@@ -1,0 +1,26 @@
+t_coffee   
+-in  tcfEXPA96772_23344.in0  
+-pdb  tcfEXPA96772_23344.in1  
+
+-evaluate_mode t_coffee_slow 
+
+-pdb_db pdb 
+-protein_db UniRef100 
+-blast LOCAL 
+-template_file MODE_PDB  
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input 
+-tree    
+-run_name=tcfEXPA96772_23344    
+-check_pdb_status  
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfEXPA96772_23344.tc_LOG 
+
+
+-protein_db /seq/databases/ncbi_blast_db/uniref100-15.6 -pdb_db /seq/databases/pdb_seq/pdb

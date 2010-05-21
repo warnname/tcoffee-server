@@ -1,0 +1,16 @@
+t_coffee   
+-in  tcfRCOA49917_8757.in0  
+-method slow_pair clustalw_pair mafft_msa probconsRNA_msa 
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input 
+-tree   
+-special_mode   rcoffee 
+-method_limits consan_pair 5 150  
+-run_name=tcfRCOA49917_8757    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfRCOA49917_8757.tc_LOG 

@@ -1,0 +1,81 @@
+#{extends 'main.html' /}
+
+%{
+  def cookiename = 'opts-' + module.name;
+  def advDisplay = request.cookies[cookiename]?.value=='true' ? 'block' : 'none';
+  def advLabel =  request.cookies[cookiename]?.value=='true' ? 'Hide advanced options' : 'Show more options';
+  def hideCount = 0;
+  
+  def isIE =  request.headers["user-agent"].value().contains("MSIE"); 
+}%
+
+#{set 'moreStyles'} 
+#{if !isIE}
+    <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/tiptip/tiptip.css'}">
+#{/if}
+#{/set} 
+
+#{set 'moreScripts'} 
+<script type="text/javascript" src="@{'/public/javascripts/autoresize.jquery.min.js'}" charset="utf-8"></script>
+<script type="text/javascript" src="@{'/public/javascripts/ajaxupload.js'}" charset="utf-8" ></script>
+#{if !isIE}
+<script type="text/javascript" src="@{'/public/tiptip/jquery.tiptip.minified.js'}" charset="utf-8"></script>
+#{/if}
+
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	/* textarea autoresize effects */
+	$('textarea').autoResize();
+
+	/* toggle adavnced options effects */
+	$('#toggleOptions').click(function() {
+		$('.c-hideable').toggle( function() {
+			var status = $(this).is(':visible'); 
+			var label =  status ? 'Hide advanced options' : 'Show more options';
+			$('#toggleOptions').text(label);
+			$.cookie('${cookiename}', status);
+		});
+	});	   
+
+
+	#{if !isIE}
+	$(".tiptip").tipTip({defaultPosition: "right"});
+	#{/if}	
+
+	/* remove any error message if the input change */
+	$('div.c-input input, div.c-input select, div.c-input textarea')
+		.bind('clearErrors', function() { 
+				$(this).parents('div.c-input').removeClass('hasError').find('.c-error').remove(); 
+			})
+		.change(function(){ $(this).trigger('clearErrors') });
+});
+
+//-->
+</script>
+#{/set} 
+
+
+<h1>${module.title} <small>${module.description}</small></h1>
+
+<form action="${request.path}?_mid=${module.name}" method="POST" enctype="multipart/form-data">
+
+#{list module.input.fieldsets, as:'set'} 
+
+#{if set.hideable && hideCount++==0 } 
+<div class="c-more-options"><a id="toggleOptions" href="javascript:void(0)" >${advLabel}</a></div> <div class="spacer" ></div>
+#{/if} 
+
+<fieldset #{if set.hideable } class="c-hideable" style="display: ${advDisplay}" #{/if} >
+#{if set.title || set.description}<legend>${set.title}<small>${set.description}</small></legend>#{/if}
+#{list set.fields, as:'field' }
+#{render field /}
+#{/list} 
+</fieldset>
+#{/list} 
+
+
+<label>&nbsp;</label> 
+<span class="button"> <button type="submit" >Submit</button> </span>
+
+</form>

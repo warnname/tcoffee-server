@@ -1,0 +1,290 @@
+/* yui reset css reset */
+
+* { margin: 0; padding: 0; }
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+	margin:0;
+	padding:0;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+fieldset,img { 
+	border:0;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+ol,ul {
+	list-style:none;
+}
+caption,th {
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+}
+q:before,q:after {
+	content:'';
+}
+abbr,acronym { border:0;
+}
+
+  
+/* my style */
+
+body{
+	font-family:Verdana, Arial, Helvetica, sans-serif; 
+	background: #eee; 
+	color: #2F2626;
+}
+
+
+h1 {
+  font-size: 2.4em;
+  margin-bottom: .5em;
+}
+
+h2 {
+  font-size: 1.8em;
+  padding-top: 0.2em;
+  padding-bottom: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+h3 {
+  font-size: 1.3em;
+} 
+
+p {
+  margin: auto auto 0.3em auto;	
+  line-height: 1.3em;
+} 
+
+.c-content {
+  width: 960px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  font-size:12px;
+  line-height: 1.3em;
+}
+
+
+h1 small {
+	display: block;
+	margin-top: 0.6em;
+	font-size: .5em;
+	color: #666;
+}
+
+.c-content ul {
+	list-style: disc inside;	
+}
+
+table.c-home {
+	margin-bottom: 1.4em;
+}
+
+table.c-home td {
+	padding: .4em;
+}
+
+table.c-home td.c-lbl {
+	text-align: right;
+	width: 8em;
+}
+
+/* magic line */
+
+.nav-wrap { font: 14px Georgia, serif; padding-top: 20px; padding-bottom: 20px;  margin: auto auto 20px auto;  background-color: #000; border-bottom: 2px solid #aaa; }
+
+.group:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+*:first-child+html .group { zoom: 1; } /* IE7 */
+
+#example-one { margin: 0 auto; list-style: none; position: relative; width: 960px; }
+#example-one li { display: inline; }
+#example-one li a { color: #bbb; font-size: 14px; display: block; float: left; padding: 6px 10px 4px 10px; text-decoration: none; text-transform: uppercase; }
+#example-one li a:hover { color: white; }
+#magic-line { position: absolute; bottom: -2px; left: 0; width: 100px; height: 2px; background: #fe4902; }
+
+.current_page_item a { color: white !important; }
+
+
+/* clean and pure css forms */
+
+.spacer{clear:both; height:1px;}
+
+
+/* ----------- stylized ----------- */
+.c-style {
+	border: 1px solid #ddd;
+	background:#f6f6f6;
+	margin:0 auto 2em;
+	width: auto;
+	padding:14px;
+	min-height: 50em;
+}
+
+.c-style legend small {
+	display: block;
+	font-size:11px;
+	font-weight: normal;
+	color:#666;
+	padding-top: 0.6em;
+	white-space: normal;
+}
+
+.c-style fieldset {
+	margin:0.2em 0 1.2em;
+	/* padding-left: 1em; */
+}
+
+.c-style fieldset legend {
+    font-size: 1.8em;
+	border-left: 2px solid #ccc;
+	padding-left: 0.4em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin-bottom:0.4em;
+	/* margin-left:-0.6em; */    
+}
+
+.c-style p {
+	margin:0.2em 0 1em;
+}
+
+.c-style label {
+	display:block;
+	font-weight:bold;
+	text-align:right;
+	width: 220px;
+	float:left;
+	margin-bottom: 20px;
+}
+
+.c-style label small {
+	color:#666666;
+	display:block;
+	font-size:11px;
+	font-weight:normal;
+	text-align:right;
+	width: 220px;
+}
+.c-style input[type='text'], 
+.c-style input[type='file'],
+.c-style textarea, 
+.c-style select{
+	font-size:12px;
+	border:solid 1px #ddd;
+	padding: 4px 2px;
+}
+
+.c-style input[type='text'], 
+.c-style select {
+	width: 20em;
+}
+
+.c-style textarea {
+	width: 41em;
+}
+
+
+.c-style .c-input { 
+	float:left;
+	font-size:12px;
+	margin:2px 0 20px 10px;
+	
+}
+
+.c-style .c-more-options {
+	padding-left: 0.2em;
+	margin-bottom: 1.8em;
+	margin-top: -2.5em;	
+}
+
+.c-style input[type='checkbox'], .c-style input[type='radio'] {
+    margin: auto 6px 8px 10px;
+}
+
+/* errors */
+
+.c-style .c-error {
+	display: block;
+	color:red;
+	font-size:11px;
+	font-weight:bold;
+	margin-top: .3em;
+}
+
+.c-style .hasError {
+	border-left:2px solid red;
+	margin-right:-4px;
+	padding-left:6px; 	
+}
+
+h2.c-error {
+	color: red;
+}
+
+
+/* wii buttons */
+
+a.button, span.button, del.button { border: medium none ; margin: 0pt 0px 0pt 8px ; padding: 0pt 10px 0pt 0pt; display: inline-block; cursor: pointer; font-size: 0pt; line-height: 0pt; background-position: 0pt 0pt; background-repeat: no-repeat; height: 30px; text-decoration: none; color: rgb(46, 82, 59); font-style: normal; vertical-align: middle; }
+a.button, span.button, del.button, a.button span, span.button button, span.button input, del.button span { background-image: url(../images/buttons.png); }
+a.button span, span.button button, span.button input, del.button span { border: medium none ; margin: 0pt -16px 0pt 10px; padding: 8px 20px 0pt 10px; white-space: nowrap; cursor: pointer; color: rgb(34, 34, 34); display: inline-block; line-height: 1; letter-spacing: 0pt ! important; font-family: "Arial" ! important; font-size: 12px ! important; font-style: normal; background-color: transparent; background-position: 100% 0pt; background-repeat: no-repeat; height: 30px; vertical-align: text-top; }
+span.button button { line-height: 2.5; }
+html.safari a.button span, html.safari del.button span { line-height: 1.3; }
+html.safari span.button button { line-height: 2.6; }
+html.safari a.button:focus, html.safari span.button button:focus { outline-color: -moz-use-text-color; outline-style: none; outline-width: medium; }
+del.button { background-position: 0pt -120px; }
+del.button span { cursor: default; color: rgb(170, 170, 170) ! important; background-position: 100% -120px; }
+span.button button, span.button input { padding-top: 0px; line-height: 2.5; }
+a.button:hover, span.button:hover, a.button:focus, a.dom-button-focus, span.button-behavior-hover { background-position: 0pt -60px; color: rgb(34, 34, 34); text-decoration: none; }
+a.button:hover span, span.button:hover button, a.button:focus span, span.button-behavior-hover button, span.button-behavior-hover input { background-position: 100% -60px; }
+a.button:active, a.button:focus span { color: rgb(68, 68, 68); }
+del.button-behavior-hover, del.button:hover { background-position: 0pt -180px; }
+del.button-behavior-hover span, del.button:hover span { background-position: 100% -180px; }
+span.button button, del.button span, span.button input {  }
+
+
+/* 
+ * tables style 
+ * see examples here http://www.smashingmagazine.com/2008/08/13/top-10-css-table-designs/
+ */
+
+
+#box-table-a
+{
+	font-size: 1em;
+	text-align: left;
+	border-collapse: collapse;
+}
+
+#box-table-a th
+{
+	font-size: 1.1em;
+	font-weight: normal;
+	padding: 8px;
+	background: #ddd;
+	border-top: 4px solid #aaa;
+	border-bottom: 1px solid #fff;
+}
+
+#box-table-a td
+{
+	padding: 8px;
+	background: #eee; 
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid transparent;
+}
+#box-table-a tr:hover td
+{
+	background: #d0dafd;
+	color: #339;
+}
+
+
+

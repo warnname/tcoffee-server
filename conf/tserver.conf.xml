@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+
+  <!-- ========================================================================
+  		Command DEFINITIONS   
+ 	   ======================================================================== -->
+  <def>
+  
+    <valid-result>
+    	<title>Alignment completed</title>
+    	<result></result>
+    	<events>
+    		<mail> 
+    		<from>${webmasterEmail}</from>
+    		<to>${email}</to>
+    		<subject>T-Coffee alignment result</subject>
+    		<body>
+    		Your alignment has been completed. 
+    		
+    		Click here to download --> ${_result_url} 
+    		
+    		
+    		Cheers, 
+    		T-Coffee team
+    		</body>
+    		</mail>
+    	</events>
+    </valid-result>
+    
+    <fail-result>
+	    <title>Alignment has failed</title>
+	    <result> </result>
+
+    	<events>
+    		<mail> 
+    		<from>${webmasterEmail}</from>
+    		<to>${email}</to>
+    		<subject>T-Coffee alignment result</subject>
+    		<body>
+    		Unfortunately your T-Coffee alignment terminated with errors. 
+    		
+    		Click here to check --> ${_result_url} 
+    		
+    		
+    		Cheers, 
+    		T-Coffee team
+    		</body>
+    		</mail>
+    	</events>
+
+    </fail-result>
+  </def>
+
+
+  <!-- ========================================================================
+  		TCoffee REGULAR   
+ 	   ======================================================================== -->
+  <module name="regular" >
+    <title>T-Coffee</title>
+	<group>Alignment</group>      
+    <description>Computes a multiple sequence alignment and the associated phylogenetic tree</description>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+    
+    <input>
+      <fieldset >
+        <title>Sequences input</title>
+		<description>Paste or upload your set of sequences in FASTA format</description>
+      
+        <field type='memo' name='seqs' label='Sequences to align' >
+          <hint>Enter the sequences to align</hint>
+          <validation format='FASTA' required='true' minnum='2' maxnum='50' maxlen='2000' >
+          	<required-error>You have to enter the sequences to align</required-error>
+          	<format-error>Sequences have to be in FASTA format</format-error>
+          	<minnum-error>You must enter at least 2 sequences</minnum-error>
+          	<maxnum-error>You must enter at most 50 sequences</maxnum-error>
+          	<maxlen-error>Sequences cannot exceed 2000 char length</maxlen-error>
+          </validation>
+          
+          <sample>@/public/sample.fasta.txt</sample>
+        </field>
+
+      </fieldset>
+      
+      <fieldset hideable="true" >
+        <title>Methods</title>
+        <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
+        
+        <field type="checkbox" name="method1" label="Pairwise Methods">
+        	<choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        </field>
+        
+        <field type="checkbox" name="method2" label="Pairwise Structual Methods">
+        	<choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+        </field>
+        
+        <field type="checkbox" name="method3" label="Multiple Methods">
+        	<choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa</choices>
+        </field>
+      </fieldset>
+      
+      
+	  <fieldset hideable="true">
+		 <title>Output options</title>
+		 <description>Use this section to control the output format.</description>
+			
+		 <field type="checkbox" name='output' label='Alignment format' >
+		   <value>score_html fasta_aln clustalw_aln phylip</value>
+		   <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+		 </field>
+
+		 <field type='dropdown' name='letter' label='Case' >
+		   <hint>Output case selection</hint>
+		   <choices>upper, lower, keep</choices>
+		 </field>			
+
+		 <field type='dropdown' name='seqnos' label='Residue number' >
+			<hint>Print the residue number</hint>
+			<choices>on, off</choices>	
+		 </field>
+			
+		 <field type='dropdown' name='outorder' >
+		   <choices>input, aligned</choices>
+		 </field>
+	  </fieldset>
+      
+
+	  <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>It will be used to notify you on alignment completion</hint>
+          <validation format="EMAIL" />
+        </field>
+	  </fieldset>
+    </input>
+    
+    <process>
+        <qsub>
+    	<tcoffee >
+	    	<args>
+	    		-in=${seqs} 
+	    		-mode=regular 
+	    		-method=${method1} ${method2} ${method3} 
+	    		-output=${output} 
+	    		-maxnseq=50 
+	    		-maxlen=2000 
+	    		-case=${letter} 
+	    		-seqnos=${seqnos} 
+	    		-outorder=${outorder} 
+				-run_name=result
+	    	</args>
+    	</tcoffee>
+        </qsub>
+    </process>
+    
+  </module>
+  
+
+  <!-- ========================================================================
+  		EXPRESSO   
+ 	   ======================================================================== -->
+  <module name="expresso">
+	 <title >Expresso</title>
+	 <description>Structure based sequence alignments are potentially more accurate than simple sequence alignments</description>
+	 <group>Alignment</group>
+     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=16845081,15201059,15215345,10964570]]></cite>
+  
+     <input>
+      <fieldset >
+        <title>Sequences input</title>
+		<description>Paste or upload your set of sequences in FASTA format</description>
+      
+        <field type='memo' name="seqs" label='Sequences to align' >
+          <hint>Enter the sequences to align</hint>
+          <validation format='FASTA' required='true' minnum='2' maxnum='50' maxlen='2000' >
+          	<required-error>You have to enter the sequences to align</required-error>
+          	<format-error>Sequences have to be in FASTA format</format-error>
+          	<minnum-error>You must enter at least 2 sequences</minnum-error>
+          	<maxnum-error>You must enter at most 50 sequences</maxnum-error>
+          	<maxlen-error>Sequences cannot exceed 2000 char length</maxlen-error>
+          </validation>
+          
+          <sample>@/public/sample.fasta.txt</sample>
+        </field>
+
+      </fieldset>
+      
+      <fieldset hideable="true">
+	      <title>Structure(s) input</title>
+	      <description>Upload your PDB structure if needed (Do NOT upload Confidential Data!)</description>
+
+	      <field type="file" name="pdb1" label="PDB file" >
+	      </field>
+	
+	      <field type="file" name="pdb2" label="PDB file" >
+	      </field>
+	
+	      <field type="file" name="pdb3" label="PDB file" >
+	      </field>
+
+      </fieldset>
+      
+      <fieldset hideable="true" >
+        <title>Library Computation</title>
+        <description>Select the methods you want to use to compute the library. T-Coffee uses various sequence and structure alignment methods to compile a collection of alignments known as a Library. Use this section to select the methods.</description>
+        
+        <field type="checkbox" name="method1" label="Pairwise Methods">
+        	<choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        </field>
+        
+        <field type="checkbox" name="method2" label="Pairwise Structual Methods (proteins)">
+        	<choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+        </field>
+      </fieldset>
+      
+      <fieldset hideable="true">
+      	<title>PDB structure selection</title>
+      	<description>pecify which PDB structure (template) should be associated with which each sequence. The uploaded PDBs are automatically associated with their own sequence. Check the box to automatically fetch the templates, or fill the box and specify the sequence/template association</description>
+      	<field type='memo' name='templateFile' label='Enter yout template' />
+      	
+      	<field type='checkbox' name='templateCheck' label='Automatically fetch pdb templates' >
+      		<hint>Check This Box To automatically Fetch Homologous Structures with BLAST</hint>
+      		<choices>MODE_PDB</choices>		
+      	</field>
+      	
+      </fieldset>
+
+	  <fieldset hideable="true">
+		 <title>Output options</title>
+		 <description>Use this section to control the output format.</description>
+			
+		 <field type="checkbox" name='output' label='Alignment format' >
+		   <value>score_html fasta_aln clustalw_aln phylip</value>
+		   <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+		 </field>
+
+		 <field type='dropdown' name='letter' label='Case' >
+		   <hint>Output case selection</hint>
+		   <choices>upper, lower, keep</choices>
+		 </field>			
+
+		 <field type='dropdown' name='seqnos' label='Residue number' >
+			<hint>Print the residue number</hint>
+			<choices>on, off</choices>	
+		 </field>
+			
+		 <field type='dropdown' name='outorder' >
+		   <choices>input, aligned</choices>
+		 </field>
+	  </fieldset>
+      
+
+	  <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>It will be used to notify you on alignment completion</hint>
+          <validation format="EMAIL" />
+        </field>
+	  </fieldset>
+      
+    </input>
+    
+    <process>
+        <qsub>
+    	<tcoffee >
+	    	<args>
+	    		-in=${seqs}
+	    		-mode=expresso
+	    		-method=${method1} ${method2}
+	    		-pdb=${pdb1}
+	    		-pdb=${pdb2}
+	    		-pdb=${pdb3}
+	    		-evaluate_mode=t_coffee_slow
+	    		-template_file=${templateFile} ${templateCheck} 
+	    		-output=${output} 
+	    		-maxnseq=50 
+	    		-maxlen=2000 
+	    		-case=${letter} 
+	    		-seqnos=${seqnos} 
+	    		-outorder=${outorder} 
+	    		-run_name=result
+	    		-multi_core=no
+	    	</args> 
+    	</tcoffee>
+        </qsub>
+    </process>
+    
+    <output>
+
+    </output>
+  </module>
+  
+  <!--=========================================================================
+  		M-COFFEE  
+  	  ========================================================================= -->
+
+  <module name="mcoffee">
+  	<title>M-Coffee</title>
+  	<description>Computes a multiple sequence alignment and the associated phylogenetic tree by combining the output of several multiple sequence alignment packages (PCMA, Poa, Mafft, Muscle, T-Coffee, ClustalW, ProbCons, DialignTX).</description>
+  	<group>Alignment</group>
+	<cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=17526519,16556910,10964570]]></cite>
+  	
+  	<input>
+	<fieldset >
+		<title>Sequences input</title>
+		<description>Paste or upload your set of sequences in FASTA format</description>
+    
+		<field type='memo' name="seqs" label='Sequences to align' >
+	        <hint>Enter the sequences to align</hint>
+            <validation format='FASTA' required='true' minnum='2' maxnum='50' maxlen='2000' >
+	          	<required-error>You have to enter the sequences to align</required-error>
+	          	<format-error>Sequences have to be in FASTA format</format-error>
+	          	<minnum-error>You must enter at least 2 sequences</minnum-error>
+	          	<maxnum-error>You must enter at most 50 sequences</maxnum-error>
+	          	<maxlen-error>Sequences cannot exceed 2000 char length</maxlen-error>
+            </validation>
+          
+	        <sample>@/public/sample.fasta.txt</sample>
+		</field>
+
+    </fieldset>
+
+	<fieldset hideable="true" >
+        <title>Alignment Computation</title>
+        <description>M-Coffee computes its alignments by combining a collection of Multiple Alignments named a Library. In this section you can select the methods you want to combine into the library. You can choose pairwise and multiple sequence alignment methods. The standard M-Coffee protocol only uses Multiple sequence alignment methods.</description>
+        
+        <field type="checkbox" name="lib1" label="Pairwise Methods">
+        	<choices>Mlalign_id_pair, Mclustalw_pair, Mpoa_pair, Mprobcons_pair, Mfast_pair, Mproba_pair, Mmafft_pair, Mdialigntx_pair, Mslow_pair, Mpcma_pair, Mmuscle_pair</choices>
+        </field>
+        
+        <field type="checkbox" name="lib2" label="Multiple Methods" >
+        	<choices>Mpcma_msa, Mmafft_msa, Mclustalw_msa, Mdialigntx_msa, Mpoa_msa, Mmuscle_msa, Mprobcons_msa, Mt_coffee_msa</choices>
+        </field>
+	</fieldset>
+
+	<fieldset hideable="true">
+		<title>Output options</title>
+		<description>Use this section to control the output format.</description>
+		
+		<field type="checkbox" name='output' label='Alignment format' >
+		  <value>score_html fasta_aln clustalw_aln phylip</value>
+		  <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+		</field>
+		
+		<field type='dropdown' name='letter' label='Case' >
+		  <hint>Output case selection</hint>
+		  <choices>upper, lower, keep</choices>
+		</field>			
+		
+		<field type='dropdown' name='seqnos' label='Residue number' >
+		<hint>Print the residue number</hint>
+		<choices>on, off</choices>	
+		</field>
+		
+		<field type='dropdown' name='outorder' >
+		  <choices>input, aligned</choices>
+		</field>
+	</fieldset>	
+
+	<fieldset>
+		<field type='text' name="email" label='Your email address' >
+			<hint>It will be used to notify you on alignment completion</hint>
+			<validation format="EMAIL" />
+		</field>
+	</fieldset>
+      
+  	</input>
+  	
+  	<process>
+    	<qsub>
+  		<tcoffee>
+	    	<args>
+	    		-in=${seqs} ${lib1} ${lib2} 
+	    		-output=${output} 
+	    		-tree 
+	    		-maxnseq=50 
+	    		-maxlen=2000 
+	    		-case=${letter} 
+	    		-seqnos=${seqnos} 
+	    		-outorder=${outorder}
+	    		-run_name=result  
+	    	</args> 
+  		</tcoffee>
+    	</qsub>
+  	</process>
+
+  </module>
+  
+  <!-- ========================================================================
+  		R-COFFEE
+  	   ======================================================================== -->
+
+	<module name="rcoffee">
+	<title>R-Coffee</title>
+	<description>Multiple Sequence Alignment of Non-Coding RNA Sequences using RNAplfold predicted secondary structures.</description>
+	<group>Alignment</group>
+	<cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=18483080,18420654,10964570]]></cite>
+	
+	<input>
+		<fieldset >
+			<title>Sequences input</title>
+			<description>Paste or upload your set of sequences in FASTA format</description>
+	    
+			<field type='memo' name="seqs" label='Sequences to align' >
+		      <hint>Enter the sequences to align</hint>
+	          <validation format='FASTA' required='true' minnum='2' maxnum='50' maxlen='2000' >
+	          	<required-error>You have to enter the sequences to align</required-error>
+	          	<format-error>Sequences have to be in FASTA format</format-error>
+	          	<minnum-error>You must enter at least 2 sequences</minnum-error>
+	          	<maxnum-error>You must enter at most 50 sequences</maxnum-error>
+	          	<maxlen-error>Sequences cannot exceed 2000 char length</maxlen-error>
+	          </validation>
+          
+		      <sample>@/public/sample-dna.fasta.txt</sample>
+			</field>
+	
+    	</fieldset>
+
+		<fieldset hideable="true" >
+	        <title>Alignment Computation</title>
+	        <description>R-Coffee computes its alignments by combining a collection of Pairwise and Multiple Alignments named a Library. In this section you can select the methods you want to combine into the library. You can choose pairwise and multiple sequence alignment methods. </description>
+	        
+	        <field type="checkbox" name="method1" label="Pairwise Methods">
+	        	<choices>lalign_id_pair, slow_pair, fast_pair, clustalw_pair, proba_pair</choices>
+	        </field>
+	        
+	        <field type="checkbox" name="method2" label="Multiple Methods">
+	            <value>mafft_msa muscle_msa probconsRNA_msa</value>
+	        	<choices>mafft_msa, muscle_msa, probconsRNA_msa</choices>
+	        </field>
+		</fieldset>
+	
+		<fieldset hideable="true">
+			<title>Output options</title>
+			<description>Use this section to control the output format.</description>
+			
+			<field type="checkbox" name='output' label='Alignment format' >
+			  <value>score_html fasta_aln clustalw_aln phylip</value>
+			  <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+			</field>
+			
+			<field type='dropdown' name='letter' label='Case' >
+			  <hint>Output case selection</hint>
+			  <choices>upper, lower, keep</choices>
+			</field>			
+			
+			<field type='dropdown' name='seqnos' label='Residue number' >
+			<hint>Print the residue number</hint>
+			<choices>on, off</choices>	
+			</field>
+			
+			<field type='dropdown' name='outorder' >
+			  <choices>input, aligned</choices>
+			</field>
+		</fieldset>	
+	
+		<fieldset>
+			<field type='text' name="email" label='Your email address' >
+				<hint>It will be used to notify you on alignment completion</hint>
+				<validation format="EMAIL" />
+			</field>
+		</fieldset>
+	      
+	</input>
+	
+	<process>
+    	<qsub>
+  		<tcoffee>
+	    	<args >
+	    		-in=${seqs}
+	    		-method=${method1} ${method2} 
+	    		-output=${output} 
+	    		-maxnseq=50 
+	    		-maxlen=2000 
+	    		-case=${letter} 
+	    		-seqnos=${seqnos} 
+	    		-outorder=${outorder} 
+	    		-run_name=result
+	    		-tree
+	    		-special_mode=rcoffee
+	    		-method_limits=consan_pair 5 150
+	    	</args>
+  		</tcoffee>
+    	</qsub>
+	</process>
+  </module>
+  
+  <!-- ========================================================================
+  		COMBINE
+  	   ======================================================================== -->
+
+	<module name="combine">
+	<title>Combine</title>
+	<description>Combines two (or more) multiple sequence alignments into a single one.</description>
+	<group>Alignment</group>
+	<cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+	
+	<input>
+		<fieldset >
+			<title>Sequences input</title>
+			<description>Upload each of the Multiple Sequence alignments you want to combine. The alignments must be in fasta or clustal format. You need at least two alignments.</description>
+	    
+			<field type='memo' name="aln1" label='Sequences alignment' >
+		        <validation required="true" />
+		        <sample >@/public/sample-clustalw.txt</sample>
+			</field>
+
+			<field type='memo' name="aln2" label='Sequences alignment' >
+		        <validation required="true" />
+		        <sample >@/public/sample-clustalw.txt</sample>
+			</field>
+    	</fieldset>
+
+		<fieldset hideable="true">
+			<title>Output options</title>
+			<description>Use this section to control the output format.</description>
+			
+			<field type="checkbox" name='output' label='Alignment format' >
+			  <value>score_html fasta_aln clustalw_aln phylip</value>
+			  <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+			</field>
+			
+			<field type='dropdown' name='letter' label='Case' >
+			  <hint>Output case selection</hint>
+			  <choices>upper, lower, keep</choices>
+			</field>			
+			
+			<field type='dropdown' name='seqnos' label='Residue number' >
+			<hint>Print the residue number</hint>
+			<choices>on, off</choices>	
+			</field>
+			
+			<field type='dropdown' name='outorder' >
+			  <choices>input, aligned</choices>
+			</field>
+		</fieldset>	
+	
+		<fieldset>
+			<field type='text' name="email" label='Your email address' >
+				<hint>It will be used to notify you on alignment completion</hint>
+				<validation format="EMAIL" />
+			</field>
+		</fieldset>
+	      
+	</input>
+	
+	<process>
+		<qsub>
+  		<tcoffee>
+	    	<args >
+			-in=${aln1} 
+			-in=${aln2}  
+			-output=${output} 
+			-evaluate_mode=t_coffee_slow 
+			-maxnseq=80 
+			-maxlen=2000  
+			-run_name=result    
+	    	</args>
+  		</tcoffee>
+		</qsub>
+	</process>
+  </module>  
+  
+  <!-- 
+  	CORE tcoffee mode 
+  	-->
+  <module name="core">
+	  <title>Core</title>
+	  <description>Evaluates your Alignment and outputs a Colored version where unreliable portions are in blue and the reliable ones in red.</description>
+	  <group>Evaluation</group>
+	  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+	  
+	  <input>
+		<fieldset >
+			<title>Alignment input</title>
+			<description>Paste or upload your Multiple Sequence Alignment in CLUSTAL format.</description>
+	    
+			<field type='memo' name="alignment" label='Alignment' >
+		        <hint>Enter your alignment</hint>
+		        <validation required="true" />
+		        <sample >@/public/sample-clustalw.txt</sample>
+			</field>
+    	</fieldset>
+
+		<fieldset hideable="true" >
+	        <title>Library Computation</title>
+	        <description>Your alignment is evaluated by comparison against a collection of alignments. This collection is named a Library. This section lets you control the computation of the library. Different libraries give different score results</description>
+	        
+	        <field type="checkbox" name="method" label="Pairwise Methods" >
+	            <value>Mlalign_id_pair Mproba_pair</value>
+	        	<choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair</choices>
+	        </field>
+		</fieldset>
+	
+		<fieldset hideable="true">
+			<title>Output options</title>
+			<description>Use this section to control the output format.</description>
+			
+			<field type="checkbox" name='output' label='Alignment format' >
+			  <value>score_html fasta_aln clustalw_aln phylip</value>
+			  <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices>
+			</field>
+			
+			<field type='dropdown' name='letter' label='Case' >
+			  <hint>Output case selection</hint>
+			  <choices>upper, lower, keep</choices>
+			</field>			
+			
+			<field type='dropdown' name='seqnos' label='Residue number' >
+			<hint>Print the residue number</hint>
+			<choices>on, off</choices>	
+			</field>
+			
+			<field type='dropdown' name='outorder' >
+			  <choices>input, aligned</choices>
+			</field>
+		</fieldset>	
+	
+		<fieldset>
+			<field type='text' name="email" label='Your email address' >
+				<hint>It will be used to notify you on alignment completion</hint>
+				<validation format="EMAIL" />
+			</field>
+		</fieldset>
+	  </input>
+	  
+	  <process>
+	  		<qsub>
+	  		<tcoffee>
+		  		<args>
+					-infile=${alignment}  
+					-in=${method}  
+					-score=1 
+					-output=${output} 
+					-maxnseq=50 
+					-maxlen=2000 
+					-case=${letter} 
+					-seqnos=${seqnos} 
+					-outorder=${outorder}  
+					-run_name=result    
+		  		</args> 
+	  		</tcoffee>
+	  		</qsub>		
+	  </process>	  
+  </module>
+  
+  <module name="irmsd">
+  	<title>iRMSD-APDB</title>
+  	<description>Evaluates your Multiple Sequence Alignment using APDB.</description>
+  	<group>Evaluation</group>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=16873492,17032685,12855461]]></cite>
+  	
+  	<input>
+		<fieldset >
+			<title>Alignment input</title>
+	    
+			<field type='memo' name="alignment" label='Alignment' >
+		        <hint>Enter your alignment</hint>
+		        <validation required="true" />
+		        <sample >@/public/sample-clustalw.txt</sample>
+			</field>
+    	</fieldset>
+
+		<fieldset hideable="true">
+			<title>Srad - the Sphere Radius</title>
+			<description>APDB is a local method and the structural neighbourhood of each residue is used to estimate its alignment accuracy. This Neighbourhood is a sphere of radius Srad (in Ångström). A sphere with a 10 Ångström Radius contains between 20-40 amino acids.</description>
+			
+			<field type="dropdown" name="srad" label="Srad" >
+			    <value>10</value> 
+				<choices>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1000</choices>
+				<hint>Set Srad, the Sphere radius (Ångström). High Srad &lt;=&gt; More stringent measure</hint>
+			</field>
+		</fieldset>
+		
+		<fieldset hideable="true">
+			<title>T1 - the Distance Threshold</title>
+			<description>Within a sphere, each pair of aligned residues either agrees or disagrees with the central residues alignment. Pairs of aligned residues whose difference of distance (Delta) is lower than T1 are considered to be supportive, pairs of residues above T1 are considered unsupportive.</description>
+			
+			<field type="dropdown" name="t1" label="T1" >
+			    <value>2.0</value> 
+				<choices>0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.5</choices>
+				<hint>T1 (Ångström) the Delta Threshold. Low T1 &lt;=&gt; More stringent measure.</hint>
+			</field>
+		</fieldset>
+
+		<fieldset hideable="true">
+			<title>T2 - the Neighbourhood Support</title>
+			<description>The final APDB score indicates the proportion of aligned residues correctly aligned from an APDB point of view. APDB considers that a pair of residues is correctly aligned if T2 percent of its neighbourhood is supportive (as defined above in the T1 section).</description>
+			
+			<field type="dropdown" name="t2" label="T2">
+			    <value>70</value> 
+				<choices>20, 30, 40, 50, 60, 70, 80, 90, 100</choices>
+				<hint>T2 (%) The Neighbourhood Support Limit. Hight T2 &lt;=&gt; More stringent Measure.</hint>
+			</field>
+		</fieldset>
+
+		<fieldset>
+			<field type='text' name="email" label='Your email address' >
+				<hint>It will be used to notify you on alignment completion</hint>
+				<validation format="EMAIL" />
+			</field>
+		</fieldset>
+  	</input>
+  	
+  	<process>
+  		<qsub>
+  		<tcoffee>
+	  		<args>
+	  			-other_pg=apdb 
+	  			-aln=${alignment}  
+	  			-apdb_outfile=default 
+	  			-outfile=default 
+	  			-io_format=hsg3 
+	  			-output=score_html 
+	  			-maximum_distance=${srad} 
+	  			-md_threshold=${t1}
+				-similarity_threshold=${t2}  
+				-run_name=result 
+	  		</args> 
+  		</tcoffee>
+  		</qsub>
+  	</process>
+  </module>
+  
+</server>
+

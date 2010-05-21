@@ -1,0 +1,23 @@
+#{extends 'main.html' /}
+#{set title:'T-Coffee | My recent alignmnts' /}
+
+<script type="text/javascript">
+function poll() {
+	$('#history').load('@{Application.historyTable()}', function() { setTimeout(poll, 5000); });
+}
+
+$(document).ready(function(){
+    poll(); 
+});
+</script>
+
+<h1>Recent alignments history
+
+<small>
+Here your recent alignments history using T-Coffee
+</small>
+</h1>
+
+<div id="history" class="c-style" >
+<!--  history table comes here -->
+</div>

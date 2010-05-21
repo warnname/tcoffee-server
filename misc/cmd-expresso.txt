@@ -1,0 +1,14 @@
+t_coffee   
+-pdb_db pdb 
+-protein_db UniRef100 
+-blast LOCAL 
+
+-in  tcfTCOR23535_32651.in0  
+-mode expresso 
+-output clustalw_aln fasta_aln phylip score_html score_pdf 
+-maxnseq 50 
+-maxlen 2000  
+-run_name=tcfTCOR23535_32651    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfTCOR23535_32651.tc_LOG 

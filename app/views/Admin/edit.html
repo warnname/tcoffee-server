@@ -1,0 +1,84 @@
+#{extends 'main.html' /}
+#{set title:'Administration' /}
+
+
+%{
+def name = new File(fullName).getName();
+def isXml = fullName.endsWith('.xml');
+}%
+
+#{if isXml}
+
+<script src="@{'/public/codemirror/js/codemirror.js'}" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+	var editor = CodeMirror.fromTextArea('editor', {
+    height: "40em",
+    parserfile: "parsexml.js",
+    stylesheet: "@{'/public/codemirror/css/xmlcolors.css'}",
+    path: "@{'/public/codemirror/js/'}/",
+    continuousScanning: 500,
+    lineNumbers: true
+  });
+
+});
+//-->
+</script>
+
+<style type="text/css">
+  .CodeMirror-wrapping {
+	background-color: white;
+	width: 60em;
+	}
+
+  
+  .CodeMirror-line-numbers {
+    width: 2.2em;
+    color: #aaa;
+    background-color: #eee;
+    text-align: right;
+    padding-right: .3em;
+    font-size: 10pt;
+    font-family: monospace;
+    padding-top: .4em;
+  }
+  
+  #wrapper { 
+  	border-left: 1px solid #999; 
+  	border-top: 1px solid #999; 
+  	border-bottom: 1px solid #999; 
+  }
+</style>
+#{/if}
+#{else}
+<style type="text/css">
+  #editor{ width: 90%; height: 40em;}
+</style>
+#{/else}
+
+
+<h1>System editor<small>Where you can edit and save system files</small> </h1>
+
+
+<div class="c-style" >
+<form method="POST" action="@{Admin.edit}">
+
+<fieldset>
+<legend>Editing file <b>${name}</b> <small>Full path: <b>${fullName}</b></small> 
+</legend>
+
+<input type="hidden" name="file" value="${fullName}" />  
+<div id="wrapper" >
+<textarea id="editor" name="content" rows="35" >${content}</textarea>
+</div>
+
+
+<div class="break"></div>
+<span class="button"> <button type="submit" >Save</button> </span>
+</fieldset>
+
+</form>
+
+</div>

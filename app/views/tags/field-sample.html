@@ -1,0 +1,9 @@
+#{if _arg.sample  }
+<small><a id="${_arg.name}_sample" class="sample" href="javascript:void(0)">Click here to use the sample file</a></small>
+
+<script type="text/javascript" >
+$('#${_arg.name}_sample').click(function(){ 
+	$.get('${_arg.sample}', function(data) { var text=$('textarea#${_arg.name}'); text.text(data); text.trigger('clearErrors'); text.trigger('keydown');  });
+});
+</script>
+#{/if} 

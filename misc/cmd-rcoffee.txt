@@ -1,0 +1,12 @@
+t_coffee   
+-in  tcfRCOR52788_24435.in0  
+-mode rcoffee 
+-output clustalw_aln fasta_aln phylip score_html score_pdf 
+-maxnseq 50 
+-maxlen 2000 
+-tree   
+-method_limits consan_pair 5 150  
+-run_name=tcfRCOR52788_24435    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfRCOR52788_24435.tc_LOG 

@@ -1,0 +1,22 @@
+ t_coffee   
+ 
+ -in  tcfEXPA29390_3650.in0  
+ -pdb  tcfEXPA29390_3650.in1  
+ -pdb  tcfEXPA29390_3650.in2  
+ -evaluate_mode t_coffee_slow 
+ -pdb_db pdb 
+ -protein_db UniRef100 
+ -blast LOCAL 
+ -template_file  tcfEXPA29390_3650.in3  
+ -output clustalw_aln score_pdf fasta_aln phylip score_html 
+ -maxnseq 50 
+ -maxlen 2000 
+ -case keep 
+ -seqnos off 
+ -outorder aligned 
+ -tree    
+ -run_name=tcfEXPA29390_3650    
+ -check_pdb_status  
+ -cache=no 
+ -remove_template_file=1 
+ -quiet=stdout >tcfEXPA29390_3650.tc_LOG 

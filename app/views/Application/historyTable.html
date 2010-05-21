@@ -1,0 +1,68 @@
+#{ifnot recent }
+<b>no history available</b>
+#{/ifnot}
+
+#{else}
+
+<table id="box-table-a">
+<thead>
+<tr>
+<th>Mode</th>
+<th>Request ID</th>
+<th>Status</th>
+<th>Begin</th>
+<th>Duration</th>
+<th>Expire</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+#{list recent, as:'history'} 
+<tr class="clickable ${history_parity}" cn="RID_${rid=history.rid}" > 
+<td class='clickable'>${history.mode}</td>
+<td class='clickable'><a href="@{Application.result()}?rid=${rid=history.rid}" >${history.rid}</a></td>
+<td class='clickable'>${history.status}</td>
+<td class='clickable'>${history.begin}</td>
+<td class='clickable'>${history.duration}</td>
+<td class='clickable'>${history.expire}</td>
+<td>[ <a href="#" class="remove" title="Click to remove this item">X</a> ]</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+
+<p>
+<small>History is sorted from the most recent to the most older alignment request</small>
+</p>
+
+<p>
+<a id="deleteAll" href="#">Delete history</a>
+</p>
+
+ 
+<script type="text/javascript">
+function remove(cname) {
+	$.cookie(cname, '--', {expires:-1, path:'/'});
+}
+
+$(document).ready(function() {
+	$('td.clickable').css('cursor', 'pointer');
+	$('td.clickable').click(function() { window.location=$(this).closest('tr').find('a').attr('href'); });
+
+	$('a.remove').click(function(){
+		var row = $(this).closest('tr');
+		remove(row.attr('cn'));
+		row.remove();
+	});
+	
+	$('#deleteAll').click(function() {
+		$('tr.clickable').each(function() {
+			remove($(this).attr('cn'));
+		} );
+
+		window.location.reload();		
+	} );
+});
+</script>
+
+#{/else}

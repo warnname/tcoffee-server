@@ -1,0 +1,29 @@
+#{extends 'main.html' /}
+#{set title:'T-Coffee | Start' /}
+
+<h1>T-Coffee
+<small>
+Here the list of available tools in the T-Coffee family
+</small>
+</h1>
+
+
+<div class="c-style" >
+
+#{list conf.groups, as:'group' }
+<h2>${group ?: 'other'}</h2>
+
+<table class="c-home" >
+<tbody>
+#{list conf.modulesByGroup(group), as:'module'} 
+<tr>
+	<td class="c-lbl" ><a href="@{Application.module}?name=${module.name}">${module.title ?: '(unknown)'}</a></td>
+	<td class="c-val">${module.description}</td>
+	</tr>
+#{/list } 
+</tbody>
+</table>
+#{/list}
+
+
+</div>

@@ -1,0 +1,23 @@
+t_coffee   -in  tcfEXPA34964_18970.in0  -method lalign_id_pair sap_pair -evaluate_mode t_coffee_slow -pdb_db pdb -protein_db UniRef100 -blast LOCAL -template_file MODE_PDB  -output clustalw_aln score_pdf fasta_aln phylip score_html -maxnseq 50 -maxlen 2000 -case upper -seqnos on -outorder input -tree    -run_name=tcfEXPA34964_18970    -check_pdb_status  -cache=no -remove_template_file=1 -quiet=stdout >tcfEXPA34964_18970.tc_LOG 
+
+t_coffee   
+-in  tcfEXPA34964_18970.in0  
+-method lalign_id_pair sap_pair 
+-evaluate_mode t_coffee_slow 
+-pdb_db pdb 
+-protein_db UniRef100 
+-blast LOCAL 
+-template_file MODE_PDB  
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input 
+-tree    
+-run_name=tcfEXPA34964_18970    
+-check_pdb_status  
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout 
+>tcfEXPA34964_18970.tc_LOG

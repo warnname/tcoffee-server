@@ -1,0 +1,61 @@
+#{extends 'main.html' /}
+#{set title:'Contacts' /}
+
+<h1>System info
+<small>
+Server &amp; framework configuration properties 
+</small>
+</h1>
+
+<div class="c-style">
+
+<fieldset>
+<h2>Play! configuration</h2>
+<table id="box-table-a">
+<thead>
+<tr><th>PARAM</th><th>VALUE</th></tr>
+</thead>
+<tbody>
+#{list list3, as:'key'}
+<tr>
+<td>${key}</td> <td>${playConf.getProperty(key)}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+</fieldset>
+
+<fieldset>
+<h2>JVM Props</h2>
+<table id="box-table-a">
+<thead>
+<tr><th>PARAM</th><th>VALUE</th></tr>
+</thead>
+<tbody>
+#{list list1, as:'key'}
+<tr>
+<td>${key}</td> <td>${System.getProperties().getProperty(key)}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+</fieldset>
+
+<fieldset>
+<h2>Environment variables</h2>
+<table id="box-table-a">
+<thead>
+<tr><th>PARAM</th><th>VALUE</th></tr>
+</thead>
+<tbody>
+#{list list2, as:'key'}
+<tr>
+<td>${key}</td> <td>${System.getenv().get(key)}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+</fieldset>
+
+
+</div>

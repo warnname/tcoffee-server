@@ -1,0 +1,1 @@
+t_coffee   -in  tcfTCOA23193_15490.in0  -pdb_db pdb -protein_db UniRef100 -blast LOCAL -mode regular -method clustalw_pair -output clustalw_aln score_pdf fasta_aln phylip score_html -maxnseq 50 -maxlen 2000 -case upper -seqnos on -outorder input  -run_name=tcfTCOA23193_15490    -cache=no -remove_template_file=1 -quiet=stdout >tcfTCOA23193_15490.tc_LOG

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ <module name="configure" >
+    <title>Configuration</title>
+    <description>Application properties &amp; settings</description>
+    
+    <input>
+      <fieldset >
+        <title>System PATH</title>
+		<description>Location of application required binaries and data</description>
+      
+        <field type='text' name="pathBin" label='BIN path' >
+          <hint>Enter the path on the file system to the application binaries</hint>
+          <validation required="true" />
+        </field>
+
+        <field type='text' name="pathTcoffee" label='T-Coffee home' >
+          <hint>Path to the .t_coffee home folder</hint>
+          <validation required="true" />
+        </field>
+
+        <field type='text' name="pathMatrix" label='M-Coffee matrix' >
+          <hint>Enter the path on file system which contains matrix required by M-Coffee </hint>
+          <validation required="true" />
+        </field>
+
+        <field type='text' name="webmasterEmail" label='Web-master email' >
+          <hint>Email address used to report error</hint>
+          <validation format="EMAIL" />
+        </field>
+      </fieldset>
+
+	  <fieldset>
+	  	<title>Other settings</title>
+		<field type="text" name="requestTimeToLive" label="Request time to live" >
+		 	<hint>Max amount of time (seconds) before valid result are deleted</hint>
+		 	<validation required="true" format="INTEGER" />
+		</field>
+
+	  </fieldset>
+
+	  <fieldset hideable="true">
+		<title>Matrix &amp; Databases</title>
+
+        <field type='text' name="BLASTMAT" label='BLAST Matrix' >
+        </field>
+
+        <field type='text' name="PDB_DB" label='PDB DB' >
+        </field>
+
+        <field type='text' name="PROTEIN_DB" label='PROTEIN DB' >
+        </field>
+	  </fieldset>
+
+	  <fieldset hideable="true">
+		<title>GRID settings</title>
+
+        <field type='text' name="SGE_QUEUE" label='Queue' />
+
+        <field type='text' name="SGE_ROOT" />
+        <field type='text' name="SGE_EXECD_PORT" />
+        <field type='text' name="SGE_CLUSTER_NAME" />
+        <field type='text' name="SGE_QMASTER_PORT"  />
+        <field type='text' name="SGE_CELL" />
+
+	  </fieldset>
+
+      
+      <fieldset hideable="true">
+        <title>SMTP Host</title>
+		<description>Settings of SMTP host used to send notification email to the users</description>
+      
+        <field type='text' name="mailSmtpHost" label='Host' >
+        </field>
+
+        <field type='text' name="mailSmtpUser" label='User name' >
+        </field>
+
+        <field type='password' name="mailSmtpPass" label='Password' >
+        </field>
+        <field type='text' name="mailSmtpChannel" label='Channel' >
+        </field>
+      </fieldset>
+
+	</input>      
+    
+  </module>

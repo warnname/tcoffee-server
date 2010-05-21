@@ -1,0 +1,35 @@
+*{
+Tag that renders a list of checkbox wrapped by a table.
+
+Required paramaters: 
+- name: the name to assigend to each input checkbox field 
+- cols: the numbers of columns used to format the table
+- list: the list of values  
+- sel: the list of current values 
+
+}*
+
+<table>
+<tbody>
+%{
+
+def nrows = Math.floor(_list.size()  / _cols) +1;
+def i=0;
+for( x=0; x<nrows; x++ ) {
+
+}%
+
+<tr>
+%{
+for( y=0; y<_cols && i<_list.size(); y++ ) {
+def item=_list[i] 
+}%
+<td> <input type="checkbox" name="${_name}" value="${item}" ${_sel.contains(item) ? "checked='checked'" : ""}  />${item}</td>
+%{ 
+  i++
+  } 
+}%
+</tr>
+%{ } }%
+</tbody>
+</table>

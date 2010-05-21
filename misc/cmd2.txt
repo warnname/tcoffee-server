@@ -1,0 +1,17 @@
+t_coffee   
+-in  tcfTCOA15951_2234.in0  
+-pdb_db pdb 
+-protein_db UniRef100 
+-blast LOCAL 
+-mode regular 
+-method best_pair4prot sap_pair fugue_pair pcma_msa poa_msa 
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input  
+-run_name=tcfTCOA15951_2234    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfTCOA15951_2234.tc_LOG 

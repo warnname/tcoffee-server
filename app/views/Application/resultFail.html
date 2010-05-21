@@ -1,0 +1,42 @@
+#{extends 'main.html' /}
+#{set title:'T-Coffee | Error' /}
+
+<h1>Your alignment request has failed</h1> 
+
+<fieldset>
+<legend>Info</legend>
+<ul>
+<li>Alignment ticket # <b>${rid}</b></li>
+<li>Elapsed time <b>${result?.elapsedTimeFmt}</b></li>
+</ul>
+</fieldset>
+
+#{if result?.commandLine?.file }
+<fieldset>
+<legend>Command Line</legend>
+<code >
+#{includefile result.commandLine.file /}
+</code>
+</fieldset>
+#{/if}
+
+#{if result?.errors }
+<fieldset>
+<legend>Errors</legend>
+#{list result.errors, as:'msg'} 
+<p><code># ${msg}</code></p>
+#{/list} 
+</fieldset>
+#{/if}
+
+#{if result?.items }
+<fieldset>
+<legend>Download</legend> 
+${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a>
+<ul>
+#{list result.items, as:'item'} 
+<li><a href="${item.webpath}" >${item.label}</a></li>
+#{/list} 
+</ul>
+</fieldset>
+#{/if}

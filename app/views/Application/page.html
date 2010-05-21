@@ -1,0 +1,26 @@
+#{extends 'main.html' /}
+#{set title: content.title /}
+
+#{if content.redirect }
+<head><meta http-equiv="refresh" content="${content.redirect.delay};${content.redirect.href}"></head>
+#{/if}
+
+<h1>${content.title} <small>${content.description}</small> </h1>
+
+
+<div class="c-style">
+
+#{list content.paragraphs, as:'p'}
+<p>${p}</p>
+#{/list}
+
+<h2>What's next?</h2>
+
+<ul>
+#{list content.links, as:'link'}
+<li> <a href="${link.href}" target="${link.target}" >${link.label}</a> </li>
+#{/list}
+</ul>
+
+</div>
+

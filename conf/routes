@@ -1,0 +1,24 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /						Application.index
+
+# Downloadable data
+GET		/data/{<.+>path}		Data.get
+
+# Administration controller 
+GET 	/adm/					Admin.index		
+* 		/adm/{action}			Admin.{action}		
+
+# Secure module controller 
+* 		/secure/{action}		Secure.{action}	
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/            	staticDir:public
+
+# Main application controller
+*		/{action}				Application.{action}
+
+

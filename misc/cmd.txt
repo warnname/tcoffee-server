@@ -1,0 +1,16 @@
+t_coffee   
+-in  tcfTCOA24141_29429.in0  
+-pdb_db pdb 
+-protein_db UniRef100 
+-blast LOCAL 
+-mode regular 
+-output clustalw_aln pir_aln pir_seq score_pdf gcg fasta_aln fasta_seq score_ascii msf_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case lower 
+-seqnos off 
+-outorder aligned  
+-run_name=tcfTCOA24141_29429    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfTCOA24141_29429.tc_LOG 

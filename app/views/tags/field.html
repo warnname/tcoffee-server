@@ -1,0 +1,145 @@
+
+#{if _arg.type == 'hidden' }
+	<input type="hidden" name="${_arg.name}" value="${_arg.value}" />
+#{/if}
+
+#{else }
+#{field-wrap _arg } 
+
+#{if _arg.type == 'text' }
+	<input type="text" name="${_arg.name}" value="${_arg.value}" title="${_arg.hint}" class="tiptip"/>
+#{/if}
+
+#{elseif _arg.type == 'password' }
+	<input type="password" name="${_arg.name}" value="${_arg.value}" title="${_arg.hint}" class="tiptip" />
+#{/elseif}
+
+#{elseif _arg.type == 'dropdown' }
+	<select name='${_arg.name}' title="${_arg.hint}" class="tiptip">
+	#{list _arg.choices, as: 'item'}
+	<option ${_arg.value==item ? "selected='selected'" : "" }>${item}</option>
+	#{/list}
+	</select>
+#{/elseif}
+
+#{elseif _arg.type == 'list' }
+	<select name='${_arg.name}' size="5" title="${_arg.hint}" class="tiptip" >
+	#{list _arg.choices, as: 'item'}
+	<option ${_arg.value==item ? "selected='selected'" : "" }>${item}</option>
+	#{/list}
+	</select>
+#{/elseif}
+
+
+#{elseif _arg.type == 'checkbox' }
+<div #{if _arg.hint && !_arg.hintsMap } class="tiptip" title="${_arg.hint}"#{/if} >
+	#{listwrap list:_arg.choices, cols:5, as:'item' }
+	<span class="tiptip" title="${_arg.hintsMap[item]}">
+	<input type="checkbox" name='${_arg.name}' value="${item}" ${_arg.value?.contains(item) ? "checked='checked'" : ""} />${item}
+	</span>
+	#{/listwrap}
+</div>
+#{/elseif}
+
+#{elseif _arg.type == 'radio' }
+<div #{if _arg.hint && !_arg.hintsMap } class="tiptip" title="${_arg.hint}"#{/if} >
+	#{listwrap list:_arg.choices, cols:5, as:'item' }
+	<span class="tiptip" title="${_arg.hintsMap[item]}">
+	<input type="radio" name='${_arg.name}' value="${item}" ${_arg.value?.contains(item) ? "checked='checked'" : ""}  />${item}
+	</span>
+	#{/listwrap}
+</div>
+#{/elseif}
+
+#{elseif _arg.type == 'memo' || _arg.type == 'file' }
+
+    <div id="${_arg.name}_wrap" >
+        #{if _arg.type=='memo'}
+		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="tiptip" rows="6" >${_arg.value}</textarea>
+	    <div class="link">
+	    - OR - <a id="${_arg.name}_uploader" href="javascript:void(0)" >click here to upload a file</a>
+	    </div>
+		#{/if}
+		
+		#{else}
+	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if}  >
+	    <a id="${_arg.name}_uploader" href="javascript:void(0)" class="tiptip">Click here to upload a file</a>
+	    </div>
+		#{/else}
+
+	    <div class="wait" style="display:none" > <img src="@{'/public/images/ajax-small.gif'}"  /> Wait while your upload is completed ..</div>
+	    <div class="error" ></div>
+	    <div class="result" #{if !_arg.hasFile() } style="display:none" #{/if} >
+	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+	    	<span style="position:relative; left:1em; top:26px;">
+	    	#{if _arg.hasFile()} ${_arg.getFileName()} <input type='hidden' name='${_arg.name}' value='$ajaxupload:${_arg.filePath}' />  #{/if} 
+	    	[ <a href="javascript:void(0)" class="cancel">x</a> ]
+	    	</span>  
+	    </div>
+    </div>
+	<script type="text/javascript">
+	$(document).ready(function() { 
+	    var sample=$('#${_arg.name}_sample'); /* as defined in field-sample.html */
+	    var text=$('#${_arg.name}');  
+		var ui=$('#${_arg.name}_wrap');
+		var timeout=null;
+		/* change the UI to reflexct the ajax upload */
+		var fSubmit=function(file,ext){ 
+			ui.find('div.link').hide(); 
+			timeout = setTimeout( function() { ui.find('div.wait').show(); timeout=null; }, 500 );
+			if(sample) sample.hide();
+		};
+
+		var fCancel=function() {
+			ui.find('div.link').show();
+			ui.find('div.result').hide(); 
+			if(sample) sample.show();
+
+			/* need to recreate the removed textarea */
+			if(text) { text.attr('name','${_arg.name}'); text.show(); }
+
+			/* remove the hidden field */
+			ui.find('div.result input').remove();
+			
+		}
+		
+		/* notify the ajax upload completion */
+		var fComplete=function(file,response){ 
+			if( timeout ) { clearTimeout(timeout); timeout=null; }
+			ui.find('div.wait').hide();
+			if(response.success===true) { fSuccess(file,response); } 
+			else { fError(response); }
+		};
+
+		var fSuccess=function(file,response) {
+			/* remove the memo field */
+			if(text) { text.hide(); text.removeAttr('name'); text.trigger('clearErrors'); }
+			/* inject an hidden field with the same name containing the uploaded filename */
+			ui.find('div.result').append("<input type='hidden' name='${_arg.name}' value='$ajaxupload:"+response.path+"' />");
+			ui.find('div.result span').prepend( response.name + " (" + response.size + ")" );
+			
+			/* feedback the upload completion */
+			ui.find('div.result').show();
+		}
+
+		var fError=function(response) {
+		}
+
+		ui.find('div.result a.cancel').click(fCancel);
+		
+		var d={name:"${_arg.name}"}; /* request params - basically the field that it is uplaoded */
+		var o={name:"${_arg.name}", action:'@{Application.upload}', responseType:'json', data:d, onSubmit:fSubmit, onComplete:fComplete };
+		new AjaxUpload('${_arg.name}_uploader', o); 
+	});
+	</script>
+	
+#{/elseif}
+
+#{else}
+	<span>(Error rendering file: ${_arg.name} - Unknown type "${_arg.type}")</span>
+#{/else}
+
+
+#{/field-wrap}
+#{/else }
+

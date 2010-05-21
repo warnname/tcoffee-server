@@ -1,0 +1,16 @@
+t_coffee   
+-in  tcfRCOA53056_2327.in0  
+-method mafft_msa muscle_msa probconsRNA_msa 
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input 
+-tree   
+-special_mode   rcoffee 
+-method_limits consan_pair 5 150  
+-run_name=tcfRCOA53056_2327    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfRCOA53056_2327.tc_LOG 

@@ -1,0 +1,134 @@
+http://patorjk.com/software/taag/
+
+
+
+  _______  _______        __  __          
+ |__   __|/ / ____|      / _|/ _|         
+    | |  / / |      ___ | |_| |_ ___  ___ 
+    | | / /| |     / _ \|  _|  _/ _ \/ _ \
+    | |/ / | |____| (_) | | | ||  __/  __/
+    |_/_/   \_____|\___/|_| |_| \___|\___|
+                                          
+                                          
+
+Font Name: Big
+Monospaced Font: Yes. Individual character widths are the same.
+Font 44 of 309
+
+
+ _______  _________          ___   ___               
+|_     _|/  /      |.-----..'  _|.'  _|.-----..-----.
+  |   |,' ,'|   ---||  _  ||   _||   _||  -__||  -__|
+  |___/__/  |______||_____||__|  |__|  |_____||_____|
+                                                     
+
+Font Name: Chunky
+Monospaced Font: Yes. Individual character widths are the same.
+Font 69 of 309
+
+ _____   _______        __  __          
+|_   _| / /  __ \      / _|/ _|         
+  | |  / /| /  \/ ___ | |_| |_ ___  ___ 
+  | | / / | |    / _ \|  _|  _/ _ \/ _ \
+  | |/ /  | \__/\ (_) | | | ||  __/  __/
+  \_/_/    \____/\___/|_| |_| \___|\___|
+                                        
+                                        
+
+Font Name: Doom
+Monospaced Font: Yes. Individual character widths are the same.
+Font 96 of 309
+
+ _____ _  __       _   _       
+/_  _///,'_/ _   ,'_7,'_7__  __
+ / / /// /_,'o| /_7 /_7,'o/,'o/
+/_/ // |__/|_,'//  //  |_( |_( 
+                               
+
+Font Name: Efti Italic
+Monospaced Font: Yes. Individual character widths are the same.
+Font 103 of 309
+
+____    ______ ____ ____ ____ ____ ____ 
+|_ _\  / /| __\|   ||  _\|  _\| __\| __\
+  ||  / / | \__| . || _\ | _\ |  ]_|  ]_
+  |/ /_/  |___/|___/|/   |/   |___/|___/
+
+Font Name: Glenyn
+Monospaced Font: Yes. Individual character widths are the same.
+Font 127 of 309
+
+                                   
+ _____ _ _____     ___ ___         
+|_   _| |     |___|  _|  _|___ ___ 
+  | |/ /|   --| . |  _|  _| -_| -_|
+  |_|_/ |_____|___|_| |_| |___|___|
+                                   
+
+Font Name: Rectangles
+Monospaced Font: Yes. Individual character widths are the same.
+
+ __ __|   /  ___|          _|   _|             
+    |    /  |       _ \   |    |     _ \   _ \ 
+    |   /   |      (   |  __|  __|   __/   __/ 
+   _| _/   \____| \___/  _|   _|   \___| \___| 
+                                               
+
+Font Name: Shadow
+Monospaced Font: Yes. Individual character widths are the same.
+Font 240 of 309
+
+  ______  ________       ________         
+ /_  __/_/_/ ____/____  / __/ __/___  ___ 
+  / / _/_// /    / __ \/ /_/ /_ / _ \/ _ \
+ / /_/_/ / /___ / /_/ / __/ __//  __/  __/
+/_//_/   \____/ \____/_/ /_/   \___/\___/ 
+                                          
+
+Font Name: Slant
+Monospaced Font: Yes. Individual character widths are the same.
+Font 244 of 309
+
+
+ __ __|  / __|         _| _|           
+    |   / (      _ \   _| _| -_)   -_) 
+   _| _/ \___| \___/ _| _| \___| \___| 
+                                       
+
+Font Name: Small Shadow
+Monospaced Font: Yes. Individual character widths are the same.
+Font 251 of 309
+
+
+ ______  _______      ______        
+/_  __/_/_/ ___/___  / _/ _/___ ___ 
+ / / _/_// /__ / _ \/ _/ _// -_) -_)
+/_/ /_/  \___/ \___/_//_/  \__/\__/ 
+                                    
+
+Font Name: Small Slant
+Monospaced Font: Yes. Individual character widths are the same.
+Font 252 of 309
+
+
+
+  _____ _____      __  __         
+ |_   _/ / __|___ / _|/ _|___ ___ 
+   | |/ / (__/ _ \  _|  _/ -_) -_)
+   |_/_/ \___\___/_| |_| \___\___|
+                                  
+
+Font Name: Small
+Monospaced Font: Ye
+
+
+  _____  ______        __  __           
+ |_   _|/ / ___| ___  / _|/ _| ___  ___ 
+   | | / / |    / _ \| |_| |_ / _ \/ _ \
+   | |/ /| |___| (_) |  _|  _|  __/  __/
+   |_/_/  \____|\___/|_| |_|  \___|\___|
+                                        
+
+Font Name: Standard
+Monospaced Font: Yes. Individual character widths are the same.
+Font 262 of 309

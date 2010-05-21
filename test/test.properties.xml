@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<props>
+	<property name="BLASTMAT" >/path/1</property>
+	<property name="PDB_DB" >/path/2</property>
+	<property name="PROTEIN_DB" >/path/3</property>
+</props>
+  

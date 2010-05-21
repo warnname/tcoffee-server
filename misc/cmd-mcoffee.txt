@@ -1,0 +1,29 @@
+t_coffee   
+-in  tcfMCOA38385_16105.in0  
+-in Mpcma_msa  
+-in Mmafft_msa  
+-in Mclustalw_msa  
+-in Mdialigntx_msa  
+-in Mpoa_msa  
+-in Mmuscle_msa  
+-in Mprobcons_msa  
+-in Mt_coffee_msa  
+-output clustalw_aln score_pdf fasta_aln phylip score_html 
+-maxnseq 50 
+-maxlen 2000 
+-case upper 
+-seqnos on 
+-outorder input 
+-tree    
+-run_name=tcfMCOA38385_16105    
+-cache=no 
+-remove_template_file=1 
+-quiet=stdout >tcfMCOA38385_16105.tc_LOG 
+
+
+
+t_coffee   -in  tcfMCOA94158_25820.in0 -in Mfast_pair  -in Mslow_pair  -in Mpcma_msa  -in Mpoa_msa  -output clustalw_aln score_pdf fasta_aln phylip score_html -case upper -seqnos on -outorder input -tree
+
+t_coffee   -in  tcfMCOA94158_25820.in0 -method Mfast_pair Mslow_pair Mpcma_msa Mpoa_msa  -output clustalw_aln score_pdf fasta_aln phylip score_html -case upper -seqnos on -outorder input -tree
+
+     

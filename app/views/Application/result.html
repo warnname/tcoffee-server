@@ -1,0 +1,84 @@
+#{extends 'main.html' /}
+#{set title:'T-Coffee | Your alignment result' /}
+
+<h1>Your alignment result</h1> 
+
+#{if result?.alignmentHtml?.file }
+<div id="result">
+#{tcoffeeHtml result?.alignmentHtml?.file /}
+</div>
+
+<style type='text/css'> 
+#result SPAN { font-family: "Vera Mono", courier new, courier-new, courier; font-weight: bold; font-size: 11pt;}
+</style>
+
+#{/if}
+
+
+<fieldset>
+<legend>Info</legend>
+<ul>
+<li>Mode: <b>${result?.mode}</b></li>
+<li>Alignment ticket # <b>${rid}</b></li>
+<li>Started at: <b>${result?.createdTimeFmt}</b></li>
+<li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
+</ul>
+</fieldset>
+
+
+#{if result?.commandLine?.file }
+<fieldset>
+<legend>Command Line</legend>
+<code >
+#{includefile result.commandLine.file /}
+</code>
+</fieldset>
+#{/if}
+
+#{if result?.items?.size > 0 }
+<fieldset>
+<legend>Download</legend> 
+${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a>
+<ul>
+#{list result.items, as:'item'} 
+<li><a href="${item.webpath}" >${item.label}</a></li>
+#{/list} 
+#{/if}
+
+</ul>
+</fieldset>
+
+#{if result?.cite }
+<fieldset>
+<legend>How to cite this result?</legend>
+<a href="${result.cite.trim()}" target="_blank">${result.cite.trim()}</a>
+</fieldset>
+#{/if}
+
+#{if result?.alignmentFasta?.file }
+<fieldset>
+<legend>Send results</legend>
+
+<form id="sendto" name="sendto"  method="POST" target="_blank">
+<input type="hidden" name="stage1" value="1" >
+<input type="hidden" name="daction" value="PROTOGENE::Regular">
+<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+<input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+
+<p style="padding-top: 10px" >
+PROTOGENE: turning amino acid alignments into bona fide CDS nucleotide alignments  
+<input type="button" id="to_ProtoGene" name="to_ProtoGene" value=" to ProtoGene " > 
+</p>
+
+<p>
+MyHits: a new interactive resource for protein annotation and domain identification
+<input type="button" id="to_MyHits" name="to_MyHits" value=" to MSA hub " >
+</p>
+</form>
+
+<script type="text/javascript">
+$('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
+$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+</script>
+</fieldset>
+#{/if}

@@ -1,0 +1,99 @@
+#{extends 'main.html' /}
+#{set title:'T-Coffee | Processing .. ' /}
+
+<link href="@{'/public/facebox/facebox.css'}" media="screen" rel="stylesheet" type="text/css"/>
+<script src="@{'/public/facebox/facebox.js'}" type="text/javascript"></script> 
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	 
+	$.facebox.settings.loadingImage = "@{'/public/facebox/loading.gif'}";
+	$.facebox.settings.closeImage = "@{'/public/facebox/closelabel.gif'}";
+	$.facebox.settings.opacity = 0.5;
+	$.facebox.settings.closeable = true;
+	$.facebox.settings.modal = true;
+	$.facebox.settings.top = 200;
+	$.facebox( {div:'#dialog-content'} );
+	$('#dialog-content').remove();
+});
+
+$(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
+
+$(document).bind('close.facebox', function(){
+	window.location = "@{Application.index}";
+} );
+</script>
+
+<div id="wait">
+<h1>Processing your alignment request</h1>
+
+<div id="dialog-content">
+
+<h2>Your alignment ticket is <b>${rid}</b> 
+</h2>
+
+<p>
+<img src="@{'/public/images/ajax-loader.gif'}" width="28" height="28" />&nbsp;&nbsp;Wait please ...
+</p>
+ 
+
+<p>
+Do not reload this page. If you don't want wait just navigate away.    
+</p>
+
+<p>You will be notified by email on aligment completion if you entered your email address - otherwise your can check later this alignment result using the <b>My Alingment</b> link on the main menu.</p>
+
+</div>
+</div>
+
+<div id="failure" style="display: none" >
+<h1>Oops .. <small>something went wrong .. </small></h1>
+<h2>Your alignment ticket ${rid} </h2>
+<div id="message"></div>
+</div> 
+
+<script type="text/javascript">
+
+function run(){
+    /* This requests the url "msgsrv.php" When it complete (or errors)*/
+    $.ajax({
+        type: "GET",
+        url: "@{Application.status()}?rid=${rid}",
+
+        async: true, /* If set to non-async, browser shows page as "Loading.."*/
+        cache: false,
+
+        success: function(data){ /* called when request to barge.php completes */
+            var status = data != null ? data.toUpperCase() : 'UNKNWON';
+            if( status == 'RUNNING' ) {
+                // if still running recheck the status in the next 1 and half second 
+                setTimeout(run, 1500);  
+            }
+            else if( status=='DONE' || status=='FAILED' ) {
+                // otherwise move to the result page
+			 	window.location.replace("@{Application.result()}?rid=${rid}");
+            }
+            else {
+            	jQuery(document).trigger('close.facebox');
+    			$('#wait').hide();
+    			$('#failure').show();
+    			$('#message').html('Returned unknown status: <b>' + data + '</b>');
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown){
+            // TODO improve this, handling retring to poll the status for after a while 
+            // also in case of error 
+            jQuery(document).trigger('close.facebox');
+			$('#wait').hide();
+			$('#failure').show();
+        }
+    });
+};
+
+$(document).ready(function(){
+    run(); 
+});
+
+
+</script>

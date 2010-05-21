@@ -1,0 +1,6 @@
+# You can specialize this file for each language.
+# For exemple, for french create a messages.fr file
+#
+validation.fasta=You must enter the sequeces to align in fasta format - OR - upload a file
+
+   
