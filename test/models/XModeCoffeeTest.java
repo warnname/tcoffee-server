@@ -4,13 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.BeforeClass;
-
 import play.test.FunctionalTest;
 import util.TcoffeeHelperTest;
 import util.TestHelper;
 import util.Utils;
-import exception.CommandException;
 
 public abstract class XModeCoffeeTest extends FunctionalTest{
 
@@ -65,6 +62,7 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 				
 				TCoffeeCommand tcoffee = new TCoffeeCommand();
 				tcoffee.args = args;
+				//tcoffee.args.put("multi_core=no");
 
 				tcoffee.errfile = "err.log";
 				tcoffee.logfile = "out.log";
@@ -93,49 +91,9 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 		
 	}
 	
-	
-	@BeforeClass 
-	public static void staticinit() {
-		DEFAULT_ARGS = new CmdArgs();
-		DEFAULT_ARGS.put("in", "sample.fasta");
-	    DEFAULT_ARGS.put("output", "score_html clustalw_aln fasta_aln phylip");
-	    DEFAULT_ARGS.put("maxnseq", "50");
-	    DEFAULT_ARGS.put("maxlen", "2000");
-		DEFAULT_ARGS.put("case", "upper") ;
-		DEFAULT_ARGS.put("seqnos", "on") ;
-		DEFAULT_ARGS.put("outorder", "input");
-		DEFAULT_ARGS.put("outfile", "tcoffee") ;
-		DEFAULT_ARGS.put("cache", "no" );
-		DEFAULT_ARGS.put("remove_template_file", "1");
-		
-	}
 
 	
-	void testWithMethod(String mode, String  method) throws CommandException {
-		String rid = mode+"-"+method;
-		mode = "mode=" + mode;
-		method = "method=" + method;
-		testWithDefaults( TestHelper.sampleFasta(), rid, mode, method );
-	}
-	
-	void testMode( String rid, File input, CmdArgs args ) throws CommandException {
-	
-		new TestRunner(rid).input(input).args(args).go();
-	}
-	
-	void testMode( String rid, File input, String... args ) throws CommandException {
-		CmdArgs obj = new CmdArgs();
-		obj.putAll(args);
-		testMode(rid,input,obj);
-	}
-	
-	void testWithDefaults( final File input, final String rid, final String... args ) throws CommandException {
 
-		CmdArgs copy = Utils.copy(DEFAULT_ARGS);
-		copy.putAll(args);
-		testMode(rid, input, copy);
-		
-	}
 
 	
 }

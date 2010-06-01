@@ -1,7 +1,5 @@
 package models;
 
-import java.io.File;
-
 import org.junit.Test;
 
 import util.TestHelper;
@@ -11,9 +9,12 @@ public class ApdbModeTest extends XModeCoffeeTest {
 
 	@Test(timeout=5*60*1000) 
 	public void testApdbMode() throws CommandException {
-		File input = TestHelper.file("/sample-clustalw.txt");
-		testMode("apdb", 
-				input, 
+
+		new TestRunner("apdb")
+		
+		.input( TestHelper.file("/sample-clustalw.txt") )
+	
+		.args( 
 				"other_pg=apdb",  // <-- must be the FIRST 
 				"aln=sample-clustalw.txt", 
 	  			"apdb_outfile=default", 
@@ -24,7 +25,9 @@ public class ApdbModeTest extends XModeCoffeeTest {
 	  			"similarity_threshold=50",
 	  			"output=score_html", 
 	  			"run_name=result"	
-	  		);	
+			)
+				
+		.go();
 	}
 	
 }

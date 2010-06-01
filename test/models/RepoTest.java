@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import play.test.UnitTest;
 import util.TestHelper;
-import exception.CommandException;
 
 public class RepoTest extends UnitTest {
 	
@@ -83,40 +82,14 @@ public class RepoTest extends UnitTest {
 	
 	@Test 
 	public void testDrop() throws Exception {
-		Module module = TestHelper.module();
-		module.prepare();
 
-		Repo repo = module.repo();
-		FileUtils.copyFile( TestHelper.sampleFasta() , new File(repo.fFolder, "sample.fasta" ));
-
+		Repo repo = new Repo("test-drop",true);
 		assertTrue( repo.fFolder.exists() );
-		System.out.println(repo.fFolder);		
-
-		final TCoffeeCommand tcoffee = new TCoffeeCommand();
-		tcoffee.args = new CmdArgs("-in=sample.fasta -mode=expresso");
-		tcoffee.init();
 		
-		
-		Thread async = new Thread() {
-			@Override
-			public void run()   {
-				try {
-					tcoffee.execute();
-				} catch (CommandException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		
-		async.start();
-		Thread.currentThread().sleep(500);
-
-
-/*
-		 * now drop all !
+		/*
+		 * TODO improve this test locking a file a forcing the deletion
 		 */
 		repo.drop(true);
-		
 		assertFalse( repo.fFolder.exists() );
 	}
 	
