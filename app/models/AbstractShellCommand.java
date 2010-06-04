@@ -47,7 +47,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	
 	/* the job context folder */
 	@XStreamOmitField
-	private File fLocalFolder;
+	public File ctxfolder;
 
 	/* the resolved command line to be executed */
 	@XStreamOmitField
@@ -89,6 +89,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		this.cmdfile = Utils.copy(that.cmdfile);
 		this.envfile = Utils.copy(that.envfile);
 		this.validCode = that.validCode;
+		this.ctxfolder = that.ctxfolder;
 	}
 	
 	
@@ -124,10 +125,6 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		return fEnvFile != null && fEnvFile.exists();
 	}
 	
-	
-	protected File getLocalFolder() {
-		return fLocalFolder;
-	}
 	
 	/** 
 	 * Template method to intercept and manipulate command line before the command execution 
@@ -201,33 +198,44 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 
 	}
 	
-	
 	/**
 	 * Initialize the job before the command execution
 	 */
 	@Override
 	protected void init( CommandCtx ctx ) {
 		super.init(ctx);
+
+		/*
+		 * setup the main context folder 
+		 */
+		if( ctxfolder == null ) {
+			ctxfolder = Module.current().repo().getFile();
+		}
+		if( !ctxfolder.exists()) {
+			if( !ctxfolder.mkdirs() ) {
+				throw new QuickException("Unable to create context folder named: '%s'", ctxfolder);
+			}
+		}
+		
 		/* 
 		 * initialize all required files 
 		 */
-		// main local folder 
-		fLocalFolder = Module.current().repo().getFile();
+		
 		// environment variables file 
 		if( Utils.isNotEmpty(envfile) ) {
-			fEnvFile = new File(fLocalFolder,envfile);
+			fEnvFile = new File(ctxfolder,envfile);
 		}
 		// command line file 
 		if( Utils.isNotEmpty(cmdfile) ) {
-			fCmdFile = new File(fLocalFolder,cmdfile);
+			fCmdFile = new File(ctxfolder,cmdfile);
 		}
 		// log/output file 
 		if( Utils.isNotEmpty(logfile) ) {
-			fLogFile = new File(fLocalFolder,logfile);
+			fLogFile = new File(ctxfolder,logfile);
 		}
 		// err file 
 		if( Utils.isNotEmpty(errfile) ) {
-			fErrFile = new File(fLocalFolder,errfile);
+			fErrFile = new File(ctxfolder,errfile);
 		}
 		
 		
@@ -261,7 +269,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		    	 * 2. prepare the command line and the executor
 		    	 */
 				DefaultExecutor executor = new DefaultExecutor();
-				executor.setWorkingDirectory( fLocalFolder );
+				executor.setWorkingDirectory( ctxfolder );
 				executor.setExitValue( validCode );
 				executor.setStreamHandler(new PumpStreamHandler(fLogStream, fErrStream));
 				
@@ -284,7 +292,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				}
 				shell.append( fCmdLine );
 				
-				FileUtils.writeStringToFile(new File(fLocalFolder, "_run.sh"), shell.toString());
+				FileUtils.writeStringToFile(new File(ctxfolder, "_run.sh"), shell.toString());
 				
 		        /*
 		         * 5. run the command    

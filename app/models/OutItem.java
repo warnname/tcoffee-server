@@ -71,7 +71,8 @@ public class OutItem {
 		this.name = name;
 		this.type = type;
 		
-		File folder = Module.current().folder();
+		Module module = Module.current();
+		File folder = module != null ? module.folder() : null;
 		if( folder != null ) {
 			this.file = new File(folder,name);
 			this.webpath = webpathFor(file);

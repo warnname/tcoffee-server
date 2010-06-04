@@ -12,10 +12,13 @@ import models.Module;
 import models.PageContent;
 import models.Property;
 import models.Repo;
+import models.TCoffeeCommand;
 
 import org.apache.commons.io.FileUtils;
 
+import play.Logger;
 import play.Play;
+import play.libs.IO;
 import play.mvc.With;
 import util.Check;
 import util.Utils;
@@ -178,5 +181,65 @@ public class Admin extends BaseController {
 		unsupportedMethod();
 	}
 	
+	/**
+	 * Retuns perl runtime info
+	 */
+	public static void perlinfo() {
+		
+		String info;
+		Process p1;
+		try {
+			p1 = Runtime.getRuntime().exec("perl -v");
+			p1.waitFor();
+			info = IO.readContentAsString(p1.getInputStream());
+		} catch (Exception e) {
+			Logger.error(e, "Error retrieving PERL version info");
+			info = "(unable to get perl information)";
+		}
+		
+		
+		Process p2;
+		String conf = null;
+		try {
+			p2 = Runtime.getRuntime().exec("perl -V");
+			p2.waitFor();
+			conf = IO.readContentAsString(p2.getInputStream());
+		} catch (Exception e) {
+			Logger.error(e, "Error retrieving PERL version info");
+			conf = "(unable to get perl configuration)";
+		}
+		
+		render(info,conf);
+	} 
+	
+	/**
+	 * Display the current version of t-coffee information
+	 */
+	public static void tcoffeeinfo() {
+		String info;
+
+		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.ctxfolder = new File(AppProps.instance().getDataPath(), "tcoffee-ver");
+		tcoffee.logfile = "info.txt";
+		tcoffee.init();
+		try {
+			tcoffee.execute();
+			info = IO.readContentAsString(tcoffee.getLogFile()).trim();
+			
+			String PREFIX = "#######   Compiling the list of available methods ... (will take a few seconds)";
+			if( info.startsWith(PREFIX)) {
+				info = info.substring(PREFIX.length()).trim();
+			}
+			
+		} catch (Exception e) {
+			Logger.error(e,"Unable to get t-coffee information");
+			info = "(unable to get t-coffee version info)";
+		}
+		
+		
+		render(info);
+	}	
+
+
 	
 }

@@ -254,7 +254,7 @@ public class Repo {
 			 * An alternative command to kill all process is: "fuser -k <file>" 
 			 * but the -k switch (kill) is not supported on OSX 
 			 * 
-			 * kill -9 `lsof -t %s`
+			 * kill -9 `lsof -t +D %s`
 			 */
 
 			try {

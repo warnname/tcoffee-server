@@ -12,12 +12,14 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 
 import models.AppConf;
+import models.AppProps;
 import models.History;
 import models.Module;
 import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import models.Status;
+import models.TCoffeeCommand;
 import play.Logger;
 import play.libs.IO;
 import play.mvc.After;
@@ -25,6 +27,7 @@ import play.mvc.Before;
 import play.templates.JavaExtensions;
 import util.Utils;
 import edu.emory.mathcs.backport.java.util.Arrays;
+import exception.CommandException;
 import exception.QuickException;
 
 /**
@@ -332,7 +335,7 @@ public class Application extends BaseController {
 		
 	}
 	
-
+	
 	
 
 }

@@ -145,8 +145,7 @@
           -case=${letter} 
           -seqnos=${seqnos} 
           -outorder=${outorder} 
-        -run_name=result
-        -multi_core=no
+          -run_name=result
         </args>
       </tcoffee>
         
@@ -277,7 +276,6 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=no
         </args> 
       </tcoffee>
         
@@ -378,7 +376,6 @@
           -seqnos=${seqnos} 
           -outorder=${outorder}
           -run_name=result
-          -multi_core=no          
         </args> 
       </tcoffee>
       
@@ -479,7 +476,6 @@
           -tree
           -special_mode=rcoffee
           -method_limits=consan_pair 5 150
-          -multi_core=no
         </args>
       </tcoffee>
       
@@ -549,14 +545,13 @@
     
       <tcoffee>
         <args >
-      -in=${aln1} 
-      -in=${aln2}  
-      -output=${output} 
-      -evaluate_mode=t_coffee_slow 
-      -maxnseq=80 
-      -maxlen=2000  
-      -run_name=result
-      -multi_core=no          
+	      -in=${aln1} 
+	      -in=${aln2}  
+	      -output=${output} 
+	      -evaluate_mode=t_coffee_slow 
+	      -maxnseq=80 
+	      -maxlen=2000  
+	      -run_name=result
         </args>
       </tcoffee>
     
@@ -640,7 +635,6 @@
           -seqnos=${seqnos} 
           -outorder=${outorder}  
           -run_name=result
-          -multi_core=no            
           </args> 
         </tcoffee>
             
@@ -717,9 +711,8 @@
           -output=score_html 
           -maximum_distance=${srad} 
           -md_threshold=${t1}
-        -similarity_threshold=${t2}  
-        -run_name=result 
-        -multi_core=no
+          -similarity_threshold=${t2}  
+          -run_name=result 
         </args> 
       </tcoffee>
       

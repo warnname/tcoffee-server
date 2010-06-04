@@ -39,7 +39,10 @@ table.c-home td {
 table.c-home td.c-lbl {
 	text-align: right;
 	width: 8em;
-} 
+}
+
+code { white-space: pre; } 
+
 
 /* 
  * clean and pure css forms 

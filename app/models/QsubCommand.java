@@ -139,7 +139,7 @@ public class QsubCommand extends AbstractShellCommand {
 		/*
 		 * 1. create the PBD script file to be submited in the cluster queue
 		 */
-		fPbsFile = new File(getLocalFolder(),scriptfile);
+		fPbsFile = new File(ctxfolder,scriptfile);
 		StringBuilder script = new StringBuilder();
 		script.append("#!/bin/sh\n");
 

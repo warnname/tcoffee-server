@@ -69,11 +69,11 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		map.put("DIR_4_TCOFFEE", Utils.getCanonicalPath(tcoffeeFolder));
 		
 		/* t-coffee temp folder */
-		map.put("TMP_4_TCOFFEE", Utils.getCanonicalPath(new File(getLocalFolder(),"_tmp")));
-		map.put("DEBUG_TMP_FILE", "1");
+		map.put("TMP_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_tmp")));
+		//map.put("DEBUG_TMP_FILE", "1");
 		
 		/* t-coffee cache folder */
-		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(getLocalFolder(),"_cache")));
+		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
 		
 		/* m-coffee folder is contained in the main bin path */ 
 		map.put("MCOFFEE_4_TCOFFEE", matrixPath );
@@ -219,7 +219,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			
 		}
 		
-		return success && result.getAlignmentHtml().exists();
+		OutItem html = result.getAlignmentHtml();
+		return success && html != null && html.exists();
 	}
 
 	List<OutItem> parseResultFile(File file) {
