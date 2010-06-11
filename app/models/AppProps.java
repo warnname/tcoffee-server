@@ -126,11 +126,7 @@ public class AppProps  {
 		 */
 		
 		/* bin apps folder */ 
-		String BIN_PATH = "bin";
-		if("Mac OS X".equals(System.getProperty("os.name"))) { 
-			BIN_PATH = "osx";
-		}
-		
+		final String BIN_PATH = "bin";
 		DEFAULT_BIN_FOLDER = new File(Play.applicationPath, BIN_PATH);
 		if( !DEFAULT_BIN_FOLDER.exists() ) {
 			Logger.warn("Unable to find 'tcoffee' executable on path: '%s'", Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));

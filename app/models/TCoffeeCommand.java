@@ -21,7 +21,7 @@ import exception.QuickException;
 @XStreamAlias("tcoffee")
 public class TCoffeeCommand extends AbstractShellCommand {
 
-	static final Pattern RESULT_PATTER = Pattern .compile("^\\s*\\#{4} File Type=(.+)Format=(.+)Name=(.+)$");
+	static final Pattern RESULT_PATTERN = Pattern .compile("^\\s*\\#{4} File Type=(.+)Format=(.+)Name=(.+)$");
 
 	/** The t-coffee arguments */
 	public CmdArgs args;
@@ -251,7 +251,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	}
 
 	OutItem parseForResultItem(String line) {
-		Matcher matcher = RESULT_PATTER.matcher(line);
+		Matcher matcher = RESULT_PATTERN.matcher(line);
 		if (!matcher.matches()) {
 			return null;
 		}

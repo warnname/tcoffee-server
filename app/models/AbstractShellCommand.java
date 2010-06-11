@@ -304,8 +304,8 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				/* 
 		         * close open stream 
 		         */
-				if( fLogStream != null ) try { fLogStream.close(); } catch(IOException e) { Logger.warn("Error closing log stream on file: %s", fLogFile); } 
-		        if( fErrStream != null ) try { fErrStream.close(); } catch(IOException e) { Logger.warn("Error closing err stream on file: %s", fErrFile); } 
+				if( fLogStream != null ) try { fLogStream.close(); } catch(IOException e) { Logger.warn("Error closing out file: %s", fLogFile); } 
+		        if( fErrStream != null ) try { fErrStream.close(); } catch(IOException e) { Logger.warn("Error closing err file: %s", fErrFile); } 
 
 			}
 
