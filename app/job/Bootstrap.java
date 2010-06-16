@@ -11,6 +11,7 @@ import play.Logger;
 import play.Play;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
+import play.mvc.Router;
 import util.Utils;
 import exception.QuickException;
 
@@ -22,6 +23,8 @@ public class Bootstrap extends Job {
 	@Override
 	public void doJob() {
 
+		addTestsRoute();
+		
 		detectContextPath();
 		
 		deployBinFolder();
@@ -34,6 +37,13 @@ public class Bootstrap extends Job {
 		
 	}
 	
+	private void addTestsRoute() {
+		if( "test".equals( Play.id ) ) {
+	        Router.addRoute("GET", "/@tests/all", "SlimTestRunner.index");			
+		}
+		
+	}
+
 	private void deployMatrixFolder() {
 
 		File source = AppProps.DEFAULT_MATRIX_FOLDER;
