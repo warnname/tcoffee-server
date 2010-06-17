@@ -38,15 +38,15 @@ public class SlimTestRunner extends Controller {
         // run unit tests 
         for( Class clazz : unitTestsList ) {
         	boolean result = run(clazz.getName());
+        	unitTests.put(clazz.getName(), result ? "passed" : "failed");
         	passed = passed && result;
-        	unitTests.put(clazz.getName(), passed ? "passed" : "failed");
         }
 
         // run functional tests 
         for( Class clazz : functionalTestsList ) {
         	boolean result = run(clazz.getName());
+        	functionalTests.put(clazz.getName(), result ? "passed" : "failed");
         	passed = passed && result;
-        	functionalTests.put(clazz.getName(), passed ? "passed" : "failed");
         }
         
         
