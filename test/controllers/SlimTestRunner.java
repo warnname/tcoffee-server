@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import models.ArgTest;
-
 import play.Logger;
 import play.Play;
 import play.libs.IO;
@@ -16,6 +14,13 @@ import play.templates.TemplateLoader;
 import play.test.*;
 import play.vfs.*;
 
+/**
+ * This controller is required only to run test in headless mode. 
+ * Not used in production mode.
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 public class SlimTestRunner extends Controller {
 
     public static void index() {

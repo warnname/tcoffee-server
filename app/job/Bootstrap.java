@@ -12,6 +12,7 @@ import play.Play;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 import play.mvc.Router;
+import play.vfs.VirtualFile;
 import util.Utils;
 import exception.QuickException;
 
@@ -39,7 +40,8 @@ public class Bootstrap extends Job {
 	
 	private void addTestsRoute() {
 		if( "test".equals( Play.id ) ) {
-	        Router.addRoute("GET", "/@tests/all", "SlimTestRunner.index");			
+	        Router.addRoute("GET", "/@tests/all", "SlimTestRunner.index");		
+	        Play.templatesPath.add( VirtualFile.open(Play.applicationPath).child("test/views") );
 		}
 		
 	}
