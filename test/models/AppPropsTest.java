@@ -75,11 +75,6 @@ public class AppPropsTest extends UnitTest {
 		AppProps instance2 = AppProps.instance();
 		assertTrue( instance == instance2 );
 		
-		/* touch the conf file to force instance reload */
-		AppProps.SERVER_PROPS_FILE.setLastModified( System.currentTimeMillis() );
-		AppProps instance3 = AppProps.instance();
-		/* so the second instance MUST be a different instance */
-		assertTrue( instance != instance3 );
 	}
 	
 	

@@ -1,0 +1,42 @@
+package util;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.junit.Test;
+
+import play.libs.IO;
+import play.test.UnitTest;
+
+public class ReloadableSingletonFileTest extends UnitTest {
+
+	
+	@Test
+	public void testReloadOnChange() {
+
+		ReloadableSingletonFile<String> singleton = new ReloadableSingletonFile<String>(TestHelper.sampleFasta()) {
+			@Override
+			public String readFile(File file) {
+				try {
+					return IO.readContentAsString(file);
+				} catch (IOException e) {
+					throw new RuntimeException(e);  
+				}
+			}
+		}; 
+		
+		String instance = singleton.get();
+		assertNotNull(instance);
+
+		/* being a singleton it MUST be the same instance */
+		String instance2 = singleton.get();
+		assertSame( instance, instance2 );
+		
+		/* touch the conf file to force instance reload */
+		singleton.file.setLastModified( System.currentTimeMillis() );
+		String instance3 = singleton.get();
+		/* so the second instance MUST be a different instance */
+		assertNotSame( instance, instance3 );		
+	}
+	
+}

@@ -17,7 +17,7 @@ public class ReloadableSingletonFile<T> {
 	
 	private long confLastModified;
 	
-	private File file;
+	File file;
 
 
 	public ReloadableSingletonFile(File file) {
