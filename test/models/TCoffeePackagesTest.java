@@ -14,10 +14,10 @@ public class TCoffeePackagesTest extends TCoffeeTest {
 		testWithMethod("regular", "kalign_msa");
 	}	
 	
-	@Test(timeout=60000)
-	public void test_proda_msa() throws Exception {
-		testWithMethod("regular", "proda_msa");
-	}	
+//	@Test(timeout=60000)
+//	public void test_proda_msa() throws Exception {
+//		testWithMethod("regular", "proda_msa");
+//	}	
 	
 	@Test(timeout=60000)
 	public void test_prank_msa() throws Exception {
@@ -31,8 +31,8 @@ public class TCoffeePackagesTest extends TCoffeeTest {
 	
 		
 	@Test(timeout=60000)
-	public void test_probacons4RNA_msa() throws Exception {
-		testWithMethod("regular", "probacons4RNA");
+	public void test_probconsRNA_msa() throws Exception {
+		testWithMethod("regular", "probconsRNA_msa");
 	}	
 
 	@Test(timeout=60000)
