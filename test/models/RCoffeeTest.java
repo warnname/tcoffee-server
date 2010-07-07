@@ -8,7 +8,7 @@ public abstract class RCoffeeTest extends XModeCoffeeTest {
 	
 	protected void rcoffee( String method ) throws CommandException {
 		
-		new TestRunner("rcoffee-" + method)
+		new TCoffeeTestRunner("rcoffee-" + method)
 		
 		.input( TestHelper.file("/sample-dna.fasta.txt") )
 	

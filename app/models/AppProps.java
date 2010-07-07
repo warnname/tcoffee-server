@@ -158,6 +158,11 @@ public class AppProps  {
 				super.onReload(file, props);
 				AppEvents.appPropsChanged(props);
 			}
+			
+			@Override
+			public AppProps readFile(File file) {
+				return file.exists() ? super.readFile(file) : new AppProps();
+			}
 		};
 		
 	}
@@ -243,6 +248,14 @@ public class AppProps  {
 	public File getMatrixFolder() {
 		return new File(getMatrixPath());
 	} 
+	
+	public String getBlastmatPath() {
+		return getString("BLASTMAT");
+	}
+	
+	public File getBlastmatFolder() {
+		return new File(getBlastmatPath());
+	}
 	
 	public int getRequestTimeToLive() {
 		return getInteger("requestTimeToLive");

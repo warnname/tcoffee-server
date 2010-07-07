@@ -12,7 +12,7 @@ public class ExpressoTest extends XModeCoffeeTest {
 	
 	void testWithMethod(String mode, String  method) throws CommandException {
 		
-		new TestRunner("tcoffee-" + method)
+		new TCoffeeTestRunner("tcoffee-" + method)
 		
 		.input( TestHelper.file("/sample.fasta") )
 	

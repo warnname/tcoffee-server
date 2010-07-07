@@ -40,8 +40,6 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	
 	@Override
 	protected void onInitEnv(Map<String, String> map) {
-		super.onInitEnv(map);
-
 		AppProps props = AppProps.instance();
 		
 		File binFolder = props.getBinFolder();
@@ -78,6 +76,13 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		/* m-coffee folder is contained in the main bin path */ 
 		map.put("MCOFFEE_4_TCOFFEE", matrixPath );
 
+		/*
+		 * put the super invocation after to make the command local environment to override 
+		 * this command "global" environment initialization
+		 */
+		super.onInitEnv(map);
+
+		
 	}
 
 	@Override

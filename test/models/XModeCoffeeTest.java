@@ -13,7 +13,7 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 
 	static CmdArgs DEFAULT_ARGS; 
 	
-	static class TestRunner {
+	static class TCoffeeTestRunner {
 		
 		final String rid;
 		
@@ -21,16 +21,16 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 		
 		CmdArgs args = new CmdArgs();
 		
-		public TestRunner(String rid) { this.rid = rid; }
+		public TCoffeeTestRunner(String rid) { this.rid = rid; }
 		
-		public TestRunner input(File ... files) {
+		public TCoffeeTestRunner input(File ... files) {
 			for( File file : files ){
 				input.add(file);
 			}
 			return this;
 		} 
 		
-		public TestRunner args(String... args) {
+		public TCoffeeTestRunner args(String... args) {
 			for( String pair : args) {
 				this.args.put(pair);
 			}
@@ -38,7 +38,7 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 			return this;
 		}
 		
-		public TestRunner args( CmdArgs args ) {
+		public TCoffeeTestRunner args( CmdArgs args ) {
 			this.args.putAll(args);
 			return this;
 		}

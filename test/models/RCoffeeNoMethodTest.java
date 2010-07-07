@@ -9,7 +9,7 @@ public class RCoffeeNoMethodTest extends RCoffeeTest {
 	@Test(timeout=60000)
 	public void testNoMethod() throws Exception { 
 
-		new TestRunner("rcoffee-no-method")
+		new TCoffeeTestRunner("rcoffee-no-method")
 		
 		.input( TestHelper.file("/sample-dna.fasta.txt") )
 	

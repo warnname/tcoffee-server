@@ -29,7 +29,7 @@ public class ReloadableSingletonFile<T> {
 		return confLastModified;
 	}
 	
-	public T readFile() {
+	public T readFile(File file) {
 		return XStreamHelper.fromXML(file);
 	}
 	
@@ -41,7 +41,7 @@ public class ReloadableSingletonFile<T> {
 		confLastModified = file.lastModified();
 	}
 	
-	public T get() {
+	public final T get() {
 
 		if( instance != null && isValid(file)) {
 			return instance;
@@ -50,7 +50,7 @@ public class ReloadableSingletonFile<T> {
 		Logger.info("Loading file: '%s'", file);
 		
 		/* ok */
-		instance = readFile();
+		instance = readFile(file);
 		onReload(file, instance);
 		return instance;
 	}

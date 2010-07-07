@@ -149,6 +149,12 @@ public class AppPropsTest extends UnitTest {
 		props.add("pathMatrix", "path/to/matrix");
 		assertEquals("path/to/matrix", props.getMatrixPath() );
 	}
-	
+
+
+	@Test
+	public void testGetBlastmatPath() {
+		props.add("BLASTMAT", "path/to/blastmat");
+		assertEquals("path/to/blastmat", props.getBlastmatPath() );
+	}	
 	
 }

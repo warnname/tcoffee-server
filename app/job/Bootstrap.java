@@ -95,9 +95,9 @@ public class Bootstrap extends Job {
 		/*
 		 * add other conf property 
 		 */
+		
 		AppProps props = AppProps.instance();
 		
-		boolean atLeastOne = false;
 		for( Object obj : Play.configuration.keySet() ) {
 			String key = (String)obj;
 			
@@ -106,16 +106,9 @@ public class Bootstrap extends Job {
 					/*
 					 * add all "mail.smtp.xxx" and "tserver.xxx" properties  
 					 */
-					if( addPropertyIfNotAlreadyExists(props, key) ) {
-						atLeastOne = true;
-					};
+					addPropertyIfNotAlreadyExists(props, key);
 				}  
 			}
-		}
-		
-		/* save it */
-		if( atLeastOne ) {
-			props.save();
 		}
 
 	}

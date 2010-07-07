@@ -10,7 +10,7 @@ public class ApdbModeTest extends XModeCoffeeTest {
 	@Test(timeout=5*60*1000) 
 	public void testApdbMode() throws CommandException {
 
-		new TestRunner("apdb")
+		new TCoffeeTestRunner("apdb")
 		
 		.input( TestHelper.file("/sample-clustalw.txt") )
 	

@@ -8,7 +8,7 @@ public class CombineModeTest extends XModeCoffeeTest {
 	
 	@Test
 	public void testCombine() {
-		new TestRunner("combine")
+		new TCoffeeTestRunner("combine")
 		
 			.input( TestHelper.file("/sample-clustalw.txt") )
 		
