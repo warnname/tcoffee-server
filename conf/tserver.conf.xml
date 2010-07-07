@@ -85,17 +85,18 @@
         <title>Methods</title>
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
         
-        <field type="checkbox" name="method1" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
-        </field>
-        
-        <field type="checkbox" name="method2" label="Pairwise Structual Methods">
+        <field type="checkbox" name="method1" label="Pairwise Structual Methods">
           <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
-        <field type="checkbox" name="method3" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, proda_msa, prank_msa, fsa_msa, probacons4RNA_msa, mus4_msa</choices>
+        <field type="checkbox" name="method2" label="Multiple Methods">
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
+
+        <field type="checkbox" name="method3" label="Pairwise Methods">
+          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        </field>
+        
       </fieldset>
       
       
@@ -202,13 +203,18 @@
         <title>Library Computation</title>
         <description>Select the methods you want to use to compute the library. T-Coffee uses various sequence and structure alignment methods to compile a collection of alignments known as a Library. Use this section to select the methods.</description>
         
-        <field type="checkbox" name="method1" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
-        </field>
-        
-        <field type="checkbox" name="method2" label="Pairwise Structual Methods (proteins)">
+        <field type="checkbox" name="method1" label="Pairwise Structual Methods">
           <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
         </field>
+        
+        <field type="checkbox" name="method2" label="Multiple Methods">
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+        </field>
+
+        <field type="checkbox" name="method3" label="Pairwise Methods">
+          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        </field>
+
       </fieldset>
       
       <fieldset hideable="true">
@@ -275,7 +281,7 @@
         <args>
           -in=${seqs}
           -mode=expresso
-          -method=${method1} ${method2}
+          -method=${method1} ${method2} ${method3}
           -pdb=${pdb1}
           -pdb=${pdb2}
           -pdb=${pdb3}
@@ -326,16 +332,16 @@
         <title>Methods</title>
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
         
-        <field type="checkbox" name="method1" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
-        </field>
-        
-        <field type="checkbox" name="method2" label="Pairwise Structual Methods">
+        <field type="checkbox" name="method1" label="Pairwise Structual Methods">
           <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
-        <field type="checkbox" name="method3" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa</choices>
+        <field type="checkbox" name="method2" label="Multiple Methods">
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+        </field>
+
+        <field type="checkbox" name="method3" label="Pairwise Methods">
+          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
       </fieldset>
       
@@ -528,14 +534,19 @@
           <title>Alignment Computation</title>
           <description>R-Coffee computes its alignments by combining a collection of Pairwise and Multiple Alignments named a Library. In this section you can select the methods you want to combine into the library. You can choose pairwise and multiple sequence alignment methods. </description>
           
-          <field type="checkbox" name="method1" label="Pairwise Methods">
-            <choices>lalign_id_pair, slow_pair, fast_pair, clustalw_pair, proba_pair</choices>
-          </field>
+        <field type="checkbox" name="method1" label="Pairwise Structual Methods">
+          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+        </field>
+        
+        <field type="checkbox" name="method2" label="Multiple Methods">
+          <value>mafft_msa muscle_msa probconsRNA_msa</value>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+        </field>
+
+        <field type="checkbox" name="method3" label="Pairwise Methods">
+          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        </field>
           
-          <field type="checkbox" name="method2" label="Multiple Methods">
-              <value>mafft_msa muscle_msa probconsRNA_msa</value>
-            <choices>mafft_msa, muscle_msa, probconsRNA_msa</choices>
-          </field>
     </fieldset>
   
     <fieldset hideable="true">
@@ -576,7 +587,7 @@
       <tcoffee>
         <args >
           -in=${seqs}
-          -method=${method1} ${method2} 
+          -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=50 
           -maxlen=2000 
