@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
 function poll() {
-	$('#history').load('@{Application.historyTable()}', function() { setTimeout(poll, 5000); });
+	$('#history').load('@{Application.historyTable()}', function() {  });
 }
 
 $(document).ready(function(){

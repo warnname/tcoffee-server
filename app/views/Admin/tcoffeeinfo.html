@@ -1,5 +1,5 @@
 #{extends 'main.html' /}
-#{set title:'T-Coffee | PERL info' /}
+#{set title:'T-Coffee | Runtime info' /}
 
 <h1>T-Coffee runtime 
 <small>
@@ -9,10 +9,12 @@ This page contains information about the T-Coffee runtime installed on this mach
 
 
 <div class="c-style">
-<h2>Version</h2>
-<code>
+<h2>Version <small>${ver}</small>
+</h2>
+<div style="width: 90%; overflow-x: scroll">
+<code >
 ${info}
 </code>
-
+</div>
 
 </div>

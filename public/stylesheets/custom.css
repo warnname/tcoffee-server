@@ -41,7 +41,7 @@ table.c-home td.c-lbl {
 	width: 8em;
 }
 
-code { white-space: pre; } 
+code { white-space: normal; } 
 
 
 /* 
@@ -54,7 +54,7 @@ code { white-space: pre; }
 	border: none;
 }
 
-#main-content fieldset legend small {
+#main-content fieldset  small {
 	display: block;
 	font-size:11px;
 	font-weight: normal;
@@ -66,6 +66,7 @@ code { white-space: pre; }
 	margin:0.2em 0 1.2em;
 }
 
+#main-content fieldset h2,
 #main-content fieldset legend {
 	border-left: 2px solid #917b66;
 	padding-left: 0.4em;
@@ -171,3 +172,38 @@ a.button:active, a.button:focus span { color: rgb(68, 68, 68); }
 del.button-behavior-hover, del.button:hover { background-position: 0pt -180px; }
 del.button-behavior-hover span, del.button:hover span { background-position: 100% -180px; }
 span.button button, del.button span, span.button input {  }
+
+/*
+ * Message boxs 
+ * http://www.jankoatwarpspeed.com/post/2008/05/22/CSS-Message-Boxes-for-different-message-types.aspx
+ */
+ 
+.box-info, .box-success, .box-warning, .box-error {
+border: 1px solid;
+margin: 10px 0px;
+padding:15px 10px 15px 50px;
+background-repeat: no-repeat;
+background-position: 10px center;
+}
+.box-info {
+color: #00529B;
+background-color: #BDE5F8;
+background-image: url('../images/box-info.png');
+}
+.box-success {
+color: #4F8A10;
+background-color: #DFF2BF;
+background-image:url('../images/box-success.png');
+}
+.box-warning {
+color: #9F6000;
+background-color: #FEEFB3;
+background-image: url('../images/box-warning.png');
+}
+.box-error {
+color: #D8000C;
+background-color: #FFBABA;
+background-image: url('../images/box-error.png');
+}
+
+

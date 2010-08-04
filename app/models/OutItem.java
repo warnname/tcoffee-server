@@ -43,6 +43,8 @@ public class OutItem {
 	 */
 	public String format;
 	
+	public String aggregation;
+	
 	/** The default constructor */
 	public OutItem() {}
 	
@@ -52,6 +54,7 @@ public class OutItem {
 		this.webpath = obj.webpath;
 		this.label = obj.label;
 		this.type = obj.type;
+		this.aggregation = obj.aggregation;
 	}
 	
 	/** set the file property and infer as well as the {@link #name} and {@link OutItem#webpath} attributes */
@@ -62,8 +65,16 @@ public class OutItem {
 		this.webpath = webpathFor(file);
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
+		this.aggregation = defaultAggregationByType(type);
 	}
 	
+	private String defaultAggregationByType(String type) {
+		Definition def = AppConf.instance().def;
+		Dictionary dict = def != null ? def.dictionary : null;
+		String result = dict != null ? dict.decode(type) : null;
+		return result != null ? result : type;
+	}
+
 	/** 
 	 * set the {@link #name} property and infer as well as the {@link #file} and {@link #webpath} attributes 
 	 */
@@ -83,6 +94,7 @@ public class OutItem {
 
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
+		this.aggregation = defaultAggregationByType(type);
 	}
 
 	private String ext( String name ) {
@@ -103,7 +115,7 @@ public class OutItem {
 	private String defaultLabelByName(String name) {
 		String ext = ext(name);
 		if( ext == null ) {
-			return "File " + name;
+			return name + " file";
 		}
 		else if( ext.equals("html") || ext.equals("score_htm")) {
 			return "Sequence alignment in HTML format";
@@ -115,7 +127,7 @@ public class OutItem {
 			return "Sequence alignment in ClustalW format";
 		}
 		else {
-			return "File ." + format;
+			return format + " file";
 		}
 	}
 	
@@ -153,4 +165,5 @@ public class OutItem {
 	public boolean exists() {
 		return file != null && file.exists();
 	} 
+	
 }

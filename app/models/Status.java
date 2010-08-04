@@ -3,7 +3,7 @@ package models;
 /** The repository status */
 public enum Status { 
 	
-	INIT("Init"), 
+	READY("Ready"),
 	RUNNING("Running"), 
 	DONE("Done"), 
 	FAILED("Failed"), 
@@ -23,15 +23,15 @@ public enum Status {
 		return RUNNING.equals(this);
 	}
 	
-	public boolean isInitialized() {
-		return INIT.equals(this);
-	}
-
 	public boolean isUnknown() {
 		return UNKNOWN.equals(this);
 	}
 	
 	public boolean isFailed() {
 		return FAILED.equals(this);
+	}
+	
+	public boolean isReady() {
+		return READY.equals(this);
 	}
 };

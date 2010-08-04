@@ -33,7 +33,7 @@ public class HistoryTest extends UnitTest {
 		History h = new History("123");
 		assertEquals("123", h.getRid());
 		assertNotNull(h.getBegin());
-		assertNotNull(h.getExpire());
+		assertNotNull(h.getMode());
 	}
 	
 	@Test

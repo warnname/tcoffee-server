@@ -1,19 +1,26 @@
 #{extends 'main.html' /}
 #{set title:'T-Coffee | Error' /}
 
-<h1>Your alignment request has failed</h1> 
+#{cache-warning /}
+
+<h1>${result?.title} alignment failed</h1> 
+
+Your aligment request could not complete successfully. 
 
 <fieldset>
-<legend>Info</legend>
+<h2>Info <small>Some information on this alignment job</small></h2>
 <ul>
 <li>Alignment ticket # <b>${rid}</b></li>
-<li>Elapsed time <b>${result?.elapsedTimeFmt}</b></li>
+<li>Created at: <b>${ctx?.creationTimeFmt}</b></li>
+<li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
 </ul>
 </fieldset>
 
 #{if result?.commandLine?.file }
 <fieldset>
-<legend>Command Line</legend>
+<h2>Command Line
+<small>This is the command line used to execute your alignment. You can use it as reference to run this alignment on your desktop.</small>
+</h2>
 <code >
 #{includefile result.commandLine.file /}
 </code>
@@ -22,7 +29,7 @@
 
 #{if result?.errors }
 <fieldset>
-<legend>Errors</legend>
+<h2>Errors</h2>
 #{list result.errors, as:'msg'} 
 <p><code># ${msg}</code></p>
 #{/list} 
@@ -31,12 +38,12 @@
 
 #{if result?.items }
 <fieldset>
-<legend>Download</legend> 
-${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a>
-<ul>
-#{list result.items, as:'item'} 
-<li><a href="${item.webpath}" >${item.label}</a></li>
-#{/list} 
-</ul>
+<h2>Result files 
+<small>${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a>
+</small>
+</h2>
+
+#{result-items result /}
 </fieldset>
+
 #{/if}

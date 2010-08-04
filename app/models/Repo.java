@@ -19,10 +19,11 @@ public class Repo {
 	
 	private static final String MARKER_FILE_NAME = ".tserver";
 
-	private static final String RESULT_FILE_NAME = ".result";
+	private static final String LOCK_FILE_NAME = ".tlock";
+	
+	private static final String RESULT_FILE_NAME = "_result";
 
-	private static final String LOCK_FILE_NAME = ".lock";
-
+	private static final String INPUT_FILE_NAME = "_input";
 
 	String rid;
 	
@@ -33,6 +34,11 @@ public class Repo {
 	File fResult;
 
 	File fMarker;
+	
+	File fInput;
+	
+	/** reports that this repository context contains a cached alignment result */
+	public boolean cached = false;
 	
 	/** 
 	 * Create the context folder on the file system for the specified <i>requets identifier</i> 
@@ -52,12 +58,20 @@ public class Repo {
 		this.fLock = new File(fFolder,LOCK_FILE_NAME);
 		this.fResult = new File(fFolder,RESULT_FILE_NAME);
 		this.fMarker = new File(fFolder,MARKER_FILE_NAME);
+		this.fInput = new File(fFolder, INPUT_FILE_NAME);
+		
 		this.rid = folder.getName();
 		
 		if(create) {
-			create(fFolder);
+			if( fMarker.exists() && fResult.exists() ) {
+				cached = true;
+			}
+			else {
+				create(fFolder);
+			}
 		}
-		
+		/* update the last access time */
+		touch();
 	}
 	
 	
@@ -123,17 +137,16 @@ public class Repo {
 		
 		if( fResult.exists() ) {
 			try {
-				OutResult result = XStreamHelper.fromXML(fResult);
-				return result.status;
+				OutResult out = XStreamHelper.fromXML(fResult);
+				return out.status;
 			} 
 			catch( Exception e ) {
 				Logger.warn(e, "Error on parsing result file: '%s'", fResult);
 				return Status.UNKNOWN;
 			}
 		}
-		
-		//TODO review this state. Is it inconsistent? 
-		return Status.INIT;
+
+		return Status.READY;
 	}
 	
 	public boolean isTerminated() {
@@ -145,19 +158,9 @@ public class Repo {
 		return fResult != null && fResult.exists() && isTerminated();
 	}
 	
-	public boolean isExpired(Status status) {
-		long elapsedSecs = (System.currentTimeMillis() - fFolder.lastModified()) / 1000;
-		
-		if( status.isFailed() && elapsedSecs>30 ) {
-			/* after 30 secs mark this repo as expired */
-			return true;
-		}
-		
-		return elapsedSecs > AppProps.instance().getRequestTimeToLive(); 		
-	}
-
 	public boolean isExpired() {
-		return isExpired(getStatus());
+		Status status = getStatus();
+		return (status.isDone() || status.isFailed()) && (System.currentTimeMillis() > getExpirationTime());
 	}
 	
 	/**
@@ -207,7 +210,7 @@ public class Repo {
 	}
 	
 	void touch( Date date ) {
-		fFolder.setLastModified(date.getTime());
+		touch(date.getTime());
 	}
 	
 	void touch() {
@@ -215,7 +218,13 @@ public class Repo {
 	}
 	
 	void touch( long millis ) {
-		fFolder.setLastModified(millis);
+		System.out.printf(">> xx: %s = %s\n", millis, new Date(millis));		
+
+		fMarker.setLastModified(millis);
+	}
+	
+	public File getInputFile() {
+		return fInput;
 	}
 	
 	/**
@@ -282,6 +291,53 @@ public class Repo {
 	}
 	
 	/**
+	 * @return The repository folder creation time. Since Java does not let top access to file creation time, 
+	 * we use the 'marker' file last update time,  
+	 *  
+	 */
+	public long getCreationTime() {
+		return fFolder.lastModified();
+	} 
+
+	public String getCreationTimeFmt() {
+		return Utils.asString( new Date(getCreationTime()) );
+	}
+	
+	/**
+	 * @return The repository last accessed time.  
+	 */
+	public long getLastAccessedTime() {
+		return fMarker.lastModified();
+	}
+	
+	public String getLastAccessTimeFmt() {
+		return Utils.asString( new Date(getLastAccessedTime()) );
+	}
+	
+	/**
+	 * @return The repository expiration timestamp.  
+	 */
+	public long getExpirationTime() {
+
+		Status status = getStatus();
+		if( status.isFailed() ) {
+			/* after 30 secs mark this repo as expired */
+			return getCreationTime() + 30 *1000 ;
+		}
+		else if( status.isDone() ) {
+			return getLastAccessedTime() + (AppProps.instance().getRequestTimeToLive() *1000);
+		}
+		else { 
+			throw new QuickException("Invalid property in current status (%s)", status);
+		}
+	
+	}
+	
+	public String getExpirationTimeFmt() {
+		return Utils.asString( new Date(getExpirationTime()) );
+	}
+	
+	/**
 	 * Find all repository instance being in one of the specified status 
 	 * 
 	 * @param status open array of the requested status of <code>null</code> for any status 
@@ -334,13 +390,12 @@ public class Repo {
 		return folder.exists() && folder.isDirectory() && new File(folder,MARKER_FILE_NAME).exists();
 	}
 
+	
 	/**
-	 * Remove all repos from the file system in the specified status 
-	 *  
-	 * @param status an open array of status begin in which the repo have to be deleted
+	 * Remove all status regardless the status in which the repo is  
 	 */
-	public static void deleteByStatus(Status... status) {
-		List<Repo> repos = Repo.findByStatus(status);
+	public static void deleteAll() {
+		List<Repo> repos = Repo.findAll();
 		
 		for( Repo repo : repos ) {
 			Logger.info("Deleting Repo folder: '%s'", repo.getFile());
@@ -348,25 +403,19 @@ public class Repo {
 			repo.drop();
 		}
 	}
-	
-	/**
-	 * Remove all status regardless the status in which the repo is  
-	 */
-	public static void deleteAll() {
-		deleteByStatus((Status[])null);
-	}
 
 	/**
 	 * Delete all the expired jobs
 	 */
 	public static void deleteExpired() {
-		List<Repo> all = findAll();
+		List<Repo> all = findByStatus(Status.DONE, Status.FAILED);
 		for( Repo repo : all ) {
 			if(repo.isExpired()) {
 				repo.drop(true);
 			}
 		}
 	}
+	
 	
 
 }

@@ -11,6 +11,7 @@ public class OutItemTest extends UnitTest{
 	@Before
 	public void register() {
 		TestHelper.module();
+		AppConf.instance().def.dictionary = null;
 	}
 	
 	@Test 
@@ -22,6 +23,19 @@ public class OutItemTest extends UnitTest{
 		assertEquals("html", item.format);
 		assertEquals("Sequence alignment in HTML format", item.label);
 		assertEquals("sample", item.type);
+		assertEquals("sample", item.aggregation);
 	}  
+
+	@Test 
+	public void tetsAggregation () { 
+		Dictionary dic = new Dictionary();
+		dic.addLabel("xxx", "yyy");
+		AppConf.instance().def.dictionary = dic;
+		
+		OutItem item = new OutItem("sample.html", "xxx");
+		
+		assertEquals( "xxx", item.type );
+		assertEquals( "yyy", item.aggregation );
+	}
 	
 }

@@ -1,7 +1,6 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import util.Check;
@@ -16,16 +15,17 @@ public class OutResult {
 	@XStreamImplicit(itemFieldName="item")
 	private List<OutItem> _items;
 
-	@XStreamAlias("created-time")
-	public long createdTime; 
-	
 	/** The amount of time (in millis) to execute the job */
 	@XStreamAlias("elapsed-time")
 	public long elapsedTime;
 	
 	public Status status;
 	
+	/** the t-coffee mode */
 	public String mode;
+	
+	/** the descriptive mode title */
+	public String title;
 	
 	/** The url reference to cite the alignment result */
 	//TODO refactor to move the in OutSection class
@@ -36,17 +36,16 @@ public class OutResult {
 	
 	/** The default constructor */
 	public OutResult() {
-		createdTime = System.currentTimeMillis();
 	}
 	
 	/** The copy constructor */
 	public OutResult(OutResult that) {
 		this._items = Utils.copy(that._items);
 		this.elapsedTime = that.elapsedTime;
-		this.createdTime = that.createdTime;
 		this.status = that.status;
 		this.errors = that.errors;
 		this.mode = that.mode;
+		this.title = that.title;
 	}
 
 	public List<OutItem> getItems() {
@@ -69,6 +68,29 @@ public class OutResult {
 	public OutItem first(String property, String value) {
 		return Utils.firstItem(items(), property, value);
 	}
+	
+	/**
+	 * @return The list of all types (categories) of OutItems instances. This is used to show 
+	 * the table of produced output in a catagorized manned in the result page.
+	 * 
+	 */
+	public List<String> aggregations() {
+		List<String> result = new ArrayList();
+		for( OutItem item : items() ) {
+			String _type = item.aggregation;
+			if( !result.contains(_type) ) {
+				result.add(_type);
+			}  
+		}
+		return result;
+	}
+	
+	/**
+	 * Filter the list of {@link OutItem}s instances by the {@link OutItem#type} property
+	 */
+	public List<OutItem> filter( String type ) {
+		return Utils.getItems(items(), "aggregation", type);
+	} 
 	
 	public void addAll(OutResult that) {
 		if( that == null ) { return; }
@@ -103,7 +125,7 @@ public class OutResult {
 	} 
 	
 	public OutItem getCommandLine() {
-		return  Utils.firstItem(items(), "type", "cmd_file");
+		return  Utils.firstItem(items(), "format", "cmdline");
 	}
 
 	public void addError( String message ) {
@@ -131,7 +153,4 @@ public class OutResult {
 		return Utils.asTimeString( elapsedTime );
 	}
 	
-	public String getCreatedTimeFmt() {
-		return Utils.asString( new Date(createdTime) );
-	}
 }

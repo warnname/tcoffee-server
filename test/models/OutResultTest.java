@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +19,7 @@ public class OutResultTest extends UnitTest {
 	@Before
 	public void register() {
 		TestHelper.module();
+		AppConf.instance().def.dictionary = null;
 	}
 	
 	@Test
@@ -68,8 +71,8 @@ public class OutResultTest extends UnitTest {
 		assertEquals("<name>sample.html</name>", reader.readLine().trim());
 		assertEquals(String.format("<file>%s</file>", item.file.getCanonicalPath()), reader.readLine().trim());
 		assertEquals("<format>html</format>", reader.readLine().trim());
+		assertEquals("<aggregation>xxx</aggregation>", reader.readLine().trim());
 		assertEquals("</item>", reader.readLine().trim());
-		assertEquals(String.format("<created-time>%s</created-time>", result.createdTime), reader.readLine().trim());
 		assertEquals("<elapsed-time>99</elapsed-time>", reader.readLine().trim());
 		assertEquals("<status>DONE</status>", reader.readLine().trim());
 		assertEquals("<error>Hola</error>", reader.readLine().trim());
@@ -78,8 +81,34 @@ public class OutResultTest extends UnitTest {
 	}
 	
 	@Test 
-	public void testConstructor() {
-		OutResult result = new OutResult();
-		assertTrue( result.createdTime>0 && result.createdTime<=System.currentTimeMillis() );
+	public void testTypes() {
+		OutResult out = new OutResult();
+		out.add( new OutItem("file1.txt", "MSA") );
+		out.add( new OutItem("file2.txt", "SYSTEM") );
+		out.add( new OutItem("file3.txt", "MSA") );
+		out.add( new OutItem("file4.txt", "TREE") );
+		
+		List<String> types = out.aggregations();
+		assertEquals( 3, types.size());
+		assertEquals( Arrays.asList("MSA", "SYSTEM", "TREE"), types);
+	
+	}
+	
+	@Test
+	public void testFilter() {
+		OutResult out = new OutResult();
+		OutItem i1; 
+		OutItem i2; 
+		OutItem i3; 
+		OutItem i4; 
+		
+		out.add( i1 = new OutItem("file1.txt", "MSA") );
+		out.add( i2 = new OutItem("file2.txt", "SYSTEM") );
+		out.add( i3 = new OutItem("file3.txt", "MSA") );
+		out.add( i4 = new OutItem("file4.txt", "TREE") );
+		
+		List<OutItem> result = out.filter("MSA");
+		assertEquals( 2, result.size());
+		assertEquals( Arrays.asList(i1,i3), result);
 	}
 }

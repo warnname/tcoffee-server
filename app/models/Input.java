@@ -1,11 +1,13 @@
 package models;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;
 import util.Utils;
+import util.XStreamHelper;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -122,6 +124,16 @@ public class Input {
 		return hash;
 	}
 	
+	
+	/**
+	 * Save this {@link Input} instance as a XML file 
+	 * 
+	 * @param file the file to which save the input collection 
+	 * 
+	 */
+	public void save( File file ) {
+		XStreamHelper.toXML(this, file);
+	}
 
 	
 }

@@ -5,6 +5,12 @@
       Command DEFINITIONS   
       ======================================================================== -->
   <def>
+  	<dictionary>
+  		<label key="input_file" value="Input(s)" />
+  		<label key="system_file" value="System" />
+  		<label key="MSA" value="Multiple Alignment" />
+  		<label key="GUIDE_TREE" value="Tree" />
+  	</dictionary>
   
     <valid-result>
       <title>Alignment completed</title>

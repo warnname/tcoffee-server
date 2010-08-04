@@ -16,7 +16,6 @@ import exception.QuickException;
 public class History {
 	
 	private static final String COOKIE_PREFIX = "RID_";
-	private static final int COOKIE_TIME_TO_LIVE = 2 * 24 * 60 * 60; // <-- 2 days 
 	
 
 	/** 
@@ -61,7 +60,7 @@ public class History {
 		Check.notEmpty(rid, "Argument rid cannot be empty for History class");
 		this.rid = rid;
 		this.begin = new Date();
-		this.expire = new Date( begin.getTime() + (COOKIE_TIME_TO_LIVE * 1000) );
+		this.expire = new Date( begin.getTime() + (AppProps.instance().getRequestTimeToLive() * 1000) );
 		
 	}
 	
@@ -227,8 +226,8 @@ public class History {
 		cookie.name = COOKIE_PREFIX + rid;
 		cookie.value = this.toValue();
 		
-		long t1 = begin != null ? begin.getTime() : new Date().getTime();
-		long t2 = expire != null ? expire.getTime() : t1 + (COOKIE_TIME_TO_LIVE*1000);
+		long t1 = begin.getTime();
+		long t2 = expire.getTime();
 		cookie.maxAge = (int)(t2-t1)/1000;
 		
 		return cookie;

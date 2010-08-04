@@ -9,25 +9,24 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
-
 import models.AppConf;
-import models.AppProps;
 import models.History;
 import models.Module;
 import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import models.Status;
-import models.TCoffeeCommand;
+
+import org.apache.commons.io.FileUtils;
+
 import play.Logger;
 import play.libs.IO;
 import play.mvc.After;
 import play.mvc.Before;
 import play.templates.JavaExtensions;
 import util.Utils;
+import util.XStreamHelper;
 import edu.emory.mathcs.backport.java.util.Arrays;
-import exception.CommandException;
 import exception.QuickException;
 
 /**
@@ -114,7 +113,7 @@ public class Application extends BaseController {
      * 
      * @param rid the unique request identifier 
      */
-    public static void result(String rid) {		
+    public static void result(String rid, Boolean... cached) {		
     	
     	final Repo ctx = new Repo(rid,false);
 
@@ -126,24 +125,20 @@ public class Application extends BaseController {
 		if( status.isDone()) {
 			// if the file exists load the result object and show it
 			OutResult result = ctx.getResult();
-    		render(rid,result);		
+    		render(rid,ctx,result,cached);		
 		}
 		else if( status.isFailed() ) {
 			OutResult result = ctx.getResult();
-	    	renderArgs.put("rid", rid);
-	    	renderArgs.put("result", result);
-	    	render("Application/resultFail.html");
+	    	render("Application/resultFail.html", rid, ctx, result, cached);
 		}
-		else if( status.isUnknown() ) {
+		else if( status.isRunning() ) {
+			renderArgs.put("rid", rid);
+			render("Application/wait.html");
+		}
+		else {
 	    	renderArgs.put("rid", rid);
 	    	render("Application/resultUnknown.html");
 		}
-    	
-    	/* 
-    	 * 4) otherwise wait until the request is available 
-    	 */
-    	renderArgs.put("rid", rid);
-    	render("Application/wait.html");
  
    }
 
@@ -174,6 +169,52 @@ public class Application extends BaseController {
 		renderText(ctx.getStatus().toString());
 	}
 	
+	public static void replay( String rid ) {
+		/* 
+		 * 1. check if a result exists 
+		 */
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound(String.format("The specified request ID does not exist (%s)", rid));
+		}
+		
+		/* 
+		 * create the module and bind the stored values 
+		 */
+		String mode = repo.getResult().mode;
+		Module module = AppConf.instance().module(mode).copy();
+		Module.current(module);
+		module.input = XStreamHelper.fromXML(repo.getInputFile());
+		
+		/* 
+		 * 3. show the input form ('module.html')
+		 */
+		renderArgs.put("module", module);
+		render("Application/module.html");		
+	}
+	
+	public static void submit( String rid ) {
+		/*
+		 * 1. check and load the repo context object 
+		 */
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound(String.format("The specified request ID does not exist (%s)", rid));
+		}
+
+		/* 
+		 * 2. create and bind the stored input values 
+		 */
+		OutResult result = repo.getResult(); 
+		Module module = AppConf.instance().module(result.mode).copy();
+		Module.current(module);
+		module.input = XStreamHelper.fromXML(repo.getInputFile());
+		
+		/* 
+		 * 4. re-execute with caching feature disabled
+		 */
+		exec(module,false);
+	}
 	
 	/**
 	 * Renders a generic t-coffee 'module' i.e. a specific configuration defined in the main application file 
@@ -203,27 +244,34 @@ public class Application extends BaseController {
 			return;
 		} 
 
+		exec(module,true);
+	}
+	
+	static void exec( Module module, boolean enableCaching ) {
+		
 		/*
-		 * prepare for the execution
+		 * 1. prepare for the execution
 		 */
-		module.prepare();
+		module.init(enableCaching);
 		
 		
+		/*
+		 * 2. check if this request has already been processed in some way 
+		 */
 		Status status = module.repo().getStatus();
-		if( module.repo().isExpired(status) ) {
-			module.repo().clean();
+		if( !status.isReady() ) {
+	    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, module.rid());
+	    	result(module.rid(), module.repo().cached);
+	    	return;
 		}
-		else {
-			if( status.isRunning() || status.isDone() || status.isFailed() ) {
-		    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, module.rid());
-		    	result(module.rid());
-		    	return;
-			}
-		}
-		
+
+		/*
+		 * 3. fire the job 
+		 */
 		if( module.start() ) {
-	    	/*
-	    	 * 3. store the current request-id in a cookie
+	    	
+			/*
+	    	 * 4. store the current request-id in a cookie
 	    	 */
 	    	History history = new History(module.rid());
 	    	history.setMode(module.title);
@@ -232,12 +280,11 @@ public class Application extends BaseController {
 		
 
     	/*
-    	 * forwards to the result page 
+    	 * 5. forwards to the result page 
     	 */
     	Logger.debug("Forward to result page with rid: %s", module.rid());
-    	result(module.rid());		
+    	result(module.rid());			
 	}
-	
 
 	/**
 	 * Create a temporary zip file with all generated content and download it

@@ -1,0 +1,70 @@
+<style type="text/css">
+table.one-col a { text-decoration: none;  } 
+
+table.one-col {
+	border-spacing: 0px;
+	background: #d8ceb6;
+	border-collapse: collapse;
+	border-top: 4px solid #917b66;
+	border-bottom: 4px solid #917b66;
+}
+
+table.one-col td { 
+	padding: 6px;
+	border-right: 1px solid #e1d9c3;
+}
+
+table.one-col td.oce-first {
+	background: #ab967e;	
+	color: white;
+	font-weight: bold;
+	min-height: 32px;
+}
+
+table.one-col tr:hover td{
+  background: #f0eada;
+}
+
+/*
+table.one-col td.backimg {
+    background: #ab967e url(/public/theme1/images/table-header.gif) repeat-x left top;
+}*/
+</style>
+
+<table class="one-col">
+#{list _arg.aggregations(), as:'ag'} 
+%{	
+	def items = _arg.filter(ag); 
+	def len = items.size();  
+	def COLS= 5; 
+	def rows = Math.floor(len / COLS) +1;  
+	def count=0;
+}%
+<tbody>
+#{list items:0..rows-1, as:'r'}
+<tr>
+	#{if r==0 } 
+	<td class="oce-first backimg">
+	${ag} 
+	</td>
+	#{/if}
+	#{else}
+	<td class="oce-first" >&nbsp;</td>
+	#{/else}
+	
+	#{list items:0..COLS-1, as:'i'}  
+	<td>
+	#{if count < len }
+	%{ def item=items[count]; count++; }%
+	<a href="${item.webpath}" >${item.label}</a> 
+	#{/if}
+	</td>
+	#{/list}
+	
+</tr>
+#{/list}
+
+#{/list} 
+</tbody>
+
+</table>

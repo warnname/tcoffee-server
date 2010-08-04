@@ -133,7 +133,15 @@ public class Module {
 		if( fRid != null ) {
 			return fRid;
 		}
-		
+
+		return fRid = getRid();
+	}
+	
+	private String getRid() {
+		return getRid(true);
+	}
+	
+	private String getRid( boolean enableCaching ) {
 		if( input == null ) { return null; };
 		
 		int hash = input.hashFields();
@@ -148,14 +156,22 @@ public class Module {
 		 */
 		String result = Integer.toHexString(hash);
 		Repo check = new Repo(result,false);
-		while( check.getFile().exists() && check.getStatus().isUnknown() ) {
-			hash = Utils.hash(hash,result);
-			result = Integer.toHexString(hash);
-			check = new Repo(result,false);
+		while( check.getFile().exists() ) {
+			Status status = check.getStatus();
+			if( !enableCaching || check.isExpired() || status .isUnknown() ) {
+				// force a new hash id 
+				hash = Utils.hash(hash,result);
+				result = Integer.toHexString(hash);
+				check = new Repo(result,false);
+			}
+			else {
+				break;
+			}
 		}
 		
 		return fRid = result;
-	}
+		
+	} 
 
 	@Deprecated
 	public File folder() {
@@ -272,10 +288,14 @@ public class Module {
 		return fCtx;
 	} 
 	
+	public void init() {
+		init(true);
+	}
+	
 	/**
 	 * Prepare the <i>module</i> to be executed 
 	 */
-	public void prepare() {
+	public void init( boolean enableCaching ) {
 		
 		/*
 		 * 0. generic initialization 
@@ -286,8 +306,9 @@ public class Module {
 		/*
 		 * 1. create the context repository folder for this execution 
 		 */
-		fRepo = new Repo(rid(),true);
-		
+		fRid = getRid(enableCaching);
+		fRepo = new Repo(fRid,true);
+	
 		/*
 		 * 2. initialize the context for the expression evaluation 
 		 */
@@ -309,7 +330,11 @@ public class Module {
 			setVariable(field);
 		}
 		
-
+		
+		/*
+		 * 4. store the input so that can be used to re-submit job execution
+		 */
+		input.save( fRepo.getInputFile() );
 	}
 
 	
@@ -416,10 +441,10 @@ public class Module {
 			
 			if( process.hasResult() ) {
 				fOutResult.addAll(process.getResult());
-				fOutResult.createdTime = fStartTime.getTime();
 				fOutResult.elapsedTime = process.elapsedTime;
 				fOutResult.status = success ? Status.DONE : Status.FAILED;
-				fOutResult.mode = this.title;
+				fOutResult.mode = this.name;
+				fOutResult.title = this.title;
 				fOutResult.cite = this.cite;
 			}
 			

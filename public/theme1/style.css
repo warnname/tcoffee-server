@@ -129,7 +129,7 @@ table#box-table-a {
   border-spacing: 0px;
 }
 
-table#box-table-a td, table th{
+table#box-table-a td, table#box-table-a th{
   text-align: left;
   border-right: 1px solid #e8e1c8;
   padding: .4em .8em;

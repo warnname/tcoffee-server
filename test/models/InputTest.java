@@ -1,7 +1,12 @@
 package models;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import play.test.UnitTest;
@@ -52,5 +57,33 @@ public class InputTest extends UnitTest {
 		
 	
 	} 	
+	
+	@Test 
+	public void testSave() throws IOException {
+		Input input = new Input();
+		input.fieldsets = new ArrayList<Fieldset>();
+		
+		Fieldset f;
+		input.fieldsets.add( f = new Fieldset() );
+		
+		f.add( new Field("text", "x", "1"), new Field("text", "y", "2") );
+		File file = File.createTempFile("tcoffee", ".test");
+		input.save(file);
+		List<String> result = FileUtils.readLines(file);
+		
+		Iterator<String> itr = result.iterator();
+		assertEquals( "<input>", itr.next().trim() );
+		assertEquals( "<fieldset hideable=\"false\">", itr.next().trim() );
+		assertEquals( "<field type=\"text\" name=\"x\">", itr.next().trim() );
+		assertEquals( "<value>1</value>", itr.next().trim() );
+		assertEquals( "</field>", itr.next().trim() );
+		assertEquals( "<field type=\"text\" name=\"y\">", itr.next().trim() );
+		assertEquals( "<value>2</value>", itr.next().trim() );    
+		assertEquals( "</field>", itr.next().trim() );
+		assertEquals( "</fieldset>", itr.next().trim() );
+		assertEquals( "</input>", itr.next().trim() );
+		file.delete();
+		
+	} 
 	
 }

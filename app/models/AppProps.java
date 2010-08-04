@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import events.AppEvents;
+import exception.QuickException;
 
 
 /**
@@ -147,7 +148,7 @@ public class AppProps  {
 		DEF_PROPS.put("pathBin",  Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
 		DEF_PROPS.put("pathTcoffee", Utils.getCanonicalPath(TCOFFEE_HOME_FOLDER));
 		DEF_PROPS.put("pathMatrix", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
-		DEF_PROPS.put("requestTimeToLive", "172800"); // = 2 * 24 * 60 * 60 -  The max age (in secs) for which the request is stored in the file system
+		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
 
 		/*
 		 * 5. create the AppProps singleton
@@ -257,16 +258,32 @@ public class AppProps  {
 		return new File(getBlastmatPath());
 	}
 	
+	/**
+	 * 
+	 * @return The max age (in secs) for which the request is stored in the file system
+	 */
 	public int getRequestTimeToLive() {
-		return getInteger("requestTimeToLive");
+		Integer secs = getInteger("requestTimeToLive");
+		if( secs != null ) {
+			return secs;
+		}
+
+		/* fallback on 'requestDaysToLive' prop */
+		Integer days = getInteger("requestDaysToLive");
+		if( days != null ) {
+			return days * 24 * 60 * 60;
+		}
+
+		throw new QuickException("Missing request TTL property. Specificy a value for 'requestDaysToLive' or 'requestTimeToLive'");
 	}
 	
 	public String getString(final String key) {
 		return get(key, DEF_PROPS.get(key));
 	}
 	
-	public int getInteger(final String key) {
-		return Integer.parseInt(get(key, DEF_PROPS.get(key)));
+	Integer getInteger(final String key) {
+		String value = get(key, DEF_PROPS.get(key));
+		return Utils.isNotEmpty(value) ? Integer.parseInt(value) : null;
 	}
 	
 	public String get(String key, final String defValue) {

@@ -138,6 +138,17 @@ public class AppPropsTest extends UnitTest {
 		props.add("requestTimeToLive", "100");
 		assertEquals(100, props.getRequestTimeToLive());
 	}
+	
+	@Test 
+	public void testRequestDaysToLive() {
+		props.add("requestDaysToLive", "1");
+		assertEquals(24 * 60 * 60, props.getRequestTimeToLive());
+
+		/* value 'requestTimeToLive' will override the value entered for 'requestDaysToLive' */
+		props.add("requestTimeToLive", "99");
+		assertEquals(99, props.getRequestTimeToLive());
+		
+	} 
 
 	@Test
 	public void testGetMatrixPath() {

@@ -45,7 +45,7 @@ public class TestHelper {
 		
 		module.input = new Input();
 		module.input.fieldsets().add(set);
-		module.prepare();
+		module.init();
 		return Module.current(module);		
 	}
 
@@ -104,4 +104,9 @@ public class TestHelper {
 		return Integer.toHexString(randomHash());
 	}
 	
+	public static void sleep( long millis ) {
+		try {
+			Thread.currentThread().sleep(millis);
+		} catch (InterruptedException e) { }
+	}
 }

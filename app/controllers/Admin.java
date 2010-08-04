@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import models.AppProps;
 import models.Field;
@@ -21,6 +23,7 @@ import play.Play;
 import play.libs.IO;
 import play.mvc.With;
 import util.Check;
+import util.FileIterator;
 import util.Utils;
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -216,14 +219,34 @@ public class Admin extends BaseController {
 	 * Display the current version of t-coffee information
 	 */
 	public static void tcoffeeinfo() {
-		String info;
-
+		Pattern pattern = Pattern.compile("PROGRAM: T-COFFEE \\((\\S+)\\)" );
+		
+		String info = "(unknown)";
+		String ver = "(unknown)";
+		
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
-		tcoffee.ctxfolder = new File(AppProps.instance().getDataPath(), "tcoffee-ver");
+		tcoffee.ctxfolder = new File(AppProps.instance().getDataPath(), ".tcoffee-ver");
 		tcoffee.logfile = "info.txt";
+		tcoffee.errfile = "err.txt";
 		tcoffee.init();
 		try {
 			tcoffee.execute();
+			
+			/* 
+			 * extract the tcoffee version 
+			 */
+			for( String line :  new FileIterator(tcoffee.getErrFile()) ) {
+				Matcher m = pattern.matcher(line);
+				if( m.matches() ) {
+					ver = m.group(1); 
+					break;
+				}
+
+			};
+			
+			/* 
+			 * fecth the list of all installed modules 
+			 */
 			info = IO.readContentAsString(tcoffee.getLogFile()).trim();
 			
 			String PREFIX = "#######   Compiling the list of available methods ... (will take a few seconds)";
@@ -233,11 +256,11 @@ public class Admin extends BaseController {
 			
 		} catch (Exception e) {
 			Logger.error(e,"Unable to get t-coffee information");
-			info = "(unable to get t-coffee version info)";
+			ver = "(unable to get t-coffee version info)";
 		}
 		
 		
-		render(info);
+		render(ver, info);
 	}	
 
 

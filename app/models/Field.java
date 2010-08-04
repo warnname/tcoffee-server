@@ -11,9 +11,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import play.Logger;
 import play.Play;
-import play.libs.IO;
 import play.mvc.Router;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;

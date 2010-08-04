@@ -70,8 +70,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		map.put("TMP_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_tmp")));
 		//map.put("DEBUG_TMP_FILE", "1");
 		
-		/* t-coffee cache folder */
-		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
+//		/* t-coffee cache folder */
+//		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
 		
 		/* m-coffee folder is contained in the main bin path */ 
 		map.put("MCOFFEE_4_TCOFFEE", matrixPath );
@@ -195,18 +195,19 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		
 		/* add the command line file to the result object */
 		if( getCmdFile() != null ) {
-			OutItem out = new OutItem(getCmdFile(),"cmd_file");
-			//TODO tis label should be parametrized
-			out.label = "T-Coffee command line";
+			OutItem out = new OutItem(getCmdFile(),"system_file");
+			//TODO this label should be parametrized
+			out.label = "Command line";
+			out.format = "cmdline";
 			result.add(out);
 		}
 		
 		if( success || existsLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
 			
 			/* add at least the tcoffee log file */
-			OutItem out = new OutItem(logfile, "log_file");
+			OutItem out = new OutItem(logfile, "system_file");
 			//TODO tis label should be parametrized
-			out.label = "T-Coffee LOG file";
+			out.label = "Log file";
 			result.add(out); 
 			
 			/* add all t-coffee result */
@@ -219,7 +220,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			/* add at least the tcoffee log file */
 			OutItem out = new OutItem(getErrFile(), "err_file");
 			//TODO tis label should be parametrized
-			out.label = "T-Coffee ERROR file";
+			out.label = "Error file";
 			result.add(out); 
 			
 		}

@@ -58,7 +58,8 @@ $(document).ready(function(){
 
 <h1>${module.title} <small>${module.description}</small></h1>
 
-<form action="${request.path}?_mid=${module.name}" method="POST" enctype="multipart/form-data">
+<form action="@{Application.module}" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="_mid" value="${module.name}" />
 
 #{list module.input.fieldsets, as:'set'} 
 
