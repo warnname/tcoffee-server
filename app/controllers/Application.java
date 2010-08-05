@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import models.AppConf;
+import models.AppProps;
 import models.History;
 import models.Module;
 import models.OutItem;
@@ -107,37 +108,33 @@ public class Application extends BaseController {
     	render();
     }
     
+    
  
     /**
      * Handle request to display the <i>result</i> page
      * 
      * @param rid the unique request identifier 
      */
-    public static void result(String rid, Boolean... cached) {		
+    public static void result(String rid, Boolean ... cached ) {		
     	
     	final Repo ctx = new Repo(rid,false);
+    	final Status status = ctx.getStatus();
 
-    	/* 
-    	 * 1) otherwise - when the rid folder exists - check if the t-coffee job is terminated 
-    	 * 
-    	 */ 
-    	Status status = ctx.getStatus();
-		if( status.isDone()) {
+    	if( status.isDone()) {
 			// if the file exists load the result object and show it
 			OutResult result = ctx.getResult();
-    		render(rid,ctx,result,cached);		
+    		render("Application/result.html", rid, ctx, result, cached);		
 		}
 		else if( status.isFailed() ) {
 			OutResult result = ctx.getResult();
-	    	render("Application/resultFail.html", rid, ctx, result, cached);
+	    	render("Application/failed.html", rid, ctx, result, cached);
 		}
 		else if( status.isRunning() ) {
-			renderArgs.put("rid", rid);
-			render("Application/wait.html");
+			render("Application/wait.html", rid );
 		}
 		else {
-	    	renderArgs.put("rid", rid);
-	    	render("Application/resultUnknown.html");
+			int maxDays = AppProps.instance().getRequestTimeToLive() / 60 / 60 / 24;
+	    	render("Application/oops.html", rid, maxDays);
 		}
  
    }
@@ -332,7 +329,11 @@ public class Application extends BaseController {
 		}
 	} 
 	
-	
+	/**
+	 * Manage user input file uploads
+	 * 
+	 * @param name the file name that is being uploaded
+	 */
 	public static void upload(String name) {
 		/* default error result */
 		String ERROR = "{success:false}";

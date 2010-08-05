@@ -431,32 +431,37 @@ public class Module {
 		
 		try {
 			/* run the main job */
-			success = process.execute();
-			
-			/*
-			 * if result is OK handle the commands for valid case  
-			 */
-			OutSection branch = getOutSection(success);
-			fOutResult = branch.result;
-			
-			if( process.hasResult() ) {
-				fOutResult.addAll(process.getResult());
-				fOutResult.elapsedTime = process.elapsedTime;
-				fOutResult.status = success ? Status.DONE : Status.FAILED;
-				fOutResult.mode = this.name;
-				fOutResult.title = this.title;
-				fOutResult.cite = this.cite;
+			try {
+				success = process.execute();
 			}
-			
-			/*
-			 * execute the result events 
-			 */
-			if( branch.hasEvents() ) {
-				branch.events.execute();
-				if( branch.events.getResult() != null ) {
-					branch.result.addAll( branch.events.getResult() );
+			finally {
+				
+				/*
+				 * if result is OK handle the commands for valid case  
+				 */
+				OutSection branch = getOutSection(success);
+				fOutResult = branch.result;
+				
+				if( process.hasResult() ) {
+					fOutResult.addAll(process.getResult());
+					fOutResult.elapsedTime = process.elapsedTime;
+					fOutResult.status = success ? Status.DONE : Status.FAILED;
+					fOutResult.mode = this.name;
+					fOutResult.title = this.title;
+					fOutResult.cite = this.cite;
 				}
-			}			
+				
+				/*
+				 * execute the result events 
+				 */
+				if( branch.hasEvents() ) {
+					branch.events.execute();
+					if( branch.events.getResult() != null ) {
+						branch.result.addAll( branch.events.getResult() );
+					}
+				}			
+			}
+
 		}
 		catch( Exception e ) {
 			/* trace the error in the log file */

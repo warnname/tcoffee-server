@@ -8,8 +8,11 @@
   	<dictionary>
   		<label key="input_file" value="Input(s)" />
   		<label key="system_file" value="System" />
+  		<label key="error_file" value="System" />
   		<label key="MSA" value="Multiple Alignment" />
   		<label key="GUIDE_TREE" value="Tree" />
+  		<label key="PHYLOGENIC_TREE" value="Tree" />
+  		<label key="Template_List" value="Template List" />
   	</dictionary>
   
     <valid-result>

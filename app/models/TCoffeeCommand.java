@@ -218,7 +218,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		if( !success &&  existsErrFile()) { 
 			
 			/* add at least the tcoffee log file */
-			OutItem out = new OutItem(getErrFile(), "err_file");
+			OutItem out = new OutItem(getErrFile(), "error_file");
 			//TODO tis label should be parametrized
 			out.label = "Error file";
 			result.add(out); 

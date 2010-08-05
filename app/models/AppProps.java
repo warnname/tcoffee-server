@@ -283,7 +283,11 @@ public class AppProps  {
 	
 	Integer getInteger(final String key) {
 		String value = get(key, DEF_PROPS.get(key));
-		return Utils.isNotEmpty(value) ? Integer.parseInt(value) : null;
+		if( Utils.isEmpty(value) ) { 
+			return null;
+		}
+		
+		return Integer.parseInt(value);
 	}
 	
 	public String get(String key, final String defValue) {

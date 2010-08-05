@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
@@ -298,7 +299,12 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		         * 5. run the command    
 		         */
 				CommandLine cmd = CommandLine.parse("bash _run.sh");
-				fExitCode = executor.execute(cmd);		
+				try  {
+					fExitCode = executor.execute(cmd);		
+				} catch( ExecuteException e ) {
+					fExitCode = e.getExitValue();
+				}
+				
 			} 
 			finally {
 				/* 
@@ -306,7 +312,6 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		         */
 				if( fLogStream != null ) try { fLogStream.close(); } catch(IOException e) { Logger.warn("Error closing out file: %s", fLogFile); } 
 		        if( fErrStream != null ) try { fErrStream.close(); } catch(IOException e) { Logger.warn("Error closing err file: %s", fErrFile); } 
-
 			}
 
 
