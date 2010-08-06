@@ -218,8 +218,6 @@ public class Repo {
 	}
 	
 	void touch( long millis ) {
-		System.out.printf(">> xx: %s = %s\n", millis, new Date(millis));		
-
 		fMarker.setLastModified(millis);
 	}
 	
