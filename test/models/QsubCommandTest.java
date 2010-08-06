@@ -1,11 +1,13 @@
 package models;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import play.libs.IO;
 import play.test.UnitTest;
 import util.TestHelper;
 import util.XStreamHelper;
@@ -109,5 +111,56 @@ public class QsubCommandTest extends UnitTest {
 		
 	} 	
 	
+	@Test
+	public void testQsubCouldNotScheduleError() throws CommandException {
+
+		CmdArgs args = new CmdArgs();
+		args.put("mode", "regular");
+		args.put("in", "sample.fasta" );
+		
+		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.errfile = "err.log";
+		tcoffee.logfile = "out.log";
+		tcoffee.cmdfile = "cmd.log";
+		tcoffee.envfile = "env.log";
+		tcoffee.args = args;
+		
+		
+		QsubCommand qsub = new QsubCommand() {
+			public boolean run() throws CommandException {
+
+				try {
+					IO.writeContent("t-coffee rulez", _commands.get(0).getLogFile());
+					
+					/* write the qsub out file */
+					IO.writeContent("12345", getLogFile());
+					
+					/* write the qsub error file */
+					IO.writeContent(
+							"Waiting for immediate job to be scheduled.\n\n" +
+							"Your qsub request could not be scheduled, try again later.", getErrFile());
+				} 
+				catch (IOException e) {
+					throw new CommandException(e, "Cannot write error file");
+				}
+				return true;
+			};
+		}; 
+		qsub._commands = new ArrayList<AbstractShellCommand>();
+		qsub._commands.add(tcoffee);
+		qsub.queue = "ws_cn";
+		qsub.errfile = "qsub.err.log";
+		qsub.logfile = "qsub.out.log";
+		qsub.cmdfile = "qsub.cmd.txt";
+		qsub.envfile = "qsub.env.txt";
+		qsub.init();
+		
+		qsub.execute();
+
+		assertFalse(qsub.isOK());
+		assertEquals( 1, qsub.result.errors.size() );
+		assertEquals( "Your qsub request could not be scheduled, try again later.", qsub.result.errors.get(0) );
+		
+	} 
 	
 }

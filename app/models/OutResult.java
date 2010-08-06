@@ -148,6 +148,12 @@ public class OutResult {
 		
 		this.errors.addAll(errors);
 	}
+	
+	public void clearErrors() {
+		if( errors != null ) {
+			errors.clear();
+		}
+	} 
 
 	public String getElapsedTimeFmt() {
 		return Utils.asTimeString( elapsedTime );

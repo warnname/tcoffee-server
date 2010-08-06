@@ -208,17 +208,17 @@ public class QsubCommand extends AbstractShellCommand {
 		result = command.result;
 
 		/*
-		 * complete this job parsinq the qsub output
+		 * complete this job parsing the qsub output
 		 */
 		parseResultFile();
-		if( success ) {
-			success = !parseForErrors();
+		if( hasErrors() ) {
+			success = false;
 		}
 		
 		return success;
 	}
 
-	private boolean parseForErrors() {
+	private boolean hasErrors() {
 		
 		final String ERROR = "Your qsub request could not be scheduled, try again later.";
 		
@@ -230,6 +230,7 @@ public class QsubCommand extends AbstractShellCommand {
 		
 		for( String line : new FileIterator(file) ) {
 			if( line.contains(ERROR)) {
+				result.clearErrors();
 				result.addError(ERROR);
 				return true;
 			}
