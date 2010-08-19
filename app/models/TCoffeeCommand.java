@@ -54,8 +54,14 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			};
 		}
 		
+		/* redefine the home folder */
 		map.put("HOME", Utils.getCanonicalPath(dataFolder));
+		
+		/* MAFFT BINARIES location */
+		
 		map.put("MAFFT_BINARIES", Utils.getCanonicalPath(binFolder)); 
+		
+		/* preprend the t-coffee binaries to teh PATH */
 		String path = Utils.getCanonicalPath(binFolder) + File.pathSeparator + System.getenv("PATH");
 		map.put("PATH", path);
 		
@@ -69,6 +75,11 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		/* t-coffee temp folder */
 		map.put("TMP_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_tmp")));
 		//map.put("DEBUG_TMP_FILE", "1");
+		
+		/* lock dir */
+		File lock = new File(ctxfolder,"_lck");
+		lock.mkdirs();
+		map.put("LOCKDIR_4_TCOFFEE", Utils.getCanonicalPath(lock));
 		
 //		/* t-coffee cache folder */
 //		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
