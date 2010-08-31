@@ -1,0 +1,21 @@
+#{extends 'layout.html' /}
+#{set title:'T-Coffee | Clear cache' /}
+
+<h1>Clear all job repo folders 
+<small>
+Using this page you can remove all tcoffee context repo in the server file system.
+</small>
+</h1>
+
+
+<h2><span>Please note</span></h2>
+<p>
+You are going to remove any T-Coffee context repo on this server including the one eventually running.  
+</p>
+
+<form action="${request.path}" method="POST" >
+<button class="button" type="submit">&nbsp;&nbsp;&nbsp;YES! Don't bother me and proceed!&nbsp;&nbsp;&nbsp;</button>
+<button class="button" type="button" onclick="window.location='@{Admin.index}'">&nbsp;&nbsp;&nbsp;Mama, I don't know where am I&nbsp;&nbsp;&nbsp;</button>
+
+</form>
+

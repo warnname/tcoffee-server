@@ -1,18 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <title>Not found</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
-    </head>
-    <body>
-		#{if play.mode.name() == 'DEV'}
-			#{404 result /}
-		#{/if}
-        #{else}
-        	<h1>Not found</h1>
-			<p>
-				${result.message}
-			</p>
-        #{/else}
-    </body>
-</html>
+#{extends 'layout.html' /}
+#{set title:'T-Coffee | Not found ' /}
+
+<h1>Not found</h1>
+<p>
+${result.message}
+</p>
+
+
+<a id="show" href="javascript:void(0)" >Show details</a>
+<div id="routes" class="box" style="display: none" >
+<h2><span>These routes have been tried, in this order</span></h2>
+<code>
+ #{list items:play.mvc.Router.routes, as:'route'}
+     ${route.method.pad(10).raw()}	${route.path.pad(50).raw()}	${route.action} <br>
+ #{/list}
+</code>
+</div>
+
+<script>
+$('#show').click(function() {
+	$(this).toggle();
+	$('#routes').toggle("fast");
+} );
+</script>

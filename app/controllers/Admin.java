@@ -41,7 +41,7 @@ public class Admin extends BaseController {
 	}
 	
 	
-    public static void clearAll() {
+    public static void clearCache() {
     	if( isGET() ) {
     		/* ask confirmation */
     		render();

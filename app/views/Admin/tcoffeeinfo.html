@@ -1,20 +1,20 @@
-#{extends 'main.html' /}
+#{extends 'layout.html' /}
 #{set title:'T-Coffee | Runtime info' /}
 
 <h1>T-Coffee runtime 
 <small>
-This page contains information about the T-Coffee runtime installed on this machine.
+This page contains information about the T-Coffee runtime installed on this server.
 </small>
 </h1>
 
 
-<div class="c-style">
-<h2>Version <small>${ver}</small>
+<div class="box">
+<h2><span>Version </span><small><span>${ver}</span></small>
 </h2>
 <div style="width: 90%; overflow-x: scroll">
-<code >
+<pre>
 ${info}
-</code>
+</pre>
 </div>
 
 </div>

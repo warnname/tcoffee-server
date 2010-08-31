@@ -1,5 +1,5 @@
-#{extends 'main.html' /}
-#{set title:'Administration' /}
+#{extends 'layout.html' /}
+#{set title:'T-Coffee | Edit configuration file' /}
 
 
 %{
@@ -45,10 +45,9 @@ $(document).ready(function(){
     padding-top: .4em;
   }
   
-  #wrapper { 
-  	border-left: 1px solid #999; 
-  	border-top: 1px solid #999; 
-  	border-bottom: 1px solid #999; 
+  #textwrap { 
+	padding-bottom: 2em;
+	padding-left: 2em;
   }
 </style>
 #{/if}
@@ -62,23 +61,24 @@ $(document).ready(function(){
 <h1>System editor<small>Where you can edit and save system files</small> </h1>
 
 
-<div class="c-style" >
 <form method="POST" action="@{Admin.edit}">
 
 <fieldset>
-<legend>Editing file <b>${name}</b> <small>Full path: <b>${fullName}</b></small> 
-</legend>
+<h2><span>Editing file <b>${name}</b></span> <small><span>Full path: <b>${fullName}</b></span></small> 
+</h2>
 
 <input type="hidden" name="file" value="${fullName}" />  
-<div id="wrapper" >
+
+<div id="textwrap" >
 <textarea id="editor" name="content" rows="35" >${content}</textarea>
 </div>
 
-
-<div class="break"></div>
-<span class="button"> <button type="submit" >Save</button> </span>
 </fieldset>
+
+<div style="margin: 1em auto 2em 2em " >
+<button type="submit" class="button">Save</button> 
+</div>
+
 
 </form>
 
-</div>

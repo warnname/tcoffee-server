@@ -1,0 +1,81 @@
+%{ def isAdm = (request.controller=='Admin') 
+   def isProd = play.mode.equals( play.Play.Mode.PROD )
+}%
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>#{get 'title' /}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
+#{get 'meta' /}
+
+<link rel="shortcut icon" type="image/x-icon" href="@{'/public/images/favicon.ico'}"  /> 
+<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css" />
+ #{get 'moreStyles' /}
+
+<script type="text/javascript" src="@{'/public/javascripts/jquery-1.4.2.min.js'}" charset="utf-8"></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" charset="utf-8"></script>
+ #{get 'moreScripts' /}
+
+</head>
+
+<body class="${request.controller?.toLowerCase()}">
+
+<div id="wrapper"> 
+	<div id="header"> 
+		<h1 id="logo"><a href="@{Application.index}" >home</a></h1> 
+		<span id="placeholder""></span>
+		
+		<ul id="navigation" class="${request.actionMethod?.toLowerCase()}">
+#{if !isAdm }
+		<li class="index"><a href="@{Application.index}"><span>Home</span></a></li>
+		<li class="history"><a href="@{Application.history}"><span>My alignments</span></a></li>
+		<li class="references" ><a href="@{Application.references}" ><span>References</span></a></li>
+		<li class="contacts"><a href="@{Application.contacts}"><span>Contacts</span></a></li>
+#{/if}
+#{else}
+		<li class="configure"><a href="@{Admin.configure}"><span>Edit props</span></a></li>
+		<li class="sysinfo"><a href="@{Admin.sysinfo}"><span>Sys info</span></a></li>
+		<li class="clearcache"><a href="@{Admin.clearCache}"><span>Clear cache</span></a></li>
+		<li class="edit"><a href="@{Admin.edit}"><span>Edit conf</span></a></li>
+		<li class="perlinfo"><a href="@{Admin.perlinfo}"><span>Perl info</span></a></li>
+		<li class="tcoffeeinfo"><a href="@{Admin.tcoffeeinfo}"><span>T-Coffee info</span></a></li>
+		<li ><a href="@{Application.index}"><span>Home</span></a></li>
+#{/else}
+		</ul>
+	</div> 
+
+
+	<div id="content" >
+	#{doLayout /}
+	</div>	
+
+	<div id="push"></div> 
+</div>
+
+<div id="footer"> 
+    <div class="separator" ></div>
+	<p class="copy-note" >
+	<img src="@{'/public/images/crg.png'}" height="18" width="18" /> T-Coffee is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
+	</p>
+	<p class="fly-away">
+		<a href="#">Back to top</a>
+	</p>
+</div> 
+
+*{ the google tracker  }*
+#{if !isAdm && isProd }
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-16712397-2']);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+#{/if}
+</body>
+</html>

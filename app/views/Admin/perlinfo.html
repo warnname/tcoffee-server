@@ -1,4 +1,4 @@
-#{extends 'main.html' /}
+#{extends 'layout.html' /}
 #{set title:'T-Coffee | PERL info' /}
 
 <h1>Perl runtime 
@@ -8,15 +8,21 @@ This page contains information about the PERL runtime installed on this machine.
 </h1>
 
 
-<div class="c-style">
-<h2>Version</h2>
-<code>
+<div class="box">
+<h2><span>Version</span></h2>
+<div style="width: 90%; overflow-x: scroll">
+<pre>
 ${info}
-</code>
+</pre>
+</div>
+</div>
 
-<h2>Configuration</h2>
-<code >
+
+<div class="box">
+<h2><span>Configuration</span></h2>
+<div style="width: 90%; overflow-x: scroll">
+<pre>
 ${conf}
-</code>
-
+</pre>
+</div>
 </div>

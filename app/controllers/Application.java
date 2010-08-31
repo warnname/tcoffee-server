@@ -21,6 +21,7 @@ import models.Status;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
+import play.Play;
 import play.libs.IO;
 import play.mvc.After;
 import play.mvc.Before;
@@ -383,7 +384,17 @@ public class Application extends BaseController {
 		
 	}
 	
-	
+	/**
+	 * Return the 'robots.txt' text file SEO optimization
+	 */
+	public static void robots() {
+		try {
+			renderText( IO.readContentAsString(Play.getFile("/public/robots.txt")) );
+		} catch (IOException e) {
+			Logger.error(e, "Unable to render 'robots.txt' file");
+			notFound();
+		} 
+	} 
 	
 
 }

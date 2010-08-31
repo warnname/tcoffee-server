@@ -1,18 +1,83 @@
+%{ def isDev = (play.mode.name() != 'DEV') }% 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <title>Application error</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
-    </head>
-    <body>
-		#{if play.mode.name() == 'DEV'}
-			#{500 exception /}
-		#{/if}
-        #{else}
-        	<h1>Oops, an error occured</h1>
-			<p>
-				This exception has been logged with id <strong>${exception.id}</strong>.
-			</p>
-        #{/else}
-    </body>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>T-Coffee | Application error</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
+#{if !isDev }
+	<link rel="shortcut icon" type="image/x-icon" href="@{'/public/images/favicon.ico'}"  /> 
+	<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="@{'/public/javascripts/jquery-1.4.2.min.js'}" charset="utf-8"></script>
+#{/if}
+</head>
+<body>
+
+#{if isDev }
+	#{500 exception /}
+#{/if}
+#{else}
+
+    
+<style type="text/css">
+body { background-image: none }
+
+#wrapper { margin: 0 auto; }
+
+#content {
+	background-image: url(@{'/public/images/geek2.jpg'}) ;
+	background-repeat: no-repeat;
+
+	position: relative;
+	top: 20%;
+	padding-left: 300px;
+	padding-right: 50px;
+	min-height: 300px;
+	height: 400px;
+}
+
+</style>
+
+<div id="wrapper">
+	<div id="content">
+	<h1>Wow guy .. you find a bug!</h1>
+	
+	<p>
+	Try to reload the page, if the problem persist send a email to T-coffee web master reporting the following error code and problem details descriptions.
+	</p>
+
+	<p>
+	This exception has been logged with id <strong>${exception.id}</strong>.
+	</p>
+	
+	<a id="show" href="javascript:void(0)" onclick="" >Error details</a>
+
+	<div id="details" class="box" style="display: none">
+	
+	<h2><span>${exception.errorTitle} </span></h2>
+	<p>
+	${exception.errorDescription.raw()}
+	</p>
+
+	<p>	
+	 #{if exception.sourceAvailable && exception.lineNumber }
+	 Check <code>${exception.sourceFile}</code> (around line ${exception.lineNumber})
+	 #{/if}
+	</p>
+	
+	</div>
+	
+	<script type="text/javascript">
+	$('#show').click(function() {
+		$(this).toggle();
+		$('#details').toggle("fast");
+	} );
+	</script>	
+	</div>
+</div>
+
+#{/else}
+</body>
 </html>
+
+

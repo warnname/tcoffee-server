@@ -1,4 +1,4 @@
-#{extends 'main.html' /}
+#{extends 'layout.html' /}
 
 %{
   def cookiename = 'opts-' + module.name;
@@ -67,16 +67,24 @@ $(document).ready(function(){
 <div class="c-more-options"><a id="toggleOptions" href="javascript:void(0)" >${advLabel}</a></div> <div class="spacer" ></div>
 #{/if} 
 
-<fieldset #{if set.hideable } class="c-hideable" style="display: ${advDisplay}" #{/if} >
-#{if set.title || set.description}<legend>${set.title}<small>${set.description}</small></legend>#{/if}
+<div #{if set.hideable } class="c-hideable" style="display: ${advDisplay}" #{/if} >
+
+<fieldset >
+#{if set.title || set.description}
+<h2><span>${set.title}</span><small><span>${set.description}</span></small></h2>
+#{/if}
+
 #{list set.fields, as:'field' }
 #{render field /}
 #{/list} 
 </fieldset>
+</div>
 #{/list} 
 
 
 <label>&nbsp;</label> 
-<span class="button"> <button type="submit" >Submit</button> </span>
+<div class="c-input">
+<button type="submit" class="button" >Submit</button>
+</div>
 
 </form>

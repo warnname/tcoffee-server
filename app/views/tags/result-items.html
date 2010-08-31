@@ -1,35 +1,3 @@
-<style type="text/css">
-table.one-col a { text-decoration: none;  } 
-
-table.one-col {
-	border-spacing: 0px;
-	background: #d8ceb6;
-	border-collapse: collapse;
-	border-top: 4px solid #917b66;
-	border-bottom: 4px solid #917b66;
-}
-
-table.one-col td { 
-	padding: 6px;
-	border-right: 1px solid #e1d9c3;
-}
-
-table.one-col td.oce-first {
-	background: #ab967e;	
-	color: white;
-	font-weight: bold;
-	min-height: 32px;
-}
-
-table.one-col tr:hover td{
-  background: #f0eada;
-}
-
-/*
-table.one-col td.backimg {
-    background: #ab967e url(/public/theme1/images/table-header.gif) repeat-x left top;
-}*/
-</style>
 
 <table class="one-col">
 #{list _arg.aggregations(), as:'ag'} 
