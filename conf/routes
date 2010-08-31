@@ -4,6 +4,8 @@
 
 # Home page
 GET     /						Application.index
+GET 	/robots.txt				Application.robots
+
 
 # Downloadable data
 GET		/data/{<.+>path}		Data.get
