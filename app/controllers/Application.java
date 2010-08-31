@@ -388,11 +388,12 @@ public class Application extends BaseController {
 	 * Return the 'robots.txt' text file SEO optimization
 	 */
 	public static void robots() {
+		final String conf = "/conf/robots.txt";
 		try {
-			renderText( IO.readContentAsString(Play.getFile("/public/robots.txt")) );
+			renderText( IO.readContentAsString(Play.getFile(conf)) );
 		} catch (IOException e) {
 			Logger.error(e, "Unable to render 'robots.txt' file");
-			notFound();
+			notFound(String.format("Unable to find '%s'", conf));
 		} 
 	} 
 	
