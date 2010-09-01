@@ -157,23 +157,7 @@ public class RepoTest extends UnitTest {
 		repo.touch( atime - ttl -1000 );
 		assertTrue( repo.isExpired() );
 		
-		/* set as FAILED */
-		repo.touch(atime);
-		result.status = Status.FAILED;
-		repo.saveResult(result);
 
-		long ctime = repo.getCreationTime();
-		ttl = 30 * 1000;
-		etime = repo.getExpirationTime();
-		
-		assertEquals( ctime +ttl, etime );
-		assertFalse(repo.isExpired());
-		
-		/* force expiration */
-		repo.fFolder.setLastModified(ctime - ttl -1000 );
-		assertTrue( repo.isExpired() );
-		
-		
 		
 	}
 	
