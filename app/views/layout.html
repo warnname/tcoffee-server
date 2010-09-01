@@ -13,9 +13,10 @@
 <link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css" />
  #{get 'moreStyles' /}
 
-<script type="text/javascript" src="@{'/public/javascripts/jquery-1.4.2.min.js'}" charset="utf-8"></script>
-<script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" charset="utf-8"></script>
- #{get 'moreScripts' /}
+#{press.script src:'jquery-1.4.2.min.js', compress:false /}
+#{press.script src:'jquery.cookie.js' /}
+#{get 'moreScripts' /}
+#{press.compressed-script /}
 
 </head>
 

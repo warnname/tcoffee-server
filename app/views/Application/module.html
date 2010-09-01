@@ -16,11 +16,14 @@
 #{/set} 
 
 #{set 'moreScripts'} 
-<script type="text/javascript" src="@{'/public/javascripts/autoresize.jquery.min.js'}" charset="utf-8"></script>
-<script type="text/javascript" src="@{'/public/javascripts/ajaxupload.js'}" charset="utf-8" ></script>
+#{press.script src:'autoresize.jquery.min.js', compress:false /}
+#{press.script src:'ajaxupload.js' /}
+
 #{if !isIE}
-<script type="text/javascript" src="@{'/public/tiptip/jquery.tiptip.minified.js'}" charset="utf-8"></script>
+#{press.script src:'jquery.tiptip.minified.js', compress:false /}
 #{/if}
+
+#{/set} 
 
 <script type="text/javascript">
 <!--
@@ -50,15 +53,12 @@ $(document).ready(function(){
 			})
 		.change(function(){ $(this).trigger('clearErrors') });
 });
-
 //-->
 </script>
-#{/set} 
-
 
 <h1>${module.title} <small>${module.description}</small></h1>
 
-<form action="@{Application.module}" method="POST" enctype="multipart/form-data">
+<form id="form" action="@{Application.module}" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="_mid" value="${module.name}" />
 
 #{list module.input.fieldsets, as:'set'} 
@@ -84,7 +84,22 @@ $(document).ready(function(){
 
 <label>&nbsp;</label> 
 <div class="c-input">
-<button type="submit" class="button" >Submit</button>
+<button id="submit" type="submit" class="button" >Submit</button>
 </div>
 
 </form>
+
+<script type="text/javascript">
+$('#form').submit(function(){
+	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
+
+});
+
+$(document).ready(function(){
+	$('#submit').removeAttr('disabled').removeClass('disabled').text('Submit');
+});
+
+$(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
+
+
+</script>

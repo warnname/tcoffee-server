@@ -390,9 +390,6 @@ h2.c-error {
     border-color:          #99ccff;
     color:                 #333333; }
 
-  .button:active {
-    position:              relative;
-    top:                   1px; }
 
   .button:active, .button:focus {
     background-position:   0 -25px;
@@ -400,6 +397,14 @@ h2.c-error {
     background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
     border-color:          #8fc7ff #94c9ff #94c9ff #8fc7ff;
     color:                 #1a1a1a;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
+    
+   .button.disabled {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #ccc #ccc #ccc #ccc;
+    color:                 #aaa;
     text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); } 
 
 /*

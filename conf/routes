@@ -23,4 +23,6 @@ GET     /public/            	staticDir:public
 # Main application controller
 *		/{action}				Application.{action}
 
+# Javascript/css compression module
+*  		/  						module:press
 
