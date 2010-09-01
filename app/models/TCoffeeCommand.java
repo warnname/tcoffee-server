@@ -81,8 +81,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		lock.mkdirs();
 		map.put("LOCKDIR_4_TCOFFEE", Utils.getCanonicalPath(lock));
 		
-//		/* t-coffee cache folder */
-//		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
+		/* t-coffee cache folder */
+		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
 		
 		/* m-coffee folder is contained in the main bin path */ 
 		map.put("MCOFFEE_4_TCOFFEE", matrixPath );

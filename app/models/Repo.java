@@ -318,11 +318,7 @@ public class Repo {
 	public long getExpirationTime() {
 
 		Status status = getStatus();
-		if( status.isFailed() ) {
-			/* after 30 secs mark this repo as expired */
-			return getCreationTime() + 30 *1000 ;
-		}
-		else if( status.isDone() ) {
+		if( status.isDone() || status.isFailed() ) {
 			return getLastAccessedTime() + (AppProps.instance().getRequestTimeToLive() *1000);
 		}
 		else { 
