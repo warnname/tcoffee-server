@@ -12,7 +12,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import events.AppEvents;
 import exception.QuickException;
 
 @XStreamAlias("server")
@@ -32,8 +31,6 @@ public class AppConf {
 					module.conf = conf;
 				}				
 				
-				/* notify this event */
-				AppEvents.appConfChanged(conf);
 			}
 			
 		};
