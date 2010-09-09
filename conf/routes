@@ -11,7 +11,7 @@ GET 	/robots.txt				Application.robots
 GET		/data/{<.+>path}		Data.get
 
 # Administration controller 
-GET 	/adm/					Admin.index		
+GET 	/adm/?					Admin.index		
 * 		/adm/{action}			Admin.{action}		
 
 # Secure module controller 
