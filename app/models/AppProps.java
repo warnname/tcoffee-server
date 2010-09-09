@@ -17,7 +17,6 @@ import util.XStreamHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-import events.AppEvents;
 import exception.QuickException;
 
 
@@ -154,11 +153,6 @@ public class AppProps  {
 		 * 5. create the AppProps singleton
 		 */
 		INSTANCE = new ReloadableSingletonFile<AppProps>(SERVER_PROPS_FILE) {
-			@Override
-			public void onReload(File file, AppProps props) {
-				super.onReload(file, props);
-				AppEvents.appPropsChanged(props);
-			}
 			
 			@Override
 			public AppProps readFile(File file) {
