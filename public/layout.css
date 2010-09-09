@@ -542,10 +542,6 @@ table.c-home td.c-lbl {
  * skin 
  */
  
-/*
- * 
- */
- 
 body  {
 	background: white url(images/bg.gif) repeat-x 0% 0%;
 	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
@@ -572,7 +568,9 @@ body  {
 }
 
 #logo {
-	margin-top: 7px;
+	position: relative;
+	top: 12px;
+	left:-5px;
 
 	background: url(images/tcoffeelogo.png) no-repeat 0% 0%;
 	float: left;
@@ -594,7 +592,7 @@ body.admin #header #placeholder {
 }
 
 /*  
- * Admin mode 
+ * Admin mode related CSS
  */
  
 body.admin #navigation li {
