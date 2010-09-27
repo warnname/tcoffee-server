@@ -1,0 +1,84 @@
+#{set title: 'T-Coffee | Home' /}
+
+#{set 'meta'}
+<meta name="description" content="T-Coffee is a multiple sequence alignment package. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
+<meta name="keywords" content="t-coffee, tcoffee, t_coffee, msa, multiple sequence alignment, dna, rna, protein sequence, protein structure, cedric notredame" />
+#{/set}
+
+<h1>T-Coffee
+<small>
+A collection of tools for Computing, Evaluating and Manipulating 
+Multiple Alignments of DNA, RNA, Protein Sequences and Structures
+</small>
+</h1>
+
+
+#{list _bundle.groups, as:'group' }
+<h2><span>${group ?: 'other'}</span></h2>
+
+<table class="c-home" >
+<tbody>
+#{list _bundle.getServicesByGroup(group) } 
+<tr>
+	<td class="c-lbl" ><a href="@{Application.main(params.bundle,_.name)}">${_.title ?: '(unknown)'}</a></td>
+	<td class="c-val">${_.description} #{if _.cite} - <small><a href="${_.cite}" target="_blank">cite</a></small> #{/if} </td>
+	</tr>
+#{/list } 
+</tbody>
+</table>
+#{/list}
+
+<h2>
+<span>Mirror sites</span>
+<small><span>Links to other institutes running T-coffee web server</span></small>
+</h2>
+
+<div class="box" style="float: right; width: 200px; text-align: center;"  >
+<a href="http://www.amazon.com/gp/product/0470089857?ie=UTF8&tag=wwwtcoffeeorg-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0470089857" 
+target="_blank" style="border: none" ><img src="public/images/bio-for-dummies.jpg" width="127" height="160"/></a>
+
+<br/>
+<small>
+The Book <a target="_blank" href="http://www.amazon.com/gp/product/0470089857?ie=UTF8&tag=wwwtcoffeeorg-20&linkCode=as2&camp=1789&creative=9325&creativeASIN=0470089857" >Bioinformatics For Dummies</a> 
+contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.dummies.com/WileyCDA/DummiesTitle/productCd-0470089857,page-1.html" >online resources</a>. 
+</small>
+</div>
+
+<table class="c-home">
+<tbody>
+
+<tr>
+<td class="c-lbl"> <a href="http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi" target="_blank"><img src="public/images/mirror_vitalch.gif" /></a> </td>
+<td class="c-val">Vital-IT, Swiss Institute of Bioinformatics (SIB) </td>
+</tr>
+
+<tr>
+<td class="c-lbl" style="padding-right: 8px"> <a href="http://www.igs.cnrs-mrs.fr/Tcoffee/" target="_blank"><img src="public/images/mirror_cnrs.jpg" /></a> </td>
+<td class="c-val">IGS lab., CNRS</td>
+</tr>
+
+<tr>
+<td class="c-lbl"> <a href="http://www.ebi.ac.uk/Tools/t-coffee/" target="_blank"><img src="public/images/mirror_ebi.gif" /></a> </td>
+<td class="c-val">EBI, European Bioinformatics Institute</td>
+</tr>
+
+<tr>
+<td class="c-lbl"> <a href="http://toolkit.tuebingen.mpg.de/t_coffee" target="_blank"><img src="public/images/mirror_maxplank.gif" /></a> </td>
+<td class="c-val">Max-Planck Institute for Developmental Biology</td>
+</tr>
+
+<tr>
+<td class="c-lbl"> <a href="http://cbsuapps.tc.cornell.edu/t_coffee.aspx" target="_blank"><img src="public/images/mirror_cbsu.jpg" /></a> </td>
+<td class="c-val">Cornell</td>
+</tr>
+
+<tr>
+<td class="c-lbl"> <a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank"><img src="public/images/mirror_EMBnetCNB.png" /></a> </td>
+<td class="c-val">EMBNet-Spain</td>
+</tr>
+
+
+</tbody>
+</table>
+
+

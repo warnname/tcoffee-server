@@ -1,0 +1,33 @@
+/* some css here */
+
+#logo {
+	position: relative;
+	top: 12px;
+	left:-5px;
+
+	background: url(public/images/tcoffeelogo-2.png) no-repeat 0% 0%;
+	float: left;
+	font-size: 1px;
+	text-indent: -9999px;
+	width: 300px;
+	height: 70px;
+	
+}
+
+#content .box {
+	background-color: #f6f6f6; 
+}
+
+
+/* 
+ * declarative menu 
+ */
+ 
+#navigation.index .index a,
+#navigation.history .history a,
+#navigation.references .references a,
+#navigation.contacts .contacts a
+
+{
+	color: #63BDD6;
+}
