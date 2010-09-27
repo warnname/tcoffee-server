@@ -139,6 +139,12 @@ html, body {
  * Typography 
  */
  
+@font-face {
+  font-family: 'Lobster';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Lobster'), url('http://themes.googleusercontent.com/font?kit=9LpJGtNuM1D8FAZ2BkJH2Q') format('truetype');
+}
 
 @font-face {
   font-family: "Vera Mono";
@@ -182,7 +188,7 @@ html, body {
 #content h1 {
 	font-size: 26px;
 	color: #212E3E;
-	font-weight: lighter;
+	font-weight: 350;
 	margin-bottom: 1em;
 }
 
@@ -412,7 +418,7 @@ h2.c-error {
  * http://www.jankoatwarpspeed.com/post/2008/05/22/CSS-Message-Boxes-for-different-message-types.aspx
  */
  
-.box-info, .box-success, .box-warning, .box-error {
+.box-info, .box-success, .box-warn, .box-error {
 border: 1px solid;
 margin: 10px 0px;
 padding:15px 10px 15px 50px;
@@ -429,7 +435,7 @@ color: #4F8A10;
 background-color: #DFF2BF;
 background-image:url('images/box-success.png');
 }
-.box-warning {
+.box-warn {
 color: #9F6000;
 background-color: #FEEFB3;
 background-image: url('images/box-warning.png');
@@ -453,12 +459,12 @@ table#box-table-a {
 table#box-table-a td, table#box-table-a th{
   text-align: left;
   padding: .4em .8em;
+  vertical-align: top;
 }
 
 table#box-table-a th {
   background: #212E41;
   color: #fff;
-  text-transform: uppercase;
   font-weight: normal;
   border-bottom: 2px solid #72BBD2;
 }
@@ -516,26 +522,6 @@ table.c-home td.c-lbl {
 	width: 8em;
 }
 
-/* 
- * declarative menu 
- */
- 
-#navigation.index .index a,
-#navigation.history .history a,
-#navigation.references .references a,
-#navigation.contacts .contacts a,
-
-#navigation.configure .configure a,
-#navigation.sysinfo .sysinfo a,
-#navigation.clearcache .clearcache a,
-#navigation.edit .edit a,
-#navigation.perlinfo .perlinfo a,
-#navigation.tcoffeeinfo .tcoffeeinfo a
-
-
-{
-	color: #63BDD6;
-}
 
 
 /* 
@@ -547,6 +533,22 @@ body  {
 	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
 	text-align: center;
 }
+
+#logo a {
+  font-family: 'Lobster', serif;
+  font-size: 3.5em;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: 2px 2px 2px #999;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0em;
+  word-spacing: 0em;
+  line-height: 1em;	
+  color: #fafafa;
+  margin-top: 10px;
+}
+
 
 #header {
  	height: 90px;
@@ -567,19 +569,12 @@ body  {
 	padding-top: 40px; 
 }
 
-#logo {
-	position: relative;
-	top: 12px;
-	left:-5px;
 
-	background: url(images/tcoffeelogo.png) no-repeat 0% 0%;
-	float: left;
-	font-size: 1px;
-	text-indent: -9999px;
-	width: 300px;
-	height: 70px;
-	
-}
+
+
+/*  
+ * Admin mode related CSS
+ */
 
 body.admin #header #placeholder {
 	background: url(images/admin.png) no-repeat 0 0;
@@ -590,10 +585,6 @@ body.admin #header #placeholder {
 	top: 0px;
 	left: 40px;
 }
-
-/*  
- * Admin mode related CSS
- */
  
 body.admin #navigation li {
 	padding-left: 14px;
