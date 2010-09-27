@@ -1,18 +1,16 @@
 package models;
 
+import java.io.Serializable;
+
+import plugins.AutoBean;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@AutoBean
 @XStreamAlias("out-section")
-public class OutSection  {
+public class OutSection implements Serializable  {
 	
-	/** The main title */
-	public String title;
-	
-	/** The page description */
-	public String description;
-
 	/** the output description */
 	public OutResult result;
 	
@@ -24,8 +22,6 @@ public class OutSection  {
 	
 	/** The copy constructor */
 	public OutSection(OutSection that) {
-		this.title = that.title;
-		this.description = that.description;
 		this.result = Utils.copy(that.result);
 		this.events = Utils.copy(that.events);
 	} 
@@ -35,19 +31,34 @@ public class OutSection  {
 		return events != null && events.hasCommands(); 
 	}
 	
-	public void append( OutSection that ) {
+	public void addAll( OutSection that ) {
 		if( that == null ) return;
 		
-		this.title = that.title;
-		this.description = that.description;
-		
-		if( this.events != null ) {
-			this.events.addAll(that.events);
+		/*
+		 * add all events from 'that'
+		 */
+		if( that.events != null && that.events.hasCommands() ) {
+			if( this.events == null ) { 
+				this.events = Utils.copy(that.events);
+			}
+			else { 
+				this.events.addAll(that.events);
+			}
 		}
 		
-		if( this.result != null ) {
+		/*
+		 * add all results from that
+		 */
+		if( that.result != null ) {
+			if( this.result == null ) { 
+				this.result = new OutResult();
+			}
 			this.result.addAll(that.result);
 		}
 		
+	}
+	
+	public String toString() { 
+		return Utils.dump(this, "title", "result", "events");
 	}
 }

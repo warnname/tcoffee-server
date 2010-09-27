@@ -670,7 +670,7 @@ public class Utils {
 			value = (T)  f.get(obj);		
 		}
 		catch( Exception e ) {
-			throw new QuickException(e, "Unable to access object property named: '%s' on class: '%s'", fieldName, clazz.getName());
+			throw new QuickException(e, "Unable to access object field: '%s' on class: '%s'", fieldName, clazz.getName());
 		}
 
 		return value != null ? value : defValue;
@@ -1848,41 +1848,58 @@ public class Utils {
 		}
 		
 		return result.toString();
-	} 
+	}
 
-//	public static String nextFileName( final String fileName ) {
-//		Check.notNull(fileName, "Argument 'fileName' cannot be null");
-//		String sExt;
-//		String sName; 
-//		int p = fileName.indexOf('.');
-//		if( p != -1 ) {
-//			sExt = fileName.substring(p);
-//			sName = fileName.substring(0,p);
-//		}
-//		else {
-//			sExt = "";
-//			sName = fileName;
-//		}
-//		
-//		Pattern PATTERN = Pattern.compile(".* \\((\\d+)\\)$");
-//		Matcher matcher=PATTERN.matcher(sName);
-//
-//		int c=0;
-//		if( matcher.matches() ) {
-//			p = sName.lastIndexOf(" (");
-//			sName = sName.substring(0,p);
-//			do {
-//				c = Integer.parseInt(matcher.group(1));
-//			} 
-//			while( (matcher=PATTERN.matcher(sName)).matches() );
-//		}
-//		
-//		return sName + " ("+(c+1) + ")" + sExt;
-//	}
-//	
-//	public static String nextFile( File file ) {
-//		return null;
-//	}
+	public static File nextUniqueFile(File target) {
+		Check.notNull(target, "Argument target cannot be null");
+		
+		int p = target.getName().indexOf(".");
+		if( p == -1 ) { 
+			return new File(target+".1");
+		}
+
+		String _name = target.getName().substring(0,p);
+		String _ext = target.getName().substring(p+1);;
+		String _parent = target.getPath();  
+		p = _parent.indexOf(target.getName());
+		_parent = _parent.substring(0,p);
+		
+		try {
+			int val = Integer.parseInt(_ext);
+			return new File(_parent + _name + "." + (val+1));
+		} 
+		catch( NumberFormatException e ) { 
+			return new File(_parent + _name + "." + incSuffix(_ext) );
+		}
+	} 
+	
+	static String incSuffix( String str ) { 
+
+		String name;
+		String ext;
+		
+		int p = str.indexOf(".");
+		if( p == -1 ) { 
+			name = str;
+			ext = "";
+		}
+		else { 
+			name = str.substring(0,p);
+			ext = str.substring(p);
+		}
+
+
+		try {
+			int val = Integer.parseInt(name);
+			return (val+1) +  ext ;
+			
+		} 
+		catch( NumberFormatException e ) { 
+			return "1." + name + ext;
+		}
+
+	}
+
 	
 }
  

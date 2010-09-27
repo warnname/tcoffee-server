@@ -1,5 +1,5 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | Processing .. ' /}
+#{set title:'Processing .. ' /}
 
 <link href="@{'/public/facebox/facebox.css'}" media="screen" rel="stylesheet" type="text/css"/>
 <script src="@{'/public/facebox/facebox.js'}" type="text/javascript"></script> 
@@ -21,16 +21,16 @@ $(document).ready(function(){
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
 $(document).bind('close.facebox', function(){
-	window.location = "@{Application.index}";
+	window.location = "@{Application.index(params.bundle)}";
 } );
 </script>
 
 <div id="wait">
-<h1>Processing your alignment request</h1>
+<h1>Processing your job request</h1>
 
 <div id="dialog-content">
 
-<h2>Your alignment ticket is <b>${rid}</b> 
+<h2>Your job ticket is <b>${rid}</b> 
 </h2>
 
 <p>
@@ -42,14 +42,14 @@ $(document).bind('close.facebox', function(){
 Do not reload this page. If you don't want wait just navigate away.    
 </p>
 
-<p>You will be notified by email on alignment completion if you entered your email address - otherwise your can check later this alignment result using the <b>My Alingment</b> link on the main menu.</p>
+<p>You will be notified by email on job completion if you entered your email address - otherwise your can check later this job result using the <b>My Jobs</b> link on the main menu.</p>
 
 </div>
 </div>
 
 <div id="failure" style="display: none" >
 <h1>Oops .. <small>something went wrong .. </small></h1>
-<h2>Your alignment ticket ${rid} </h2>
+<h2>Your job ticket ${rid} </h2>
 <div id="message"></div>
 </div> 
 
@@ -59,7 +59,7 @@ function run(){
     /* This requests the url "msgsrv.php" When it complete (or errors)*/
     $.ajax({
         type: "GET",
-        url: "@{Application.status()}?rid=${rid}",
+        url: "@{Application.status(params.bundle)}?rid=${rid}",
 
         async: true, /* If set to non-async, browser shows page as "Loading.."*/
         cache: false,
@@ -72,7 +72,7 @@ function run(){
             }
             else if( status=='DONE' || status=='FAILED' ) {
                 // otherwise move to the result page
-			 	window.location.replace("@{Application.result()}?rid=${rid}");
+			 	window.location.replace("@{Application.result(params.bundle)}?rid=${rid}");
             }
             else {
             	jQuery(document).trigger('close.facebox');

@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @AutoBean
 @XStreamAlias("arg")
-public class Arg {
+public class Arg implements Serializable {
 
 	public String name;
 
@@ -49,9 +50,9 @@ public class Arg {
 			return result;
 		}
 		
-		Module module = Module.current();
+		Service service = Service.current();
 		String firstVarName = eval.vars.get(0);
-		Map<String,Object> ctx = module.getCtx();
+		Map<String,Object> ctx = service.getCtx();
 		Object item = ctx.get(firstVarName);
 		if( eval.vars.size() == 1 && item instanceof List ) {
 			

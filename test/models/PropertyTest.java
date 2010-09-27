@@ -76,9 +76,9 @@ public class PropertyTest extends UnitTest {
 		prop.setName("ciao");
 		assertEquals("ciao", prop.getName());
 		
-		try {
-			prop.setName("field.1"); fail();
-		} catch( Exception e ) {}
+//		try {
+//			prop.setName("field.1"); fail();
+//		} catch( Exception e ) {}
 
 		try {
 			prop.setName("field["); fail();

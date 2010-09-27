@@ -15,7 +15,7 @@ public class RepoTest extends UnitTest {
 	
 	@BeforeClass
 	public static void init() {
-		AppProps.DATA_FOLDER.mkdirs();
+		AppProps.WORKSPACE_FOLDER.mkdirs();
 	}
 
 	@Test 
@@ -35,7 +35,7 @@ public class RepoTest extends UnitTest {
 		
 		assertEquals( RID, repo.rid );
 		assertEquals( RID, repo.getFile().getName() );
-		assertTrue( repo.fFolder.exists() );
+		assertTrue( repo.fRoot.exists() );
 		assertTrue( repo.fMarker.exists() );
 		assertFalse( repo.fLock.exists() );
 		assertEquals( Status.READY, repo.getStatus() );
@@ -54,7 +54,7 @@ public class RepoTest extends UnitTest {
 	@Test
 	public void testFindAll() {
 		/* clean all folder */
-		File[] files = AppProps.DATA_FOLDER.listFiles();
+		File[] files = AppProps.WORKSPACE_FOLDER.listFiles();
 		for( File file : files ) if( file.isDirectory() ) {
 			FileUtils.deleteQuietly(file);
 		}
@@ -74,13 +74,13 @@ public class RepoTest extends UnitTest {
 	public void testDrop() throws Exception {
 
 		Repo repo = new Repo("test-drop",true);
-		assertTrue( repo.fFolder.exists() );
+		assertTrue( repo.fRoot.exists() );
 		
 		/*
 		 * TODO improve this test locking a file a forcing the deletion
 		 */
 		repo.drop(true);
-		assertFalse( repo.fFolder.exists() );
+		assertFalse( repo.fRoot.exists() );
 	}
 	
 	public void testExpiredStatus() {

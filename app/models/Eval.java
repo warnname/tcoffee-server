@@ -1,6 +1,7 @@
 package models;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +17,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @AutoBean
 @XStreamAlias("eval")
-public class Eval {
+public class Eval implements Serializable {
 	
 	@XStreamOmitField public String raw;
 	
@@ -37,8 +38,8 @@ public class Eval {
 	}
 
 	public String eval() {
-		final Module module = Module.current();
-		return eval(module.getCtx());
+		final Service service = Service.current();
+		return eval(service.getCtx());
 	}
 	
 	public String eval( final Map<String,Object> ctx ) {
@@ -48,8 +49,9 @@ public class Eval {
 		}
 
 		Utils.MapValue<String, Object> mapper = new Utils.MapValue<String,Object>() {
-			public Object get(String expression) {
-				Object obj = ctx.get(expression);
+			
+			public Object get(String varname) {
+				Object obj = ctx.get(varname);
 				if( obj == null ) {
 					// if null just .. NULL
 					return null;

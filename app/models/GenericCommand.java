@@ -28,4 +28,33 @@ public class GenericCommand extends AbstractShellCommand {
 		return cmd != null ? cmd.eval() : "";
 	}
 	
+	
+	@Override
+	protected boolean done(boolean success) {
+
+		/*
+		 * add the stdout file to the result
+		 */
+		if( existsLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
+			
+			/* add at least the tcoffee log file */
+			OutItem out = new OutItem(getLogFile(), "stdout");
+			out.label = "Command stdout";
+			result.add(out); 
+			
+		}
+
+		/*
+		 * add the stderr file to teh result if exists
+		 */
+		if( existsErrFile()) { 
+			
+			OutItem out = new OutItem(getErrFile(), "stderr");
+			out.label = "Command stderr";
+			result.add(out); 
+			
+		}
+		
+		return success;
+	}	
 }

@@ -1,16 +1,19 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import plugins.AutoBean;
 import util.Check;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+@AutoBean
 @XStreamAlias("result")
-public class OutResult {
+public class OutResult implements Serializable {
 	
 	@XStreamImplicit(itemFieldName="item")
 	private List<OutItem> _items;
@@ -21,14 +24,16 @@ public class OutResult {
 	
 	public Status status;
 	
-	/** the t-coffee mode */
-	public String mode;
+	/** Name of the bundle that produced this result */
+	public String bundle;
+	
+	/** The bundle service name executed (i.e. the T-Coffee mode)*/
+	public String service;
 	
 	/** the descriptive mode title */
 	public String title;
 	
 	/** The url reference to cite the alignment result */
-	//TODO refactor to move the in OutSection class
 	public String cite;
 	
 	@XStreamImplicit(itemFieldName="error")
@@ -44,12 +49,18 @@ public class OutResult {
 		this.elapsedTime = that.elapsedTime;
 		this.status = that.status;
 		this.errors = that.errors;
-		this.mode = that.mode;
+		this.service = that.service;
 		this.title = that.title;
+		this.bundle = that.bundle;
+		this.cite = that.cite;
 	}
 
 	public List<OutItem> getItems() {
 		return items();
+	}
+	
+	public OutItem getItem( String name ) { 
+		return Utils.firstItem(items(), "name", name);
 	}
 	
 	private List<OutItem> items() {
@@ -127,7 +138,25 @@ public class OutResult {
 	public OutItem getCommandLine() {
 		return  Utils.firstItem(items(), "format", "cmdline");
 	}
+	
+	/**
+	 * @return the output item containing the program standard output 
+	 * 
+	 * see {@link GenericCommand#done(boolean)}
+	 */
+	public OutItem getStdout() {
+		return  Utils.firstItem(items(), "type", "stdout");
+	} 
 
+	/**
+	 * @return the output item containing the program standard error
+	 * 
+	 * see {@link GenericCommand#done(boolean)}
+	 */
+	public OutItem getStderr() {
+		return  Utils.firstItem(items(), "type", "stderr");
+	} 
+	
 	public void addError( String message ) {
 		if( Utils.isEmpty(message)) return;
 		
@@ -157,6 +186,10 @@ public class OutResult {
 
 	public String getElapsedTimeFmt() {
 		return Utils.asTimeString( elapsedTime );
+	}
+	
+	public String toString() { 
+		return Utils.dump( this, "bundle", "mode", "status", "title", "_items" );
 	}
 	
 }

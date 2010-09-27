@@ -1,7 +1,7 @@
 #{extends 'layout.html' /}
 
 %{
-  def cookiename = 'opts-' + module.name;
+  def cookiename = 'opts-' + service.name;
   def advDisplay = request.cookies[cookiename]?.value=='true' ? 'block' : 'none';
   def advLabel =  request.cookies[cookiename]?.value=='true' ? 'Hide advanced options' : 'Show more options';
   def hideCount = 0;
@@ -56,12 +56,11 @@ $(document).ready(function(){
 //-->
 </script>
 
-<h1>${module.title} <small>${module.description}</small></h1>
+<h1>${service.title} <small>${service.description}</small></h1>
 
-<form id="form" action="@{Application.module}" method="POST" enctype="multipart/form-data">
-<input type="hidden" name="_mid" value="${module.name}" />
+<form id="form" action="@{Application.main(params.bundle,service.name)}" method="POST" enctype="multipart/form-data">
 
-#{list module.input.fieldsets, as:'set'} 
+#{list service.input.fieldsets, as:'set'} 
 
 #{if set.hideable && hideCount++==0 } 
 <div class="c-more-options"><a id="toggleOptions" href="javascript:void(0)" >${advLabel}</a></div> <div class="spacer" ></div>
@@ -86,9 +85,11 @@ $(document).ready(function(){
 <div class="c-input">
 <button id="submit" type="submit" class="button" >Submit</button>
 </div>
-
 </form>
 
+*{
+ * This javascript will disable  submitin button on the first button click 
+}*
 <script type="text/javascript">
 $('#form').submit(function(){
 	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
@@ -100,6 +101,5 @@ $(document).ready(function(){
 });
 
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
-
 
 </script>

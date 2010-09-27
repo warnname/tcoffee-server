@@ -12,7 +12,7 @@ public class MailTest extends UnitTest {
 
 	@Before
 	public void init() {
-		TestHelper.module("address=paolo@crg.es");
+		TestHelper.init("address=paolo@crg.es");
 	}
 	
 	@Test

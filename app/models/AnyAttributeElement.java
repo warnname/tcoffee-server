@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-public abstract class AnyAttributeElement {
+public abstract class AnyAttributeElement implements Serializable {
 
 	@XStreamOmitField
 	Map<String,Eval> values;

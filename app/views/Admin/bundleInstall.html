@@ -1,0 +1,108 @@
+#{extends 'layout.html' /}
+#{set title:'Bundle install' /}
+
+<h1>
+Install a new bundle
+</h1>
+
+#{if message } 
+<div class="${message_class}">
+${message}
+</div>
+#{/if}
+
+
+
+#{if "POST".equalsIgnoreCase(request.method) }
+
+#{include 'Admin/bundleInfo.html' /}
+
+<a href="@{Admin.bundleManager}" >Bundle manager</a>
+#{/if}
+
+
+#{else}
+<h2><span>Bundle information</span></h2>
+
+<table class="one-col">
+<tbody>
+
+<tr>
+<td>Name </td>
+<td>${bundle.name}</td></tr>
+
+<tr>
+<td>Version</td>
+<td>${bundle.version}</td></tr>
+
+<tr>
+<td>Title</td>
+<td>${bundle.title}</td></tr>
+
+<tr>
+<td>Description </td>
+<td>${bundle.description}</td></tr>
+
+<tr>
+<td>Author </td>
+<td>${bundle.author}</td></tr>
+
+<tr>
+<td>Contact e-mail </td>
+<td>${bundle.email}</td></tr>
+
+</tbody>
+</table>
+
+
+
+<!-- 
+	Components 
+	 -->
+<h2>
+<span>Services </span>
+</h2>
+
+#{if bundle.services }
+<table id="box-table-a">
+<thead>
+<tr>
+<th>Name</th>
+<th>Group</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+#{list bundle.services }
+<tr class="_parity" >
+<td nowrap="nowrap">${_.title}</td>
+<td nowrap="nowrap">${_.group}</td>
+<td>${_.description}</td>
+</tr>
+#{/list }
+
+</tbody>
+</table>
+#{/if}
+
+#{else}
+<small>(no components in this bundles)</small>
+#{/else}
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('table.one-col tr').each( function() {
+		$(this).children().first().addClass('oce-first')
+	} );
+} )
+</script>
+
+
+<form method="POST">
+<button type="submit" #{if message_class=='box-error'} class="button disabled" disabled="disabled"#{/if}#{else}class="button" #{/else} >Confirm installation</button>
+&nbsp;&nbsp;
+<a href="@{Admin.bundleManager}" >Cancel</a>
+</form>
+#{/else}
+

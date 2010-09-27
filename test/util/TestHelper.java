@@ -8,12 +8,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import models.AppConf;
+import models.Bundle;
 import models.Field;
 import models.Fieldset;
 import models.Input;
-import models.Module;
+import models.Service;
+import play.Play;
 import play.libs.IO;
+import play.mvc.Scope;
 import exception.QuickException;
 
 /**
@@ -24,17 +26,19 @@ import exception.QuickException;
  */
 public class TestHelper {
 
-	public static Module module() {
-		return module(new String[]{});
+	public static Service init() {
+		return init(new String[]{});
 	}
 	
-	public static Module module(String ... fieldsAndValues) {
-		Module module = new Module();
+	public static Service init(String ... fieldsAndValues) {
+		Scope.Params.current().put("bundle", "tcoffee");
+		Service service = new Service();
 
-		AppConf conf = new AppConf();
-		conf.modules = new ArrayList<Module>();
-		conf.modules.add(module);
-		module.conf = conf;
+		Bundle bundle = Bundle.read( new File(Play.applicationPath,"bundles/tcoffee") );
+		
+		bundle.services = new ArrayList<Service>();
+		bundle.services.add(service);
+		service.bundle = bundle;
 	
 		Fieldset set = new Fieldset();
 
@@ -43,10 +47,14 @@ public class TestHelper {
 			set.add(new Field("text",items[0], items.length>1 ? items[1] : ""));
 		}
 		
-		module.input = new Input();
-		module.input.fieldsets().add(set);
-		module.init();
-		return Module.current(module);		
+		service.input = new Input();
+		service.input.fieldsets().add(set);
+
+		service.init( );
+		
+		
+		
+		return Service.current(service);		
 	}
 
 	public static File file(String file) {

@@ -17,7 +17,7 @@ public class QsubCommandTest extends UnitTest {
 	
 	@Before
 	public void register() {
-		TestHelper.module("output=html pdf clustal");
+		TestHelper.init("output=html pdf clustal");
 	}
 	
 	@Test 
@@ -52,7 +52,7 @@ public class QsubCommandTest extends UnitTest {
 //	@Test 
 	public void testExecute() throws CommandException {
 		File source = TestHelper.sampleFasta();
-		TestHelper.copy(source, new File(Module.current().folder(), "sample.fasta"));		
+		TestHelper.copy(source, new File(Service.current().folder(), "sample.fasta"));		
 		
 		CmdArgs args = new CmdArgs();
 		args.put("mode", "regular");

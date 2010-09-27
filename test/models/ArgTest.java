@@ -48,7 +48,7 @@ public class ArgTest extends UnitTest {
 	
 	@Test 
 	public void testGetAll() {
-		TestHelper.module("x=alfa", "y=beta", "y=delta");
+		TestHelper.init("x=alfa", "y=beta", "y=delta");
 		
 		Arg arg = new Arg ("param", "${x}");
 		assertEquals( 1, arg.getAll().size() );
@@ -85,7 +85,7 @@ public class ArgTest extends UnitTest {
 	
 	@Test 
 	public void testToCmdLineVars() {
-		TestHelper.module("x=1", "y=2");
+		TestHelper.init("x=1", "y=2");
 		
 		Arg arg = new Arg("param", "${x}");
 		assertEquals( "-param=1", arg.toCmdLine() );
@@ -99,7 +99,7 @@ public class ArgTest extends UnitTest {
 	
 	@Test 
 	public void testToCmdLineMultiple() {
-		TestHelper.module("x=1", "x=2", "x=3", "z=99");
+		TestHelper.init("x=1", "x=2", "x=3", "z=99");
 		
 		Arg arg = new Arg("param", "${x}");
 		assertEquals( "-param=1 -param=2 -param=3", arg.toCmdLine());
@@ -110,14 +110,14 @@ public class ArgTest extends UnitTest {
 		/*
 		 * argument with all missing variable are removed 
 		 */
-		TestHelper.module();
+		TestHelper.init();
 		Arg arg = new Arg("param", "${x} ${y}");
 		assertEquals( "", arg.toCmdLine());
 
 		/*
 		 * if at lest one exists it is mantained 
 		 */
-		TestHelper.module("z=3");
+		TestHelper.init("z=3");
 		arg = new Arg("param","${x} ${y} ${z}");
 		assertEquals("-param=3", arg.toCmdLine());
 		

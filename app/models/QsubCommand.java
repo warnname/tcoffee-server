@@ -43,7 +43,6 @@ public class QsubCommand extends AbstractShellCommand {
 	@XStreamOmitField private AbstractShellCommand command;
 
 	private String jobid;
-	//@XStreamOmitField private String jobid;
 	
 	
 	/** The default constructor */
@@ -74,7 +73,7 @@ public class QsubCommand extends AbstractShellCommand {
 	}
 	
 	@Override
-	protected void init(CommandCtx ctx) {
+	public void init(CommandCtx ctx) {
 		
 		command =  _commands != null && _commands.size()>0 ? _commands.get(0) : null;
 		Check.notNull(command, "Missing nested command");

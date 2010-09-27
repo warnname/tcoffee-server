@@ -1,11 +1,15 @@
 package models;
 
+import java.io.Serializable;
+
+import plugins.AutoBean;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@AutoBean
 @XStreamAlias("output")
-public class Output {
+public class Output implements Serializable {
 
 	public OutSection valid;
 	
@@ -19,4 +23,8 @@ public class Output {
 		this.fail = Utils.copy(that.fail);
 	}
 	
+	
+	public String toString() { 
+		return Utils.dump(this,"valid","fail");
+	}
 }

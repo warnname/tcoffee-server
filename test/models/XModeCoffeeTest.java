@@ -2,8 +2,10 @@ package models;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import play.Play;
 import play.test.FunctionalTest;
 import util.TcoffeeHelperTest;
 import util.TestHelper;
@@ -50,15 +52,25 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 				Repo ctx = new Repo(RID);
 				Utils.deleteFolder(ctx.getFile());
 				
-				/* initialize the current module */
-				Module module = Module.current(new Module());
-				module.fRid = RID;
-				module.fRepo = new Repo(RID,true);
+				Bundle bundle = Bundle.read(new File(Play.applicationPath,"bundles/tcoffee")) ;
+				
+				/* initialize the current service */
+				Service service = Service.current(new Service());
+				service.bundle = bundle;
+				service.fRid = RID;
+				service.fRepo = new Repo(RID,true);
 				/* copy the source file */
 				for( File file : input ) {
-					TestHelper.copy(file, new File(module.folder(), file.getName()));		
+					TestHelper.copy(file, new File(service.repo().getFile(), file.getName()));		
 					
 				}
+				
+				service.fCtx = new HashMap<String, Object>();
+				/* add the bundle properties content */
+				for( Object key : bundle.properties.keySet() ) {
+					service.fCtx.put( key.toString(), bundle.properties.getProperty(key.toString()));
+				}
+				service.fCtx.put("data.path", service.repo().getFile().toString());
 				
 				TCoffeeCommand tcoffee = new TCoffeeCommand();
 				tcoffee.args = args;
@@ -70,6 +82,7 @@ public abstract class XModeCoffeeTest extends FunctionalTest{
 				tcoffee.envfile = "env.log";
 				
 				tcoffee.init();
+				
 				boolean ok = tcoffee.execute();
 				assertTrue( ok );
 				assertTrue( tcoffee.getLogFile().exists() );

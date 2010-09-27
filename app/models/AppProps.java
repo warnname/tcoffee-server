@@ -1,6 +1,7 @@
 package models;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +28,12 @@ import exception.QuickException;
  *
  */
 @XStreamAlias("props")
-public class AppProps  {
+public class AppProps implements Serializable  {
 
-	static File getConfFile(String confProp, String defName) {
+	static File getConfPath() {
+		final String confProp = "app.properties.file";
 		File result;
-		String propsFileName = Play.configuration.getProperty(confProp,defName);
+		String propsFileName = Play.configuration.getProperty(confProp,"tserver.properties.xml");
 		
 		if( propsFileName.startsWith( File.separator ) ) {
 			/* when an absolute path is specified just use it */
@@ -39,7 +41,7 @@ public class AppProps  {
 		}
 		else {
 			/* try to find it on the data folder */
-			result = new File(DATA_FOLDER,propsFileName);
+			result = new File(WORKSPACE_FOLDER,propsFileName);
 			
 			/* if does not exist fallback on the application conf path */
 			if( !result .exists() ) {
@@ -59,14 +61,36 @@ public class AppProps  {
 		
 	}
 	
+	static File getBundlePath() { 
+		final String path = Play.configuration.getProperty("tserver.bundles.path", "bundles");
+		
+		/* when an absolute file name is specified just use it */
+		if( path.startsWith(File.separator) ) { 
+			return new File(path);
+		}
+		
+		/* try to find it out on the data folder */
+		File result = new File(WORKSPACE_FOLDER, path);
+		if( result.exists() ) { 
+			return result;
+		}
+ 
+		/* otherwise fallback on the application root */
+		result = new File(Play.applicationPath,path);
+		return result;
+	}
 	
 	/**
 	 * The application main <i>data</i> folder. It contains application 
 	 * properties <code>tserver.properties.xml></code>, tcoffee configuration file
 	 * <code>tserver.conf.xml</code> and application temporary data
 	 */
-	static final File DATA_FOLDER;
+	public static final File WORKSPACE_FOLDER;
 
+	/** The path where all application bundles are located */
+	public static final File BUNDLES_FOLDER;
+	
+	public static final File BUNDLE_UPLOAD_PATH;
 	
 	static final Map<String,String> DEF_PROPS;
 
@@ -74,19 +98,10 @@ public class AppProps  {
 	public static final File SERVER_PROPS_FILE;
 
 	/** Reference the server properties file <code>tserver.conf.xml</code> */
-	public static final File SERVER_CONF_FILE;
+	//public static final File SERVER_CONF_FILE;
 
 	/** Alignment requests log file */
 	public static final File SERVER_LOG_FILE; 
-	
-	/*
-	 * the folder containing all the executable binaries
-	 */
-	public static final File DEFAULT_BIN_FOLDER;
-	
-	public static final File DEFAULT_MATRIX_FOLDER;
-	
-	static final File TCOFFEE_HOME_FOLDER;
 	
 	/* singleton instance */
 	final private static ReloadableSingletonFile<AppProps> INSTANCE;
@@ -95,58 +110,78 @@ public class AppProps  {
 
     	/*
     	 * 1. local data workspace 
+    	 * It could be specified by the property 'tserver.workspace.path'
+    	 * - or - if it is missing it wiull be used the path {application.path}/data
     	 */
-		String path = Play.configuration.getProperty("tserver.pathData");   
-		DATA_FOLDER = Utils.isNotEmpty(path) 
+		String path = Play.configuration.getProperty("tserver.workspace.path");   
+		WORKSPACE_FOLDER = Utils.isNotEmpty(path) 
 				    ? new File(path)
 		 			: new File(Play.applicationPath,"data");
 	
-		if( !DATA_FOLDER.exists() ) {
-			Logger.warn("Application DATA root does not exists: '%s'", DATA_FOLDER);
+		if( !WORKSPACE_FOLDER.exists() ) {
+			Logger.warn("Application DATA root does not exists: '%s'", WORKSPACE_FOLDER);
+			// try to create it and raise anc exception if it fails 
+			if( !WORKSPACE_FOLDER.mkdirs() ) { 
+				throw new QuickException("Unable to create appplication 'data' path: '%s' ", WORKSPACE_FOLDER);
+			}
 		}
 		
 		/*
 		 * 2. define the properties file 
 		 */
-		SERVER_PROPS_FILE = getConfFile("application.props.file","tserver.properties.xml");
+		SERVER_PROPS_FILE = getConfPath();
 
 		/*
-		 * 3. define the conf file 
+		 * 3. log file name
 		 */
-		SERVER_CONF_FILE = getConfFile("application.conf.file", "tserver.conf.xml");
-
-		/*
-		 * 4. log file name
-		 */
-		SERVER_LOG_FILE = new File(DATA_FOLDER,"tserver.log");
+		SERVER_LOG_FILE = new File(WORKSPACE_FOLDER,"tserver.log");
 		
+		/*
+		 * 4. bundles path 
+		 */
+		BUNDLES_FOLDER = getBundlePath();
+		if( !BUNDLES_FOLDER.exists() ) {
+			if( !BUNDLES_FOLDER.mkdirs() ) { 
+				throw new QuickException("Unable to create bundle folder path: '%s'", BUNDLES_FOLDER);
+			}
+		}
+		Logger.info("Using 'bundles' on path: %s", BUNDLES_FOLDER);
+
+		/* create upload path */
+		BUNDLE_UPLOAD_PATH = new File(BUNDLES_FOLDER, ".upload");
+		if( !BUNDLE_UPLOAD_PATH.exists() ) {
+			if( !BUNDLE_UPLOAD_PATH.mkdirs() ) { 
+				throw new QuickException("Unable to create bundle upload path: '%s'", BUNDLE_UPLOAD_PATH);
+			}
+		}
+	
 		
 		/*
 		 * 5. Define the other default folder that can be overriden at runtime
 		 */
 		
-		/* bin apps folder */ 
-		final String BIN_PATH = "bin";
-		DEFAULT_BIN_FOLDER = new File(Play.applicationPath, BIN_PATH);
-		if( !DEFAULT_BIN_FOLDER.exists() ) {
-			Logger.warn("Unable to find 'tcoffee' executable on path: '%s'", Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
-		}
-		
-		/* mcoffee matrix */
-		DEFAULT_MATRIX_FOLDER = new File(Play.applicationPath, "matrix");
-		if( !DEFAULT_MATRIX_FOLDER.exists() ) {
-			Logger.warn("Unable to find 'matrix' folder at path: '%s'", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
-		}
-		
-		
-		/* t-coffee home */
-    	TCOFFEE_HOME_FOLDER = new File(DATA_FOLDER, ".t_coffee");
+//		/* bin apps folder */ 
+//		final String BIN_PATH = "bin";
+//		DEFAULT_BIN_FOLDER = new File(Play.applicationPath, BIN_PATH);
+//		if( !DEFAULT_BIN_FOLDER.exists() ) {
+//			Logger.warn("Unable to find 'tcoffee' executable on path: '%s'", Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
+//		}
+//		
+//		/* mcoffee matrix */
+//		DEFAULT_MATRIX_FOLDER = new File(Play.applicationPath, "matrix");
+//		if( !DEFAULT_MATRIX_FOLDER.exists() ) {
+//			Logger.warn("Unable to find 'matrix' folder at path: '%s'", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
+//		}
+//		
+//		
+//		/* t-coffee home */
+//    	TCOFFEE_HOME_FOLDER = new File(DATA_FOLDER, ".t_coffee");
 				
 		
 		DEF_PROPS = new HashMap<String,String>();
-		DEF_PROPS.put("pathBin",  Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
-		DEF_PROPS.put("pathTcoffee", Utils.getCanonicalPath(TCOFFEE_HOME_FOLDER));
-		DEF_PROPS.put("pathMatrix", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
+//		DEF_PROPS.put("pathBin",  Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
+//		DEF_PROPS.put("pathTcoffee", Utils.getCanonicalPath(TCOFFEE_HOME_FOLDER));
+//		DEF_PROPS.put("pathMatrix", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
 		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
 
 		/*
@@ -160,8 +195,46 @@ public class AppProps  {
 			}
 		};
 		
+		/*
+		 * 6. add 'tserver's properties from application.conf
+		 */
+		
+		
+		for( Object obj : Play.configuration.keySet() ) {
+			String key = (String)obj;
+			
+			if( key != null ) {
+				if( key.startsWith("mail.smtp.") || key.startsWith("tserver.")) {
+					/*
+					 * add all "mail.smtp.xxx" and "tserver.xxx" properties  
+					 */
+					addPropertyIfNotAlreadyExists(INSTANCE.get(), key);
+				}  
+			}
+		}
+
+
 	}
 
+	static boolean addPropertyIfNotAlreadyExists( final AppProps props, final String key ) {
+		String value = Play.configuration.getProperty(key);
+		
+		String name = key;
+		// remove "tserver." prefix
+		if( name.startsWith("tserver.")) {
+			name = name.substring("tserver.".length());
+		}
+		
+		// add to properties if not already exists and has a valid value 
+		if( Utils.isNotEmpty(value) && !props.containsKey(name) ) {
+			props.add(name, value);
+			return true;
+		}
+		
+		return false;
+	}
+				
+	
 	@XStreamImplicit(itemFieldName="property")
 	List<Property> properties;
 
@@ -210,47 +283,14 @@ public class AppProps  {
 	 * The application data path. Statically defined cannot be overriden. 
 	 */
 	public String getDataPath() {
-		return Utils.getCanonicalPath(DATA_FOLDER);
+		return Utils.getCanonicalPath(WORKSPACE_FOLDER);
 	}
 
 	public File getDataFolder() {
-		return DATA_FOLDER;
+		return WORKSPACE_FOLDER;
 	}
 	
-	/*
-	 * the path 
-	 */
-	public String getBinPath() {
-		return getString("pathBin");
-	}
-	
-	public File getBinFolder() {
-		return new File(getBinPath());
-	}
-	
-	public String getTCoffeePath() {
-		return getString("pathTcoffee");
-	}
-	
-	public File getTCoffeeFolder() {
-		return new File(getTCoffeePath());
-	}
-	
-	public String getMatrixPath() {
-		return getString("pathMatrix");
-	}
-	
-	public File getMatrixFolder() {
-		return new File(getMatrixPath());
-	} 
-	
-	public String getBlastmatPath() {
-		return getString("BLASTMAT");
-	}
-	
-	public File getBlastmatFolder() {
-		return new File(getBlastmatPath());
-	}
+
 	
 	/**
 	 * 
@@ -273,6 +313,25 @@ public class AppProps  {
 	
 	public String getString(final String key) {
 		return get(key, DEF_PROPS.get(key));
+	}
+
+	/**
+	 * Just a synonim for {@link #getString(String)} method
+	 * 
+	 * @param name the property unique key
+	 * @return the string value for the required property name
+	 */
+	public String getProperty(final String name) { 
+		return get(name, DEF_PROPS.get(name));
+	}
+	
+	/**
+	 * Just a synonim for {@link #put(String, String)}
+	 * @param name the property name 
+	 * @param value the property value 
+	 */
+	public void setProperty( String name, String value ) { 
+		put(name,value);
 	}
 	
 	Integer getInteger(final String key) {
@@ -298,9 +357,10 @@ public class AppProps  {
 	}
 
 	public List<String> getNames() {
-		if( properties == null ) return null;
 
 		List<String> result = new ArrayList<String>();
+		
+		if( properties != null ) 
 		for( Property prop : properties ) {
 			result.add(prop.getName());
 		}

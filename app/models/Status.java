@@ -1,7 +1,9 @@
 package models;
 
+import java.io.Serializable;
+
 /** The repository status */
-public enum Status { 
+public enum Status implements Serializable { 
 	
 	READY("Ready"),
 	RUNNING("Running"), 

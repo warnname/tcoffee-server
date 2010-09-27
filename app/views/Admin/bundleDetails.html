@@ -1,0 +1,17 @@
+#{extends 'layout.html' /}
+#{set title:'Bundle details' /}
+
+<h1>
+<span>Bundle details</span>
+</h1>
+
+#{include 'Admin/bundleInfo.html' /}
+
+<div>
+<form action="@{Admin.bundleDrop}" >
+<input type="hidden" name="bundleName" value="${bundle.name}">
+<button type="submit" class="button">Drop</button>
+&nbsp;&nbsp;
+<a href="@{Admin.bundleManager}" >Bundle manager</a>
+</form>
+</div>

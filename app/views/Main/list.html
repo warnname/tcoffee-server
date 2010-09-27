@@ -1,0 +1,17 @@
+#{extends 'layout.html' /}
+
+<h1>Application available
+<small>The following application bundles are available</small>
+</h1>
+
+
+<table class="c-home" >
+<tbody>
+#{list bundles, as:'bundle'} 
+<tr>
+	<td class="c-lbl" ><a href="@{Application.index(bundle.name)}">${bundle.title}</a></td>
+	<td class="c-val">${bundle.description}</td>
+	</tr>
+#{/list } 
+</tbody>
+</table>

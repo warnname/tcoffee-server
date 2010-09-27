@@ -11,8 +11,8 @@ import exception.QuickException;
 public class TcoffeeHelper {
 	
 	public static class ResultHtml {
-		String style;
-		String body;
+		public String style;
+		public String body;
 	}
 	
 

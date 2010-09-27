@@ -1,0 +1,44 @@
+#{extends 'layout.html' /}
+#{set title:'Bundle drop' /}
+
+<h1>
+<span>Bundle drop</span>
+</h1>
+
+#{if success}
+<div class="box-success">
+Bundle <code>${bundleName}</code> removed from the system. 
+</div>
+
+<a href="@{Admin.bundleManager}">Back to bundle list page</a>
+#{/if}
+
+#{elseif error}
+<div class="box-error">
+An error occurred removing bundle <code>${bundleName}</code> . 
+<p>
+The following message has been reported: <br/><code>${error}</code> 
+</p>
+</div>
+
+<a href="@{Admin.bundleManager}">Back to bundle list page</a>
+
+
+#{/elseif}
+
+#{else}
+<div class="box-warn">
+<b>Warning:</b> This will uninstall and delete the bundle from the server. 
+<p>
+This operation cannot be undone. Press 'Confirm' button to proceed.
+</p>
+</div>
+
+<form method="POST">
+<button class="button" type="submit">Confirm</button>
+&nbsp;&nbsp;
+<a href="@{Admin.bundleDetails(bundleName)}" >Back</a>
+</form>
+
+#{/else}
+

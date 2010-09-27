@@ -1,0 +1,135 @@
+*{
+*   Bundle fragment included in different pages 
+*}*
+<style>
+table { margin-bottom: 3em; } 
+table#box-table-a { margin-bottom: 3em; } 
+</style>
+
+<!-- 
+	Common properties 
+	 -->
+<h2>
+<span>Common properties</span>
+</h2>
+
+<table class="one-col">
+<tbody>
+
+<tr>
+<td>Name </td>
+<td>${bundle.name}</td></tr>
+
+<tr>
+<td>Version</td>
+<td>${bundle.version}</td></tr>
+
+<tr>
+<td>Title </td>
+<td>${bundle.title}</td></tr>
+
+<tr>
+<td>Description </td>
+<td>${bundle.description}</td></tr>
+
+<tr>
+<td>Author </td>
+<td>${bundle.author}</td></tr>
+
+<tr>
+<td>Contact e-mail </td>
+<td>${bundle.email}</td></tr>
+
+
+<tr>
+<td>Root</td>
+<td>${bundle.root}</td></tr>
+
+<tr>
+<td>Last update</td>
+<td>${new Date(bundle.conf.lastModified()).format("dd MMM yyyy, kk:mm:ss ")}</td></tr>
+
+<tr>
+<td>Public link</td>
+<td><a href="@@{Application.index(bundle.name)}" target="_blank" >@@{Application.index(bundle.name)}</a></td>
+</tr>
+ 
+</tbody>
+</table>
+
+<!-- 
+	Configuration files
+	 -->
+
+<h2>
+<span>Configuration files</span>
+</h2>
+
+<table class="one-col">
+<tbody>
+
+<tr>
+<td>Conf file</td>
+<td><a href="@{Admin.editfile(bundle.conf)}" >${bundle.conf}</a></td></tr>
+
+<tr>
+<td>Environment file</td>
+<td><a href="@{Admin.editfile(bundle.envFile)}" >${bundle.envFile}</a></td></tr>
+
+<tr>
+<td>Navigation menu</td>
+<td><a href="@{Admin.editfile(bundle.navigatorPath)}">${bundle.navigatorPath}</a> </td></tr>
+
+<tr>
+<td>CSS file</td>
+<td><a href="@{Admin.editfile(bundle.cssPath)}" >${bundle.cssPath}</a></td></tr>
+
+<tr>
+<td>Javascript file</td>
+<td><a href="@{Admin.editfile(bundle.javascriptPath)}" >${bundle.javascriptPath}</a></td></tr>
+
+
+</tbody>
+</table>
+
+<!-- 
+	Components 
+	 -->
+<h2>
+<span>Components </span>
+</h2>
+
+#{if bundle.services }
+<table id="box-table-a">
+<thead>
+<tr>
+<th>Name</th>
+<th>Group</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+#{list bundle.services }
+<tr class="${_parity}" >
+<td nowrap="nowrap">${_.title}</td>
+<td nowrap="nowrap">${_.group}</td>
+<td>${_.description}</td>
+</tr>
+#{/list }
+
+</tbody>
+</table>
+#{/if}
+#{else}
+<small>(no components in this bundle)</small>
+#{/else}
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('table.one-col tr').each( function() {
+		$(this).children().first().addClass('oce-first')
+	} );
+} )
+</script>

@@ -25,7 +25,19 @@ public class AppPropsTest extends UnitTest {
 		props.properties.add( new Property("beta", "2"));
 	}
 	
+	//@Test
+	public void testGetConfFile() { 
+		//TODO 
+		fail();
+	}
 	
+	//@Test 
+	public void testGetBundleFolder() { 
+		//TODO 
+		fail();
+		
+	}
+
 	@Test 
 	public void fromXml() {
 		String xml = 
@@ -55,15 +67,9 @@ public class AppPropsTest extends UnitTest {
 	}
 	
 	@Test 
-	public void testConfFile() {
-		assertEquals("tserver.conf.xml", AppProps.SERVER_CONF_FILE.getName());
-		assertTrue( "Missing server configuration file: 'tserver.conf.xml'", AppProps.SERVER_CONF_FILE.exists() );
-	}
-
-	@Test 
 	public void testPropertiesFile() {
 		assertEquals("tserver.properties.xml", AppProps.SERVER_PROPS_FILE.getName());
-		assertTrue( "Missing server configuration file: 'tserver.properties.xml'", AppProps.SERVER_CONF_FILE.exists() );
+		assertTrue( "Missing server configuration file: 'tserver.properties.xml'", AppProps.SERVER_PROPS_FILE.exists() );
 	}
 	
 	@Test 
@@ -118,19 +124,7 @@ public class AppPropsTest extends UnitTest {
 	
 	@Test
 	public void testGetDataPath() {
-		assertEquals( AppProps.DATA_FOLDER.getAbsolutePath(), props.getDataPath() );
-	}
-	
-	@Test
-	public void testGetBinPath() {
-		props.add("pathBin", "path/to/bin");
-		assertEquals("path/to/bin", props.getBinPath() );
-	}
-	
-	@Test
-	public void testTcoffeHome() {
-		props.add("pathTcoffee", "path/to/tcoffee");
-		assertEquals("path/to/tcoffee", props.getTCoffeePath() );
+		assertEquals( AppProps.WORKSPACE_FOLDER.getAbsolutePath(), props.getDataPath() );
 	}
 	
 	@Test
@@ -150,17 +144,4 @@ public class AppPropsTest extends UnitTest {
 		
 	} 
 
-	@Test
-	public void testGetMatrixPath() {
-		props.add("pathMatrix", "path/to/matrix");
-		assertEquals("path/to/matrix", props.getMatrixPath() );
-	}
-
-
-	@Test
-	public void testGetBlastmatPath() {
-		props.add("BLASTMAT", "path/to/blastmat");
-		assertEquals("path/to/blastmat", props.getBlastmatPath() );
-	}	
-	
 }

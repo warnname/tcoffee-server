@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import exception.CommandException;
  *
  */
 @XStreamAlias("process")
-public class ProcessCommand extends AbstractCommand<OutResult> {
+public class ProcessCommand extends AbstractCommand<OutResult> implements Serializable {
 
 	@XStreamImplicit
 	public List<AbstractCommand<OutResult>> commands;
@@ -35,14 +36,14 @@ public class ProcessCommand extends AbstractCommand<OutResult> {
 	 * @return <code>true</code> if this process has at least one command to execute, <code>false</code> otherwise 
 	 */
 	public boolean hasCommands() {
-		return commands != null && commands.size()>0;
+		return size()>0;
 	} 
 
 	/**
 	 * Initialize all commands 
 	 */
 	@Override
-	protected void init(CommandCtx ctx) {
+	public void init(CommandCtx ctx) {
 		super.init(ctx);
 		
 		if(!hasCommands()) return;
@@ -93,4 +94,9 @@ public class ProcessCommand extends AbstractCommand<OutResult> {
 		
 		commands.addAll( that.commands ); 
 	}
+	
+	public int size() { 
+		return commands != null ? commands.size() : 0;
+	}
+	
 }

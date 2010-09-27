@@ -1,35 +1,21 @@
 package controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import models.AppConf;
 import models.AppProps;
+import models.Bundle;
+import models.Service;
 import models.History;
-import models.Module;
-import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import models.Status;
-
-import org.apache.commons.io.FileUtils;
-
 import play.Logger;
-import play.Play;
-import play.libs.IO;
 import play.mvc.After;
 import play.mvc.Before;
-import play.templates.JavaExtensions;
-import util.Utils;
 import util.XStreamHelper;
+import bundle.BundleRegistry;
 import edu.emory.mathcs.backport.java.util.Arrays;
-import exception.QuickException;
 
 /**
  * The main application controller 
@@ -38,85 +24,50 @@ import exception.QuickException;
  *
  */
 
-public class Application extends BaseController {
+public class Application extends CommonController {
 	
 	static List<String> PAGES = Arrays.asList(new String[]{"index", "history", "references", "help", "contacts" });
 	
-	
 	@Before
-	static void init() {
-		String a = request.actionMethod;
-		if( PAGES.contains(a)) {
-			session.put("menu", a);
-		}
-		else {
-			a = session.get("menu");
-			if( !PAGES.contains(a) ) {
-				session.put("menu", PAGES.get(0));
-			}
-		}
-		
+	static void before() { 
+		injectImplicitVars();
 	}
 	
 	@After 
 	static void release() {
-		Module.release();
+		Service.release();
 	}
+		
+	static Service service(String bundle, String service) { 
+		
+		Bundle _bundle = BundleRegistry.instance().get(bundle);
+		if( _bundle == null ) { 
+			notFound( "Unkown bundle: '%s'", bundle );
+		}
+		
+		Service result = _bundle.getService(service);
+		if( service == null ) { 
+			notFound( "Unknown service: '%s' in bundle '%s'", service, bundle );
+		}
+		
+		return result;
+	}
+	
 	
 	/** 
 	 * Renders the main application index page
 	 */
-    public static void index() {
-    	AppConf conf = AppConf.instance();
-        render(conf);
-    }
-    
-    /**
-     * Renders the <i>References</i> html page
-     */
-    public static void references() {
-    	render();
-    }
-    
-    /**
-     * Renders the <i>Help</i> html page
-     */
-    public static void help() {
-    	render();
-    }
-    
-    /**
-     * Renders the <i>Contacts</i> html page
-     */
-    public static void contacts() {
-    	render();
+    public static void index( String bundle ) {
+    	redirect("Application._", bundle, "index.html");
     }
     
 
-    /**
-     * Handles the Welcome page showed at application first run 
-     */
-    public static void welcome() {
-    	render();
-    }
-    
-    
-
-    /*
-     * fake page used for tests purpose only   
-     */
-    public static void sandbox() {
-    	render();
-    }
-    
-    
- 
     /**
      * Handle request to display the <i>result</i> page
      * 
      * @param rid the unique request identifier 
      */
-    public static void result(String rid, Boolean ... cached ) {		
+    public static void result(String bundle, String rid, Boolean ... cached ) {		
     	
     	final Repo ctx = new Repo(rid,false);
     	final Status status = ctx.getStatus();
@@ -124,7 +75,12 @@ public class Application extends BaseController {
     	if( status.isDone()) {
 			// if the file exists load the result object and show it
 			OutResult result = ctx.getResult();
-    		render("Application/result.html", rid, ctx, result, cached);		
+			renderArgs.put("rid", rid);
+			renderArgs.put("ctx", ctx);
+			renderArgs.put("result", result);
+			renderArgs.put("cached", cached);
+	
+    		renderBundlePage("result.html");
 		}
 		else if( status.isFailed() ) {
 			OutResult result = ctx.getResult();
@@ -139,18 +95,11 @@ public class Application extends BaseController {
 		}
  
    }
-
-	/**
-	 * Renders the history page 
-	 */
-	public static void history() { 
-		render();
-	}
 	
 	/**
 	 * Renders the history html table  
 	 */
-	public static void historyTable() {
+	public static void historyTable( String bundle ) {
 		List<History> recent = History.findAll();
 		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
 		render(recent);
@@ -162,12 +111,13 @@ public class Application extends BaseController {
 	 * 
 	 * @param rid the request unique identifier
 	 */
-	public static void status(String rid) {
+	public static void status(String bundle, String rid) {
 		Repo ctx = new Repo(rid,false);
 		renderText(ctx.getStatus().toString());
 	}
 	
-	public static void replay( String rid ) {
+	public static void replay( String bundle, String rid ) {
+	
 		/* 
 		 * 1. check if a result exists 
 		 */
@@ -177,21 +127,22 @@ public class Application extends BaseController {
 		}
 		
 		/* 
-		 * create the module and bind the stored values 
+		 * create the service and bind the stored values 
 		 */
-		String mode = repo.getResult().mode;
-		Module module = AppConf.instance().module(mode).copy();
-		Module.current(module);
-		module.input = XStreamHelper.fromXML(repo.getInputFile());
+		String mode = repo.getResult().service;
+		Service service = service(bundle,mode);
+		service = service.copy();
+		Service.current(service);
+		service.input = XStreamHelper.fromXML(repo.getInputFile());
 		
 		/* 
-		 * 3. show the input form ('module.html')
+		 * 3. show the input form ('main.html')
 		 */
-		renderArgs.put("module", module);
-		render("Application/module.html");		
+		renderArgs.put("service", service);
+		render("Application/main.html");		
 	}
 	
-	public static void submit( String rid ) {
+	public static void submit( String bundle, String rid ) {
 		/*
 		 * 1. check and load the repo context object 
 		 */
@@ -204,75 +155,74 @@ public class Application extends BaseController {
 		 * 2. create and bind the stored input values 
 		 */
 		OutResult result = repo.getResult(); 
-		Module module = AppConf.instance().module(result.mode).copy();
-		Module.current(module);
-		module.input = XStreamHelper.fromXML(repo.getInputFile());
+		Service service = service(bundle,result.service).copy();
+		Service.current(service);
+		service.input = XStreamHelper.fromXML(repo.getInputFile());
 		
 		/* 
 		 * 4. re-execute with caching feature disabled
 		 */
-		exec(module,false);
+		exec(bundle,service,false);
 	}
 	
 	/**
-	 * Renders a generic t-coffee 'module' i.e. a specific configuration defined in the main application file 
+	 * Renders a generic t-coffee 'service' i.e. a specific configuration defined in the main application file 
 	 * 
-	 * @param name the <i>module</i> name i.e. is unique identifier
+	 * @param name the <i>service</i> name i.e. is unique identifier
 	 */
-	public static void module(String name) {
+	public static void main(String bundle,String name) {
 		
 		if( isGET() ) {
-			Logger.debug("Rendering module w/t name: %s", name);
-			Module module = AppConf.instance().module(name);
-			render(module);
+			Service service = service(bundle,name);
+			render(service);
 			return;
 		}
 
 		/*
 		 * process the submitted data
 		 */
-		String mid = params.get("_mid");
-		Module module = AppConf.instance().module(mid).copy();
-		Module.current(module);
+		Service service = service(bundle,name).copy();
+		Service.current(service);
 
-		if( !module.validate(params) ) {
-			/* if the validation FAIL go back to the module page */
-			renderArgs.put("module", module);
+		if( !service.validate(params) ) {
+			/* if the validation FAIL go back to the service page */
+			renderArgs.put("service", service);
 			render();
 			return;
 		} 
 
-		exec(module,true);
+		exec(bundle,service, true);
 	}
 	
-	static void exec( Module module, boolean enableCaching ) {
+	static void exec( String bundle, Service service, boolean enableCaching ) {
 		
 		/*
 		 * 1. prepare for the execution
 		 */
-		module.init(enableCaching);
+		service.init(enableCaching);
 		
 		
 		/*
 		 * 2. check if this request has already been processed in some way 
 		 */
-		Status status = module.repo().getStatus();
+		Status status = service.repo().getStatus();
 		if( !status.isReady() ) {
-	    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, module.rid());
-	    	result(module.rid(), module.repo().cached);
+	    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, service.rid());
+	    	result(bundle, service.rid(), service.repo().cached);
 	    	return;
 		}
 
 		/*
 		 * 3. fire the job 
 		 */
-		if( module.start() ) {
+		if( service.start() ) {
 	    	
 			/*
 	    	 * 4. store the current request-id in a cookie
 	    	 */
-	    	History history = new History(module.rid());
-	    	history.setMode(module.title);
+	    	History history = new History(service.rid());
+	    	history.setBundle(bundle);
+	    	history.setLabel(service.title);
 	    	history.save();		
 		}
 		
@@ -280,122 +230,43 @@ public class Application extends BaseController {
     	/*
     	 * 5. forwards to the result page 
     	 */
-    	Logger.debug("Forward to result page with rid: %s", module.rid());
-    	result(module.rid());			
+    	Logger.debug("Forward to result page with rid: %s", service.rid());
+    	result(bundle, service.rid());			
 	}
 
+
+	public static void servePublic( String bundle, String path ) { 
+		Bundle oBundle = BundleRegistry.instance().get(bundle);
+		renderFile(oBundle.publicPath, path );
+	}
+	
 	/**
-	 * Create a temporary zip file with all generated content and download it
+	 * Renders a generic page provided the by bundle 
 	 * 
-	 * @param rid the request identifier
-	 * @throws IOException 
+	 * @param bundle 
+	 * @param path
 	 */
-	public static void zip(String rid) throws IOException {
-		Repo repo = new Repo(rid);
-		if( !repo.hasResult() ) {
-			notFound(String.format("The requested download is not available (%s) ", rid));
-			return;
-		}
-		
-		OutResult result = repo.getResult();
-		File zip = File.createTempFile("download", ".zip", repo.getFile());
-		zipThemAll(result.getItems(), zip);
-		renderBinary(zip, String.format("tcoffee-all-files-%s.zip",rid));
+	public static void _( String bundle, String page ) { 
+		renderBundlePage(page);
 	}
 	
-	static void zipThemAll( List<OutItem> items, File file ) {
-
-		try {
-			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file));
-			
-			for( OutItem item : items ) { 
-				if( item.file==null || !item.file.exists() ) { continue; }
-				
-				// add a new zip entry
-				zip.putNextEntry( new ZipEntry(item.file.getName()) );
-				
-				// append the file content
-				FileInputStream in = new FileInputStream(item.file);
-				IO.write(in, zip);
-	 
-				// Complete the entry 
-				zip.closeEntry(); 
-				in.close(); 		
-			}
-			
-			zip.close();					
-		}
-		catch (IOException e) {
-			throw new QuickException(e, "Unable to zip content to file: '%s'", file);
-		}
-	} 
-	
 	/**
-	 * Manage user input file uploads
+	 * Try to load the specied page template in the bundle context 
+	 * if does not exists fallback on the application scope 
 	 * 
-	 * @param name the file name that is being uploaded
+	 * @param page
+	 * @param args
 	 */
-	public static void upload(String name) {
-		/* default error result */
-		String ERROR = "{success:false}";
-		
-		/* 
-		 * here it is the uploaded file 
-		 */
-		File file = params.get(name, File.class);
-		
-		/* uh oh something goes wrong .. */
-		if( file==null ) {
-			Logger.error("Ajax upload is null for field: '%s'", name);
-			renderText(ERROR);
-			return;
+	static void renderBundlePage( String page, Object... args) { 
+		Bundle bundle = (Bundle) renderArgs.get("_bundle");
+		if( bundle.pagesPath != null && bundle.pagesPath.child(page) .exists()) { 
+			renderArgs.put("_page", page);
+			render("Application/_wrapper.html", args);
 		}
-		
-		/* error condition: wtf is that file ? */
-		if( !file.exists() ) {
-			Logger.error("Cannot find file for ajax upload field: '%s'", name);
-			renderText(ERROR);
-			return;
+		else { 
+			render("Application/" + page, args);
 		}
 
-		/* 
-		 * copy the uploaded content to a temporary file 
-		 * and return that name in the result to be stored in a hidden field
-		 */
-		try {
-			File temp = File.createTempFile("upload-", null);
-			// to create a temporary folder instead of a file delete and recreate it 
-			temp.delete();
-			temp.mkdir();
-			temp = new File(temp, file.getName());
-			
-			FileUtils.copyFile(file, temp);
-			String filename = Utils.getCanonicalPath(temp);
-			renderText(String.format("{success:true, name:'%s', path:'%s', size:'%s'}", 
-						file.getName(),
-						JavaExtensions.escapeJavaScript(filename),
-						FileUtils.byteCountToDisplaySize(temp.length())
-						));
-		}
-		catch( IOException e ) {
-			Logger.error(e, "Unable to copy temporary upload file: '%s'", file);
-			renderText(ERROR);
-		}
-		
 	}
-	
-	/**
-	 * Return the 'robots.txt' text file SEO optimization
-	 */
-	public static void robots() {
-		final String conf = "/conf/robots.txt";
-		try {
-			renderText( IO.readContentAsString(Play.getFile(conf)) );
-		} catch (IOException e) {
-			Logger.error(e, "Unable to render 'robots.txt' file");
-			notFound(String.format("Unable to find '%s'", conf));
-		} 
-	} 
-	
 
 }

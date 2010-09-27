@@ -14,11 +14,15 @@ public class DefinitionTest extends UnitTest {
 			"<def>" +
 			
 				"<valid-result>" +
+				"<result>" +
 				"<title>Alignment completed</title>" + 
+				"</result>" +
 				"</valid-result>" +
 				
 				"<fail-result>" +
+				"<result>" +
 				"<title>Alignment failed</title>" + 
+				"</result>" +
 				"</fail-result>" +
 				"" +
 				"<dictionary>" +
@@ -32,10 +36,10 @@ public class DefinitionTest extends UnitTest {
 		assertNotNull(def);
 
 		assertNotNull( def.validResult );
-		assertEquals( "Alignment completed", def.validResult.title );
+		assertEquals( "Alignment completed", def.validResult.result.title );
 
 		assertNotNull( def.failResult );
-		assertEquals( "Alignment failed", def.failResult.title );
+		assertEquals( "Alignment failed", def.failResult.result.title );
 		
 		assertNotNull( def.dictionary );
 		assertEquals( 2, def.dictionary.labels.size() );

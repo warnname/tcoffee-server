@@ -1,11 +1,13 @@
 package models;
 
+import java.io.Serializable;
+
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("def")
-public class Definition {
+public class Definition implements Serializable {
 
 	@XStreamAlias("valid-result")
 	OutSection validResult;

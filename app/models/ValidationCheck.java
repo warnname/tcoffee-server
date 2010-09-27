@@ -1,5 +1,8 @@
 package models;
 
+import static models.ValidationFormat.*;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -11,11 +14,9 @@ import util.Utils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-import static models.ValidationFormat.*;
-
 @AutoBean
 @XStreamAlias("validation")
-public class ValidationCheck {
+public class ValidationCheck implements Serializable {
 
 	@XStreamAsAttribute
 	public boolean required;

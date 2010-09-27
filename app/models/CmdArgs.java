@@ -9,9 +9,7 @@ import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
-@AutoBean
+@AutoBean 
 @XStreamAlias("args")
 public class CmdArgs {
 

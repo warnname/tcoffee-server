@@ -2,6 +2,7 @@ package models;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,7 @@ import util.XStreamHelper;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import exception.QuickException;
 
-public class Repo {
+public class Repo implements Serializable {
 	
 	private static final String MARKER_FILE_NAME = ".tserver";
 
@@ -27,7 +28,7 @@ public class Repo {
 
 	String rid;
 	
-	File fFolder;
+	File fRoot;
 	
 	File fLock;
 	
@@ -54,11 +55,11 @@ public class Repo {
 	protected Repo( final File folder, final boolean create ) {
 		Check.notNull(folder,"Repo folder cannot be null");
 		
-		this.fFolder = folder;
-		this.fLock = new File(fFolder,LOCK_FILE_NAME);
-		this.fResult = new File(fFolder,RESULT_FILE_NAME);
-		this.fMarker = new File(fFolder,MARKER_FILE_NAME);
-		this.fInput = new File(fFolder, INPUT_FILE_NAME);
+		this.fRoot = folder;
+		this.fLock = new File(fRoot,LOCK_FILE_NAME);
+		this.fResult = new File(fRoot,RESULT_FILE_NAME);
+		this.fMarker = new File(fRoot,MARKER_FILE_NAME);
+		this.fInput = new File(fRoot, INPUT_FILE_NAME);
 		
 		this.rid = folder.getName();
 		
@@ -67,7 +68,7 @@ public class Repo {
 				cached = true;
 			}
 			else {
-				create(fFolder);
+				create(fRoot);
 			}
 		}
 		/* update the last access time */
@@ -78,20 +79,20 @@ public class Repo {
 	/** The copy constructor */
 	public Repo( Repo that ) {
 		this.rid = that.rid;
-		this.fFolder = that.fFolder;
+		this.fRoot = that.fRoot;
 		this.fLock = that.fLock;
-		this.fMarker = new File(fFolder,MARKER_FILE_NAME);
+		this.fMarker = new File(fRoot,MARKER_FILE_NAME);
 		this.fResult = that.fResult;
 	}
 	
 	@Override
 	public boolean equals( Object that ) {
-		return Utils.isEquals(this, that, "rid", "fFolder", "fLock", "fMarker", "fResult");
+		return Utils.isEquals(this, that, "rid", "fRoot", "fLock", "fMarker", "fResult");
 	}
 	
 	@Override
 	public int hashCode() {
-		return Utils.hash(this, "rid", "fFolder", "fLock", "fMarker", "fResult");
+		return Utils.hash(this, "rid", "fRoot", "fLock", "fMarker", "fResult");
 	}
 
 	/** Locks the current context folder */
@@ -122,12 +123,19 @@ public class Repo {
 		}
 	}
 	
+	/**
+	 * @return the repository root folder 
+	 */
 	public File getFile() {
-		return fFolder;
+		return fRoot;
+	}
+	
+	public File getFile( String path ) { 
+		return new File(fRoot, path);
 	}
 	
 	public Status getStatus() {
-		if( !fFolder.exists() || !fMarker.exists()) {
+		if( !fRoot.exists() || !fMarker.exists()) {
 			return Status.UNKNOWN;
 		}
 		
@@ -230,7 +238,7 @@ public class Repo {
 	 */
 	public void clean() {
 		
-		File[] all = fFolder.listFiles();
+		File[] all = fRoot.listFiles();
 		if( all!=null ) for( File file : all ) {
 			
 			if( !fMarker.equals(file) ) {
@@ -266,7 +274,7 @@ public class Repo {
 
 			try {
 				//TODO win32 porting: rewrite this command to support Windows platform 
-				String kill = String.format("kill -9 `lsof -t +D %s`", fFolder);
+				String kill = String.format("kill -9 `lsof -t +D %s`", fRoot);
 //				DefaultExecutor exec = new DefaultExecutor();
 //				exec.setWatchdog( new ExecuteWatchdog(5000) ); // <-- 5secs timeout to run kill all pending  
 //				exec.execute(new CommandLine(kill));
@@ -275,7 +283,7 @@ public class Repo {
 				
 				
 			} catch( Exception e ) {
-				Logger.warn(e, "Error kill pending process for folder: '%s' ", fFolder);
+				Logger.warn(e, "Error kill pending process for folder: '%s' ", fRoot);
 			}
 			
 		}
@@ -283,8 +291,8 @@ public class Repo {
 		/*
 		 * remove all files 
 		 */
-		if( !FileUtils.deleteQuietly(fFolder) ) {
-			Logger.error("Unable to delete folder: '%s'", fFolder);
+		if( !FileUtils.deleteQuietly(fRoot) ) {
+			Logger.error("Unable to delete folder: '%s'", fRoot);
 		}
 	}
 	
@@ -294,7 +302,7 @@ public class Repo {
 	 *  
 	 */
 	public long getCreationTime() {
-		return fFolder.lastModified();
+		return fRoot.lastModified();
 	} 
 
 	public String getCreationTimeFmt() {

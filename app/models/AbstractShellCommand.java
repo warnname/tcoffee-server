@@ -43,7 +43,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	/** The exit code return when the program terminate without error */
 	public int validCode = 0; 
 	
-	/** The number of seconds after that kill the process */
+	/** The number of seconds after that the process is killed */
 	public long timeout = 0;
 	
 	/* the job context folder */
@@ -161,6 +161,25 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	 */
 	
 	protected void onInitEnv( Map<String,String> map  ) {
+		
+		/* 
+		 * preprend the bundle binaries to the PATH by default 
+		 */
+		String binPath = ctx.get("bundle.bin.path") ;
+		String path = binPath + File.pathSeparator + System.getenv("PATH");
+		map.put("PATH", path);
+		
+		/* 
+		 * add the bundle environment file is exists 
+		 */
+		Map<String,String> bundleEnv = Service.current() != null ? Service.current().defaultEnvironment() : null;
+		if( bundleEnv != null ) { 
+			map.putAll(bundleEnv);
+		}
+		
+		/*
+		 * add command defined environment if exists
+		 */
 		if( env == null ) return;
 		
 		for( String name : env.getNames() ) {
@@ -171,6 +190,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		}
 	}
 		
+
 	
 	final private void prepareEnvironment() {
 		
@@ -180,7 +200,8 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		
     	fEnv = local;
     	
-    	/* if it has been provided a file name, store the env configuration in a file */
+    	/* if it has been provided a file name, store the env configuration in a file 
+    	 * for debugging purpose */
     	if( fEnvFile != null ) {
     		/* copy the current environment */
     		Map<String,String> all = new HashMap<String, String>(System.getenv());
@@ -188,7 +209,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
     		all.putAll(local);
 
     		try {
-    			all = new TreeMap<String, String>(all); // sort by natural ky 
+    			all = new TreeMap<String, String>(all); // sort by natural key 
     			String sEnv = Utils.asString(all, "\n");
     			IO.writeContent(sEnv, fEnvFile);
     		} 
@@ -203,15 +224,22 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	 * Initialize the job before the command execution
 	 */
 	@Override
-	protected void init( CommandCtx ctx ) {
+	public void init( CommandCtx ctx ) {
 		super.init(ctx);
 
 		/*
 		 * setup the main context folder 
 		 */
+		
 		if( ctxfolder == null ) {
-			ctxfolder = Module.current().repo().getFile();
+			Object sCtxFolder = ctx != null ? ctx.get("data.path") : null;
+			if( sCtxFolder == null ) { 
+				throw new QuickException("Missing 'data.path' context property");
+			}
+
+			ctxfolder = new File(sCtxFolder.toString());
 		}
+		
 		if( !ctxfolder.exists()) {
 			if( !ctxfolder.mkdirs() ) {
 				throw new QuickException("Unable to create context folder named: '%s'", ctxfolder);
@@ -278,7 +306,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				 * 3. set a watchdog if a timeout has been specified
 				 */
 				if(timeout > 0) { 
-					executor.setWatchdog(new ExecuteWatchdog(timeout));
+					executor.setWatchdog(new ExecuteWatchdog(timeout * 1000));
 				}
 				
 				/* 

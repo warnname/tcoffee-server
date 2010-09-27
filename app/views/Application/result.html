@@ -1,15 +1,16 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | Your alignment result' /}
+#{set title: 'Your job result' /}
 
 #{cache-warning /}
 
-<h1>${result?.title} alignment result</h1> 
+<h1>${result?.title} result</h1> 
 
-
-#{if result?.cite }
+#{if result?.stdout?.file?.exists() }
 <div class="box">
-<h2><span>Citation</span></h2>
-Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+<h2><span>Command output</span></h2>
+<pre>
+#{includefile result?.stdout?.file /}
+</pre>
 </div>
 #{/if}
 
@@ -18,7 +19,7 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 <div class="box">
 
 <h2><span>Result files</span> 
-<small><span >${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a></span></small>
+<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
 </h2>
 
 #{result-items result /}
@@ -26,60 +27,10 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 #{/if}
 
 
-#{if result?.alignmentFasta?.file }
 <div class="box">
-
-<h2><span>Send results</span>
-<small><span>Forward this result to other online tools.</span></small>
-</h2>
-
-<form id="sendto" name="sendto"  method="POST" target="_blank">
-<input type="hidden" name="stage1" value="1" >
-<input type="hidden" name="daction" value="PROTOGENE::Regular">
-<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
-<input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
-
-<p style="padding-bottom: 1em;" > 
-<input type="button" id="to_ProtoGene" name="to_ProtoGene" value=" ProtoGene "  >
-Turning amino acid alignments into bona fide CDS nucleotide alignments 
-<br/><br/>
-<input type="button" id="to_MyHits" name="to_MyHits" value=" MSA hub "  >
-MyHits: a new interactive resource for protein annotation and domain identification
-</p>
-</form>
-
-<script type="text/javascript">
-$('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
-$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
-</script>
-</div>
-#{/if}
-
-
-#{if result?.alignmentHtml?.file }
-<div class="box">
-
-<h2><span>MSA</span> 
-<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
-</h2>
-
-<div id="result">
-#{tcoffeeHtml result?.alignmentHtml?.file /}
-</div>
-
-<style type='text/css'> 
-#result SPAN { font-family: "Vera Mono", courier new, courier-new, courier; font-weight: 100; font-size: 11pt; color: black;}
-</style>
-</div>
-#{/if}
-
-
-<div class="box">
-
 <h2><span>Info</span>
 <small><span>Some information on this alignment job</span></small>
 </h2>
-
 
 <ul>
 <li>Mode: <b>${result?.title}</b></li>
@@ -90,24 +41,17 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 </ul>
 </div>
 
-
-#{if result?.commandLine?.file }
+#{if result?.cite }
 <div class="box">
-
-<h2><span>Command Line</span>
-<small><span>This is the command line used to execute your alignment. You can use it as reference to run this alignment on your desktop.</span></small>
-</h2>
-
-<code >
-#{includefile result.commandLine.file /}
-</code>
+<h2><span>Citation</span></h2>
+Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
 </div>
 #{/if}
 
 <div class="box">
 <h2><span>Replay</span></h2>
 
-Change some input parameters and resubmit this alignment <a href="@{Application.replay(rid)}" >clicking here</a>.
+Change some input parameters and resubmit this alignment <a href="@{Application.replay(params.bundle,rid)}" >clicking here</a>.
 </div>
 
 

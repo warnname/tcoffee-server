@@ -33,15 +33,16 @@ public class HistoryTest extends UnitTest {
 		History h = new History("123");
 		assertEquals("123", h.getRid());
 		assertNotNull(h.getBegin());
-		assertNotNull(h.getMode());
+		assertNotNull(h.getLabel());
 	}
 	
 	@Test
 	public void testConstructorAll() { 
 
-		History h = new History("123", "expresso", date1, date2, 500L, "done");
+		History h = new History("123", "tcoffee", "expresso", date1, date2, 500L, "done");
 		assertEquals("123", h.getRid());
-		assertEquals("expresso", h.getMode());
+		assertEquals("tcoffee", h.getBundle());
+		assertEquals("expresso", h.getLabel());
 		assertEquals("23 Feb", h.getBegin());
 		assertEquals("24 Feb", h.getExpire());
 		assertEquals("500 ms", h.getDuration());
@@ -71,24 +72,25 @@ public class HistoryTest extends UnitTest {
 		assertEquals("", result.getBegin());
 		assertEquals("", result.getExpire());
 		assertEquals("--", result.getDuration());
-		assertEquals("regular", result.getMode());
+		assertEquals("regular", result.getLabel());
 	}
 	
 	@Test public void testToValue() { 
 		History h = new History("anyvalue");
-		assertEquals(String.format("|%s|%s", h.getBeginDate().getTime(), h.getExpireDate().getTime()), h.toValue());
+		assertEquals(String.format("|%s|%s|", h.getBeginDate().getTime(), h.getExpireDate().getTime()), h.toValue());
 	}
 	
 
 	@Test public void testToCookie() { 
 		History h = new History("123");
-		h.setMode("regular");
+		h.setLabel("regular");
+		h.setBundle("tcoffee");
 		
 		Cookie c = h.toCookie();
 		assertEquals( "RID_123", c.name);
 		long t1 = h.getBeginDate().getTime();
 		long t2 = h.getExpireDate().getTime();
-		assertEquals( String.format("regular|%s|%s", t1, t2), c.value );
+		assertEquals( String.format("regular|%s|%s|tcoffee", t1, t2), c.value );
 
 		assertEquals( (t2-t1)/1000, (long)c.maxAge );
 	}

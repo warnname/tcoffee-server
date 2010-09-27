@@ -1,16 +1,17 @@
 package models;
 
 import java.io.File;
+import java.io.Serializable;
 
-import play.Logger;
-import play.Play;
+import plugins.AutoBean;
 import util.Check;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@AutoBean
 @XStreamAlias("item")
-public class OutItem {
+public class OutItem implements Serializable {
 
 	/**
 	 * The http web path of this file 
@@ -50,31 +51,29 @@ public class OutItem {
 	
 	/** The copy constructor */
 	public OutItem(OutItem obj) {
-		this.file = obj.file;
-		this.webpath = obj.webpath;
-		this.label = obj.label;
-		this.type = obj.type;
 		this.aggregation = obj.aggregation;
+		this.file = obj.file;
+		this.format = obj.format;
+		this.label = obj.label;
+		this.name = obj.name;
+		this.type = obj.type;
+		this.webpath = obj.webpath;
 	}
 	
-	/** set the file property and infer as well as the {@link #name} and {@link OutItem#webpath} attributes */
+	/** 
+	 * set the file property and infer as well as the {@link #name} and {@link OutItem#webpath} attributes 
+	 *
+	 */
 	public OutItem( File file, String type ) {
 		this.file = file;
 		this.type = type;
 		this.name = file.getName();
-		this.webpath = webpathFor(file);
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
 		this.aggregation = defaultAggregationByType(type);
 	}
-	
-	private String defaultAggregationByType(String type) {
-		Definition def = AppConf.instance().def;
-		Dictionary dict = def != null ? def.dictionary : null;
-		String result = dict != null ? dict.decode(type) : null;
-		return result != null ? result : type;
-	}
 
+	
 	/** 
 	 * set the {@link #name} property and infer as well as the {@link #file} and {@link #webpath} attributes 
 	 */
@@ -82,20 +81,19 @@ public class OutItem {
 		this.name = name;
 		this.type = type;
 		
-		Module module = Module.current();
-		File folder = module != null ? module.folder() : null;
-		if( folder != null ) {
-			this.file = new File(folder,name);
-			this.webpath = webpathFor(file);
-		}
-		else {
-			Logger.warn("Local folder for current module is not defined");
-		}
-
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
 		this.aggregation = defaultAggregationByType(type);
 	}
+	
+	
+	private String defaultAggregationByType(String type) {
+		Definition def = Service.current().bundle.def;
+		Dictionary dict = def != null ? def.dictionary : null;
+		String result = dict != null ? dict.decode(type) : null;
+		return result != null ? result : type;
+	}
+
 
 	private String ext( String name ) {
 		int p = name.lastIndexOf(".");
@@ -131,32 +129,7 @@ public class OutItem {
 		}
 	}
 	
-	private String webpathFor( File file ) {
-		/*
-		 * the file path have to be published under the framework root, 
-		 * being so the 'framework path' is the prefix of the file full path
-		 */
-		String context = Play.configuration.getProperty("context");
-		String path = Utils.getCanonicalPath(file);
-		String root = AppProps.instance().getDataPath();
-		
-		String result = null;
-		int p = path.indexOf(root);
-		if( p==0 ) {
-			result = path.substring(root.length());
-			if( result.charAt(0) != '/' ) {
-				result = "/" + result;
-			}
-			result = "/data" + result;
-			
-			if( Utils.isNotEmpty(context)) {
-				result = context + result;
-			}
-			
-		}
-		
-		return result;
-	}
+
 	
 	/**
 	 * Check that the file exists on the file system 
@@ -166,4 +139,8 @@ public class OutItem {
 		return file != null && file.exists();
 	} 
 	
+	
+	public String toString() { 
+		return Utils.dump(this, "name", "label", "type", "file", "format", "webpath", "aggregation");
+	}
 }

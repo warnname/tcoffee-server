@@ -1,5 +1,6 @@
 package util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -513,13 +514,25 @@ public class UtilsTest extends UnitTest {
 		assertEquals("Hola", Utils.create(String.class,"Hola"));
 	}
 	
-//	@Test 
-//	public void testNextFileName() {
-//		assertEquals("file (1)", Utils.nextFileName("file"));
-//		assertEquals("file (1).", Utils.nextFileName("file."));
-//		assertEquals("file (1).txt", Utils.nextFileName("file.txt"));
-//		assertEquals("file (2).txt", Utils.nextFileName("file (1).txt"));
-//		assertEquals("(2)", Utils.nextFileName("(1)"));
-//	}
+	@Test 
+	public void testNextUniqueFile() {
+		assertEquals(new File("name.1"), Utils.nextUniqueFile(new File("name")));
+		assertEquals(new File("name.2"), Utils.nextUniqueFile(new File("name.1")));
+		assertEquals(new File("name.1.zip"), Utils.nextUniqueFile(new File("name.zip")));
+		assertEquals(new File("name.2.zip"), Utils.nextUniqueFile(new File("name.1.zip")));
+		assertEquals(new File("name.10.zip"), Utils.nextUniqueFile(new File("name.9.zip")));
+		assertEquals(new File("name.1."), Utils.nextUniqueFile(new File("name.")));
+		assertEquals(new File("name.1.tar.gz"), Utils.nextUniqueFile(new File("name.tar.gz")));
+
+		assertEquals(new File("/root/name.1"), Utils.nextUniqueFile(new File("/root/name")));
+		assertEquals(new File("/root/name.1.tar.gz"), Utils.nextUniqueFile(new File("/root/name.tar.gz")));
+		assertEquals(new File("/root/name.10.tar.gz"), Utils.nextUniqueFile(new File("/root/name.9.tar.gz")));
+
+		assertEquals(new File("/root/x.y.z/name.1"), Utils.nextUniqueFile(new File("/root/x.y.z/name")));
+		assertEquals(new File("/root/x.y.z/name.1.tar.gz"), Utils.nextUniqueFile(new File("/root/x.y.z/name.tar.gz")));
+		assertEquals(new File("/root/x.y.z/name.10.tar.gz"), Utils.nextUniqueFile(new File("/root/x.y.z/name.9.tar.gz")));
+		
+		
+	}
 
 }

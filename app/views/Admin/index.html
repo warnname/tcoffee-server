@@ -1,11 +1,54 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | Administration' /}
+#{set title:'Administration' /}
 
 <h1>Administration panel <small>Manage T-Coffee application server </small>
 </h1>
 
+<style type="text/css">
+.fbox{
+	float: left;
+	width: 10em;
+	min-height: 8em;
+	background-color: #eaeaea;
+	padding: 1em;
+	padding-top: .5em;
+	margin-right: 2em;
+	margin-bottom: 2em;
+} 
 
-<p>
-Choose an action on the top menu. 
-</p>
+</style>
+
+<div class="fbox">
+<h3><a href="@{Admin.appinfo}">Edit props</a></h3>
+View and edit application properties
+</div>
+
+
+<div class="fbox" >
+<h3><a href="@{Admin.sysinfo}"><span>Sys info</span></a></h3>
+View Server &amp; framework configuration properties
+</div>
+
+<div class="fbox" >
+<h3><a href="@{Admin.perlinfo}"><span>Perl info</span></a></h3>
+PERL runtime information
+</div>
+
+<div class="fbox">
+<h3><a href="@{Admin.tcoffeeinfo}"><span>T-Coffee info</span></a></h3>
+T-Coffee installation info
+</div>
+
+<div style="clear: both" ></div>
+
+<div class="fbox">
+<h3><a href="@{Admin.bundleManager}"><span>Bundle manager</span></a></h3>
+Load, unload and check status of server bundles
+</div>
+
+<div class="fbox">
+<h3><span>File editor</span></h3>
+Browse and edit files on server
+</div>
+
 

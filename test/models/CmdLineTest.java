@@ -12,7 +12,7 @@ public class CmdLineTest extends UnitTest {
 	
 	@Before
 	public void register() {
-		TestHelper.module("field1=Value 1", "x=1", "x=2", "x=3");
+		TestHelper.init("field1=Value 1", "x=1", "x=2", "x=3");
 	}
 	
 	@Test 

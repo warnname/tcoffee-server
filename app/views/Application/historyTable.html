@@ -19,20 +19,20 @@
 <tbody>
 #{list recent, as:'history'} 
 <tr class="clickable ${history_parity}" cn="RID_${rid=history.rid}" > 
-<td class='clickable'>${history.mode}</td>
-<td class='clickable'><a href="@{Application.result()}?rid=${rid=history.rid}" >${history.rid}</a></td>
+<td class='clickable'>${history.label}</td>
+<td class='clickable'><a href="@{Application.result(history.bundle)}?rid=${rid=history.rid}" >${history.rid}</a></td>
 <td class='clickable'>${history.status}</td>
 <td class='clickable'>${history.begin}</td>
 <td class='clickable'>${history.duration}</td>
 <td class='clickable'>${history.expire}</td>
-<td>[ <a href="#" class="remove" title="Click to remove this item">X</a> ]</td>
+<td> #{if history.status != 'Running'}[ <a href="#" class="remove" title="Click to remove this item">X</a> ]#{/if} </td>
 </tr>
 #{/list}
 </tbody>
 </table>
 
 <p>
-<small>History is sorted from the most recent to the most older alignment request</small>
+<small>History is sorted from the most recent to the most older job request</small>
 </p>
 
 <p>

@@ -51,6 +51,10 @@
 </div>
 #{/elseif}
 
+#{elseif _arg.type == 'textarea' }
+	<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="tiptip" rows="6" >${_arg.value}</textarea>
+#{/elseif}
+
 #{elseif _arg.type == 'memo' || _arg.type == 'file' }
 
     <div id="${_arg.name}_wrap" >
@@ -83,7 +87,7 @@
 	    var text=$('#${_arg.name}');  
 		var ui=$('#${_arg.name}_wrap');
 		var timeout=null;
-		/* change the UI to reflexct the ajax upload */
+		/* change the UI to reflect the ajax upload */
 		var fSubmit=function(file,ext){ 
 			ui.find('div.link').hide(); 
 			timeout = setTimeout( function() { ui.find('div.wait').show(); timeout=null; }, 500 );
@@ -128,7 +132,7 @@
 		ui.find('div.result a.cancel').click(fCancel);
 		
 		var d={name:"${_arg.name}"}; /* request params - basically the field that it is uplaoded */
-		var o={name:"${_arg.name}", action:'@{Application.upload}', responseType:'json', data:d, onSubmit:fSubmit, onComplete:fComplete };
+		var o={name:"${_arg.name}", action:'@{Data.upload}', responseType:'json', data:d, onSubmit:fSubmit, onComplete:fComplete };
 		new AjaxUpload('${_arg.name}_uploader', o); 
 	});
 	</script>

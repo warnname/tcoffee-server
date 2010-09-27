@@ -3,7 +3,7 @@ package models;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("env") 
-public class Env extends AnyAttributeElement {
+public class Env extends AnyAttributeElement  {
 
 	/** The default constructor */
 	public Env() { } 

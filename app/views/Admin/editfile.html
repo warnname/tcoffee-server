@@ -1,5 +1,5 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | Edit configuration file' /}
+#{set title:'Edit configuration file' /}
 
 
 %{
@@ -61,7 +61,7 @@ $(document).ready(function(){
 <h1>System editor<small>Where you can edit and save system files</small> </h1>
 
 
-<form method="POST" action="@{Admin.edit}">
+<form method="POST" action="@{Admin.editfile}">
 
 <fieldset>
 <h2><span>Editing file <b>${name}</b></span> <small><span>Full path: <b>${fullName}</b></span></small> 

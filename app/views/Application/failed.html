@@ -1,18 +1,18 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | Error' /}
+#{set title:'Error' /}
 
 #{cache-warning /}
 
-<h1>${result?.title} alignment failed
-<small>Your aligment request could not complete successfully</small>
+<h1>${result?.title} failed
+<small>Your request could not complete successfully</small>
 </h1> 
 
 
 <div class="box">
 <h2><span>Info</span> 
-<small><span>Some information on this alignment job</span></small></h2>
+<small><span>Some information on this job</span></small></h2>
 <ul>
-<li>Alignment ticket # <b>${rid}</b></li>
+<li>Request ID: <b>${rid}</b></li>
 <li>Created at: <b>${ctx?.creationTimeFmt}</b></li>
 <li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
 </ul>
@@ -21,7 +21,7 @@
 #{if result?.commandLine?.file }
 <div class="box">
 <h2><span>Command Line</span>
-<small><span>This is the command line used to execute your alignment. You can use it as reference to run this alignment on your desktop</span></small>
+<small><span>This is the command line used to execute your job. </span></small>
 </h2>
 
 <code >
@@ -42,7 +42,7 @@
 #{if result?.items }
 <div class="box">
 <h2><span>Result files</span> 
-<small><span>${result.items.size} output files - <a href="@{Application.zip(rid)}">download them all</a></span></small>
+<small><span>${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
 </h2>
 
 #{result-items result /}
@@ -53,5 +53,5 @@
 <div class="box">
 <h2><span>Retry</span></h2>
 
-Change some input parameters and resubmit this alignment <a href="@{Application.replay(rid)}" >clicking here</a>.
+Change some input parameters and resubmit this job <a href="@{Application.replay(params.bundle,rid)}" >clicking here</a>.
 </div>

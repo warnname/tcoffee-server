@@ -2,7 +2,9 @@ package models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -10,10 +12,28 @@ import util.Utils;
 
 public class CommandCtx implements Serializable {
 
-	private Map<String,Object> ctx ;
+	Map<String,Object> ctx ;
 
 	public CommandCtx() {
 		ctx = new HashMap<String, Object>();
+	}
+	
+	public CommandCtx( Map<String, Object> map ) { 
+		ctx = new HashMap<String,Object>(map);
+	}
+	
+	public CommandCtx( Hashtable hash ) { 
+		ctx = new HashMap<String,Object>();
+		Enumeration _enum = hash.keys();
+		while( _enum.hasMoreElements() ) { 
+			Object key = _enum.nextElement();
+			ctx.put( key.toString(), hash.get(key));
+		}
+	}
+	
+	
+	public CommandCtx( String ... pairs ) { 
+		ctx = new HashMap<String, Object>( Utils.asStringMap(pairs));
 	}
 	
 	public CommandCtx(CommandCtx that) {

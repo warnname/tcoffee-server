@@ -47,8 +47,11 @@ public class History {
 	/* the alignment job duration in millis */
 	private Long duration;
 	
-	/* the t-coffee mode */
-	private String mode;
+	/* the label used to show this entry in the history list */
+	private String label;
+	
+	/** name of the bundle that produced this history item */
+	private String bundle;
 	
 	/* the current job execution status */
 	private String status;
@@ -64,10 +67,11 @@ public class History {
 		
 	}
 	
-	public History(String rid, String mode, Date begin, Date expire, Long duration, String status) { 
+	public History(String rid, String bundle, String mode, Date begin, Date expire, Long duration, String status) { 
 		Check.notEmpty(rid, "Argument rid cannot be empty for History class");
 		this.rid = rid;
-		this.mode = mode;
+		this.bundle = bundle;
+		this.label = mode;
 		this.begin = begin;
 		this.expire = expire;
 		this.duration = duration;
@@ -91,7 +95,7 @@ public class History {
 
 		String[] item = cookie.value.split("\\" + COOKIE_SEP);
 		if( item.length>0 ) {
-			mode = item[0];
+			label = item[0];
 		}
 		
 		if( item.length>1 ) { 
@@ -100,6 +104,14 @@ public class History {
 		
 		if( item.length>2 ) { 
 			expire = safeDate(item[2]);
+		}
+
+		if( item.length>3 ) { 
+			bundle = item[3];
+		}
+		else { 
+			// default case
+			bundle = "tcoffee";
 		}
 		
 		/* try to find out the result file */
@@ -160,15 +172,21 @@ public class History {
 	}
 	
 	
-	public String getMode() { 
-		return Utils.asString(mode);
+	public String getLabel() { 
+		return Utils.asString(label);
 	}
 	
-	public void setMode(String mode) {
-		this.mode = mode;
+	public void setLabel(String mode) {
+		this.label = mode;
 	}
 	
+	public String getBundle() { 
+		return bundle;
+	}
 	
+	public void setBundle( String value ) { 
+		this.bundle = value;
+	}
 	
 	/**
 	 * Serialize this {@link History} instance to an equivalent string value
@@ -202,8 +220,8 @@ public class History {
 	String toValue() { 
 		StringBuilder result = new StringBuilder();
 
-		if( mode != null ) { 
-			result.append(mode);
+		if( label != null ) { 
+			result.append(label);
 		}
 		
 		result.append(COOKIE_SEP);
@@ -216,6 +234,10 @@ public class History {
 			result.append(expire.getTime());
 		}
 
+		result.append(COOKIE_SEP);
+		if( bundle != null ) { 
+			result.append(bundle);
+		}
 		
 		return result.toString();
 		

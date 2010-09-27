@@ -18,7 +18,7 @@ public class TCoffeeCommandTest extends UnitTest {
 
 	@Before
 	public void register() {
-		TestHelper.module("output=html pdf clustal");
+		TestHelper.init("output=html pdf clustal");
 	}
 	
 	
@@ -31,13 +31,9 @@ public class TCoffeeCommandTest extends UnitTest {
 			"</tcoffee>";
 		
 		TCoffeeCommand tcoffee = XStreamHelper.fromXML(xml);
-		tcoffee.init();
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
 		String cmd = tcoffee.getCmdLine();
 		
-		if( cmd.startsWith("/Users/ptommaso/tools/play-1.0.1/tcoffee/osx/")) { 
-			// dirty fix to support my mac 
-			cmd = cmd.substring("/Users/ptommaso/tools/play-1.0.1/tcoffee/osx/".length());
-		}
 		assertEquals( "t_coffee -in=input.txt -mode=regular -output=html pdf clustal -quiet=stdout", cmd );
 	} 
 
@@ -45,6 +41,7 @@ public class TCoffeeCommandTest extends UnitTest {
 	public void testParseResultItem() {
 		String TEST = "	#### File Type=        MSA Format= clustalw_aln Name= tcoffee.clustalw_aln";
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
 		OutItem item = tcoffee.parseForResultItem(TEST);
 		
 		assertNotNull(item);
@@ -61,6 +58,8 @@ public class TCoffeeCommandTest extends UnitTest {
 	public void testParseResult() {
 		File log = TestHelper.sampleLog();
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
+
 		List<OutItem> result = tcoffee.parseResultFile(log);
 		assertNotNull(result);
 		assertEquals(3, result.size());
@@ -82,7 +81,7 @@ public class TCoffeeCommandTest extends UnitTest {
 	@Test
 	public void testRun() throws IOException, CommandException {
 		File source = TestHelper.sampleFasta();
-		TestHelper.copy(source, new File(Module.current().folder(), "sample.fasta"));
+		TestHelper.copy(source, new File(Service.current().folder(), "sample.fasta"));
 		
 		CmdArgs args = new CmdArgs();
 		args.put("mode", "regular");
@@ -91,13 +90,15 @@ public class TCoffeeCommandTest extends UnitTest {
 		args.put("run_name", "sample");
 		
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
+
 		tcoffee.errfile = "err.log";
 		tcoffee.logfile = "out.log";
 		tcoffee.cmdfile = "cmd.log";
 		tcoffee.envfile = "env.log";
 		tcoffee.args = args;
-		
-		tcoffee.init();
+
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
+
 		boolean ok = tcoffee.execute();
 		
 		assertTrue( ok );

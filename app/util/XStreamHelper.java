@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 
-import models.AppConf;
+import models.Service;
 import play.Logger;
 
 import com.thoughtworks.xstream.XStream;
@@ -64,7 +64,7 @@ public class XStreamHelper {
 		}
 		
 		/* process models for annotation */
-		String className = AppConf.class.getName();
+		String className = Service.class.getName(); // <-- use Module as a placeholder for 'models' package
 		int p = className.lastIndexOf(".");
 		String packageName = p != -1 ? className.substring(0,p) : ""; 
 		Logger.trace("Xstream processing package: '%s'", packageName);

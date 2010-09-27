@@ -13,7 +13,7 @@ public class GenericCommandTest extends UnitTest {
 	
 	@Before
 	public void init() {
-		TestHelper.module("field1=value 1", "field2=value 2");
+		TestHelper.init("field1=value 1", "field2=value 2");
 	}
 	
 
@@ -65,6 +65,8 @@ public class GenericCommandTest extends UnitTest {
 		
 		String cmdline = IO.readContentAsString(cmd.getCmdFile());
 		assertEquals("ls -la", cmdline.trim());
+		
+		assertTrue( cmd.getResult().getStdout().exists() );
 	} 
 
 	@Test 

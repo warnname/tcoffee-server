@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,14 +12,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
+import play.Play;
 import play.data.validation.Validation;
 import play.jobs.Job;
-import play.mvc.Router;
 import play.mvc.Http.Request;
+import play.mvc.Router;
+import play.mvc.Scope;
 import play.mvc.Scope.Params;
 import play.mvc.Scope.Session;
 import util.Utils;
@@ -29,14 +34,14 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.QuickException;
  
-@XStreamAlias("module")
-public class Module {
+@XStreamAlias("service")
+public class Service implements Serializable {
 
-	static ThreadLocal<Module> CURRENT = new ThreadLocal<Module>();
+	static ThreadLocal<Service> CURRENT = new ThreadLocal<Service>();
 	
 	/** the parent configuration object */
 	@XStreamOmitField
-	public AppConf conf; 
+	public Bundle bundle; 
 	
 	@XStreamOmitField Map<String,Object> fCtx;
 	@XStreamOmitField String fRid;
@@ -46,26 +51,26 @@ public class Module {
 	@XStreamOmitField String fRemoteAddress;
 	
 	/**
-	 * The unique module name
+	 * The unique service name
 	 */
 	@XStreamAsAttribute
 	public String name; 
 
-	/** A label used to describe the group to which this module belongs to */
+	/** A label used to describe the group to which this service belongs to */
 	public String group;
 	
 	/**
-	 * The module main <i>title</i>. It will be displayed in the index page and on top of the module form input data
+	 * The service main <i>title</i>. It will be displayed in the index page and on top of the service form input data
 	 */
 	public String title;
 
 	/**
-	 * The module <i>description</i>. It will be displayed in the index page and on top of the module form input data
+	 * The service <i>description</i>. It will be displayed in the index page and on top of the service form input data
 	 */
 	public String description;
 
 	/**
-	 * The reference to the related ncbi articles related to the selected tcoffee module
+	 * The reference to the related ncbi articles related to the selected tcoffee service
 	 */
 	public String cite; 
 	
@@ -77,37 +82,37 @@ public class Module {
 	
 
 	/**
-	 * Define the main job to be executed in this module
+	 * Define the main job to be executed in this service
 	 */
 	public ProcessCommand process;
 	
 	
 	/**
-	 * Defines the output of this module execution 
+	 * Defines the output of this service execution 
 	 */
 	public Output output;
 	
 	/**
 	 * The defualt constructor. Initialize the class to empty 
 	 */
-	public Module() {
+	public Service() {
 		
 	}
 	
-	public Module( String name ) {
+	public Service( String name ) {
 		this.name = name;
 	}
 	
-	public Module( final AppConf conf ) {
-		this.conf = conf;
+	public Service( final Bundle bundle ) {
+		this.bundle = bundle;
 	}
 	
 	
 	/** 
 	 * Module cony constructor. Creates a copy of <code>that</code> instance
 	 */
-	public Module( Module that ) {
-		this.conf = that.conf; // <-- be aware the - parent - configuration must NOT be copied 
+	public Service( Service that ) {
+		this.bundle = that.bundle; // <-- be aware the - parent - configuration must NOT be copied 
 		this.name = Utils.copy(that.name); 
 		this.group = Utils.copy(that.group);
 		this.title = Utils.copy(that.title); 
@@ -119,10 +124,10 @@ public class Module {
 	}
 	
 	/**
-	 * @return a cloned instance of the current module
+	 * @return a cloned instance of the current service
 	 */
-	public Module copy() {
-		return new Module(this);
+	public Service copy() {
+		return new Service(this);
 	}
 	
 	public String getTitle() {
@@ -147,7 +152,7 @@ public class Module {
 		int hash = input.hashFields();
 		hash = Utils.hash(hash, this.name);
 		hash = Utils.hash(hash, Session.current().getId());
-		hash = Utils.hash(hash, this.conf.getLastModified());
+		hash = Utils.hash(hash, this.bundle.getLastModified());
 
 		/* 
 		 * Avoid clash on existing folder with unknown status, 
@@ -182,13 +187,13 @@ public class Module {
 		return fRepo;
 	}
 	
-	public static Module current() {
+	public static Service current() {
 		return CURRENT.get();
 	}
 	
-	public static Module current(Module module) {
-		CURRENT.set(module);
-		return module;
+	public static Service current(Service service) {
+		CURRENT.set(service);
+		return service;
 	}
 	
 	public static void release() {
@@ -236,7 +241,7 @@ public class Module {
 		 */
 		else if( "file".equals(field.type) ) {
 			byte[] data = field.getFileContent();
-			if( data == null && data.length == 0 ) {
+			if( data == null || data.length == 0 ) {
 				/* empty file - do not put this variable on the context */
 				return;
 			}
@@ -283,17 +288,29 @@ public class Module {
 		
 	}
 	
-	
+
+
 	public Map<String,Object> getCtx() {
 		return fCtx;
 	} 
+	
+	/**
+	 * Evaluate the string replacing variables in the form ${varname}
+	 * 
+	 * @param raw the string containing variables to replace
+	 * @return the string wioth resolved variables 
+	 */
+	public String eval(String raw) { 
+		Eval evaluator = new Eval(raw);
+		return evaluator.eval( fCtx );
+	}
 	
 	public void init() {
 		init(true);
 	}
 	
 	/**
-	 * Prepare the <i>module</i> to be executed 
+	 * Prepare the <i>service</i> to be executed 
 	 */
 	public void init( boolean enableCaching ) {
 		
@@ -313,14 +330,18 @@ public class Module {
 		 * 2. initialize the context for the expression evaluation 
 		 */
 		fCtx = new HashMap<String,Object>();
+		
+		/* add the bundle properties content */
+		for( Object key : bundle.properties.keySet() ) {
+			setVariable( key.toString(), bundle.properties.getProperty(key.toString()));
+		}
+
+		/* the private folder for this service */
+		setVariable( "data.path", Utils.getCanonicalPath(fRepo.getFile()) );
+
 		/* some 'special' variables */
 		setVariable("_rid", rid());
 		setVariable("_result_url", getResultURL());
-		
-		/* add the app properties content */
-		for( Property property : AppProps.instance().list() ) {
-			setVariable(property.name, property.value);
-		}
 		
 		
 		/* 
@@ -339,12 +360,13 @@ public class Module {
 
 	
 	String getResultURL() {
-		StringBuilder result = new StringBuilder();
-		result.append("http://")
-			.append(Request.current().host)
-			.append( Router.reverse("Application.result").toString() )
-			.append("?rid=") .append(rid());
-		return result.toString();
+		String bundle = Scope.Params.current().get("bundle");
+		String rid = rid();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("bundle", bundle);
+		params.put("rid", rid);
+		
+		return Request.current().getBase() + Router.reverse("Application.result", params).toString();
 	}
 	
 	public boolean start() {
@@ -370,15 +392,15 @@ public class Module {
     			/*
     			 * run the alignment job
     			 */
-    			Module.current(Module.this);
+    			Service.current(Service.this);
     			try {
     				/* run the job */
-    				Module.this.run();
+    				Service.this.run();
     			}
     			finally  {
-    				try { Module.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
-    				try { Module.this.trace(); } catch( Exception e ) { Logger.error(e, "Failure on request logging"); }
-    				Module.release();
+    				try { Service.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
+    				try { Service.this.trace(); } catch( Exception e ) { Logger.error(e, "Failure on request logging"); }
+    				Service.release();
     			}
     		}
     	}; 
@@ -393,7 +415,7 @@ public class Module {
 	/**
 	 * Append a line in the server requests log with the following format 
 	 * 
-	 * <start time>, <user ip>, <module name>, <request id>, <elapsed time>, <status> 
+	 * <start time>, <user ip>, <bundle name>, <service name>, <request id>, <elapsed time>, <status> 
 	 */
 	void trace() {
 		try {
@@ -401,6 +423,7 @@ public class Module {
 			StringBuilder line = new StringBuilder();
 			line.append( fmt.format(fStartTime) ).append(",")
 				.append( fRemoteAddress ).append(",")
+				.append( this.bundle.name ).append(",")
 				.append( this.name ).append(",")
 				.append( this.fRid ).append(",")
 				.append( fOutResult!=null ? String.valueOf(fOutResult.elapsedTime) : "-") .append(",")
@@ -420,7 +443,7 @@ public class Module {
 		/* 
 		 * initialize the process 
 		 */
-		process.init();
+		process.init(new CommandCtx( fCtx )); // <-- pass to the command context the save variables
 		
 		/* 
 		 * the main execution 
@@ -446,7 +469,8 @@ public class Module {
 					fOutResult.addAll(process.getResult());
 					fOutResult.elapsedTime = process.elapsedTime;
 					fOutResult.status = success ? Status.DONE : Status.FAILED;
-					fOutResult.mode = this.name;
+					fOutResult.bundle = bundle.name;
+					fOutResult.service = this.name;
 					fOutResult.title = this.title;
 					fOutResult.cite = this.cite;
 				}
@@ -459,7 +483,12 @@ public class Module {
 					if( branch.events.getResult() != null ) {
 						branch.result.addAll( branch.events.getResult() );
 					}
-				}			
+				}	
+				
+				/*
+				 * normalize path on result items 
+				 */
+				resolveOutFilesPath();
 			}
 
 		}
@@ -479,12 +508,60 @@ public class Module {
 
 	}
 	
+	/**
+	 * Resolve file system and web paths for files in {@link OutItem} instances 
+	 */
+	void resolveOutFilesPath() { 
+		for( OutItem item : fOutResult.getItems() ) { 
+			if( item.file == null && item.name != null) { 
+				item.file = this.repo().getFile(item.name);
+			}
+			
+			if( item.webpath == null && item.file != null ) { 
+				item.webpath = webPathFor(item.file);
+			}
+			
+		}
+	}
+
+
+	
+	private static String webPathFor( File file ) {
+		if( file == null ) { 
+			return null;
+		}
+		/*
+		 * the file path have to be published under the framework root, 
+		 * being so the 'framework path' is the prefix of the file full path
+		 */
+		String context = Play.configuration.getProperty("context");
+		String path = Utils.getCanonicalPath(file);
+		String root = AppProps.instance().getDataPath();
+		
+		String result = null;
+		int p = path.indexOf(root);
+		if( p==0 ) {
+			result = path.substring(root.length());
+			if( result.charAt(0) != '/' ) {
+				result = "/" + result;
+			}
+			result = "/data" + result;
+			
+			if( Utils.isNotEmpty(context)) {
+				result = context + result;
+			}
+			
+		}
+		
+		return result;
+	}	
+	
 	OutSection getOutSection(boolean status) {
 		/* initialize the standard output if it has not been specified */
 		OutSection section = defaultOutSection(status); 
 		
 		if( output != null ) {
-			section.append( status ? output.valid : output.fail );
+			section.addAll( status ? output.valid : output.fail );
 		}
 
 		/* garantee a result object */
@@ -498,22 +575,66 @@ public class Module {
 	OutSection defaultOutSection(boolean success) {
 		OutSection out = null;
 		
-		if( conf != null && conf.def != null ) {
-			if( success && conf.def.validResult != null ) {
-				out = new OutSection(conf.def.validResult);
+		if( bundle != null && bundle.def != null ) {
+			if( success && bundle.def.validResult != null ) {
+				out = new OutSection(bundle.def.validResult);
 			}
-			else if( !success && conf.def.failResult != null ){
-				out = new OutSection(conf.def.failResult);
+			else if( !success && bundle.def.failResult != null ){
+				out = new OutSection(bundle.def.failResult);
 			}
 		}
 		
 		if( out == null ) {
 			out = new OutSection();
 			out.result = new OutResult();
-			out.title = success ? "OK" : "Fail";
 		}
 		
 		return out;
 	}
+	
+	
+	/**
+	 * Replace all variables in the environment with the specified context and return it
+	 * 
+	 * @param fCtx
+	 * @return
+	 */
+	public Map<String,String> defaultEnvironment() {
+
+		if( bundle == null || bundle.environment == null ) { 
+			return null;
+		}
+	
+		
+		Map<String,String> result = new HashMap<String,String>();
+		
+        // Resolve ${..}
+        Pattern pattern = Pattern.compile("\\$\\{([^}]+)}");
+        for (Object key : bundle.environment.keySet()) {
+            String value = bundle.environment.getProperty(key.toString());
+            Matcher matcher = pattern.matcher(value);
+            StringBuffer newValue = new StringBuffer();
+            while (matcher.find()) {
+                String var = matcher.group(1);
+                String r = null;
+                if( var != null && var.startsWith("env.")) { 
+                	r = System.getenv(var.substring(4));
+                }
+                else if( fCtx != null ) { 
+                	r = fCtx.get(var) != null ? fCtx.get(var).toString() : null; 
+                }
+                
+                if (r == null) {
+                    Logger.warn("Cannot replace %s in configuration (%s=%s)", var, key, value);
+                    continue;
+                }
+                matcher.appendReplacement(newValue, r.replaceAll("\\\\", "\\\\\\\\"));
+            }
+            matcher.appendTail(newValue);
+            result.put(key.toString(), newValue.toString());
+        }		
+        
+        return result;
+	}		
 
 }

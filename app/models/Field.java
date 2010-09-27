@@ -3,6 +3,7 @@ package models;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,8 +13,8 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 import play.Play;
-import play.mvc.Router;
 import play.mvc.Http.Request;
+import play.mvc.Router;
 import play.mvc.Scope.Params;
 import play.vfs.VirtualFile;
 import util.Utils;
@@ -28,10 +29,11 @@ import exception.QuickException;
 
 
 @XStreamAlias("field")
-public class Field {
+public class Field implements Serializable {
 
 	public static final List<String> TYPES = Arrays.asList(
 			"text", 
+			"textarea",
 			"hidden", 
 			"password",
 			"dropdown",

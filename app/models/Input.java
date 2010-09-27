@@ -1,6 +1,7 @@
 package models;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("input")
-public class Input {
+public class Input implements Serializable {
 
 	@XStreamImplicit(itemFieldName="fieldset")
 	public List<Fieldset> fieldsets;

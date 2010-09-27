@@ -1,5 +1,14 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | System info' /}
+#{set title:'System info' /}
+
+*{
+* This template uses a custom extension to format path. 
+* See ServerExtensions#path()
+* }*
+
+<style type="text/css">
+.box { overflow-x: scroll; }
+</style>
 
 <h1>System info
 <small>
@@ -7,21 +16,23 @@ Server &amp; framework configuration properties
 </small>
 </h1>
 
-<div class="box">
+<div class="box" >
 <h2><span>Play! configuration</span></h2>
 <table id="box-table-a">
 <thead>
 <tr><th>PARAM</th><th>VALUE</th></tr>
 </thead>
 <tbody>
-#{list list3, as:'key'}
-<tr>
-<td>${key}</td> <td>${playConf.getProperty(key)}</td>
+#{each map3 }
+<tr class="${_parity}"> 
+<td>${_key}</td> <td>${_.path().nl2br()}</td>
 </tr>
-#{/list}
+#{/each}
 </tbody>
 </table>
 </div>
+
+
 
 <div class="box">
 <h2><span>JVM Props</span></h2>
@@ -30,11 +41,11 @@ Server &amp; framework configuration properties
 <tr><th>PARAM</th><th>VALUE</th></tr>
 </thead>
 <tbody>
-#{list list1, as:'key'}
-<tr>
-<td>${key}</td> <td>${System.getProperties().getProperty(key)}</td>
+#{each map1 }
+<tr class="${_parity}">
+<td>${_key}</td> <td>${_.path().nl2br()}</td>
 </tr>
-#{/list}
+#{/each}
 </tbody>
 </table>
 </div>
@@ -46,11 +57,11 @@ Server &amp; framework configuration properties
 <tr><th>PARAM</th><th>VALUE</th></tr>
 </thead>
 <tbody>
-#{list list2, as:'key'}
-<tr>
-<td>${key}</td> <td>${System.getenv().get(key)}</td>
+#{each map2 }
+<tr class="${_parity}">
+<td>${_key}</td> <td>${_.path().nl2br()}</td>
 </tr>
-#{/list}
+#{/each}
 </tbody>
 </table>
 

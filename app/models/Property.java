@@ -1,5 +1,7 @@
 package models;
 
+import java.io.Serializable;
+
 import util.Check;
 import util.ChiperHelper;
 import util.Utils;
@@ -8,7 +10,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("property")
-public class Property {
+public class Property implements Serializable {
 	
 	@XStreamAsAttribute
 	public String name; 
@@ -55,7 +57,7 @@ public class Property {
 	
 	public void setName( String name ) {
 		Check.notEmpty(name, "Property name cannot be empty");
-		Check.isFalse( name.contains( "." ), "Property '%s' is not a valid name. Char '.' is not allowed", name );
+		//Check.isFalse( name.contains( "." ), "Property '%s' is not a valid name. Char '.' is not allowed", name );
 		Check.isFalse( name.contains( "[" ), "Property '%s' is not a valid name. Char '[' is not allowed", name );
 		Check.isFalse( name.contains( "]" ), "Property '%s' is not a valid name. Char ']' is not allowed", name );
 		this.name = name;

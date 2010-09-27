@@ -12,7 +12,7 @@ public class EnvTest extends UnitTest {
 
 	@Before
 	public void init() {
-		TestHelper.module("var1=99", "var2=66");
+		TestHelper.init("var1=99", "var2=66");
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @AutoBean
 @XStreamAlias("dictionary")
-public class Dictionary {
+public class Dictionary implements Serializable  {
 
 	@XStreamImplicit(itemFieldName="label")
 	public List<Label> labels;

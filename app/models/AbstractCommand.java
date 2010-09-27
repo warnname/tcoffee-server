@@ -1,5 +1,7 @@
 package models;
 
+import java.io.Serializable;
+
 import play.Logger;
 import util.Utils;
 import exception.CommandException;
@@ -9,7 +11,7 @@ import exception.CommandException;
  * 
  * @author Paolo Di Tommaso
  */
-public abstract class AbstractCommand<T> {
+public abstract class AbstractCommand<T> implements Serializable {
 
 	/** The gereric result available at the end of the execution of this command */
 	protected T result;
@@ -40,7 +42,8 @@ public abstract class AbstractCommand<T> {
 	 * Initialize the command and inject a new {@link CommandCtx} empty instance  
 	 */
 	final public void init() {
-		init(new CommandCtx());
+		CommandCtx ctx = Service.current() != null ? new CommandCtx(Service.current().fCtx) : new CommandCtx();
+		init(ctx);
 	}
 	
 	/**
@@ -48,10 +51,10 @@ public abstract class AbstractCommand<T> {
 	 * 
 	 * @param ctx 
 	 */
-	protected void init(CommandCtx ctx) {
+	public void init(CommandCtx ctx) {
 		this.ctx = ctx;
 	}
-		
+	
 	/**
 	 * Fires the command execution 
 	 * 

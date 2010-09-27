@@ -1,9 +1,9 @@
 #{extends 'layout.html' /}
-#{set title:'T-Coffee | My recent alignments' /}
+#{set title: 'My recent jobs' /}
 
 <script type="text/javascript">
 function poll() {
-	$('#history').load('@{Application.historyTable()}', function() {  });
+	$('#history').load('@{Application.historyTable(params.bundle)}', function() {  });
 }
 
 $(document).ready(function(){
@@ -11,13 +11,13 @@ $(document).ready(function(){
 });
 </script>
 
-<h1>Recent alignments history
+<h1>Recent jobs history
 
 <small>
-Here your recent alignments history using T-Coffee
+Here the list of your requests
 </small>
 </h1>
 
-<div id="history" class="c-style" >
+<div id="history" >
 <!--  history table comes here -->
 </div>

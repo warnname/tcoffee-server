@@ -39,65 +39,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	}
 	
 	@Override
-	protected void onInitEnv(Map<String, String> map) {
-		AppProps props = AppProps.instance();
-		
-		File binFolder = props.getBinFolder();
-		File dataFolder = props.getDataFolder();
-		String matrixPath = props.getMatrixPath();
-		
-		/* check that the t-coffee home exists */
-		File tcoffeeFolder = props.getTCoffeeFolder();
-		if( !tcoffeeFolder.exists() ) {
-			if( !tcoffeeFolder.mkdirs() ) {
-				throw new QuickException("Unable to create T-Coffee home folder: '%s'", tcoffeeFolder);
-			};
-		}
-		
-		/* redefine the home folder */
-		map.put("HOME", Utils.getCanonicalPath(dataFolder));
-		
-		/* MAFFT BINARIES location */
-		
-		map.put("MAFFT_BINARIES", Utils.getCanonicalPath(binFolder)); 
-		
-		/* preprend the t-coffee binaries to teh PATH */
-		String path = Utils.getCanonicalPath(binFolder) + File.pathSeparator + System.getenv("PATH");
-		map.put("PATH", path);
-		
-
-		/* t-coffee email */
-		map.put("EMAIL_4_TCOFFEE", "paolo.ditommaso@crg.es");
-
-		/* t-coffee home folder */
-		map.put("DIR_4_TCOFFEE", Utils.getCanonicalPath(tcoffeeFolder));
-		
-		/* t-coffee temp folder */
-		map.put("TMP_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_tmp")));
-		//map.put("DEBUG_TMP_FILE", "1");
-		
-		/* lock dir */
-		File lock = new File(ctxfolder,"_lck");
-		lock.mkdirs();
-		map.put("LOCKDIR_4_TCOFFEE", Utils.getCanonicalPath(lock));
-		
-		/* t-coffee cache folder */
-		map.put("CACHE_4_TCOFFEE", Utils.getCanonicalPath(new File(ctxfolder,"_cache")));
-		
-		/* m-coffee folder is contained in the main bin path */ 
-		map.put("MCOFFEE_4_TCOFFEE", matrixPath );
-
-		/*
-		 * put the super invocation after to make the command local environment to override 
-		 * this command "global" environment initialization
-		 */
-		super.onInitEnv(map);
-
-		
-	}
-
-	@Override
-	protected void init(CommandCtx ctx) {
+	public void init(CommandCtx ctx) {
 
 		/* an outfile is mandatory required */
 		if( Utils.isEmpty(logfile) ) logfile = "_tcoffee.out.log";
@@ -107,6 +49,19 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		
 		super.init(ctx);
 
+	}
+	
+	@Override
+	protected void onInitEnv(Map<String, String> map) {
+		super.onInitEnv(map);
+		
+		String path = map.get("DIR_4_TCOFFEE");
+		if( Utils.isNotEmpty(path) ) {
+			File file = new File(path);
+			if( !file.exists() && !file.mkdirs() ) {
+				Logger.warn("Unable to create T-coffee home path: '%s' ", file);
+			}
+		}
 	}
 
 	@Override
@@ -281,7 +236,11 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			return null;
 		}
 		
-		OutItem item = new OutItem(name,type);
+		/* retrieve the file in the context path */
+		String root = ctx.get("data.path");
+		File file = new File( root, name );
+		
+		OutItem item = new OutItem(file,type);
 		item.format = matcher.group(2).trim();
 
 		return item;

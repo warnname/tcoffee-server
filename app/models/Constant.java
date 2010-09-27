@@ -1,12 +1,14 @@
 package models;
 
+import java.io.Serializable;
+
 import plugins.AutoBean;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @AutoBean
 @XStreamAlias("const")
-public class Constant {
+public class Constant implements Serializable {
 	 
 	public String name; 
 	

@@ -1,6 +1,7 @@
 package models;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -12,14 +13,43 @@ import org.junit.Test;
 
 import play.test.UnitTest;
 import util.TestHelper;
+import util.Utils;
 import util.XStreamHelper;
 
 public class OutResultTest extends UnitTest {
 
 	@Before
 	public void register() {
-		TestHelper.module();
-		AppConf.instance().def.dictionary = null;
+		TestHelper.init();
+		Service.current().bundle.def.dictionary = null;
+	}
+	
+	@Test 
+	public void testCopy() { 
+		
+		OutResult result = new OutResult();
+		result.bundle = "tcoffee";
+		result.cite = "cite";
+		result.elapsedTime = 99;
+		result.errors = new ArrayList<String>();
+		result.errors.add("oops");
+		result.service = "mode";
+		result.status = Status.DONE;
+		result.title = "Hola";
+		
+		OutResult copy = Utils.copy(result);
+		
+		assertEquals( copy, result );
+		assertEquals( copy.bundle, result.bundle );
+		assertEquals( copy.cite, result.cite );
+		assertEquals( copy.elapsedTime, result.elapsedTime );
+		assertEquals( copy.errors.size(), result.errors.size() );
+		assertEquals( copy.errors.get(0), result.errors.get(0) );
+		assertEquals( copy.service, result.service);
+		assertEquals( copy.status, result.status );
+		assertEquals( copy.title , result.title );
+
+		
 	}
 	
 	@Test
@@ -27,6 +57,9 @@ public class OutResultTest extends UnitTest {
 	
 		String xml  
 			= "<result>" +
+				"<title>the-title</title>" + 
+				"<bundle>bundle-name</bundle>" + 
+				"<service>the-mode</service>" + 
 				"<elapsed-time>999</elapsed-time>" +
 				"<status>DONE</status>" +
 				"<error>the error message</error>" +
@@ -40,6 +73,9 @@ public class OutResultTest extends UnitTest {
 		
 		OutResult out = XStreamHelper.fromXML(xml);
 		assertNotNull(out);
+		assertEquals("bundle-name", out.bundle);
+		assertEquals("the-title", out.title);
+		assertEquals("the-mode", out.service);
 		assertEquals(999, out.elapsedTime);
 		assertEquals( Status.DONE, out.status);
 		assertEquals("the error message", out.errors.get(0));
@@ -55,21 +91,24 @@ public class OutResultTest extends UnitTest {
 		OutResult result = new OutResult();
 		result.status = Status.DONE;
 		result.elapsedTime = 99;
+		
 		result.errors = new ArrayList<String>();
 		result.errors.add("Hola");
 		result.errors.add("Ciao");
 		
 		OutItem item = new OutItem("sample.html","xxx");
+		item.webpath = "/web/path";
+		item.file = new File("/root/file.txt");
 		result.add(item);
 		
 		BufferedReader reader = new BufferedReader(new StringReader(XStreamHelper.toXML(result)));
 		assertEquals("<result>", reader.readLine().trim());
 		assertEquals("<item>", reader.readLine().trim());
-		assertEquals(String.format("<webpath>%s</webpath>", item.webpath), reader.readLine().trim());
+		assertEquals("<webpath>/web/path</webpath>", reader.readLine().trim());
 		assertEquals("<label>Sequence alignment in HTML format</label>", reader.readLine().trim());
 		assertEquals("<type>xxx</type>", reader.readLine().trim());
 		assertEquals("<name>sample.html</name>", reader.readLine().trim());
-		assertEquals(String.format("<file>%s</file>", item.file.getCanonicalPath()), reader.readLine().trim());
+		assertEquals("<file>/root/file.txt</file>", reader.readLine().trim());
 		assertEquals("<format>html</format>", reader.readLine().trim());
 		assertEquals("<aggregation>xxx</aggregation>", reader.readLine().trim());
 		assertEquals("</item>", reader.readLine().trim());

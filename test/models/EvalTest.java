@@ -15,7 +15,7 @@ public class EvalTest extends UnitTest {
 
 	@Before
 	public void init() {
-		TestHelper.module("field1=alfa", "field2=beta");
+		TestHelper.init("field1=alfa", "field2=beta");
 	}
 
 	@Test 
