@@ -3,15 +3,19 @@
 # ~~~~
 
 # Home page
-GET     /						Application.index
-GET 	/robots.txt				Application.robots
-
+GET     /						Main.index
+GET 	/tcoffee				Main.index
+GET		/tcoffee/				Main.index
+GET 	/robots.txt				Main.robots
 
 # Downloadable data
-GET		/data/{<.+>path}		Data.get
+GET		/data/zip				Data.zip
+*		/data/upload			Data.upload
+GET		/data/{<.+>path}		Data.resource
 
 # Administration controller 
 GET 	/adm/?					Admin.index		
+*		/adm/bundle/{action}	Admin.bundle{action}
 * 		/adm/{action}			Admin.{action}		
 
 # Secure module controller 
@@ -20,8 +24,20 @@ GET 	/adm/?					Admin.index
 # Map static resources from the /app/public folder to the /public path
 GET     /public/            	staticDir:public
 
-# Main application controller
-*		/{action}				Application.{action}
+GET		/apps/{bundle}						Application.index
+GET		/apps/{bundle}/						Application.index
+*		/apps/{bundle}/play					Application.main
+GET		/apps/{bundle}/result				Application.result
+GET		/apps/{bundle}/replay				Application.replay	
+GET		/apps/{bundle}/submit				Application.submit
+GET		/apps/{bundle}/status				Application.status
+GET		/apps/{bundle}/history				Application.historyTable
+GET		/apps/{bundle}/index.html			Application._(page:'index.html')
+GET		/apps/{bundle}/{<.+\.html>page}		Application._
+GET		/apps/{bundle}/public/{<.+>path}	Application.servePublic
+
+
+GET		/{action}				Main.{action}
 
 # Javascript/css compression module
 *  		/  						module:press
