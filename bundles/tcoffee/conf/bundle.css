@@ -14,8 +14,45 @@
 	
 }
 
-#content .box {
-	background-color: #f6f6f6; 
+/* some colors */
+
+#content {
+	color: #444;
+	font-weight: normal;
+	font-size: 15px;
+	
+}
+
+#content h1 small {
+	font-weight: 300;
+}
+
+#content label small {
+	font-size: 12px;
+	font-weight: 300;
+} 
+
+#content .box,
+#content fieldset,
+#content .box h2 span,
+#content fieldset h2 span
+
+ {
+	background-color: #f0f0f0; 
+}
+
+/* highlight color */
+#content em,
+#content h1 small 
+{
+	color: #4eb3cc;
+}
+
+#content a,
+#footer a
+{
+	color: #4eb3cc;
+	border-color: #4eb3cc; 
 }
 
 
@@ -29,5 +66,5 @@
 #navigation.contacts .contacts a
 
 {
-	color: #63BDD6;
+	color: #4eb3cc;
 }
