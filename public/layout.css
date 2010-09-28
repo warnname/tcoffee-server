@@ -106,19 +106,9 @@ html, body {
 	text-decoration: none;
 }
 
-#navigation .selected a {
-	color: #63BDD6;
-}
-
 #footer .separator {
 	border-top: 1px solid #DDD;
 	padding-bottom: 14px;
-}
-
-#footer a {
-	color: #63BDD6;
-	font-weight: bold;
-	text-decoration: none;
 }
 
 #footer .copy-note {
@@ -255,6 +245,12 @@ html, body {
 
 #dialog-content h2 {
 	font-size: 1.4em;
+}
+
+#footer a {
+	color: #72BBD2;
+	font-weight: bold;
+	text-decoration: none;
 }
 
 
