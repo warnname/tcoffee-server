@@ -500,9 +500,9 @@ public class Admin extends CommonController {
 	 * Let to upload and install a new bundle in the system 
 	 */
 	public static void bundleInstall(String key) {
-		final Bundle bundle = (Bundle) Cache.get(key);
-		final BundleRegistry registry = BundleRegistry.instance();
-		final Bundle installed = registry.get(bundle.name);
+		Bundle bundle = (Bundle) Cache.get(key);
+		BundleRegistry registry = BundleRegistry.instance();
+		Bundle installed = registry.get(bundle.name);
 
 		
 		if( isGET() ) { 
@@ -558,17 +558,24 @@ public class Admin extends CommonController {
 				target = new File( AppProps.BUNDLES_FOLDER, randomName); 
 			}
 			
+			
 			try {
+
+				/*
+				 * 3. move to final path 
+				 */
 				final File source = bundle.root;
 				FileUtils.moveDirectory(source, target);
 
 				/*
-				 * 3. force installation 
+				 * 4. force installation 
 				 */
-				registry.load(target);
+				bundle = registry.load(target);
 				if( source.exists() && !FileUtils.deleteQuietly(source) ) { 
 					Logger.warn("Unable to remove bundle staging path: '%s'", source);
 				}
+				
+				
 				renderArgs.put("message", "Bundle installed successfully");
 				renderArgs.put("message_class", "box-success");
 			} 
@@ -577,7 +584,23 @@ public class Admin extends CommonController {
 				renderArgs.put("message", error);
 				renderArgs.put("message_class", "box-error");
 			}
+
+			/* 
+			 * 5. try to change permission for bin folder 
+			 */
+			try { 
+				if( bundle.binPath != null ) { 
+					File[] bins = bundle.binPath. listFiles();
+					for( File bin : bins ) { 
+						bin.setExecutable(true,false);
+					}
+				}			
+				
+			} catch( Exception e ) { 
+				Logger.warn(e, "Unable to change to exec permission '%s'", bundle.binPath);
+			}
 			
+			/* finally render the page */
 			render(bundle);
 		}
 

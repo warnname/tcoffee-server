@@ -55,15 +55,25 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	protected void onInitEnv(Map<String, String> map) {
 		super.onInitEnv(map);
 		
-		String path = map.get("DIR_4_TCOFFEE");
-		if( Utils.isNotEmpty(path) ) {
-			File file = new File(path);
-			if( !file.exists() && !file.mkdirs() ) {
-				Logger.warn("Unable to create T-coffee home path: '%s' ", file);
-			}
-		}
+		makePath( map.get("DIR_4_TCOFFEE") );
+		makePath( map.get("TMP_4_TCOFFEE") );
+		makePath( map.get("LOCKDIR_4_TCOFFEE") );
+		makePath( map.get("CACHE_4_TCOFFEE") );
 	}
 
+	
+	protected void makePath( String path ) { 
+		if( Utils.isEmpty(path) ) { 
+			return;
+		}
+		
+		File file = new File(path);
+		if( !file.exists() && !file.mkdirs() ) {
+			Logger.warn("Unable to create T-coffee path: '%s' ", file);
+		}
+		
+	}
+	
 	@Override
 	protected String onInitCommandLine(String cmdLine) {
 		/*
