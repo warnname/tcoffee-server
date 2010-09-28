@@ -25,3 +25,4 @@ LOCKDIR_4_TCOFFEE=${data.path}/_lck
 CACHE_4_TCOFFEE=${data.path}/_cache
 MCOFFEE_4_TCOFFEE=${bundle.path}/matrix
 MAFFT_BINARIES=${bundle.path}/bin
+PERL5LIB=${bundle.path}/perl
