@@ -1,4 +1,4 @@
-#{set title: 'T-Coffee | Home' /}
+#{set title: 'Home' /}
 
 #{set 'meta'}
 <meta name="description" content="T-Coffee is a multiple sequence alignment package. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
@@ -12,7 +12,7 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 </small>
 </h1>
 
-
+<div class="box" >
 #{list _bundle.groups, as:'group' }
 <h2><span>${group ?: 'other'}</span></h2>
 
@@ -25,17 +25,41 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 	</td>
 	
 	<td class="c-val">${_.description} 
-		#{if _.cite} <br> <img src="public/images/quote-icon.jpeg"/> <small ><a href="${_.cite}" target="_blank" style="color: #999; border: none; font-style: italic;" >Cite using this link</a> </small> #{/if}	
+		#{if _.cite}<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="${_.cite}" target="_blank" >Cite</a> </small> #{/if}	
 	</td>
 	</tr>
 #{/list } 
 </tbody>
 </table>
 #{/list}
+</div>
+
+
+<!-- 
+	USEFUL LINKS section
+ -->
 
 <h2>
+<span>Useful links</span>
+</h2>
+
+<table class="c-home">
+<tbody>
+
+<tr>
+<td class="c-lbl">
+	<a target="blank" href="http://www.tcoffee.org/Projects_home_page/t_coffee_home_page.html">T-Coffee project</a>
+</td>
+<td class="c-val"> Documentation, tutorials and details about the T-Coffee multiple sequences aligner tool </td>
+</tr>
+</tbody>
+</table>
+
+<!-- 
+	MIRROR SITES section
+ 	-->
+<h2>
 <span>Mirror sites</span>
-<small><span>Links to other institutes running T-coffee web server</span></small>
 </h2>
 
 <div class="box" style="float: right; width: 200px; text-align: center;"  >
@@ -49,41 +73,52 @@ contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.
 </small>
 </div>
 
-<table class="c-home">
+<table id="mirrors" class="c-home">
 <tbody>
 
 <tr>
-<td class="c-lbl"> <a href="http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi" target="_blank"><img src="public/images/mirror_vitalch.gif" /></a> </td>
-<td class="c-val">Vital-IT, Swiss Institute of Bioinformatics (SIB) </td>
+<td class="c-lbl"> <img src="public/images/mirror_vitalch.gif" /> </td>
+<td class="c-val"><a href="http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi" target="_blank">Vital-IT, Swiss Institute of Bioinformatics (SIB)</a> </td>
 </tr>
 
 <tr>
-<td class="c-lbl" style="padding-right: 8px"> <a href="http://www.igs.cnrs-mrs.fr/Tcoffee/" target="_blank"><img src="public/images/mirror_cnrs.jpg" /></a> </td>
-<td class="c-val">IGS lab., CNRS</td>
+<td class="c-lbl"> <img src="public/images/mirror_ebi.gif" /></td>
+<td class="c-val"> <a href="http://www.ebi.ac.uk/Tools/t-coffee/" target="_blank">EBI, European Bioinformatics Institute</a></td>
 </tr>
 
 <tr>
-<td class="c-lbl"> <a href="http://www.ebi.ac.uk/Tools/t-coffee/" target="_blank"><img src="public/images/mirror_ebi.gif" /></a> </td>
-<td class="c-val">EBI, European Bioinformatics Institute</td>
+<td class="c-lbl" style="padding-right:12px"><img src="public/images/mirror_cnrs.jpg" /> </td>
+<td class="c-val"> <a href="http://www.igs.cnrs-mrs.fr/Tcoffee/" target="_blank">IGS lab., CNRS</a></td>
 </tr>
 
 <tr>
-<td class="c-lbl"> <a href="http://toolkit.tuebingen.mpg.de/t_coffee" target="_blank"><img src="public/images/mirror_maxplank.gif" /></a> </td>
-<td class="c-val">Max-Planck Institute for Developmental Biology</td>
+<td class="c-lbl"> <img src="public/images/mirror_maxplank.gif" /></td>
+<td class="c-val"><a href="http://toolkit.tuebingen.mpg.de/t_coffee" target="_blank">Max-Planck Institute for Developmental Biology</a></td>
 </tr>
 
 <tr>
-<td class="c-lbl"> <a href="http://cbsuapps.tc.cornell.edu/t_coffee.aspx" target="_blank"><img src="public/images/mirror_cbsu.jpg" /></a> </td>
-<td class="c-val">Cornell</td>
+<td class="c-lbl"> <img src="public/images/mirror_cbsu.jpg" /></td>
+<td class="c-val"><a href="http://cbsuapps.tc.cornell.edu/t_coffee.aspx" target="_blank">Cornell</a></td>
 </tr>
 
 <tr>
-<td class="c-lbl"> <a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank"><img src="public/images/mirror_EMBnetCNB.png" /></a> </td>
-<td class="c-val">EMBNet-Spain</td>
+<td class="c-lbl"><img src="public/images/mirror_EMBnetCNB.png" /> </td>
+<td class="c-val"><a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank">EMBNet-Spain</a></td>
 </tr>
 
+<tr>
+<td class="c-lbl" style="padding-right: 12px"> <img src="public/images/mirror_crg.png" width="24" height="24" /> </td>
+<td class="c-val"><a href="${request.base}" >Centre for Genomic Regulation (CRG)</a> </td>
+</tr>
 
 </tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#mirrors tr').css('cursor', 'pointer');
+	$('#mirrors tr').click(function() { window.open($(this).find('a').attr('href'), "_blank") });
+} );
+</script>
 
 

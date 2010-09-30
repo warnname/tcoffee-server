@@ -23,8 +23,12 @@
 	
 }
 
+#content h1 {
+	font-weight: 500;
+}
+
 #content h1 small {
-	font-weight: 300;
+	font-weight: normal;
 }
 
 #content label small {
@@ -38,21 +42,21 @@
 #content fieldset h2 span
 
  {
-	background-color: #f0f0f0; 
+	background-color: #f4f4f4; 
 }
 
 /* highlight color */
 #content em,
 #content h1 small 
 {
-	color: #4eb3cc;
+	color: #0c8aa3;
 }
 
 #content a,
 #footer a
 {
-	color: #4eb3cc;
-	border-color: #4eb3cc; 
+	color: #0c8aa3;
+	border-color: #0c8aa3; 
 }
 
 
@@ -66,5 +70,20 @@
 #navigation.contacts .contacts a
 
 {
-	color: #4eb3cc;
+	color: #0c8aa3;
 }
+
+/* 
+ * Home page 
+ */
+ 
+#content .cite {
+	color: #888;
+	border: none;
+} 
+
+#content #mirrors a {
+	border: none;
+	color: #444;
+}
+

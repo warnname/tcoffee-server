@@ -1,5 +1,4 @@
-#{extends 'layout.html' /}
-#{set title:'T-Coffee | Your alignment result' /}
+#{set title:'Your alignment result' /}
 
 #{cache-warning /}
 
@@ -40,10 +39,10 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 
 <p style="padding-bottom: 1em;" > 
-<input type="button" id="to_ProtoGene" name="to_ProtoGene" value=" ProtoGene "  >
+<button id="to_ProtoGene" name="to_ProtoGene" class="button"> ProtoGene </button>
 Turning amino acid alignments into bona fide CDS nucleotide alignments 
 <br/><br/>
-<input type="button" id="to_MyHits" name="to_MyHits" value=" MSA hub "  >
+<button id="to_MyHits" name="to_MyHits" class="button">  MSA hub </button>
 MyHits: a new interactive resource for protein annotation and domain identification
 </p>
 </form>
