@@ -160,28 +160,9 @@ public class AppProps implements Serializable  {
 		 * 5. Define the other default folder that can be overriden at runtime
 		 */
 		
-//		/* bin apps folder */ 
-//		final String BIN_PATH = "bin";
-//		DEFAULT_BIN_FOLDER = new File(Play.applicationPath, BIN_PATH);
-//		if( !DEFAULT_BIN_FOLDER.exists() ) {
-//			Logger.warn("Unable to find 'tcoffee' executable on path: '%s'", Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
-//		}
-//		
-//		/* mcoffee matrix */
-//		DEFAULT_MATRIX_FOLDER = new File(Play.applicationPath, "matrix");
-//		if( !DEFAULT_MATRIX_FOLDER.exists() ) {
-//			Logger.warn("Unable to find 'matrix' folder at path: '%s'", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
-//		}
-//		
-//		
-//		/* t-coffee home */
-//    	TCOFFEE_HOME_FOLDER = new File(DATA_FOLDER, ".t_coffee");
 				
 		
 		DEF_PROPS = new HashMap<String,String>();
-//		DEF_PROPS.put("pathBin",  Utils.getCanonicalPath(DEFAULT_BIN_FOLDER));
-//		DEF_PROPS.put("pathTcoffee", Utils.getCanonicalPath(TCOFFEE_HOME_FOLDER));
-//		DEF_PROPS.put("pathMatrix", Utils.getCanonicalPath(DEFAULT_MATRIX_FOLDER));
 		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
 
 		/*

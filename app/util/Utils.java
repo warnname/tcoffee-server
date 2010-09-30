@@ -1900,6 +1900,22 @@ public class Utils {
 
 	}
 
-	
+
+	public static String cause( Throwable e ) { 
+		String result = null;
+
+		if( e == null ) { 
+			return result;
+		}
+		
+		if( e.getCause() != null ) { 
+			result = e.getCause().getMessage();
+		}
+		if( result == null ) { 
+			result = e.getMessage();
+		}		
+		
+		return result;
+	}
 }
  

@@ -50,7 +50,7 @@ public class BundlePageLoader extends TemplateLoader {
 			throw new TemplateNotFoundException(page);
 		}
 		
-		return load(file);
+		return load(bundle,file);
 	}	
 	
 	/**
@@ -58,6 +58,7 @@ public class BundlePageLoader extends TemplateLoader {
 	 * 
 	 */
     public static Template load(Bundle bundle, VirtualFile file) {
+    	
         if( templates == null ) { 
     		templates = new HashMap<String, Template>();
         }

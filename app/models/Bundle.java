@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
 import play.Logger;
 import play.Play;
 import play.libs.IO;
@@ -356,6 +361,23 @@ public class Bundle implements Serializable {
 	        
 	        return bundle;
 		
+	}
+	
+	Element getServiceElement( String serviceName ) { 
+		try {
+			SAXReader reader = new SAXReader();
+			Document doc = reader.read( conf );
+			Element elem = (Element) doc.selectSingleNode(String.format("/bundle/service[@name='%s']", serviceName));
+			return elem;
+		} 
+		catch (DocumentException e) {
+        	throw new QuickException(e, "Fail getting XML for service '%s' on bundle '%s'", serviceName, name);
+		}
+	}
+	
+	
+	public String getServiceXML( String serviceName ) { 
+		return getServiceElement(serviceName).asXML();
 	}
 	
 

@@ -27,7 +27,7 @@ public class Mail extends AbstractCommand {
 	/** Address of the sender */
 	public Eval from;
 	
-	/** Address to whicj reply */
+	/** Address to which reply */
 	public Eval reply;
 	
 	/** Address of the recipients */
@@ -56,7 +56,7 @@ public class Mail extends AbstractCommand {
 	@Override
 	public boolean run() throws CommandException {
 		
-		String _from = from != null ? from.eval() : null;
+		String _from = from != null ? from.eval() : AppProps.instance().getWebmasterEmail();
 		String _to = to != null ? to.eval() : null;
 		String _cc = cc != null ? cc.eval() : null;
 		String _subject = subject != null ? subject.eval() : null;
@@ -65,8 +65,12 @@ public class Mail extends AbstractCommand {
 		if( Utils.isEmpty(_reply)) _reply = _from;
 		
 		/* check the from address */ 
-		//TODO if empt use a default address instead of fail 
-		if( Utils.isEmpty(_from) || invalid(_from) ) {
+		if( Utils.isEmpty(_from) ) {
+			Logger.error("Cannot send mail with missing sender");
+			return false;
+		}	
+		
+		if( invalid(_from) ) {
 			Logger.error("Cannot send mail with invalid FROM address: '%s'", _from);
 			return false;
 		}

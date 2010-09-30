@@ -3,16 +3,19 @@ package controllers;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import models.AppProps;
 import models.Bundle;
@@ -22,6 +25,8 @@ import models.Service;
 import models.TCoffeeCommand;
 
 import org.apache.commons.io.FileUtils;
+import org.dom4j.Attribute;
+import org.dom4j.Element;
 
 import play.Logger;
 import play.Play;
@@ -38,6 +43,7 @@ import util.FileIterator;
 import util.Utils;
 import util.XStreamHelper;
 import bundle.BundleException;
+import bundle.BundleHelper;
 import bundle.BundleRegistry;
 import edu.emory.mathcs.backport.java.util.Collections;
 import exception.QuickException;
@@ -483,15 +489,8 @@ public class Admin extends CommonController {
 			renderText(ERROR(e.getMessage()));
 		}
 		catch( Exception e ) {
-			String cause = null;
-			if( e.getCause() != null ) { 
-				cause = e.getCause().getMessage();
-			}
-			if( cause == null ) { 
-				cause = e.getMessage();
-			}
 			Logger.error(e, "Unable to copy temporary upload file: '%s'", bundleZip);
-			renderText(ERROR(cause));
+			renderText(ERROR(Utils.cause(e)));
 		}
 	
 	}
@@ -606,5 +605,202 @@ public class Admin extends CommonController {
 
 		unsupportedMethod();
 	} 
+	
+	
+
+	
+	public static void bundleServiceEdit( String bundleName, String serviceName, String content ) { 
+    	
+		final BundleRegistry registry = BundleRegistry.instance();
+		final Bundle bundle = registry.get(bundleName);
+
+		if( isGET() ) { 
+			/*
+			 * show the edit form 
+			 */
+	        try {
+	        	String conf = IO.readContentAsString(bundle.conf);
+	        	content = BundleHelper.getServiceXml(conf, serviceName);
+
+			} 
+	        catch (Exception e) {
+	        	throw new QuickException(e, "Fail on editing service '%s' on bundle '%s'", serviceName, bundleName);
+			}
+			
+		}
+		
+		
+		if( isPOST() ) { 
+			/*
+			 * save the changed service 
+			 */
+			try {
+				// TODO if empty redirect to serviceDelete
+				
+				// 1. read the original xml 
+	        	String conf = IO.readContentAsString(bundle.conf);
+	        	conf = BundleHelper.replaceServiceXml(conf, content);
+	        	
+	        	// 2. save to a temporary file 
+	        	File file = File.createTempFile("bundle-", ".xml");
+	        	IO.writeContent(conf, file);
+	        	
+	        	// 3. try to load to check to nothing is broken 
+	        	XStreamHelper.fromXML(file);
+	        	
+	        	// 4. if ok save to original file 
+	        	IO.writeContent(conf, bundle.conf);
+	        	
+	        	String message = String.format("Service configuration saved successfully to file: '%s'", bundle.conf);
+	        	renderArgs.put("message", message);
+	        	renderArgs.put("messageClass", "box-info");
+			} 
+			catch( Exception e ) { 
+				Logger.error(e, "Error saving service conf '%s' for bundle '%s'", serviceName, bundleName);
+				
+				String message = "Error saving service configuration. Cause: " + Utils.cause(e);
+	        	renderArgs.put("message", message);
+	        	renderArgs.put("messageClass", "box-error");
+				
+			}
+			
+		}
+		
+		render("Admin/editxml.html", bundleName, serviceName, content);
+		
+	}
+	
+	
+	
+	public static void bundleServiceDelete( String bundleName, String serviceName ) { 
+		
+		
+	}
+	
+	
+	/**
+	 * Creates a copy of the service XML configuration 
+	 * 
+	 * @param bundleName the unique {@link Bundele} name
+	 * @param serviceName the new name for the copied service
+	 * @param content when invoked in GET mode the name of the service to be copied, 
+	 * in POST mode the xml service fragment to be saved  
+	 */
+	public static void bundleServiceCopy( String bundleName, String serviceName, String newName, String content ) { 
+
+    	
+		final BundleRegistry registry = BundleRegistry.instance();
+		final Bundle bundle = registry.get(bundleName);
+
+		if( isGET() ) { 
+			/*
+			 * show the edit form 
+			 */
+	        try {
+	        	String conf = IO.readContentAsString(bundle.conf);
+	        	Element elem = BundleHelper.getServiceElement(conf, serviceName);
+	        	Attribute attr = elem.attribute("name");
+	        	attr.setValue( newName );
+	        	
+	        	content = elem.asXML();
+	        	
+	        	render("Admin/editxml.html", bundleName, serviceName, newName, content);
+			} 
+	        catch (Exception e) {
+	        	throw new QuickException(e, "Fail on editing service '%s' on bundle '%s'", serviceName, bundleName);
+			}
+			
+		}
+		
+		
+		if( isPOST() ) { 
+			try { 
+				//TODO verify that thare is a name conflic !
+				
+				// 1. read the conf file 
+	        	String conf = IO.readContentAsString(bundle.conf);
+				
+	        	// 3. add the new fragment 
+	        	conf = BundleHelper.addServiceXml(conf, content);
+	        	
+	        	// 4. save to a temporary file 
+	        	File file = File.createTempFile("bundle-", ".xml");
+	        	IO.writeContent(conf, file);
+	        	
+	        	// 5. try to load to check to nothing is broken 
+	        	XStreamHelper.fromXML(file);
+	        	
+	        	// 6. if ok save to original file 
+	        	IO.writeContent(conf, bundle.conf);
+	        	
+	        	String message = String.format("Service configuration saved successfully to file: '%s'", bundle.conf);
+	        	renderArgs.put("message", message);
+	        	renderArgs.put("messageClass", "box-info");
+  	
+			}
+			catch( Exception e ) { 
+				Logger.error(e, "Error saving service conf '%s' for bundle '%s'", serviceName, bundleName);
+				
+				String message = "Error saving service configuration. Cause: " + Utils.cause(e);
+	        	renderArgs.put("message", message);
+	        	renderArgs.put("messageClass", "box-error");
+				
+			}
+			
+        	render("Admin/editxml.html", bundleName, serviceName, newName, content);
+		
+		}
+		
+	}
+	
+	
+	/**
+	 * Zip all the bundle content and return the binary file to download
+	 * 
+	 * @param bundleName the bundle name of pack and download
+	 */
+	public static void bundleZipAndDownload( String bundleName ) { 
+		final BundleRegistry registry = BundleRegistry.instance();
+		final Bundle bundle = registry.get(bundleName);
+		
+		try {
+			File zipFile = File.createTempFile("bundle-", ".zip");
+			
+			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(zipFile));
+
+			final String base = bundle.root.getParent().toString();
+			Iterator i = FileUtils.iterateFiles(bundle.root, null, true);
+			while( i.hasNext() ) { 
+				File file = (File) i.next();
+				
+				String name = file.toString();
+				if( name.startsWith(base)) { 
+					name = name.substring(base.length());
+				}
+				ZipEntry entry = new ZipEntry(name);
+				zip.putNextEntry(entry);
+				
+				if( file.isFile() ) { 
+					// append the file content
+					FileInputStream in = new FileInputStream(file);
+					IO.write(in, zip);
+					in.close(); 		
+				}
+				// Complete the entry 
+				zip.closeEntry(); 
+			}
+			
+			zip.close();
+			
+			String attachName = String.format("bundle-%s-%s.zip", bundle.name, bundle.version);
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + attachName+ "\"");
+			renderBinary(zipFile);
+		}
+		catch (IOException e) {
+			throw new QuickException(e, "Unable to zip content for bundle: '%s'", bundle.name);
+		}		
+	}
+	
+
  }
 

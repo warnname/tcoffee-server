@@ -8,10 +8,22 @@
 #{include 'Admin/bundleInfo.html' /}
 
 <div>
-<form action="@{Admin.bundleDrop}" >
-<input type="hidden" name="bundleName" value="${bundle.name}">
-<button type="submit" class="button">Drop</button>
+<button id="zip" type="button" class="button">Zip &amp; Download</button>
+<button id="drop" type="button" class="button">Drop</button>
 &nbsp;&nbsp;
 <a href="@{Admin.bundleManager}" >Bundle manager</a>
-</form>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$('#zip').click(function(){
+		window.open("@{Admin.bundleZipAndDownload(bundle.name)}","_blank")
+	});
+
+	$('#drop').click(function() {
+		window.location = "@{Admin.bundleDrop(bundle.name)}"
+	});
+	
+} );
+</script>

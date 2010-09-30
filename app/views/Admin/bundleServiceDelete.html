@@ -1,0 +1,26 @@
+#{extends 'layout.html' /}
+#{set title:'Bundle Service Delete' /}
+
+
+
+
+<h1>
+<span>Bundle Service deletion</span>
+</h1>
+
+<p>
+Your are going to delete service <b>${serviceName}</b> from bundle <b>${bundleName}</b>
+</p>
+
+<div class="box-warn">
+This operation cannot be undone. Click the button "Confirm" to proceed.
+</div>
+
+
+<form method="POST">
+<button class="button" type="submit">Confirm</button>
+&nbsp;&nbsp;
+<a href="@{Admin.bundleDetails(bundleName)}" >No, I don't want</a>
+</form>
+
+

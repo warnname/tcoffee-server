@@ -56,7 +56,10 @@ public class Data extends CommonController {
 		OutResult result = repo.getResult();
 		File zip = File.createTempFile("download", ".zip", repo.getFile());
 		zipThemAll(result.getItems(), zip);
-		renderBinary(zip, String.format("tcoffee-all-files-%s.zip",rid));
+
+		String attachName = String.format("tcoffee-all-files-%s.zip",rid);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + attachName+ "\"");
+		renderBinary(zip);
 	}
 	
 	static void zipThemAll( List<OutItem> items, File file ) {

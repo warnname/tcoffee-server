@@ -1,0 +1,74 @@
+#{extends 'layout.html' /}
+#{set title:'Edit XML' /}
+
+<script src="@{'/public/codemirror/js/codemirror.js'}" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+	var editor = CodeMirror.fromTextArea('editor', {
+    height: "40em",
+    parserfile: "parsexml.js",
+    stylesheet: "@{'/public/codemirror/css/xmlcolors.css'}",
+    path: "@{'/public/codemirror/js/'}/",
+    continuousScanning: 500,
+    lineNumbers: true
+  });
+
+});
+//-->
+</script>
+
+<style type="text/css">
+  .CodeMirror-wrapping {
+	background-color: white;
+	width: 60em;
+	}
+
+  
+  .CodeMirror-line-numbers {
+    width: 2.2em;
+    color: #aaa;
+    background-color: #eee;
+    text-align: right;
+    padding-right: .3em;
+    font-size: 10pt;
+    font-family: monospace;
+    padding-top: .4em;
+  }
+  
+  #textwrap { 
+	padding-bottom: 2em;
+	padding-left: 2em;
+  }
+</style>
+
+
+
+<h1>System editor<small>Where you can edit and save system files</small> </h1>
+
+#{if message && messageClass }
+<div class="${messageClass}" >
+<p>${message}</p>
+</div>
+#{/if}
+
+<form method="POST" >
+
+<fieldset>
+<h2><span>Editing file </span>  
+</h2>
+
+<div id="textwrap" >
+<textarea id="editor" name="content" rows="35" >${content}</textarea>
+</div>
+
+</fieldset>
+
+<div style="margin: 1em auto 2em 2em " >
+<button type="submit" class="button">Save</button> 
+</div>
+
+
+</form>
+

@@ -96,7 +96,7 @@ table#box-table-a { margin-bottom: 3em; }
 	Components 
 	 -->
 <h2>
-<span>Components </span>
+<span>Services </span>
 </h2>
 
 #{if bundle.services }
@@ -105,7 +105,8 @@ table#box-table-a { margin-bottom: 3em; }
 <tr>
 <th>Name</th>
 <th>Group</th>
-<th>Description</th>
+<th>Info</th>
+<th>Actions</th>
 </tr>
 </thead>
 
@@ -114,9 +115,16 @@ table#box-table-a { margin-bottom: 3em; }
 <tr class="${_parity}" >
 <td nowrap="nowrap">${_.title}</td>
 <td nowrap="nowrap">${_.group}</td>
-<td>${_.description}</td>
+<td>
+${_.description} <br/>
+<a target="_blank" href="@{Application.main(bundle.name,_.name)}" >@@{Application.main(bundle.name,_.name)}</a></td>
+<td nowrap="nowrap" >
+	[ <a href="@{Admin.bundleServiceEdit(bundle.name,_.name)}" title="Modify service configuration"  >edit</a> ]
+	[ <a href="@{Admin.bundleServiceDelete(bundle.name,_.name)}" title="Delete service from bundle" >delete</a> ]
+	[ <a href="javascript:void(0)" class="copy" bundle="${bundle.name}" service="${_.name}" title="Create a copy of this service" >copy</a> ]
+</td>
 </tr>
-#{/list }
+#{/list}
 
 </tbody>
 </table>
@@ -131,5 +139,14 @@ $(document).ready(function() {
 	$('table.one-col tr').each( function() {
 		$(this).children().first().addClass('oce-first')
 	} );
+
+	/* the copy link behavior */
+	$('a.copy').click(function() {
+		var newName = prompt('Enters a new service name');
+		if( newName == null ) return;
+		var go = #{jsAction @Admin.bundleServiceCopy(':bundleName',':serviceName', ':newName') /}
+		window.location = go( {bundleName:$(this).attr('bundle'), serviceName:$(this).attr('service'), newName:newName } )
+	} );
+	
 } )
 </script>

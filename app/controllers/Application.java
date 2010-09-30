@@ -259,7 +259,7 @@ public class Application extends CommonController {
 	 */
 	static void renderBundlePage( String page, Object... args) { 
 		Bundle bundle = (Bundle) renderArgs.get("_bundle");
-		if( bundle.pagesPath != null && bundle.pagesPath.child(page) .exists()) { 
+		if( bundle != null && bundle.pagesPath != null && bundle.pagesPath.child(page) .exists()) { 
 			renderArgs.put("_page", page);
 			render("Application/_wrapper.html", args);
 		}
