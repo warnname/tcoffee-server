@@ -1,6 +1,14 @@
 package job;
 
+import java.io.File;
+import java.util.Iterator;
+
+import models.AppProps;
 import models.Repo;
+
+import org.apache.commons.io.FileUtils;
+
+import play.Logger;
 import play.jobs.Every;
 import play.jobs.Job;
 
@@ -16,7 +24,25 @@ public class Wiper extends Job {
 	
 	@Override
 	public void doJob() { 
+		/* 
+		 * delete expired jobs 
+		 */
 		Repo.deleteExpired();
+		
+		/* 
+		 * delete temporary files and upload
+		 */
+		Iterator files = FileUtils.iterateFiles(AppProps.TEMP_PATH, null, false);
+		while( files.hasNext() ) { 
+			File file = (File) files.next();
+			long max = 60 * 60 * 1000; // <-- 1 h
+			long delta = System.currentTimeMillis() - file.lastModified();
+			if( delta>max && !FileUtils.deleteQuietly(file) ) { 
+				Logger.warn("Wiper cannot delete temp file: '%s'", file);
+			}
+		}
+		
+		
     }
 	
 	

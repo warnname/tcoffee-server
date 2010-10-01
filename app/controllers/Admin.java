@@ -380,7 +380,7 @@ public class Admin extends CommonController {
 			 * and return that name in the result to be stored in a hidden field
 			 */
 
-			bundleZip = File.createTempFile("bundle_", ".zip", AppProps.BUNDLE_UPLOAD_PATH);
+			bundleZip = File.createTempFile("bundle_", ".zip", AppProps.TEMP_PATH);
 			OutputStream out = new BufferedOutputStream(new FileOutputStream(bundleZip));
 			IO.write(new BufferedInputStream(request.body), out);
 			out.close();
@@ -403,7 +403,7 @@ public class Admin extends CommonController {
 			 * 2. Stage
 			 * Unzip the bundle in a temporaty folder 
 			 */
-			File stagingRoot = File.createTempFile("bundle_",null, AppProps.BUNDLE_UPLOAD_PATH);
+			File stagingRoot = File.createTempFile("bundle_",null, AppProps.TEMP_PATH);
 			stagingRoot.delete();
 			stagingRoot.mkdir();
 			
@@ -642,7 +642,7 @@ public class Admin extends CommonController {
 	        	conf = BundleHelper.replaceServiceXml(conf, content);
 	        	
 	        	// 2. save to a temporary file 
-	        	File file = File.createTempFile("bundle-", ".xml");
+	        	File file = File.createTempFile("bundle-", ".xml", AppProps.TEMP_PATH);
 	        	IO.writeContent(conf, file);
 	        	
 	        	// 3. try to load to check to nothing is broken 
@@ -724,7 +724,7 @@ public class Admin extends CommonController {
 	        	conf = BundleHelper.addServiceXml(conf, content);
 	        	
 	        	// 4. save to a temporary file 
-	        	File file = File.createTempFile("bundle-", ".xml");
+	        	File file = File.createTempFile("bundle-", ".xml", AppProps.TEMP_PATH);
 	        	IO.writeContent(conf, file);
 	        	
 	        	// 5. try to load to check to nothing is broken 
@@ -764,7 +764,7 @@ public class Admin extends CommonController {
 		final Bundle bundle = registry.get(bundleName);
 		
 		try {
-			File zipFile = File.createTempFile("bundle-", ".zip");
+			File zipFile = File.createTempFile("bundle-", ".zip", AppProps.TEMP_PATH);
 			
 			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(zipFile));
 

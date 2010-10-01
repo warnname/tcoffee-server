@@ -61,8 +61,9 @@ public class AppProps implements Serializable  {
 		
 	}
 	
-	static File getBundlePath() { 
-		final String path = Play.configuration.getProperty("tserver.bundles.path", "bundles");
+	
+	static File getWorkPath( final String propertyName, final String defaultLocation ) { 
+		final String path = Play.configuration.getProperty(propertyName, defaultLocation);
 		
 		/* when an absolute file name is specified just use it */
 		if( path.startsWith(File.separator) ) { 
@@ -77,7 +78,12 @@ public class AppProps implements Serializable  {
  
 		/* otherwise fallback on the application root */
 		result = new File(Play.applicationPath,path);
-		return result;
+		
+		if( !result.exists() && !result.mkdirs()) { 
+			throw new QuickException("Unable to create path '%s'", result);
+		}
+		
+		return result;		
 	}
 	
 	/**
@@ -90,7 +96,7 @@ public class AppProps implements Serializable  {
 	/** The path where all application bundles are located */
 	public static final File BUNDLES_FOLDER;
 	
-	public static final File BUNDLE_UPLOAD_PATH;
+	public static final File TEMP_PATH;
 	
 	static final Map<String,String> DEF_PROPS;
 
@@ -139,22 +145,13 @@ public class AppProps implements Serializable  {
 		/*
 		 * 4. bundles path 
 		 */
-		BUNDLES_FOLDER = getBundlePath();
-		if( !BUNDLES_FOLDER.exists() ) {
-			if( !BUNDLES_FOLDER.mkdirs() ) { 
-				throw new QuickException("Unable to create bundle folder path: '%s'", BUNDLES_FOLDER);
-			}
-		}
+		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
 		Logger.info("Using 'bundles' on path: %s", BUNDLES_FOLDER);
 
 		/* create upload path */
-		BUNDLE_UPLOAD_PATH = new File(BUNDLES_FOLDER, ".upload");
-		if( !BUNDLE_UPLOAD_PATH.exists() ) {
-			if( !BUNDLE_UPLOAD_PATH.mkdirs() ) { 
-				throw new QuickException("Unable to create bundle upload path: '%s'", BUNDLE_UPLOAD_PATH);
-			}
-		}
-	
+		TEMP_PATH = getWorkPath("tserver.temp.path", ".temp");
+		Logger.info("Using 'temp' path: %s", TEMP_PATH);
+		
 		
 		/*
 		 * 5. Define the other default folder that can be overriden at runtime
