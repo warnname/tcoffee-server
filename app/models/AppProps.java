@@ -79,8 +79,11 @@ public class AppProps implements Serializable  {
 		/* otherwise fallback on the application root */
 		result = new File(Play.applicationPath,path);
 		
-		if( !result.exists() && !result.mkdirs()) { 
-			throw new QuickException("Unable to create path '%s'", result);
+		if( !result.exists() ) { 
+			Logger.info("Creating path '%s'",result);
+			if( !result.mkdirs() ) { 
+				throw new QuickException("Unable to create path '%s'", result);
+			}
 		}
 		
 		return result;		
@@ -125,10 +128,10 @@ public class AppProps implements Serializable  {
 		 			: new File(Play.applicationPath,"data");
 	
 		if( !WORKSPACE_FOLDER.exists() ) {
-			Logger.warn("Application DATA root does not exists: '%s'", WORKSPACE_FOLDER);
+			Logger.warn("Creating Workspace folder: '%s'", WORKSPACE_FOLDER);
 			// try to create it and raise anc exception if it fails 
 			if( !WORKSPACE_FOLDER.mkdirs() ) { 
-				throw new QuickException("Unable to create appplication 'data' path: '%s' ", WORKSPACE_FOLDER);
+				throw new QuickException("Unable to create workspace folder: '%s' ", WORKSPACE_FOLDER);
 			}
 		}
 		
@@ -148,7 +151,7 @@ public class AppProps implements Serializable  {
 		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
 		Logger.info("Using 'bundles' on path: %s", BUNDLES_FOLDER);
 
-		/* create upload path */
+		/* create temporary path */
 		TEMP_PATH = getWorkPath("tserver.temp.path", ".temp");
 		Logger.info("Using 'temp' path: %s", TEMP_PATH);
 		
@@ -156,7 +159,6 @@ public class AppProps implements Serializable  {
 		/*
 		 * 5. Define the other default folder that can be overriden at runtime
 		 */
-		
 				
 		
 		DEF_PROPS = new HashMap<String,String>();

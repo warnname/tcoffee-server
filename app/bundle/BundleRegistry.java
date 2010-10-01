@@ -153,11 +153,13 @@ public class BundleRegistry {
 
 		/* create a set with all bundles root currently */
 		File[] files = AppProps.BUNDLES_FOLDER.listFiles();
-		Set<File> foundBundlesOnFileSystem = new HashSet(files.length);
-		for( File file : files ) { 
-			if( isBundlePath(file)) { 
-				foundBundlesOnFileSystem.add(file);
-			}
+		Set<File> foundBundlesOnFileSystem = new HashSet( (files!=null) ? files.length : 0);
+		if( files != null ) { 
+			for( File file : files ) { 
+				if( isBundlePath(file)) { 
+					foundBundlesOnFileSystem.add(file);
+				}
+			}			
 		}
 		
 		Set<File> installed = new HashSet<File>( roots.keySet() );
