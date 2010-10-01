@@ -5,10 +5,10 @@ import java.util.List;
 
 import models.AppProps;
 import models.Bundle;
-import models.Service;
 import models.History;
 import models.OutResult;
 import models.Repo;
+import models.Service;
 import models.Status;
 import play.Logger;
 import play.mvc.After;
@@ -99,9 +99,10 @@ public class Application extends CommonController {
 	/**
 	 * Renders the history html table  
 	 */
-	public static void historyTable( String bundle ) {
+	public static void historyTable( String bundle ) {	
 		List<History> recent = History.findAll();
 		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
+        response.setHeader("Cache-Control", "no-cache");
 		render(recent);
 	}
 
