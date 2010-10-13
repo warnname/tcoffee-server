@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import play.mvc.Router;
 import play.test.UnitTest;
 import util.XStreamHelper;
 
@@ -144,4 +145,16 @@ public class AppPropsTest extends UnitTest {
 		
 	} 
 
+	@Test
+	public void testContextPath() { 
+		/* default root context */
+		assertEquals("", props.contextPath);
+		
+		/* simulate a top level context path */
+		Router.routes.add(0, Router.getRoute("GET", "/root/path", "Main.index", null));
+		props.contextPath = null; // force re-evaluating
+		assertEquals("/root", props.contextPath);
+
+		Router.routes.remove(0);
+	}
 }

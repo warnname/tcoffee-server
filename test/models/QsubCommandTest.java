@@ -67,6 +67,7 @@ public class QsubCommandTest extends UnitTest {
 		
 		
 		QsubCommand qsub = new QsubCommand();
+		qsub.disabled = false;
 		qsub._commands = new ArrayList<AbstractShellCommand>();
 		qsub._commands.add(tcoffee);
 		qsub.queue = "ws_cn";
@@ -153,6 +154,7 @@ public class QsubCommandTest extends UnitTest {
 		qsub.logfile = "qsub.out.log";
 		qsub.cmdfile = "qsub.cmd.txt";
 		qsub.envfile = "qsub.env.txt";
+		qsub.disabled = false;
 		qsub.init();
 		
 		qsub.execute();
@@ -162,5 +164,20 @@ public class QsubCommandTest extends UnitTest {
 		assertEquals( "Your qsub request could not be scheduled, try again later.", qsub.result.errors.get(0) );
 		
 	} 
+	
+	@Test 
+	public void testDisabledProperty() { 
+		QsubCommand qsub = new QsubCommand();
+		assertTrue( qsub.disabled ); // disabled in DEV mode by default
+		
+		AppProps.instance().setProperty("qsub.disabled", "false");
+		qsub = new QsubCommand();
+		assertFalse( qsub.disabled ); 
+
+		AppProps.instance().setProperty("qsub.disabled", "true");
+		qsub = new QsubCommand();
+		assertTrue( qsub.disabled ); 
+		
+	}
 	
 }

@@ -13,7 +13,8 @@ public class FastaTest extends UnitTest {
 	@Test
 	public void testFasta() throws IOException {
 		
-		Fasta fasta = new Fasta(TestHelper.file("/test.fasta"));
+		Fasta fasta = new Fasta(Fasta.AminoAcid.INSTANCE);
+		fasta.parse(TestHelper.file("/test.fasta"));
 		
 		assertNotNull(fasta.sequences);
 		//assertEquals(5, fasta.sequences.size());
@@ -38,23 +39,46 @@ public class FastaTest extends UnitTest {
 	
 	@Test 
 	public void testIsValidFile() {
-		assertTrue( Fasta.isValid(TestHelper.file("/test.fasta")) );
+		assertTrue( Fasta.isValid(TestHelper.file("/test.fasta"), Fasta.AminoAcid.INSTANCE) );
 	}
 
 	@Test 
 	public void testNotValidFile() {
-		assertFalse( Fasta.isValid(TestHelper.sampleLog()) );
-		assertFalse( Fasta.isValid(new File("XXX")) );
+		assertFalse( Fasta.isValid(TestHelper.sampleLog(), Fasta.AminoAcid.INSTANCE) );
+		assertFalse( Fasta.isValid(new File("XXX"), Fasta.AminoAcid.INSTANCE ));
 	}
+
+	@Test
+	public void testIsValidNucleicString() { 
+		assertTrue( Fasta.isValid(">1aboA\nACGTGGCU", Fasta.NucleicAcid.INSTANCE) );
+		assertFalse( Fasta.isValid(">1aboA\nACGTGGCS", Fasta.NucleicAcid.INSTANCE) );
+	}
+
+	@Test
+	public void testIsValidDnaString() { 
+		assertTrue( Fasta.isValid(">1aboA\nACGTACGT", Fasta.Dna.INSTANCE) );
+		assertFalse( Fasta.isValid(">1aboA\nACGTACGU", Fasta.Dna.INSTANCE) );
+	}
+
+	@Test
+	public void testIsValidRnaString() { 
+		assertFalse( Fasta.isValid(">1aboA\nACGTACGT", Fasta.Rna.INSTANCE) );
+		assertTrue( Fasta.isValid(">1aboA\nACGUACGU", Fasta.Rna.INSTANCE) );
+	}	
 	
 	@Test
 	public void testIsValidString() { 
-		assertTrue( Fasta.isValid(">1aboA\nNLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN") );
+		assertTrue( Fasta.isValid(">1aboA\nNLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", Fasta.AminoAcid.INSTANCE) );
+	}
+
+	@Test
+	public void testIsValidLowerString() { 
+		assertTrue( Fasta.isValid(">1aboA\nnlfvalydfvasgdntlsitkgeklrvlgynhngewceaqtkngqgwvpsnyitpvn", Fasta.AminoAcid.INSTANCE) );
 	}
 	
 	@Test
 	public void testNotValidString() { 
-		assertFalse( Fasta.isValid("XXXX") );
+		assertFalse( Fasta.isValid("XXXX", Fasta.AminoAcid.INSTANCE) );
 	}
 	
 	
