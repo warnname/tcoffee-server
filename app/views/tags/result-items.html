@@ -24,7 +24,7 @@
 	<td>
 	#{if count < len }
 	%{ def item=items[count]; count++; }%
-	<a href="${item.webpath}" target="_blank">${item.label}</a> 
+	<a href="${item.webpath}" target="_blank">${item.label}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length().formatSize()})</small>
 	#{/if}
 	</td>
 	#{/list}
