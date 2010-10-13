@@ -7,15 +7,15 @@
 #{field-wrap _arg } 
 
 #{if _arg.type == 'text' }
-	<input type="text" name="${_arg.name}" value="${_arg.value}" title="${_arg.hint}" class="tiptip"/>
+	<input type="text" name="${_arg.name}" value="${_arg.value}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if}/>
 #{/if}
 
 #{elseif _arg.type == 'password' }
-	<input type="password" name="${_arg.name}" value="${_arg.value}" title="${_arg.hint}" class="tiptip" />
+	<input type="password" name="${_arg.name}" value="${_arg.value}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} />
 #{/elseif}
 
 #{elseif _arg.type == 'dropdown' }
-	<select name='${_arg.name}' title="${_arg.hint}" class="tiptip">
+	<select name='${_arg.name}' #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if}>
 	#{list _arg.choices, as: 'item'}
 	<option ${_arg.value==item ? "selected='selected'" : "" }>${item}</option>
 	#{/list}
@@ -23,7 +23,7 @@
 #{/elseif}
 
 #{elseif _arg.type == 'list' }
-	<select name='${_arg.name}' size="5" title="${_arg.hint}" class="tiptip" >
+	<select name='${_arg.name}' size="5" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} >
 	#{list _arg.choices, as: 'item'}
 	<option ${_arg.value==item ? "selected='selected'" : "" }>${item}</option>
 	#{/list}
@@ -52,14 +52,14 @@
 #{/elseif}
 
 #{elseif _arg.type == 'textarea' }
-	<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="tiptip" rows="6" >${_arg.value}</textarea>
+	<textarea id="${_arg.name}" name="${_arg.name}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} rows="6" >${_arg.value}</textarea>
 #{/elseif}
 
 #{elseif _arg.type == 'memo' || _arg.type == 'file' }
 
     <div id="${_arg.name}_wrap" >
         #{if _arg.type=='memo'}
-		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="tiptip" rows="6" >${_arg.value}</textarea>
+		<textarea id="${_arg.name}" name="${_arg.name}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} rows="6" >${_arg.value}</textarea>
 	    <div class="link">
 	    - OR - <a id="${_arg.name}_uploader" href="javascript:void(0)" >click here to upload a file</a>
 	    </div>

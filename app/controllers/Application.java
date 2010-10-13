@@ -87,6 +87,7 @@ public class Application extends CommonController {
 	    	render("Application/failed.html", rid, ctx, result, cached);
 		}
 		else if( status.isRunning() ) {
+			responseNoCache();
 			render("Application/wait.html", rid );
 		}
 		else {
@@ -102,11 +103,12 @@ public class Application extends CommonController {
 	public static void historyTable( String bundle ) {	
 		List<History> recent = History.findAll();
 		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
-        response.setHeader("Cache-Control", "no-cache");
+		responseNoCache();
 		render(recent);
 	}
 
-	
+
+
 	/**
 	 * Check the current status for the alignment request specified by <code>rid</code>
 	 * 
@@ -238,7 +240,7 @@ public class Application extends CommonController {
 
 	public static void servePublic( String bundle, String path ) { 
 		Bundle oBundle = BundleRegistry.instance().get(bundle);
-		renderFile(oBundle.publicPath, path );
+		renderFile(oBundle.publicPath, path);
 	}
 	
 	/**

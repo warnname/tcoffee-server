@@ -23,6 +23,157 @@ import exception.QuickException;
  */
 public class Fasta {
 	
+	
+	private static final int LINE_FEED = '\n';
+	
+	private static final int CARRIAGE_RETURN = '\r';
+		
+	public interface Alphabet {
+		
+		boolean isValidChar( char ch );
+		
+		char[] letters();
+		
+	}
+	
+	/**
+	 * Amino Acid alphabet as defined http://www.ncbi.nlm.nih.gov/blast/fasta.shtml 
+	 * 
+	 * @author Paolo Di Tommaso
+	 *
+	 */
+	static class AminoAcid implements Alphabet {
+
+		public static Alphabet INSTANCE = new AminoAcid();
+		
+		static final char[] aminos = { 
+			'a', 'A',	// alanine 
+			'b', 'B',	// aspartate or asparagine
+			'c', 'C',	// cystine
+			'd', 'D',	// aspartate
+			'e', 'E',	// glutamate
+			'f', 'F',	// phenylalanine
+			'g', 'G',	// glycine
+			'h', 'H',	// histidine
+			'i', 'I',	// isoleucine
+			'k', 'K',	// lysine
+			'l', 'L',	// leucine
+			'm', 'M',	// methionine
+			'n', 'N',	// asparagine
+			'p', 'P',	// proline
+			'q', 'Q',	// glutamine
+			'r', 'R',	// arginine
+			's', 'S',	// serine
+			't', 'T',	// threonine
+			'u', 'U',	// selenocysteine
+			'v', 'V',	// valine	
+			'w', 'W',	// tryptophan
+			'y', 'Y',	// tyrosine
+			'z', 'Z',	// glutamate or glutamine
+			'x', 'X',	// any   
+			'*',	// translation stop
+			'-'		// gap of indeterminate length
+		};
+		
+		
+		public boolean isValidChar(char ch) {
+			return Utils.contains(aminos, ch);
+		}
+
+		public char[] letters() {
+			return aminos;
+		} 
+		
+	}
+	
+	/**
+	 * Nucleic acid alphabet 
+	 * 
+	 */
+	static class NucleicAcid implements Alphabet { 
+		
+		public static Alphabet INSTANCE = new NucleicAcid();
+		
+		
+		static final char[] letters = { 
+			'a', 'A',	// adenosine
+			'c', 'C',	// cytosine
+			'g', 'G',	// guanine
+			'u', 'U',	// uracil
+			't', 'T',	// thymidine
+			'x', 'X',	// any   
+			'-'		// gap of indeterminate length
+		};
+		
+		
+		public boolean isValidChar(char ch) {
+			return Utils.contains(letters, ch);
+		}
+
+		public char[] letters() {
+			return letters;
+		} 
+		
+	}
+	
+	/**
+	 * DNA alphabet 
+	 *
+	 */
+	static class Dna implements Alphabet { 
+
+		public static Alphabet INSTANCE = new Dna();
+		
+		static final char[] letters = { 
+			'a', 'A',	// adenosine
+			't', 'T',	// thymidine
+			'c', 'C',	// cytosine
+			'g', 'G',	// guanine
+			'x', 'X',	// any   
+			'-'		// gap of indeterminate length
+		};
+		
+		
+		public boolean isValidChar(char ch) {
+			return Utils.contains(letters, ch);
+		}
+
+		public char[] letters() {
+			return letters;
+		} 
+		
+	}
+
+	/**
+	 * RNA alphabet 
+	 * 
+	 */
+	static class Rna implements Alphabet { 
+
+		public static Alphabet INSTANCE = new Rna();
+		
+		static final char[] letters = { 
+			'a', 'A',	// adenosine
+			'u', 'U',	// uracil
+			'c', 'C',	// cytosine
+			'g', 'G',	// guanine
+			'x', 'X',	// any   
+			'-'		// gap of indeterminate length
+		};
+		
+		
+		public boolean isValidChar(char ch) {
+			return Utils.contains(letters, ch);
+		}
+
+		public char[] letters() {
+			return letters;
+		} 
+		
+	}
+	
+	
+	
 	static public class Sequence implements Serializable {
 		
 		/** The sequence header */
@@ -32,7 +183,7 @@ public class Fasta {
 		String value;
 		
 		
-		void parse( PushbackReader reader ) {
+		void parse( PushbackReader reader, Alphabet alphabet ) {
 			StringBuilder block = new StringBuilder();   
 
 			boolean stop;
@@ -43,12 +194,12 @@ public class Fasta {
 				int ch;
 				String more;
 				do {
-					more = readLine(reader,VALID_CHARS);
+					more = readLine(reader,alphabet.letters());
 					block.append(more);
 					
 					/* what's next ? */
 					ch = reader.read();
-					stop = !isValidChar((char)ch); 
+					stop = !alphabet.isValidChar((char)ch); 
 					if( ch != -1 ) {
 						/* pushback and continue reading */
 						reader.unread(ch);
@@ -114,6 +265,8 @@ public class Fasta {
 	}
 	
 
+	final Alphabet alphabet;
+	
 	/** The list of sequences */
 	List<Sequence> sequences;
 	
@@ -121,24 +274,11 @@ public class Fasta {
 	String error; 
 	
 	/** The default constructor */
-	public Fasta() {
-		sequences = new ArrayList<Sequence>();
+	public Fasta( Alphabet alphabet ) {
+		this.alphabet = alphabet;
+		this.sequences = new ArrayList<Sequence>();
 	}
 	
-	/**
-	 * Constuct the object parsing the specified string as a FASTA format content
-	 * 
-	 * @param sequences the sequences in FASTA format 
-	 */
-	public Fasta( String sequences ) {
-		this();
-		parse( new PushbackReader(new StringReader(sequences)) );
-	}
-
-	public Fasta( File file ) throws FileNotFoundException {
-		this();
-		parse( new PushbackReader(new FileReader(file)) );
-	}
 	
 	
 	public boolean isEmpty() {
@@ -179,6 +319,15 @@ public class Fasta {
 		return max;
 	}
 	
+	public void parse( File file ) throws FileNotFoundException { 
+		parse( new PushbackReader(new FileReader(file)) );
+	}
+
+	public void parse( String sequences )  { 
+		parse( new PushbackReader(new StringReader(sequences)) );
+	}
+	
+	
 	void parse( PushbackReader reader ) {
 		Check.notNull(reader, "Argument reader cannot be null");
 
@@ -189,7 +338,7 @@ public class Fasta {
 			while( (ch=reader.read()) != -1 ) {
 				if( ch == '>' ) {
 					Sequence seq = new Sequence();
-					seq.parse(reader);
+					seq.parse(reader,alphabet);
 					result.add(seq);
 				}
 			}
@@ -205,17 +354,15 @@ public class Fasta {
 		return !isEmpty() && minLength()>0;
 	} 
 
-	static boolean isValidChar( char ch ) {
-		return Utils.contains(VALID_CHARS, ch);
-	}
-	
 	/**
 	 * @param file the file to be checked 
 	 * @return <code>true</code> if the specified file a valid content in FASTA format 
 	 */
-	public static boolean isValid(File file) {
+	public static boolean isValid(File file, Alphabet alphabet) {
 		try {
-			return new Fasta(file).isValid();
+			Fasta fasta = new Fasta(alphabet);
+			fasta.parse(file);
+			return fasta.isValid();
 		} 
 		catch (FileNotFoundException e) {
 			Logger.warn("Specified FASTA file does not exists: %s", file);
@@ -223,44 +370,12 @@ public class Fasta {
 		}
 	}
 
-	public static boolean isValid(String sequences) {
-		return new Fasta(sequences).isValid();
+	public static boolean isValid(String sequences, Alphabet alphabet) {
+		Fasta fasta = new Fasta(alphabet);
+		fasta.parse(sequences);
+		return fasta.isValid();
 	}
-	
 
-	private static final int LINE_FEED = '\n';
-	
-	private static final int CARRIAGE_RETURN = '\r';
-	
-	
-	/** as defined http://www.ncbi.nlm.nih.gov/blast/fasta.shtml */
-	static final char[] VALID_CHARS = { 
-		'A',	// alanine 
-		'B',	// aspartate or asparagine
-		'C',	// cystine
-		'D',	// aspartate
-		'E',	// glutamate
-		'F',	// phenylalanine
-		'G',	// glycine
-		'H',	// histidine
-		'I',	// isoleucine
-		'K',	// lysine
-		'L',	// leucine
-		'M',	// methionine
-		'N',	// asparagine
-		'P',	// proline
-		'Q',	// glutamine
-		'R',	// arginine
-		'S',	// serine
-		'T',	// threonine
-		'U',	// selenocysteine
-		'V',	// valine	
-		'W',	// tryptophan
-		'Y',	// tyrosine
-		'Z',	// glutamate or glutamine
-		'X',	// any   
-		'*',	// translation stop
-		'-'		// gap of indeterminate length
-	};
+
 
 }

@@ -13,7 +13,6 @@ import play.jobs.Job;
 import play.jobs.OnApplicationStart;
 import play.mvc.Router;
 import play.vfs.VirtualFile;
-import util.Utils;
 import exception.QuickException;
 
 @OnApplicationStart
@@ -26,8 +25,6 @@ public class Bootstrap extends Job {
 
 		addTestsRoute();
 		
-		detectContextPath();
-				
 		deployPropFile();
 		
 	}
@@ -65,25 +62,6 @@ public class Bootstrap extends Job {
 		}
 	}
 	
-
-	private void detectContextPath() {
-
-		/*
-		 * TODO make this dynamic with dependency with an external property
-		 */
-		String context = Play.configuration.getProperty("context");
-		if( Utils.isEmpty(context) ) {
-			Logger.info("Using ROOT Context path");
-		}
-		else {
-			if( !context.startsWith("/") ) {
-				context = "/" + context;
-				Play.configuration.setProperty("context",context);
-			}
-			Logger.info("Detected application Context Path: '%s'", context);
-		}
-		
-	}
 
 
 }

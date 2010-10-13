@@ -10,6 +10,7 @@ import java.util.Map;
 
 import play.Logger;
 import play.Play;
+import play.mvc.Router;
 import util.Check;
 import util.ReloadableSingletonFile;
 import util.Utils;
@@ -428,5 +429,41 @@ public class AppProps implements Serializable  {
 			}
 		}
 	} 
+	
+	public String contextPath;
+	
+	public String getContextPath() { 
+		if( contextPath != null ) { 
+			return contextPath;
+		}
+		
+		String path = Router.reverse("Main.index").toString();
+
+		/* normalize the discovered context path */
+		if( path != null && path.equals("/") ) { 
+			Logger.info("Using ROOT Context path");
+			contextPath = "";
+			return contextPath;
+		}
+		
+		if( Utils.isEmpty(path) || !path.startsWith("/") ) {
+			Logger.warn("Invalid context path: '%s'", path);
+			return "";
+		}
+		
+		int p = path.substring(1).indexOf("/");
+		if( p != -1 ) { 
+			path = path.substring(0,p+1);
+			Logger.info("Detected application Context Path: '%s'", path);
+			contextPath = path;
+		}
+		else { 
+			contextPath = "";
+		}
+		return contextPath;
+
+
+
+	}
 	
 }

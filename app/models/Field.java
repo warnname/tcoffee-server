@@ -15,9 +15,11 @@ import org.apache.commons.io.FileUtils;
 import play.Play;
 import play.mvc.Http.Request;
 import play.mvc.Router;
+import play.mvc.Scope;
 import play.mvc.Scope.Params;
 import play.vfs.VirtualFile;
 import util.Utils;
+import bundle.BundleRegistry;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -72,7 +74,7 @@ public class Field implements Serializable {
 	private @XStreamOmitField byte[] fFileContent;
 	private @XStreamOmitField File fFile;
 	
-
+	
 	/**
 	 * Field default constructor. Instantiate will all field to <code>null</code>
 	 */
@@ -181,6 +183,10 @@ public class Field implements Serializable {
 					throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
 				}
 			}
+			else if( value != null ) {
+				// normalize value removing trailing and leading blanks and special chars
+				value = value.trim();
+			}
 		
 
 		}
@@ -251,6 +257,15 @@ public class Field implements Serializable {
 		
 		return fHintsMap = result;
 		
+	}
+	
+	
+	public boolean getUseTipTip() { 
+		/* TODO find a better way instead of using the singleton */
+		Bundle bundle = BundleRegistry.instance().get(Scope.Params.current().get("bundle"));
+		String result = bundle != null ? bundle.properties.getProperty("ui.use.tiptip") : null;
+		
+		return "true".equalsIgnoreCase(result);
 	}
 	
 	/**

@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
-import play.Play;
 import play.data.validation.Validation;
 import play.jobs.Job;
 import play.mvc.Http.Request;
@@ -534,7 +533,7 @@ public class Service implements Serializable {
 		 * the file path have to be published under the framework root, 
 		 * being so the 'framework path' is the prefix of the file full path
 		 */
-		String context = Play.configuration.getProperty("context");
+		String context = AppProps.instance().getContextPath();
 		String path = Utils.getCanonicalPath(file);
 		String root = AppProps.instance().getDataPath();
 		

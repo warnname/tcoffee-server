@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import play.Logger;
+import play.Play;
 import util.Check;
 import util.FileIterator;
 import util.Utils;
@@ -17,6 +18,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+
+import exception.CommandException;
 
 /**
  * Execute the specified command on the system cluster 
@@ -44,6 +47,7 @@ public class QsubCommand extends AbstractShellCommand {
 
 	private String jobid;
 	
+	public Boolean disabled;
 	
 	/** The default constructor */
 	public QsubCommand() {}
@@ -72,6 +76,16 @@ public class QsubCommand extends AbstractShellCommand {
 		return jobid;
 	}
 	
+	public boolean getDisabled() { 
+		if( disabled != null ) { 
+			return disabled;
+		}
+		
+		String result = AppProps.instance().getProperty("qsub.disabled");
+		disabled = result != null ? "true".equals(result) : Play.mode.equals( Play.Mode.DEV );
+		return disabled;
+	}
+	
 	@Override
 	public void init(CommandCtx ctx) {
 		
@@ -83,6 +97,10 @@ public class QsubCommand extends AbstractShellCommand {
 		 * initialize the target command 
 		 */
 		command.init(ctx);
+		
+		if( disabled ) {
+			return;
+		}
 		
 		/*
 		 * initialize this command 
@@ -98,6 +116,7 @@ public class QsubCommand extends AbstractShellCommand {
 	
 	@Override
 	protected void onInitEnv(Map<String, String> map) {
+		
 		super.onInitEnv(map);
 
 		/*
@@ -194,18 +213,29 @@ public class QsubCommand extends AbstractShellCommand {
 	}
 	
 	@Override
+	public boolean run() throws CommandException {
+		return (disabled)
+			 	? command.run()
+				: super.run();
+	}
+	
+	@Override
 	protected boolean done(boolean success) {
 		
 		/*
 		 * complete the target command
 		 */
 		success = command.done(success);
-
+		
 		/* 
 		 * the result of this command is the same as the target command 
 		 */
 		result = command.result;
 
+		if( disabled ) { 
+			return success;
+		}
+	
 		/*
 		 * complete this job parsing the qsub output
 		 */

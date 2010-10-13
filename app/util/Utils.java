@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import play.Logger;
 import play.Play;
@@ -1917,5 +1918,36 @@ public class Utils {
 		
 		return result;
 	}
+	
+	
+	/**
+	*
+	* PL/SQL decode like function
+	*
+	* Evaluate the first argument and compare it with second argument, if they are equals will return the third one,
+	* otherwise compare it with the forth one and will return the fifth, and so on.
+	* If all the comparisons fails will return the last one, if present, or null.
+	*
+	* @param args x, y0, v0, y1, v1, ...., [default]
+	* @return
+	*/
+	public Object decode( Object... args )
+	{
+		Object pivot = args[0];
+	
+		int max = args.length-1;
+	
+		int i=1;
+		for ( ; i< max; i+=2 )
+		{
+			if ( ObjectUtils.equals(pivot,args[i]) ) { 
+				return args[i+1];
+			}
+		}
+	
+		// default value
+		return i==max ? args[i] : null;
+	}
+	
 }
  

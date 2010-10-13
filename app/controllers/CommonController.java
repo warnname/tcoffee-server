@@ -134,6 +134,10 @@ public class CommonController extends Controller {
 		render("Application/page.html", content);
 	}
 	
+	
+	static void responseNoCache() {
+        response.setHeader("Cache-Control", "no-cache");
+	}	
 
 	/**
 	 * Marks the headers for caching static returned response

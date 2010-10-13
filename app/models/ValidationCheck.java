@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import play.Logger;
 import play.data.validation.EmailCheck;
 import play.data.validation.Validation;
 import plugins.AutoBean;
@@ -37,7 +38,18 @@ public class ValidationCheck implements Serializable {
 	@XStreamAlias("format-error")
 	public String formatError;
 	
-	/** minimum value accepted for numbers and date, minlength for string values */
+	/** 
+	 * Sub-type for format 'FASTA'. Valida types are: 
+	 * <li>amino-acid</li> (default)
+	 * <li>nucleic-acid</li>
+	 * <li>dna</li>
+	 * <li>rna</li>
+	 * 
+	 */
+	@XStreamAlias("type")
+	public String type;
+	
+	/** minimum value accepted for numbers and date and string values */
 	@XStreamAsAttribute
 	public String min; 
 
@@ -45,7 +57,7 @@ public class ValidationCheck implements Serializable {
 	@XStreamAlias("min-error")
 	public String minError;	
 	
-	/** maximum value accepted for numbers and date, minlength for string values */
+	/** maximum value accepted for numbers and date and string values */
 	@XStreamAsAttribute
 	public String max;
 	
@@ -164,6 +176,7 @@ public class ValidationCheck implements Serializable {
 			}
 			
 		}
+		
 		/*
 		 * DATE  validation
 		 */
@@ -239,7 +252,28 @@ public class ValidationCheck implements Serializable {
 		 */
 		else if( FASTA.equals(format) && Utils.isNotEmpty(value) ) {
 
-			Fasta fasta = new Fasta(value);
+			Fasta fasta;
+			if( Utils.isEmpty(type) || "amino-acid".equalsIgnoreCase(type) )  { 
+				 fasta = new Fasta(Fasta.AminoAcid.INSTANCE);		
+			}
+			else if( "nucleic-acid".equalsIgnoreCase(type) ) { 
+				 fasta = new Fasta(Fasta.NucleicAcid.INSTANCE);		
+			}
+			else if( "dna".equalsIgnoreCase(type) ) { 
+				 fasta = new Fasta(Fasta.Dna.INSTANCE);		
+			}
+			else if( "rna".equalsIgnoreCase(type) ) { 
+				 fasta = new Fasta(Fasta.Rna.INSTANCE);		
+			}
+			else { 
+				Logger.warn("Unknown fasta type '%s'. Using amino-acid format by default", type);
+				 fasta = new Fasta(Fasta.AminoAcid.INSTANCE);		
+			}
+			
+			/* parse the sequences */
+			fasta.parse(value);
+			
+			/* check for validity */
             if ( !fasta.isValid() ) { 
 				String message = Utils.isNotEmpty(formatError) ? formatError : "validation.fasta.format";
             	Validation.addError(name, message, new String[0]);

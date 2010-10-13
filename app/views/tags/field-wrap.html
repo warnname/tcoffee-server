@@ -1,5 +1,5 @@
 
-<label>${_arg.label} #{field-sample _arg /}
+<label>${_arg.label} #{if !_arg.useTipTip && !_arg.hintsMap}<small>${_arg.hint}</small>#{/if}  #{field-sample _arg /}
 </label>
 <div class="c-input #{errorClass _arg.name /}"> 
 #{doBody /}
