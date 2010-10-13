@@ -62,9 +62,21 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 <small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
 </h2>
 
+#{if result.alignmentHtml.file.length() < 1024*1024 }
 <div id="result">
-#{tcoffeeHtml result?.alignmentHtml?.file /}
+#{tcoffeeHtml result.alignmentHtml.file /}
 </div>
+#{/if}
+
+#{else}
+<p>
+   	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+   	<span style="position:relative; left:1em; ">The result alignment is too big to <br/> be showed inline, 
+   	<a target="_blank" href="${result.alignmentHtml.webpath}" >click here to open it</a> .
+   	</span>  
+
+</p>
+#{/else}
 
 <style type='text/css'> 
 #result { line-height: 1.0  }

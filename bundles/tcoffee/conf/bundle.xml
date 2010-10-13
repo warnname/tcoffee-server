@@ -57,7 +57,7 @@
         <description>Paste or upload your set of sequences in FASTA format</description>  
         <field type="memo" name="seqs" label="Sequences to align"> 
           <hint>Enter the sequences to align</hint>  
-          <validation format="FASTA" required="true" minnum="2" maxnum="50" maxlen="2000"> 
+          <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="50" maxlen="2000"> 
             <required-error>You have to enter the sequences to align</required-error>  
             <format-error>Sequences have to be in FASTA format</format-error>  
             <minnum-error>You must enter at least 2 sequences</minnum-error>  
@@ -67,6 +67,7 @@
           <sample>public/sample.fasta.txt</sample> 
         </field> 
       </fieldset>  
+      
       <fieldset hideable="true"> 
         <title>Methods</title>  
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>  
@@ -107,11 +108,14 @@
       </fieldset> 
     </input>  
     <process> 
+      <qsub>
       <tcoffee> 
         <args>-in=${seqs} -mode=regular -method=${method1} ${method2} ${method3} -output=${output} -maxnseq=50 -maxlen=2000 -case=${letter} -seqnos=${seqnos} -outorder=${outorder} -run_name=result</args> 
       </tcoffee> 
+      </qsub>
     </process> 
   </service>  
+  
   <!-- ========================================================================
       EXPRESSO   
       ======================================================================== -->  
@@ -126,7 +130,7 @@
         <description>Paste or upload your set of sequences in FASTA format</description>  
         <field type="memo" name="seqs" label="Sequences to align"> 
           <hint>Enter the sequences to align</hint>  
-          <validation format="FASTA" required="true" minnum="2" maxnum="50" maxlen="2000"> 
+          <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="50" maxlen="2000"> 
             <required-error>You have to enter the sequences to align</required-error>  
             <format-error>Sequences have to be in FASTA format</format-error>  
             <minnum-error>You must enter at least 2 sequences</minnum-error>  
@@ -220,7 +224,7 @@
         <description>Paste or upload your set of sequences in FASTA format</description>  
         <field type="memo" name="seqs" label="Sequences to align"> 
           <hint>Enter the sequences to align</hint>  
-          <validation format="FASTA" required="true" minnum="2" maxnum="50" maxlen="2000"> 
+          <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="50" maxlen="2000"> 
             <required-error>You have to enter the sequences to align</required-error>  
             <format-error>Sequences have to be in FASTA format</format-error>  
             <minnum-error>You must enter at least 2 sequences</minnum-error>  
@@ -343,6 +347,7 @@
       </tcoffee> 
     </process> 
   </service>  
+  
   <!-- ========================================================================
       R-COFFEE
        ======================================================================== -->  
@@ -357,7 +362,7 @@
         <description>Paste or upload your set of sequences in FASTA format</description>  
         <field type="memo" name="seqs" label="Sequences to align"> 
           <hint>Enter the sequences to align</hint>  
-          <validation format="FASTA" required="true" minnum="2" maxnum="50" maxlen="2000"> 
+          <validation format="FASTA" type="rna" required="true" minnum="2" maxnum="50" maxlen="2000"> 
             <required-error>You have to enter the sequences to align</required-error>  
             <format-error>Sequences have to be in FASTA format</format-error>  
             <minnum-error>You must enter at least 2 sequences</minnum-error>  
@@ -413,6 +418,7 @@
       </tcoffee> 
     </process> 
   </service>  
+  
   <!-- ========================================================================
       COMBINE
        ======================================================================== -->  
@@ -472,6 +478,7 @@
       </tcoffee> 
     </process> 
   </service>  
+  
   <!-- 
     CORE tcoffee mode 
     -->  
@@ -529,62 +536,9 @@
       </tcoffee> 
     </process> 
   </service>  
-  <service name="Core2"> 
-    <title>Core</title>  
-    <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>  
-    <group>Evaluation</group>  
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>  
-    <input> 
-      <fieldset> 
-        <title>Alignment input</title>  
-        <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL format.</description>  
-        <field type="memo" name="alignment" label="Alignment"> 
-          <hint>Enter your alignment</hint>  
-          <validation required="true"/>  
-          <sample>public/sample-clustalw.txt</sample> 
-        </field> 
-      </fieldset>  
-      <fieldset hideable="true"> 
-        <title>Library Computation</title>  
-        <description>Your alignment is evaluated by comparison against a collection of alignments. This collection is named a Library. This section lets you control the computation of the library. Different libraries give different score results</description>  
-        <field type="checkbox" name="method" label="Pairwise Methods"> 
-          <value>Mproba_pair</value>  
-          <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair</choices> 
-        </field> 
-      </fieldset>  
-      <fieldset hideable="true"> 
-        <title>Output options</title>  
-        <description>Use this section to control the output format.</description>  
-        <field type="checkbox" name="output" label="Alignment format"> 
-          <value>score_html fasta_aln clustalw_aln phylip</value>  
-          <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, fasta_seq, score_ascii, msf_aln, phylip</choices> 
-        </field>  
-        <field type="dropdown" name="letter" label="Case"> 
-          <hint>Output case selection</hint>  
-          <choices>upper, lower, keep</choices> 
-        </field>  
-        <field type="dropdown" name="seqnos" label="Residue number"> 
-          <hint>Print the residue number</hint>  
-          <choices>on, off</choices> 
-        </field>  
-        <field type="dropdown" name="outorder"> 
-          <choices>input, aligned</choices> 
-        </field> 
-      </fieldset>  
-      <fieldset> 
-        <field type="text" name="email" label="Your email address"> 
-          <hint>It will be used to notify you on alignment completion</hint>  
-          <validation format="EMAIL"/> 
-        </field> 
-      </fieldset> 
-    </input>  
-    <process> 
-      <tcoffee> 
-        <args>-infile=${alignment} -in=${method} -score=1 -output=${output} -maxnseq=50 -maxlen=2000 -case=${letter} -seqnos=${seqnos} -outorder=${outorder} -run_name=result</args> 
-      </tcoffee> 
-    </process> 
-  </service>  
-  <service name="Core"> 
+ 
+  
+  <service name="core"> 
     <title>Core</title>  
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>  
     <group>Evaluation</group>  
