@@ -298,6 +298,11 @@ html, body {
 	width: 220px;
 }
 
+#content small.size {
+	color: #999;
+	font-size: 0.8em;
+} 
+
 #content input[type='text'], 
 #content input[type='file'],
 #content input[type='password'],
