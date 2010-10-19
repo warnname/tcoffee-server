@@ -25,37 +25,6 @@
 
 #{/set} 
 
-<script type="text/javascript">
-<!--
-$(document).ready(function(){
-	/* textarea autoresize effects */
-	$('textarea').autoResize();
-
-	/* toggle adavnced options effects */
-	$('#toggleOptions').click(function() {
-		$('.c-hideable').toggle( function() {
-			var status = $(this).is(':visible'); 
-			var label =  status ? 'Hide advanced options' : 'Show more options';
-			$('#toggleOptions').text(label);
-			$.cookie('${cookiename}', status);
-		});
-	});	   
-
-
-	#{if !isIE}
-	$(".tiptip").tipTip();
-	#{/if}	
-
-	/* remove any error message if the input change */
-	$('div.c-input input, div.c-input select, div.c-input textarea')
-		.bind('clearErrors', function() { 
-				$(this).parents('div.c-input').removeClass('hasError').find('.c-error').remove(); 
-			})
-		.change(function(){ $(this).trigger('clearErrors') });
-});
-//-->
-</script>
-
 <h1>${service.title} <small>${service.description}</small></h1>
 
 <form id="form" action="@{Application.main(params.bundle,service.name)}" method="POST" enctype="multipart/form-data">
@@ -91,6 +60,36 @@ $(document).ready(function(){
  * This javascript will disable  submitin button on the first button click 
 }*
 <script type="text/javascript">
+<!--
+
+$(document).ready(function(){
+	/* textarea autoresize effects */
+	$('textarea').autoResize();
+
+	/* toggle adavnced options effects */
+	$('#toggleOptions').click(function() {
+		$('.c-hideable').toggle( function() {
+			var status = $(this).is(':visible'); 
+			var label =  status ? 'Hide advanced options' : 'Show more options';
+			$('#toggleOptions').text(label);
+			$.cookie('${cookiename}', status);
+		});
+	});	   
+
+
+	#{if !isIE}
+	$(".tiptip").tipTip();
+	#{/if}	
+
+	/* remove any error message if the input change */
+	$('div.c-input input, div.c-input select, div.c-input textarea')
+		.bind('clearErrors', function() { 
+				$(this).parents('div.c-input').removeClass('hasError').find('.c-error').remove(); 
+			})
+		.change(function(){ $(this).trigger('clearErrors') });
+});
+
+/* disabling submit button on first click */
 $('#form').submit(function(){
 	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
 
@@ -102,4 +101,5 @@ $(document).ready(function(){
 
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
+//-->
 </script>
