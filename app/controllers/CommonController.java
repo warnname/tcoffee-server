@@ -9,6 +9,7 @@ import java.util.Map;
 
 import models.Bundle;
 import models.PageContent;
+import models.Service;
 import play.Logger;
 import play.Play;
 import play.exceptions.NoRouteFoundException;
@@ -194,4 +195,20 @@ public class CommonController extends Controller {
 			Logger.error(e, "Error serving file: '%s'", file);
 		}		
 	}
+	
+	static Service service(String bundle, String service) { 
+		
+		Bundle _bundle = BundleRegistry.instance().get(bundle);
+		if( _bundle == null ) { 
+			notFound( "Unkown bundle: '%s'", bundle );
+		}
+		
+		Service result = _bundle.getService(service);
+		if( service == null ) { 
+			notFound( "Unknown service: '%s' in bundle '%s'", service, bundle );
+		}
+		
+		return result;
+	}
+	
 }

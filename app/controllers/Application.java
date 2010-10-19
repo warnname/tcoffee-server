@@ -37,22 +37,6 @@ public class Application extends CommonController {
 	static void release() {
 		Service.release();
 	}
-		
-	static Service service(String bundle, String service) { 
-		
-		Bundle _bundle = BundleRegistry.instance().get(bundle);
-		if( _bundle == null ) { 
-			notFound( "Unkown bundle: '%s'", bundle );
-		}
-		
-		Service result = _bundle.getService(service);
-		if( service == null ) { 
-			notFound( "Unknown service: '%s' in bundle '%s'", service, bundle );
-		}
-		
-		return result;
-	}
-	
 	
 	/** 
 	 * Renders the main application index page
@@ -272,4 +256,6 @@ public class Application extends CommonController {
 
 	}
 
+
+	
 }
