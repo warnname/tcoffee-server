@@ -224,6 +224,7 @@ public class Application extends CommonController {
 
 	public static void servePublic( String bundle, String path ) { 
 		Bundle oBundle = BundleRegistry.instance().get(bundle);
+		renderStaticResponse();
 		renderFile(oBundle.publicPath, path);
 	}
 	

@@ -37,6 +37,7 @@ public class Data extends CommonController {
 	 * @param path
 	 */
 	public static void resource(String path) {
+		renderStaticResponse();
 		renderFile(AppProps.WORKSPACE_FOLDER, path);
 	}
 	
@@ -59,6 +60,7 @@ public class Data extends CommonController {
 
 		String attachName = String.format("tcoffee-all-files-%s.zip",rid);
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + attachName+ "\"");
+		renderStaticResponse();
 		renderBinary(zip);
 	}
 	
