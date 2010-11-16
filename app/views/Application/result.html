@@ -19,7 +19,9 @@
 <div class="box">
 
 <h2><span>Result files</span> 
+#{if result?.items?.size > 1}
 <small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
+#{/if}
 </h2>
 
 #{result-items result /}
