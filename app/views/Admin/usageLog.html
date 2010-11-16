@@ -1,0 +1,21 @@
+#{extends 'layout.html' /}
+#{set title:'Usage log download' /}
+
+<h1>Usage Log
+<small>
+Download the server usage log file
+</small>
+</h1>
+
+#{if logExists }
+ 	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+ 	<span style="position:relative; left:1em; top: 1.6em;">
+ 	<a target="_blank" href="@{Admin.usageDownload}" >Click to download</a>
+ 	</span> 
+#{/if}
+
+#{else}
+<div class="box-warn">
+Usage file does not exist! Did you run a job at least one time? 
+</div>
+#{/else}

@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -802,5 +804,23 @@ public class Admin extends CommonController {
 	}
 	
 
+	/** 
+	 * Show the Usage log file download page
+	 */
+	public static void usageLog() { 
+		renderArgs.put("logExists", AppProps.SERVER_LOG_FILE.exists());
+		render();
+	}
+	
+	/**
+	 * Invoke to download the usage log file
+	 */
+	public static void usageDownload() { 
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+		String filename = "tserver-usage-"+fmt.format(new Date())+".log";
+		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
+		renderBinary( AppProps.SERVER_LOG_FILE );
+	}
+	
  }
 
