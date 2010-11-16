@@ -47,7 +47,7 @@ public class CommonController extends Controller {
 		if( Utils.isNotEmpty(sBundle) ) { 
 			bundle = BundleRegistry.instance().get(sBundle);
 			if( bundle == null ) { 
-				Logger.info("Unkwown bundle '%s'", sBundle);
+				notFound(String.format("Missing bundle: '%s' ", sBundle));
 			}
 		}
 		
