@@ -144,7 +144,7 @@ public class AppProps implements Serializable  {
 		/*
 		 * 3. log file name
 		 */
-		SERVER_LOG_FILE = new File(WORKSPACE_FOLDER,"tserver.log");
+		SERVER_LOG_FILE = new File(WORKSPACE_FOLDER,"usage.log");
 		
 		/*
 		 * 4. bundles path 
