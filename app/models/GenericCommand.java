@@ -24,6 +24,12 @@ public class GenericCommand extends AbstractShellCommand {
 	}
 	
 	@Override
+	public void init(CommandCtx ctx) {
+		if( Utils.isEmpty(logfile) ) logfile = "stdout.log";		
+		super.init(ctx);
+	}
+	
+	@Override
 	protected String onInitCommandLine(String cmdLine) {
 		return cmd != null ? cmd.eval() : "";
 	}
