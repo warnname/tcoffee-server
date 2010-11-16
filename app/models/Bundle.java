@@ -339,8 +339,12 @@ public class Bundle implements Serializable {
 	        /* 
 	         * load environment 
 	         */
-	        if( root.child("conf/bundle.environment").exists() ) { 
-	        	bundle.envFile  = root.child("conf/bundle.environment").getRealFile();
+	        VirtualFile env = root.child("conf/bundle.environment");
+	        if( !env.exists() ) { 
+	        	env = root.child("conf/bundle.env");
+	        }
+	        if( env.exists() ) { 
+	        	bundle.envFile  = env.getRealFile();
 	        	try {
 					bundle.environment = IO.readUtf8Properties( new FileInputStream(bundle.envFile));
 				} catch (IOException e) {
