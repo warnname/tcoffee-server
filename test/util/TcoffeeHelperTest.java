@@ -15,7 +15,7 @@ public class TcoffeeHelperTest extends UnitTest {
 	}
 	
 	public static void parseHtmlFile( File file ) {
-		String TEST_STYLE = "SPAN { font-family: courier new, courier-new, courier; font-weight: bold; font-size: 11pt;}";
+		String TEST_STYLE = "SPAN { font-family: courier new, courier-new, courier, monospace; font-weight: bold; font-size: 11pt;}";
 		String TEST_BODY = "<span class=valuedefault>T-COFFEE,&nbsp;";
 
 		ResultHtml result = TcoffeeHelper.parseHtml(file);

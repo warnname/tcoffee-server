@@ -557,6 +557,10 @@ OUTPUT RESULTS
 # TIP  1:  Get the most accurate protein alignments with: t_coffee <yourseq> -special_mode accurate [Slow]
 # TIP  4:  -special_mode=expresso to fetch your structures automatically
 
+41002 -- WARNING: Blast for A_thaliana_At5g60730 failed (Run: 1)
+41003 -- WARNING: Blah blah
+
+
 # Command Line: /users/cn/ptommaso/tools/play-1.0.1/tcoffee/bin/t_coffee -in input.fasta -mode regular -output clustalw_aln score_html -case upper -seqnos on -outorder input -run_name=tcoffee -cache=no -remove_template_file=1 -quiet=stdout  [PROGRAM:T-COFFEE]
 # T-COFFEE Memory Usage: Current= 11.596 Mb, Max= 12.603 Mb
 # T-COFFEE CPU Usage: 0 millisec

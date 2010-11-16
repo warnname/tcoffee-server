@@ -68,12 +68,6 @@ public class AppPropsTest extends UnitTest {
 	}
 	
 	@Test 
-	public void testPropertiesFile() {
-		assertEquals("tserver.properties.xml", AppProps.SERVER_PROPS_FILE.getName());
-		assertTrue( "Missing server configuration file: 'tserver.properties.xml'", AppProps.SERVER_PROPS_FILE.exists() );
-	}
-	
-	@Test 
 	public void testSingletonInstance() {
 		AppProps instance = AppProps.instance();
 		assertNotNull(instance);

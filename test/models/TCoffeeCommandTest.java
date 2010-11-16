@@ -53,6 +53,19 @@ public class TCoffeeCommandTest extends UnitTest {
 		assertNull(tcoffee.parseForResultItem("#### Invalid format"));
 	}
 	
+	@Test 
+	public void testParseWarning() { 
+		String TEST = "41002 -- WARNING: Blast for A_thaliana_At5g60730 failed (Run: 1)";
+		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
+		String warn = tcoffee.parseForWarning(TEST);
+		
+		assertNotNull(warn);
+		assertEquals( "Blast for A_thaliana_At5g60730 failed (Run: 1)", warn );
+		
+		assertNull(tcoffee.parseForWarning("xxx"));
+		
+	}
 	
 	@Test 
 	public void testParseResult() {
@@ -75,6 +88,10 @@ public class TCoffeeCommandTest extends UnitTest {
 		assertEquals("MSA", result.get(2).type );
 		assertEquals("score_html", result.get(2).format );
 		assertEquals("tcoffee.score_html", result.get(2).name );
+		
+		assertTrue( tcoffee._warnings != null );
+		assertEquals( "Blast for A_thaliana_At5g60730 failed (Run: 1)", tcoffee._warnings.get(0) );
+		assertEquals( "Blah blah", tcoffee._warnings.get(1) );
 	}
 	
 
@@ -118,7 +135,7 @@ public class TCoffeeCommandTest extends UnitTest {
 		assertNotNull( result.getAlignmentHtml() );
 		assertNotNull( result.getAlignmentFasta() );
 		
-		/* assert that the html is the exècted form */
+		/* assert that the html is in the expected format */
 		TcoffeeHelperTest.parseHtmlFile(result.getAlignmentHtml().file);
 	}
 	

@@ -74,7 +74,7 @@ public class TestHelper {
 	}
 	
 	public static void copy( File source, File target ) {
-		Check.isTrue(source.exists(), "The source file does nto exists: %s", source);
+		Check.isTrue(source.exists(), "The source file does not exists: %s", source);
 		Check.isTrue(source.isFile(), "The source is not a file: %s", source);
 
 		File folder; 
