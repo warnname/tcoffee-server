@@ -54,6 +54,17 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 </div>
 #{/if}
 
+#{if result?.warnings }
+<div class="box-warn" >
+<p>Please note: T-coffee returned the following warning(s):</p>
+<ul class="list" >
+#{list result?.warnings }
+<li>${_}</li>
+#{/list}
+</ul>
+</div>
+#{/if}
+
 
 #{if result?.alignmentHtml?.file }
 <div class="box">
