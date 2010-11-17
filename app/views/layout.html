@@ -17,10 +17,9 @@
 #{/if}
  #{get 'moreStyles' /}
 
-#{press.script src:'jquery-1.4.4.min.js', compress:false /}
-#{press.script src:'jquery.cookie.js' /}
+<script type="text/javascript" src="@{'/public/javascripts/jquery-1.4.4.min.js'}" ></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" ></script>
 #{get 'moreScripts' /}
-#{press.compressed-script /}
 
 *{
  Fix IE 6 PNG trasparency bug. See http://jquery.andreaseberhard.de/pngFix/

@@ -39,6 +39,4 @@ GET		/apps/{bundle}/public/{<.+>path}	Application.servePublic
 
 GET		/{action}				Main.{action}
 
-# Javascript/css compression module
-*  		/  						module:press
 
