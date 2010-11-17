@@ -38,6 +38,10 @@ public class OutResult implements Serializable {
 	
 	@XStreamImplicit(itemFieldName="error")
 	public List<String> errors;
+
+	@XStreamImplicit(itemFieldName="warn")
+	public List<String> warnings;
+	
 	
 	/** The default constructor */
 	public OutResult() {
@@ -187,6 +191,25 @@ public class OutResult implements Serializable {
 	public String getElapsedTimeFmt() {
 		return Utils.asTimeString( elapsedTime );
 	}
+
+	public void addWarnings( List<String> warns) {
+		if( warns == null ) return;
+		
+		
+		if( this.warnings == null ) {
+			this.warnings = new ArrayList<String>();
+		}
+		
+		this.warnings.addAll(warns);
+	}
+	
+	/**
+	 * 
+	 * @return <code>true</code> if contains at least one warning
+	 */
+	public boolean hasWarnings() { 
+		return warnings != null && warnings.size()>0;
+	}	
 	
 	public String toString() { 
 		return Utils.dump( this, "bundle", "mode", "status", "title", "_items" );

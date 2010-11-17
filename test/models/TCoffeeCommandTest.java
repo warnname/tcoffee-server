@@ -89,11 +89,37 @@ public class TCoffeeCommandTest extends UnitTest {
 		assertEquals("score_html", result.get(2).format );
 		assertEquals("tcoffee.score_html", result.get(2).name );
 		
-		assertTrue( tcoffee._warnings != null );
-		assertEquals( "Blast for A_thaliana_At5g60730 failed (Run: 1)", tcoffee._warnings.get(0) );
-		assertEquals( "Blah blah", tcoffee._warnings.get(1) );
 	}
 	
+	@Test
+	public void testParseResultWarning() { 
+		/*
+		 * the sample log contrains some warnings, 
+		 * we assert that the result object will contain them
+		 */
+		File log = TestHelper.sampleLog();
+		TestHelper.copy(log, Service.current().folder());
+
+		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		tcoffee.logfile = log.getName();
+		tcoffee.init ( new CommandCtx(Service.current().fCtx) );
+	
+		tcoffee.done(true);
+		OutResult result = tcoffee.getResult();
+		
+		assertTrue( result.hasWarnings() );
+		String w0 = "_P_  Template |3IBGF| Could Not be Used for Sequence |G_sulphuraria_Gs08590|: Coverage too low [40, Min=50]";
+		String w1 = "_P_  Template |3IQXB| Could Not be Used for Sequence |C_merolae_CMER_CMP235C|: Coverage too low [31, Min=50]";
+		String w2 = "SAP failed to align: 1II9B.pdb against 1II9B.pdb [T-COFFEE:WARNING]";
+		
+		assertTrue( result.warnings != null );
+		assertEquals( w0, result.warnings.get(0) );
+		assertEquals( w1, result.warnings.get(1) );
+		assertEquals( w2, result.warnings.get(2) );
+		
+		XStreamHelper.toXML(result, new File( Service.current().folder(), "_result"));
+		
+	}
 
 	@Test
 	public void testRun() throws IOException, CommandException {

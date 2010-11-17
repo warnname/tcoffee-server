@@ -15,6 +15,7 @@ import util.FileIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.QuickException;
 
@@ -23,10 +24,15 @@ public class TCoffeeCommand extends AbstractShellCommand {
 
 	static final Pattern RESULT_PATTERN = Pattern .compile("^\\s*\\#{4} File Type=(.+)Format=(.+)Name=(.+)$");
 
+	static final Pattern WARNING_PATTERN = Pattern .compile("^\\d+ -- WARNING: (.*)$");
+	
 	/** The t-coffee arguments */
 	public CmdArgs args;
 
 	private String fInputFileName;
+	
+	@XStreamOmitField
+	List<String> _warnings;
 	
 	/** The default constructor */
 	public TCoffeeCommand() {
@@ -188,7 +194,9 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			
 			/* add all t-coffee result */
 			result.addAll(parseResultFile(getLogFile()));
-
+			
+			/* add warnings */
+			result.addWarnings( _warnings );
 		}
 
 		if( !success &&  existsErrFile()) { 
@@ -207,7 +215,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 
 	List<OutItem> parseResultFile(File file) {
 		List<OutItem> result = new ArrayList<OutItem>();
-
+		_warnings = new ArrayList<String>();
+		
 		try {
 			String line;
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -222,6 +231,15 @@ public class TCoffeeCommand extends AbstractShellCommand {
 				OutItem item = parseForResultItem(line);
 				if (item != null) {
 					result.add(item);
+				}
+				
+				// check for warnings 
+				String warn = parseForWarning(line);
+				if( Utils.isNotEmpty(warn)) { 
+					if( warn.startsWith("WARNING:")) { 
+						warn = warn.substring(8);
+					}
+					_warnings.add(warn.trim());
 				}
 			}
 			/* .. and return the list */
@@ -255,5 +273,16 @@ public class TCoffeeCommand extends AbstractShellCommand {
 
 		return item;
 	}
+	
+	String parseForWarning( String line ) { 
+		Matcher matcher = WARNING_PATTERN.matcher(line);
+		if (!matcher.matches()) {
+			return null;
+		}
+		
+		return matcher.group(1).trim();
+	}
+	
+
 	
 }
