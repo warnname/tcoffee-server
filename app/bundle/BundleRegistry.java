@@ -294,6 +294,11 @@ public class BundleRegistry {
 		hash = Utils.hash(hash, bundle.conf.lastModified());
 		hash = Utils.hash(hash, bundle.conf.length());
 		
+		if( bundle.propFile != null ) { 
+			hash = Utils.hash(hash, bundle.propFile.lastModified());
+			hash = Utils.hash(hash, bundle.propFile.length());
+		}
+		
 		if( bundle.envFile != null ) { 
 			hash = Utils.hash(hash, bundle.envFile.lastModified());
 			hash = Utils.hash(hash, bundle.envFile.length());
