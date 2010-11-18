@@ -70,7 +70,7 @@ public class QsubCommandTest extends UnitTest {
 		qsub.disabled = false;
 		qsub._commands = new ArrayList<AbstractShellCommand>();
 		qsub._commands.add(tcoffee);
-		qsub.queue = "ws_cn";
+		qsub.queue = "ws_cn@palestine";
 		qsub.errfile = ".qsub.err.log";
 		qsub.logfile = ".qsub.out.log";
 		qsub.cmdfile = ".qsub.cmd.txt";
@@ -149,7 +149,7 @@ public class QsubCommandTest extends UnitTest {
 		}; 
 		qsub._commands = new ArrayList<AbstractShellCommand>();
 		qsub._commands.add(tcoffee);
-		qsub.queue = "ws_cn";
+		qsub.queue = "ws_cn@palestine";
 		qsub.errfile = "qsub.err.log";
 		qsub.logfile = "qsub.out.log";
 		qsub.cmdfile = "qsub.cmd.txt";

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import play.test.UnitTest;
+import util.TestHelper;
 import util.XStreamHelper;
 import exception.QuickException;
 
@@ -99,6 +100,22 @@ public class BundleTest extends UnitTest {
 		catch( Exception e ) { /* ok */  }
 	} 
 
-	
+	@Test
+	public void testBundleReadProperties() { 
+		Bundle bundle = new Bundle();
+		bundle.readProperties( TestHelper.file("/bundle.properties"), "TEST" );
+		
+		assertEquals( "1", bundle.properties.get("alpha") );
+		assertEquals( "2", bundle.properties.get("beta") );
+		assertEquals( "3", bundle.properties.get("delta") );
 
+		bundle = new Bundle();
+		bundle.readProperties( TestHelper.file("/bundle.properties"), "DEMO" );
+		
+		assertEquals( "1", bundle.properties.get("alpha") );
+		assertEquals( "2", bundle.properties.get("beta") );
+		assertEquals( "4", bundle.properties.get("delta") );
+		
+	}
+	
 }

@@ -114,7 +114,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		}
 		
 		/*
-		 * check if database has been specified for loca blast 
+		 * check if database has been specified for local blast 
 		 */
 		if( "LOCAL".equals(args.get("blast")) ) {
 			String db = args.get("pdb_db");
@@ -205,6 +205,15 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			OutItem out = new OutItem(getErrFile(), "error_file");
 			//TODO tis label should be parametrized
 			out.label = "Error file";
+			result.add(out); 
+			
+		}
+		
+		/* add the t_coffee.ErrorReport file */
+		File report;
+		if( !success && (report=new File(ctxfolder, "t_coffee.ErrorReport")).exists() ) { 
+			OutItem out = new OutItem(report, "error_file");
+			out.label = "Error Report";
 			result.add(out); 
 			
 		}

@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -75,6 +77,9 @@ public class Bundle implements Serializable {
 
 	@XStreamOmitField
 	public File envFile;
+
+	@XStreamOmitField
+	public File propFile;
 	
 	@XStreamOmitField
 	public Properties environment;
@@ -226,7 +231,11 @@ public class Bundle implements Serializable {
 		return conf != null ? conf.lastModified() : 0;
 	}
 	
-	public void readProperties( VirtualFile conf ) { 
+	public void readProperties( File conf ) { 
+		readProperties(conf, Play.id);
+	}
+	
+	void readProperties( File conf, String id ) { 
 
 		Properties result = new Properties();
 		
@@ -245,10 +254,9 @@ public class Bundle implements Serializable {
 		result.put( "application.path", Utils.getCanonicalPath(Play.applicationPath));
 		result.put( "application.mode", Play.configuration.getProperty("application.mode"));
 		result.put( "workspace.path", Utils.getCanonicalPath( AppProps.WORKSPACE_FOLDER ));
-		result.put( "bundle.path", Utils.getCanonicalPath(root) );
-		
-		if( binPath != null ) result.put( "bundle.bin.path", Utils.getCanonicalPath(binPath) );
 
+		if( root != null ) result.put( "bundle.path", Utils.getCanonicalPath(root) );
+		if( binPath != null ) result.put( "bundle.bin.path", Utils.getCanonicalPath(binPath) );
 		if( name != null ) result.put("bundle.name", name);
 		if( version != null ) result.put("bundle.version", version);
 		if( title != null ) result.put("bundle.title", title);
@@ -259,8 +267,38 @@ public class Bundle implements Serializable {
 		/* load the properties file if exists */
 		if( conf != null && conf.exists() ) { 
 	        try {
-	            Properties local = IO.readUtf8Properties(conf.inputstream());
-	            result.putAll(local);
+	            Properties local = IO.readUtf8Properties(new FileInputStream(conf));
+	            
+	            /*
+	             * first load all properties without any prefix 
+	             */
+	            Properties newConfiguration = new Properties();
+	            Pattern pattern = Pattern.compile("^%([a-zA-Z0-9_\\-]+)\\.(.*)$");
+	            for (Object key : local.keySet()) {
+	                Matcher matcher = pattern.matcher(key + "");
+	                if (!matcher.matches()) {
+	                    newConfiguration.put(key, local.get(key).toString().trim());
+	                }
+	            }
+
+	            /*
+	             * then override with all prefixed properties
+	             */
+	            for (Object key : local.keySet()) {
+	                Matcher matcher = pattern.matcher(key + "");
+
+	                if (matcher.matches()) {
+	                    String instance = matcher.group(1);
+	                    if (instance.equals(id)) {
+	                        newConfiguration.put(matcher.group(2), local.get(key).toString().trim());
+	                    }
+	                }
+	            }	            
+	            
+	            /* add the properties and set the file */
+	            result.putAll(newConfiguration);
+	            this.propFile = conf;
+	            	
 	        } 
 	        catch (IOException ex) {
 	            throw new BundleException("Cannot read bundle properties file: '%s'", conf);
@@ -334,7 +372,7 @@ public class Bundle implements Serializable {
 	        /* 
 	         * load properties 
 	         */
-	        bundle.readProperties( root.child("conf/bundle.properties") );
+	        bundle.readProperties( root.child("conf/bundle.properties").getRealFile() );
 	        
 	        /* 
 	         * load environment 
