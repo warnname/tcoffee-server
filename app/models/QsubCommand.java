@@ -191,7 +191,6 @@ public class QsubCommand extends AbstractShellCommand {
 		result .append("qsub ");
 		result .append("-cwd ");
 		result .append("-sync y ");
-		result .append("-now y ");
 		result .append("-r no ");
 		result .append("-terse ");
 		result .append("-q ") .append(queue) .append(" ");
