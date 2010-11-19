@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<bundle name="tcoffee" version="1.0.1"> 
+<bundle name="tcoffee" version="1.0.2"> 
   <title>T-Coffee</title>
   <description>A collection of tools for Computing, Evaluating and
     Manipulating Multiple Alignments of DNA, RNA, Protein Sequences and
@@ -398,6 +398,8 @@
           -in=${seqs} 
           -mode=psicoffee
           -blast=LOCAL
+          -pdb_db=${PDB_DB} 
+          -protein_db=${PROTEIN_DB}
           -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=150 

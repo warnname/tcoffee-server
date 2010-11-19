@@ -17,6 +17,7 @@
 #
 # Relatives paths are located starting from 'bundle.path' 
 # 
+PATH=${bundle.path}/bin:${bundle.path}/blast:${env.PATH}
 HOME=${data.path}
 EMAIL_4_TCOFFEE=${bundle.email}
 DIR_4_TCOFFEE=${workspace.path}/.t_coffee/
