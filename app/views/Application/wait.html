@@ -69,8 +69,8 @@ function run(){
         success: function(data){ /* called when request to barge.php completes */
             var status = data != null ? data.toUpperCase() : 'UNKNWON';
             if( status == 'RUNNING' ) {
-                // if still running recheck the status in the next 1 and half second 
-                setTimeout(run, 1500);  
+                // if still running recheck the status in the next 5 seconds 
+                setTimeout(run, 5000);  
             }
             else if( status=='DONE' || status=='FAILED' ) {
                 // otherwise move to the result page
