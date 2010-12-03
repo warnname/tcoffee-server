@@ -42,6 +42,34 @@ public class Main extends CommonController {
 	
 	
 	/**
+	 * Quick access link to PSI-coffee
+	 */
+	public static void psicoffee() { 
+		redirect("Application.main", "tcoffee", "psicoffee" );
+	}
+	
+	/**
+	 * Quick link to R-coffee
+	 */
+	public static void rcoffee() { 
+		redirect("Application.main", "tcoffee", "rcoffee" );
+	}
+	
+	/**
+	 * Quick link to M-coffee
+	 */
+	public static void mcoffee() { 
+		redirect("Application.main", "tcoffee", "mcoffee" );
+	}
+	
+	/**
+	 * Quick link Expresso
+	 */
+	public static void expresso() { 
+		redirect("Application.main", "tcoffee", "expresso" );
+	}
+	
+	/**
 	 * Return the 'robots.txt' text file SEO optimization
 	 */
 	public static void robots() {
