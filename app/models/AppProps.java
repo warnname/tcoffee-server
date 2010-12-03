@@ -144,7 +144,15 @@ public class AppProps implements Serializable  {
 		/*
 		 * 3. log file name
 		 */
-		SERVER_LOG_FILE = new File(WORKSPACE_FOLDER,"usage.log");
+		String logFileName = Play.configuration.getProperty("tserver.usage.file", "usage.log");
+		SERVER_LOG_FILE = logFileName.startsWith( File.separator )
+						? new File(logFileName)
+						: new File(WORKSPACE_FOLDER, logFileName);
+						
+		File parent = SERVER_LOG_FILE.getParentFile();
+		if( !parent.exists() && !parent.getParentFile().mkdirs() ) { 
+			throw new QuickException("Cannot create log path: '%s' ", parent);
+		}
 		
 		/*
 		 * 4. bundles path 
