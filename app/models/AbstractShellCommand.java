@@ -310,7 +310,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				}
 				
 				/* 
-				 * 4. wrap the command in a bach script to provide env variables 
+				 * 4. wrap the command in a batch script to provide env variables 
 				 */
 				StringBuilder shell = new StringBuilder();
 				for( Object item : fEnv.keySet()) {
