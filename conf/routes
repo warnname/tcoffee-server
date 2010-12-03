@@ -6,6 +6,10 @@
 GET     /						Main.index
 GET 	/tcoffee				Main.index
 GET		/tcoffee/				Main.index
+GET		/psicoffee				Main.psicoffee
+GET		/expresso				Main.expresso
+GET		/mcoffee				Main.mcoffee
+GET		/rcoffee				Main.rcoffee
 GET 	/robots.txt				Main.robots
 
 # Downloadable data
