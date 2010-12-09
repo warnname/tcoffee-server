@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import play.Logger;
 import play.Play;
@@ -20,15 +20,20 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.CommandException;
+import exception.QuickException;
 
 /**
- * Execute the specified command on the system cluster 
+ * Execute the command on the LSF Platform Computing trough the "bsub" system command
+ * 
+ * See  http://www.platform.com/workload-management/high-performance-computing/lp
  * 
  * @author Paolo Di Tommaso
  *
  */
-@XStreamAlias("qsub")
-public class QsubCommand extends AbstractShellCommand {
+@XStreamAlias("bsub")
+public class BsubCommand extends AbstractShellCommand {
+	
+	static final Pattern JOB_PATTERN = Pattern.compile("^Job <(\\d+)> .*$");
 	
 	@XStreamImplicit
 	List<AbstractShellCommand> _commands;
@@ -39,8 +44,6 @@ public class QsubCommand extends AbstractShellCommand {
 	@XStreamAsAttribute
 	String jobname;
 	
-	/** the qsub script filename */
-	String scriptfile;
 	
 	@XStreamOmitField private File fPbsFile; 
 	@XStreamOmitField private AbstractShellCommand command;
@@ -50,14 +53,13 @@ public class QsubCommand extends AbstractShellCommand {
 	public Boolean disabled;
 	
 	/** The default constructor */
-	public QsubCommand() {}
+	public BsubCommand() {}
 	
-	public QsubCommand( QsubCommand that ) {
+	public BsubCommand( BsubCommand that ) {
 		super(that);
 		this._commands = Utils.copy(that._commands);
 		this.queue = that.queue;
 		this.jobname = that.jobname;
-		this.scriptfile = that.scriptfile;
 	}
 	
 	String getQueue() {
@@ -81,7 +83,7 @@ public class QsubCommand extends AbstractShellCommand {
 			return disabled;
 		}
 		
-		String result = AppProps.instance().getProperty("qsub.disabled");
+		String result = AppProps.instance().getProperty("bsub.disabled");
 		disabled = result != null ? "true".equals(result) : Play.mode.equals( Play.Mode.DEV );
 		return disabled;
 	}
@@ -105,38 +107,12 @@ public class QsubCommand extends AbstractShellCommand {
 		/*
 		 * initialize this command 
 		 */
-		if( Utils.isEmpty(logfile) ) logfile = "_qsub.out.log";
-		if( Utils.isEmpty(errfile) ) errfile = "_qsub.err.log";
-		if( Utils.isEmpty(envfile) ) envfile = "_qsub.env.txt";
-		if( Utils.isEmpty(cmdfile) ) cmdfile = "_qsub.cmd.txt";
-		if( Utils.isEmpty(scriptfile) ) scriptfile = "_qsub.pbs";
+		if( Utils.isEmpty(logfile) ) logfile = "_bsub.out.log";
+		if( Utils.isEmpty(errfile) ) errfile = "_bsub.err.log";
+		if( Utils.isEmpty(envfile) ) envfile = "_bsub.env.txt";
+		if( Utils.isEmpty(cmdfile) ) cmdfile = "_bsub.cmd.txt";
 		
 		super.init(ctx); 
-	}
-	
-	@Override
-	protected void onInitEnv(Map<String, String> map) {
-		
-		super.onInitEnv(map);
-
-		/*
-		 * add the SGV_ROOT env variable if exists 
-		 */
-		addIfNotEmpty(map, "SGE_ROOT");
-		addIfNotEmpty(map, "SGE_EXECD_PORT");
-		addIfNotEmpty(map, "SGE_CLUSTER_NAME");
-		addIfNotEmpty(map, "SGE_QMASTER_PORT");
-		addIfNotEmpty(map, "SGE_CELL");
-	
-	}
-	
-	private void addIfNotEmpty(Map<String,String> map, String key) {
-		if( map.containsKey(key)) return;
-		
-		String val = AppProps.instance().getString(key);
-		if( Utils.isNotEmpty(val)) {
-			map.put(key,val);
-		}
 	}
 	
 	@Override
@@ -146,68 +122,52 @@ public class QsubCommand extends AbstractShellCommand {
 		 * 0. validation 
 		 */
 		if( Utils.isEmpty(queue) ) {
-			queue = AppProps.instance().getString("SGE_QUEUE");
-			Check.notEmpty(queue, "Qsub queue parameter cannot be empty");
+			queue = AppProps.instance().getString("bsub.queue");
 		}
 		
 		if( Utils.isEmpty(jobname)) {
-			jobname = "t-server-"+ ctx.get("_rid") ;
+			jobname = "tcoffee-" + ctx.get("_rid");
 		}
  		
-		/*
-		 * 1. create the PBD script file to be submited in the cluster queue
-		 */
-		fPbsFile = new File(ctxfolder,scriptfile);
-		StringBuilder script = new StringBuilder();
-		script.append("#!/bin/sh\n");
 
 		/*
-		 * 2. fetch the env vars from the target command
-		 *    and add them to t  
-		 */
-		Map<String,String> targetEnv = new HashMap<String, String>();
-		command.onInitEnv(targetEnv);
-		
-		if( targetEnv != null && targetEnv.size()>0 ) {
-			for( Map.Entry<String,String> entry : targetEnv.entrySet() ) {
-				script.append("#$ -v ");
-				script.append(entry.getKey()).append("=").append(entry.getValue());
-				script.append("\n"); // <-- don't forget the blank
-			}
-		}
-
-		/* write the command and save */
-		script.append(command.getCmdLine());
-		Utils.write(script, fPbsFile);
-	
-		
-
-		/*
-		 * 3. return the qsub command 
+		 * 3. return the bsub command 
 		 */
 		File targetOutFile = command.getLogFile();
 		File targetErrFile = command.getErrFile();
-		StringBuilder result = new StringBuilder();
-		result .append("qsub ");
-		result .append("-cwd ");
-		result .append("-sync y ");
-		result .append("-r no ");
-		result .append("-terse ");
-		result .append("-q ") .append(queue) .append(" ");
+		StringBuilder result = new StringBuilder("bsub ");
 
+		result .append("-K ");		// sync mode i.e. wait for termination before exit
+		result .append("-rn ");		// define as not restartable
+	
+
+		// add the queue name
+		if( Utils.isNotEmpty(queue)) { 
+			result .append("-q ") .append(queue) .append(" ");
+		}
+		
+		// add the job name
+		if( Utils.isNotEmpty(jobname) ) {
+			result.append("-J ") .append(jobname) .append(" ");
+		}
+
+		// add the std output filename
 		if( targetOutFile != null ) {
 			result .append("-o ") .append(targetOutFile.getName()) .append(" ");
 		}
 
+		// add the std error filename
 		if( targetErrFile != null ) {
 			result .append("-e ") .append(targetErrFile.getName()) .append(" ");
 		}
 		
-		if( Utils.isNotEmpty(jobname) ) {
-			result.append("-N ") .append(jobname) .append(" ");
+		// append the original command which is being submitted 
+		if( Utils.isNotEmpty(command.cmdfile)) { 
+			result.append( "< " ) .append( command.cmdfile ) ;
 		}
-
-		result.append( fPbsFile.getName() );
+		else { 
+			result.append( command.getCmdLine() );
+		}
 		return  result.toString();
 	}
 	
@@ -236,7 +196,7 @@ public class QsubCommand extends AbstractShellCommand {
 		}
 	
 		/*
-		 * complete this job parsing the qsub output
+		 * complete this job parsing the bsub output
 		 */
 		parseResultFile();
 		if( hasErrors() ) {
@@ -277,11 +237,19 @@ public class QsubCommand extends AbstractShellCommand {
 		BufferedReader reader;
 		try {
 			reader = new BufferedReader(new FileReader(getLogFile()));
-			jobid = reader.readLine().trim();  // <-- by definition the first line contains the submitted job-id 
+			String line = reader.readLine().trim();
 			reader.close();
+			Matcher matcher = JOB_PATTERN.matcher(line);
+			if(matcher.matches()) { 
+				jobid = matcher.group(1); 
+			}
+			
+			if( Utils.isEmpty(jobid)) { 
+				throw new QuickException("Bsub does not returned a valid job queue number");
+			}
 		} 
-		catch (IOException e) {
-			Logger.error(e, "Error on parsing qsub result file: ", getLogFile());
+		catch (Exception e) {
+			Logger.error(e, "Error on parsing bsub result file: ", getLogFile());
 		}
 	}
 	
