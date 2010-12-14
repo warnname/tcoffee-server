@@ -20,7 +20,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.CommandException;
-import exception.QuickException;
 
 /**
  * Execute the command on the LSF Platform Computing trough the "bsub" system command
@@ -233,7 +232,7 @@ public class BsubCommand extends AbstractShellCommand {
 		return true;
 	}
 
-	private void parseResultFile() {
+	private boolean parseResultFile() {
 		BufferedReader reader;
 		try {
 			reader = new BufferedReader(new FileReader(getLogFile()));
@@ -244,13 +243,17 @@ public class BsubCommand extends AbstractShellCommand {
 				jobid = matcher.group(1); 
 			}
 			
-			if( Utils.isEmpty(jobid)) { 
-				throw new QuickException("Bsub does not returned a valid job queue number");
-			}
 		} 
 		catch (Exception e) {
 			Logger.error(e, "Error on parsing bsub result file: ", getLogFile());
 		}
+
+		if( Utils.isEmpty(jobid)) { 
+			result.addError("Unable to submit your job to grid for computation");
+			return false;
+		}
+		
+		return true;	
 	}
 	
 }

@@ -273,7 +273,7 @@ public class QsubCommand extends AbstractShellCommand {
 		return true;
 	}
 
-	private void parseResultFile() {
+	private boolean parseResultFile() {
 		BufferedReader reader;
 		try {
 			reader = new BufferedReader(new FileReader(getLogFile()));
@@ -283,6 +283,13 @@ public class QsubCommand extends AbstractShellCommand {
 		catch (IOException e) {
 			Logger.error(e, "Error on parsing qsub result file: ", getLogFile());
 		}
+		
+		if( Utils.isEmpty(jobid)) { 
+			result.addError("Unable to submit your job to grid for computation");
+			return false;
+		}
+		
+		return true;
 	}
 	
 }
