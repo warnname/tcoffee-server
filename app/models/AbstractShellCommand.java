@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.libs.IO;
+import play.libs.Time;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -43,8 +44,12 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	/** The exit code return when the program terminate without error */
 	public int validCode = 0; 
 	
-	/** The number of seconds after that the process is killed */
-	public long timeout = 0;
+	/** 
+	 * The max duration after that the process is killed e.g. 5s, 7min, 8h
+	 * 
+	 *  @see Time#parseDuration(String)
+	 */
+	public String duration;
 	
 	/* the job context folder */
 	@XStreamOmitField
@@ -166,8 +171,10 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		 * preprend the bundle binaries to the PATH by default 
 		 */
 		String binPath = ctx.get("bundle.bin.path") ;
-		String path = binPath + File.pathSeparator + System.getenv("PATH");
-		map.put("PATH", path);
+		if( Utils.isNotEmpty(binPath)) { 
+			String path = binPath + File.pathSeparator + System.getenv("PATH");
+			map.put("PATH", path);
+		}
 		
 		/* 
 		 * add the bundle environment file is exists 
@@ -303,8 +310,17 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				executor.setStreamHandler(new PumpStreamHandler(fLogStream, fErrStream));
 				
 				/*
-				 * 3. set a watchdog if a timeout has been specified
+				 * 3. set a watchdog if a duration has been specified
 				 */
+				long timeout=0;
+				if( Utils.isNotEmpty(duration)) { 
+					try { 
+						timeout = Time.parseDuration(duration);
+					} catch( IllegalArgumentException e ) { 
+						Logger.error("Error parsing command duration property. Invalid value: '%s'", duration);
+					}
+				}
+				
 				if(timeout > 0) { 
 					executor.setWatchdog(new ExecuteWatchdog(timeout * 1000));
 				}
