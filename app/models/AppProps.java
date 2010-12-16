@@ -135,6 +135,9 @@ public class AppProps implements Serializable  {
 				throw new QuickException("Unable to create workspace folder: '%s' ", WORKSPACE_FOLDER);
 			}
 		}
+		else { 
+			Logger.info("Using Workspace folder: '%s'", WORKSPACE_FOLDER);
+		}
 		
 		/*
 		 * 2. define the properties file 
@@ -153,16 +156,17 @@ public class AppProps implements Serializable  {
 		if( !parent.exists() && !parent.getParentFile().mkdirs() ) { 
 			throw new QuickException("Cannot create log path: '%s' ", parent);
 		}
+		Logger.info("Using Log file: '%s'", SERVER_LOG_FILE);
 		
 		/*
 		 * 4. bundles path 
 		 */
 		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
-		Logger.info("Using 'bundles' on path: %s", BUNDLES_FOLDER);
+		Logger.info("Using Bundles path: %s", BUNDLES_FOLDER);
 
 		/* create temporary path */
 		TEMP_PATH = getWorkPath("tserver.temp.path", ".temp");
-		Logger.info("Using 'temp' path: %s", TEMP_PATH);
+		Logger.info("Using Temp path: %s", TEMP_PATH);
 		
 		
 		/*

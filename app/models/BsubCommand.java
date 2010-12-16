@@ -137,9 +137,9 @@ public class BsubCommand extends AbstractShellCommand {
 		StringBuilder result = new StringBuilder("bsub ");
 
 		result .append("-K ");		// sync mode i.e. wait for termination before exit
-		result .append("-rn ");		// define as not restartable
 	
-
+		result .append("-cwd ") .append(ctxfolder) .append(" ");
+		
 		// add the queue name
 		if( Utils.isNotEmpty(queue)) { 
 			result .append("-q ") .append(queue) .append(" ");
@@ -197,20 +197,20 @@ public class BsubCommand extends AbstractShellCommand {
 		/*
 		 * complete this job parsing the bsub output
 		 */
-		parseResultFile();
-		if( hasErrors() ) {
-			success = false;
+		if( success && parseResultFile() ) { 
+			return true;
 		}
 		
-		return success;
+		parseErrorFile();
+		return false;
 	}
 
-	private boolean hasErrors() {
+	private void parseErrorFile() {
 		
 		File file = getErrFile(); 
 		if( file == null || !file.exists() || file.length() == 0) {
-			/* no error file so .. no errors ! */
-			return false;
+			/* no error file so .. nothing to do ! */
+			return;
 		}
 		
 		String error;
@@ -218,18 +218,17 @@ public class BsubCommand extends AbstractShellCommand {
 			error = IO.readContentAsString(file);
 		} 
 		catch (IOException e) {
-			Logger.error(e, "Enable to read qsub error file: '%s'", file);
-			error = "(qsub reports problems but the error file cannot be read)";
+			Logger.error(e, "Enable to read bsub error file: '%s'", file);
+			error = "(bsub reports problems but the error file cannot be read)";
 		}
 		
 		if( error == null || (error=error.trim()).length() == 0 ) { 
 			/* empty error file so .. NO ERROR */
-			return false;
+			return;
 		}
 		
 		result.clearErrors();
 		result.addError(error);
-		return true;
 	}
 
 	private boolean parseResultFile() {

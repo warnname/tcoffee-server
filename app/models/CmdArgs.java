@@ -9,6 +9,9 @@ import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+import edu.emory.mathcs.backport.java.util.Collections;
+
 @AutoBean 
 @XStreamAlias("args")
 public class CmdArgs {
@@ -55,6 +58,34 @@ public class CmdArgs {
 		
 		return result.toString();
 	}
+
+	
+	/**
+	 * Add a value without replacing the current content if exists
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	public void add( String name, String value ) { 
+		if( items == null ) {
+			items = new ArrayList<Arg>();
+		}
+
+		int p = indexOf(name);
+		if( p != -1 ) { 
+			Arg arg = items.get(p);
+			if( arg != null && Utils.isNotEmpty(arg.value) ) {
+				value = arg.value + " " + value;
+			}
+			
+			items.remove(p);
+			items.add(p, new Arg(name,value));
+		}
+		else { 
+			items.add(new Arg(name,value));
+		}
+
+	}	
 	
 	public void put( String name, String value ) {
 		if( items == null ) {
@@ -62,7 +93,6 @@ public class CmdArgs {
 		}
 		items.add( new Arg(name,value) );
 	}
-	
 	
 	public void put( String pair ) {
 		if( pair==null || Utils.isEmpty(pair=pair.trim()) ) { return; }
@@ -137,6 +167,19 @@ public class CmdArgs {
 		int p = indexOf(name);
 		Arg arg = (p!=-1) ? items.get(p) : null;
 		return (arg != null) ? arg.getVal() : null; 
+	}
+	
+	public List<String> getAsList( String key ) { 
+
+		String vals = get(key);
+		
+		if( Utils.isEmpty(vals) ) { 
+			// empty result
+			return Collections.emptyList();
+		}
+		
+		List<String> result = Arrays.asList( vals.split(" ") );
+		return result;
 	}
 
 	public String at( int index ) {

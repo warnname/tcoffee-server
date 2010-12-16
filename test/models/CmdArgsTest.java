@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,7 +10,7 @@ import util.TestHelper;
 import util.Utils;
 import util.XStreamHelper;
 
-public class CmdLineTest extends UnitTest {
+public class CmdArgsTest extends UnitTest {
 	
 	@Before
 	public void register() {
@@ -55,7 +57,29 @@ public class CmdLineTest extends UnitTest {
 		assertEquals(null, args.get("w"));
 		assertEquals("1", args.get("q"));
 	}
+	
+	@Test 
+	public void testAdd() { 
+		CmdArgs args = new CmdArgs();
+		args.add("p","a");
+		args.add("q","b");
+		args.add("q","c");
 
+		assertEquals("a", args.get("p"));
+		assertEquals("b c", args.get("q"));
+	}
+
+	@Test 
+	public void testGetList() { 
+		CmdArgs args = new CmdArgs();
+		args.put("a","b");
+		args.put("x=1 2 3");
+		
+		assertEquals( Arrays.asList("b"), args.getAsList("a") );
+		assertEquals( Arrays.asList("1","2","3"), args.getAsList("x"));
+		
+	}
+	
 	@Test 
 	public void testParse() {
 		CmdArgs args = new CmdArgs();

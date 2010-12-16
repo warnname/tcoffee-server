@@ -149,6 +149,14 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		}
 		args.put("quiet", "stdout");
 		
+		/*
+		 * garantee always html output
+		 */
+		List<String> output = args.getAsList("output");
+		if( !output.contains("score_html") && !output.contains("html") ) { 
+			args.add( "output", "score_html" );
+		}
+		
 		/* return the command line */
 		return result += " " + args.toCmdLine();
 	}
