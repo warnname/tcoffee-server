@@ -72,12 +72,15 @@ public class Bundle implements Serializable {
 	@XStreamOmitField
 	public File binPath;
 	
+	/** the 'bundle.xml' file */
 	@XStreamOmitField
 	public File conf;
 
+	/** the 'bundle.env' (or 'bundle.environment') file */
 	@XStreamOmitField
 	public File envFile;
 
+	/** the 'bundle.properties' file */
 	@XStreamOmitField
 	public File propFile;
 	
@@ -103,6 +106,11 @@ public class Bundle implements Serializable {
 	@XStreamOmitField
 	public int contentHash = 0;
 		
+	/** bundle last modified time */
+	@XStreamOmitField
+	public long lastModified = 0;
+	
+	
 	public Bundle() { 
 		
 	}
@@ -215,11 +223,11 @@ public class Bundle implements Serializable {
 		group = group.trim();
 		List<Service> result = new ArrayList<Service>();
 		
-		for( Service m : services ) {
-			String g = (m.group==null) ? "" : m.group.trim(); // <-- normalize the group name;
+		for( Service srv : services ) {
+			String g = (srv.group==null) ? "" : srv.group.trim(); // <-- normalize the group name;
 			
 			if( group.equals(g) ) {
-				result.add(m);
+				result.add(srv);
 			}
 		}
 		
@@ -228,7 +236,7 @@ public class Bundle implements Serializable {
 	}
 	
 	public long getLastModified() { 
-		return conf != null ? conf.lastModified() : 0;
+		return lastModified;
 	}
 	
 	public void readProperties( File conf ) { 

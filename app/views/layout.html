@@ -31,6 +31,11 @@ $(document).ready(function(){  $(document).pngFix(); });
 </script>
 <![endif]-->
 
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#sysmsg .close').click(function() { $('#sysmsg').hide(300); $.cookie('sysmsg_closed','${_main_sysmsg?.hashCode()}', {expires: 7, path: '/'}) } );
+} )
+</script>
 </head>
 
 <body class="${_main_class}">
@@ -49,6 +54,12 @@ $(document).ready(function(){  $(document).pngFix(); });
 
 
 	<div id="content" >
+	#{if _main_sysmsg && request.cookies['sysmsg_closed']?.value != _main_sysmsg.hash }
+	<div id="sysmsg" class="${_main_sysmsg.type}"><span style="float: right; position: relative; top: -10px; font-size: .8em" >[ <a class="close" href="#">X</a> ]</span>
+	${_main_sysmsg.value}
+	</div>
+	#{/if}
+	
 	#{doLayout /}
 	</div>	
 

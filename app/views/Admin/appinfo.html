@@ -27,7 +27,7 @@ View and edit application properties &amp; configuration
 <tbody>
 #{list names, as:'key'}
 <tr  >
-<td>${key}</td> <td id="${key}" class="cellval">${props.getProperty(key)}</td>
+<td>${key}</td> <td id="${key.replace('.','_')}" class="cellval">${props.getProperty(key)}</td>
 </tr>
 #{/list}
 </tbody>
@@ -41,7 +41,7 @@ View and edit application properties &amp; configuration
 </form>
 
 *{
- More about the Edit-in-place pluing 
+ More about the Edit-in-place plugin 
  http://code.google.com/p/jquery-in-place-editor/
 }*
 <script type="text/javascript" src="@{'/public/javascripts/jquery.editinplace.js'}" ></script>

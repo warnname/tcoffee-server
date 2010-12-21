@@ -12,6 +12,7 @@ import models.PageContent;
 import models.Service;
 import play.Logger;
 import play.Play;
+import play.cache.Cache;
 import play.exceptions.NoRouteFoundException;
 import play.mvc.Controller;
 import play.mvc.Router;
@@ -110,6 +111,7 @@ public class CommonController extends Controller {
 		renderArgs.put("_main_action", _main_action);
 		renderArgs.put("_main_index", _main_index);
 		renderArgs.put("_main_title", _main_title);
+		renderArgs.put("_main_sysmsg", Cache.get("sysmsg"));
 		
 	}	
 	

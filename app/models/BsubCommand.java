@@ -3,15 +3,14 @@ package models;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import play.Logger;
 import play.Play;
-import play.libs.IO;
 import util.Check;
+import util.FileIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -212,23 +211,24 @@ public class BsubCommand extends AbstractShellCommand {
 			/* no error file so .. nothing to do ! */
 			return;
 		}
-		
-		String error;
-		try {
-			error = IO.readContentAsString(file);
-		} 
-		catch (IOException e) {
-			Logger.error(e, "Enable to read bsub error file: '%s'", file);
-			error = "(bsub reports problems but the error file cannot be read)";
+
+		int count=0;
+		for( String line : new FileIterator(file) ) { 
+			if( line != null ) { 
+				if( line.trim().equals("<<Job is finished>>") || 
+					line.trim().equals("<<Waiting for dispatch ...>>")) { 
+					continue;
+				}
+			}
+
+			/* Append each line like an error. 
+			 * Remove all previous errors because we are supposing that the main failure cause is the bsub command */
+			if( count++==0 ) { 
+				result.clearErrors();
+			}
+			result.addError("bsub: " + line);
 		}
 		
-		if( error == null || (error=error.trim()).length() == 0 ) { 
-			/* empty error file so .. NO ERROR */
-			return;
-		}
-		
-		result.clearErrors();
-		result.addError(error);
 	}
 
 	private boolean parseResultFile() {

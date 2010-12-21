@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -21,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 
 import models.AppProps;
 import models.Bundle;
+import models.Field;
 import models.PageContent;
 import models.Repo;
 import models.Service;
@@ -65,6 +67,8 @@ public class Admin extends CommonController {
 	@Before
 	static void before() { 
 		injectImplicitVars();
+		/* clear alwasy sys message for admin pages */
+		renderArgs.put("_main_sysmsg", null);
 	}
 	
 	/*
@@ -822,5 +826,70 @@ public class Admin extends CommonController {
 		renderBinary( AppProps.SERVER_LOG_FILE );
 	}
 	
+	
+	public static class SysMessage implements Serializable { 
+		public String value;
+		public String type;
+
+		public SysMessage( String message, String type ) { 
+			this.value = message;
+			this.type = type;
+		}
+		
+		public int hashCode() { 
+			int result = Utils.hash();
+			result = Utils.hash(result, value);
+			result = Utils.hash(result, type);
+			return result;
+		}
+		
+		public String getHash() { 
+			return String.valueOf(hashCode());
+		}
+	}
+	
+	/**
+	 * Publish a system message to all users 
+	 */
+	public static void sysmsg( String message, String type, String duration ) { 
+		Field fieldMessage = new Field("textarea", "message");
+		fieldMessage.label = "Message to publish";
+		fieldMessage.hint = "Enter here the message to publish";
+
+		Field fieldType = new Field("dropdown", "type");
+		fieldType.label = "Type";
+		fieldType.hint = "The type of the message";
+		fieldType.choices = new String[] { "box-info", "box-success", "box-warn", "box-error" };
+		
+		
+		Field fieldExpires = new Field("text", "duration");
+		fieldExpires.label = "Duration";
+		fieldExpires.hint = "Specify how long this message will be visible e.g 10min, 1h, 1d";
+		
+		/*
+		 * is POST apply the changes 
+		 */
+		if( isPOST() ) { 
+			String feedback;
+			if( Utils.isEmpty(message)) { 
+				Cache.delete("sysmsg");
+				feedback = "System message removed";
+			}
+			else { 
+				if( Utils.isEmpty(duration) ) { duration = null; }
+				Cache.safeSet("sysmsg", new SysMessage(message,type), duration);
+				feedback = "System message published";
+			}
+			
+			renderArgs.put("feedback", feedback);
+		}
+		
+		/* default values */
+		SysMessage sysmsg = (SysMessage) Cache.get("sysmsg");
+		fieldMessage.value =  sysmsg != null ? sysmsg.value : null;
+		fieldType.value = type != null ? type : "box-warn";
+		
+		render(fieldMessage, fieldType, fieldExpires);
+	}
  }
 

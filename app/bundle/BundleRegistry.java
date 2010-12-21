@@ -286,23 +286,26 @@ public class BundleRegistry {
 	 */
 	public int getBundleHash( Bundle bundle ) {
 		
+		List<String> hotfiles = java.util.Arrays.asList("bundle.xml", "bundle.properties","bundle.environment","bundle.env"); 
+		
 		int hash = Utils.hash();
 		File[] files = new File( bundle.root, "conf").listFiles();
 		for( File file : files ) { 
+			
 			hash = Utils.hash(hash, file.getName());
+			
+			/* for hot files check also file size and last update date */
+			if( hotfiles.contains( file.getName() ) ) { 
+				hash = Utils.hash(hash, file.lastModified());
+				hash = Utils.hash(hash, file.length());
+				
+				// update the last modified time as well 
+				if( file.lastModified() > bundle.lastModified ) { 
+					bundle.lastModified = file.lastModified(); 
+				}
+			}
 		}
-		hash = Utils.hash(hash, bundle.conf.lastModified());
-		hash = Utils.hash(hash, bundle.conf.length());
-		
-		if( bundle.propFile != null ) { 
-			hash = Utils.hash(hash, bundle.propFile.lastModified());
-			hash = Utils.hash(hash, bundle.propFile.length());
-		}
-		
-		if( bundle.envFile != null ) { 
-			hash = Utils.hash(hash, bundle.envFile.lastModified());
-			hash = Utils.hash(hash, bundle.envFile.length());
-		}
+
 		
 		
 		return hash;

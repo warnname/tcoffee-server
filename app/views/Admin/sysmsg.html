@@ -1,0 +1,39 @@
+#{extends 'layout.html' /}
+#{set title:'System message' /}
+
+<h1>System Message
+<small>
+Use this to publish a message to all users
+</small>
+</h1>
+
+#{if feedback }
+<div class="box-info">
+<b>OK</b> ${feedback}
+</div>
+#{/if}
+
+
+
+<form method="post">
+
+<fieldset>
+
+#{render fieldMessage /}
+#{render fieldType /}
+#{render fieldExpires /}
+
+
+<label>&nbsp;</label> 
+<div class="c-input">
+	<button id="submit" class="button" >&nbsp;&nbsp;Publish&nbsp;&nbsp;</button>
+	&nbsp;&nbsp;
+	<a href="@{Admin.index}" title="Discard changes, if any, and back to index page">Cancel</a>
+</div>
+
+
+</fieldset>
+
+
+</form>
+
