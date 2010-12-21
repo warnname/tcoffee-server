@@ -169,11 +169,22 @@ public class Admin extends CommonController {
 	 * Renders the System information page 
 	 */
 	public static void sysinfo() {
+		
+		String sStartTime = "--";
+		Long lStartTime = (Long) Cache.get("server-start-time");
+		if( lStartTime != null ) { 
+			Date dStartTime = new Date(lStartTime);
+			sStartTime = Utils.asString(dStartTime);
+			
+			long delta = System.currentTimeMillis() - lStartTime;
+			sStartTime += " (" + Utils.asTimeString(delta) + " ago)"; 
+		}
+		
 		TreeMap<Object,Object> map1 = new TreeMap<Object,Object>(System.getProperties());
 		TreeMap<String,String> map2 = new TreeMap<String,String>(System.getenv());
 		TreeMap<Object,Object> map3 = new TreeMap<Object,Object>( Play.configuration );
 
-		render(map1,map2,map3);
+		render(map1,map2,map3,sStartTime);
 	}
     
 	/**
