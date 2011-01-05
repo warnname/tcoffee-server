@@ -1,3 +1,5 @@
 User-agent: *
-Disallow: /history
-Disallow: /module
+Disallow: /
+Allow: /$
+Allow: /apps/tcoffee/
+Allow: /public/

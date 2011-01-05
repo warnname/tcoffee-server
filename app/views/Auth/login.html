@@ -1,0 +1,13 @@
+#{extends 'layout.html' /}
+
+<h1>Authentication required</h1>
+
+#{if flash.error}
+<div class="box-error">
+${flash.error}
+</div>
+#{/if}
+ 
+<form action="@{Auth.validate()}" method="POST">
+    <input class="button" type="submit" value="&nbsp;Sign-in using your Google Account&nbsp;" />
+</form>

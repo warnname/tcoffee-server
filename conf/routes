@@ -10,20 +10,26 @@ GET		/psicoffee				Main.psicoffee
 GET		/expresso				Main.expresso
 GET		/mcoffee				Main.mcoffee
 GET		/rcoffee				Main.rcoffee
+GET		/ampa					Application.index(bundle:'ampa')
+GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots
 
 # Downloadable data
 GET		/data/zip				Data.zip
 *		/data/upload			Data.upload
+GET		/data/{path}/@			Data.list
 GET		/data/{<.+>path}		Data.resource
 
-# Administration controller 
-GET 	/adm/?					Admin.index		
-*		/adm/bundle/{action}	Admin.bundle{action}
-* 		/adm/{action}			Admin.{action}		
+# Authentication
+GET		/admin/login			Auth.login
+*		/admin/logout			Auth.logout
+*		/admin/auth				Auth.validate
 
-# Secure module controller 
-* 		/secure/{action}		Secure.{action}	
+
+# Administration controller 
+GET 	/admin/?				Admin.index		
+*		/admin/bundle/{action}	Admin.bundle{action}
+* 		/admin/{action}			Admin.{action}		
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/            	staticDir:public

@@ -1,0 +1,10 @@
+http://tcoffee.crg.cat/apps/tcoffee/index.html
+http://tcoffee.crg.cat/apps/tcoffee/play?name=regular
+http://tcoffee.crg.cat/apps/tcoffee/play?name=expresso
+http://tcoffee.crg.cat/apps/tcoffee/play?name=psicoffee
+http://tcoffee.crg.cat/apps/tcoffee/play?name=accurate
+http://tcoffee.crg.cat/apps/tcoffee/play?name=mcoffee
+http://tcoffee.crg.cat/apps/tcoffee/play?name=rcoffee
+http://tcoffee.crg.cat/apps/tcoffee/play?name=combine
+http://tcoffee.crg.cat/apps/tcoffee/play?name=core
+http://tcoffee.crg.cat/apps/tcoffee/play?name=irmsd

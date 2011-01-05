@@ -6,6 +6,19 @@ import java.io.FileReader;
 
 import exception.QuickException;
 
+/**
+ * Let to iterate over a text file line by line. Example: 
+ * 
+ * <pre>
+ * for( String line :  new FileIterator(tcoffee.getErrFile()) ) {
+ * 	:
+ *	do something with lines 
+ *	:
+ * }
+ * </pre>
+ * @author ptommaso
+ *
+ */
 public class FileIterator extends ReaderIterator {
 
 	public FileIterator( File file ) {

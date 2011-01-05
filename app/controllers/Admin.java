@@ -5,10 +5,14 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.security.Security;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -44,6 +48,7 @@ import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 import util.Check;
 import util.FileIterator;
+import util.ReloadableSingletonFile;
 import util.Utils;
 import util.XStreamHelper;
 import bundle.BundleException;
@@ -60,9 +65,46 @@ import exception.QuickException;
  * @author Paolo Di Tommaso
  *
  */
-@With(Secure.class)
+@With(Auth.class)
 public class Admin extends CommonController {
 
+	
+	public final static File USERS_FILE;
+	
+	public final static ReloadableSingletonFile<List<String>> USERS_LIST;
+	
+	static { 
+		/*
+		 * defines the users list file
+		 */
+		 USERS_FILE = new File( AppProps.WORKSPACE_FOLDER, "users.properties");
+		 Logger.info("Users list file: '%s'", USERS_FILE);
+		 
+		 
+		 /*
+		  * defines the 
+		  */
+		 USERS_LIST = new ReloadableSingletonFile<List<String>>(USERS_FILE) {
+			 
+			 public List<String> readFile(File file) {
+				 List<String> result = new ArrayList<String>();
+				 
+				 if( file != null && file.exists() ) { 
+					 for( String line : new FileIterator(file) ) { 
+						 result.add(line);
+					 }
+				 }
+				 
+				 /* sort them */
+				 Collections.sort(result);
+				 
+				 return result;
+			 };
+			 
+		 };
+		 
+	}
+	
 	
 	@Before
 	static void before() { 
@@ -124,7 +166,7 @@ public class Admin extends CommonController {
      * Let to inspect and modify application properties 
      * 
      */
-    public static void appinfo() {
+    public static void editprops() {
     	final String cachekey = session.getId() + "_appinfo";
 
     	AppProps props = null;
@@ -155,13 +197,41 @@ public class Admin extends CommonController {
 		render(props,names);
     }
     
-    public static void editprop( String element_id, String original_html, String update_value) { 
+    /**
+     * This method is invoked when a property value is update using by an ajax request.
+     * <p>
+     * Please NOTE: changing parameters name will break the code (they must match the javascript plugin definition)
+     * </p>
+     * 
+     * 
+     * @param element_id the property key hash code
+     * @param original_html the previous property value 
+     * @param update_value the new property value
+     */
+    public static void updateproperty( String element_id, String original_html, String update_value) { 
+    	
     	final String cachekey = session.getId() + "_appinfo";
     	AppProps props = (AppProps) Cache.get(cachekey);
-    	props.setProperty(element_id, update_value);
+
+    	/* 
+    	 * note: the element_id encode the property name hash code, so we need to map back to the property name 
+    	 */
+    	for( String key : props.getNames() ) { 
+    		if(  key.hashCode() == Integer.parseInt(element_id)) { 
+    			/* 
+    			 * when found the 'key' contains the looked for property name 
+    			 */
+    	    	Logger.debug("Changing property: '%s'; old value: '%s'; new value: '%s'", element_id, original_html, update_value);
+    	    	props.setProperty(key, update_value);
+    	    	/* 
+    	    	 * render back the updated value as confirmation and exit 
+    	    	 */
+    	    	renderText(update_value);
+    	    	return; 
+    		}
+    	}
     	
-    	/* render back the updated value as confirmation */
-    	renderText(update_value);
+    	renderText(String.format("ERROR: cannot find property with id: %s", element_id));
     }
     
     	
@@ -902,5 +972,65 @@ public class Admin extends CommonController {
 		
 		render(fieldMessage, fieldType, fieldExpires);
 	}
+	
+	/**
+	 * Render the page for to Manage Users 
+	 * 
+	 */
+	public static void usersList() { 
+		renderArgs.put("users", USERS_LIST.get());
+		render();
+	}
+	
+	/**
+	 * Handle ajax request actions on users page.
+	 * <p>
+	 * NOTE: parameters name must mach as specified by the editinplace plugin
+	 * 
+	 * @param element_id the element submiting the data 
+	 * @param original_html the previous value (not meaningful)
+	 * @param update_value the user account
+	 */
+	public static void userUpdate( String element_id, String original_html, String update_value ) { 
+		final String sAction = element_id;
+		final String sUser = update_value;
+		
+		String result = update_value; // send back this value as confirmation
+		
+		try { 
+			List<String> items = USERS_LIST.get();
+			if( "add" .equals(sAction) ) { 
+				if( !items.contains(sUser) ) { 
+					items.add(sUser);
+					/* save  the new one */
+					PrintWriter out = new PrintWriter(new FileWriter(USERS_FILE,true));	// <-- true to append 
+					out.println(sUser);
+					out.close();
+				}
+				
+			}
+			else if( "del" .equals(sAction) ) { 
+				if( items.remove(sUser) ) { 
+					/* save the updated list */
+					PrintWriter out = new PrintWriter(new FileWriter(USERS_FILE,false)); // <-- false to OVERWRITE
+					for( String uu : items ) { 
+						out.println(uu);
+					}
+					out.close();
+				}
+			}
+			
+		}
+		catch( Exception e ) { 
+			Logger.error(e, "Failing on user action: '%s'; '%s'", sAction, sUser );
+			result = "ERROR";
+		}
+		
+    	/* render back the updated value as confirmation */
+    	renderText(result);
+		
+	}
+	
+
  }
 

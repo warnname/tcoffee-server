@@ -19,7 +19,7 @@
 </style>
 
 <div class="fbox">
-<h3><a href="@{Admin.appinfo}">Edit props</a></h3>
+<h3><a href="@{Admin.editprops}">Edit props</a></h3>
 View and edit application properties
 </div>
 
@@ -61,5 +61,21 @@ Download server usage log file
 <div class="fbox">
 <h3><a href="@{Admin.sysmsg}"><span>System Message</span></a></h3>
 Publish a message to web site users
+</div>
+
+<div style="clear: both" ></div>
+
+
+<div class="fbox">
+<h3><a href="@{Admin.userslist}"><span>Manage Users</span></a></h3>
+Users enabled to access administration services
+</div>
+
+<div style="clear: both" ></div>
+
+
+*{ Log-out link }*
+<div>
+<a href="@{Auth.logout}" title="Teminate the admin session" >Log-out</a> (${session.get('user.email')})
 </div>
 
