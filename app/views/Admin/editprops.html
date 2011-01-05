@@ -1,0 +1,56 @@
+#{extends 'layout.html' /}
+#{set title:'App properties' /}
+
+<h1>Application properties 
+<small>
+View and edit application properties &amp; configuration
+</small>
+</h1>
+
+#{if saved}
+<div class="box-info">
+<b>OK</b> Changed properties applied to the application.
+</div>
+#{/if}
+
+
+<div class="box">
+<h2>
+<span>Available properties</span>
+<small><span>Click on the value column to edit</span></small>
+</h2>
+
+<table id="box-table-a">
+<thead>
+<tr><th>PARAM</th><th>VALUE</th></tr>
+</thead>
+<tbody>
+#{list names, as:'key'}
+<tr  >
+<td>${key}</td> <td id="${key.hashCode()}" class="cellval">${props.getProperty(key)}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+</div>
+
+<form method="post">
+<button id="submit" class="button disabled" disabled="disabled">Apply changes</button>
+&nbsp;&nbsp;
+<a href="@{Admin.index}" title="Discard changes, if any, and back to index page">Cancel</a>
+</form>
+
+*{
+ More about the Edit-in-place plugin ()
+ http://code.google.com/p/jquery-in-place-editor/
+}*
+<script type="text/javascript" src="@{'/public/javascripts/jquery.editinplace.js'}" ></script>
+<script>
+function activeSubmit() {
+	$('#submit').removeAttr('disabled').removeClass('disabled');
+}
+
+$(document).ready(function(){
+	$('.cellval').editInPlace({url:"@{Admin.updateproperty}", success:activeSubmit })
+} )
+</script>
