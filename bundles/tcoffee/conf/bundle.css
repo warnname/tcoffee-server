@@ -64,14 +64,35 @@
  * declarative menu 
  */
  
+#navigation li a {
+	color: #e3e3e3; 
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5); 
+	-webkit-border-radius: 14px; 
+	-moz-border-radius: 14px; 
+	border-radius: 14px;
+	
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out; 
+	-o-transition: all 0.3s ease-in-out; 
+	transition: all 0.3s ease-in-out;	
+	
+}
+
+#navigation li a:hover, 
+#navigation li a:focus {
+	color: #fff; 
+	background: rgba(255, 255, 255, 0.15);
+} 
+ 
 #navigation.index .index a,
 #navigation.history .history a,
 #navigation.references .references a,
 #navigation.contacts .contacts a
 
 {
-	color: #0c8aa3;
+	color: #24bae0;	
 }
+
 
 /* 
  * Home page 
