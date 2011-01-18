@@ -1697,6 +1697,35 @@ public class Utils {
 		return result.toString();
 	}	
 
+	public static String match( final String text, final String re, final MatchAction action ) { 
+		return match(text, Pattern.compile(re), action);
+	}
+	
+	public static String match( final String text, final Pattern re, final MatchAction action ) { 
+		Matcher matcher = re.matcher(text);
+		StringBuffer result = new StringBuffer();
+
+		while (matcher.find()) {
+
+			List<String> groups = new ArrayList<String>(matcher.groupCount()+1);
+			for( int i=0, c=matcher.groupCount(); i<=c; i++ ) { 
+				groups.add(matcher.group(i));
+			}
+			String value = action.replace(groups);
+			
+			if( value != null ) { 
+				matcher.appendReplacement(result, value != null ? value : "");
+			}
+		}
+		
+		matcher.appendTail(result);
+ 		return result.toString();
+	}
+
+	public interface MatchAction { 
+		String replace( List<String> groups );
+	}
+	
 	/**
 	 * Find out all the items in an array that match against a specified attribute value
 	 * 

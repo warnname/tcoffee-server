@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<bundle name="tcoffee" version="1.0.2"> 
-  <title>T-Coffee</title>
+<bundle name="tcoffee" version="8.98"> 
+  <title>T-Coffee</title> 
   <description>A collection of tools for Computing, Evaluating and
     Manipulating Multiple Alignments of DNA, RNA, Protein Sequences and
     Structures</description>
@@ -76,12 +76,12 @@
       
         <field type='memo' name='seqs' label='Sequences to align' >
           <hint>Enter the sequences to align</hint>
-          <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="150" maxlen='2000' >
+          <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="150" maxlen='10000' >
             <required-error>You have to enter the sequences to align</required-error>
             <format-error>Sequences have to be in FASTA format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
             <maxnum-error>You must enter at most 150 sequences</maxnum-error>
-            <maxlen-error>Sequences cannot exceed 2000 char length</maxlen-error>
+            <maxlen-error>Sequences cannot exceed 10000 char length</maxlen-error>
           </validation>
           
           <sample>public/sample.fasta.txt</sample>
@@ -94,7 +94,7 @@
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
         
         <field type="checkbox" name="method1" label="Pairwise Structual Methods">
-          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+          <choices>sap_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
@@ -150,7 +150,7 @@
           -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=150 
-          -maxlen=2000 
+          -maxlen=10000 
           -case=${letter} 
           -seqnos=${seqnos} 
           -outorder=${outorder} 
@@ -213,7 +213,7 @@
         <description>Select the methods you want to use to compute the library. T-Coffee uses various sequence and structure alignment methods to compile a collection of alignments known as a Library. Use this section to select the methods.</description>
         
         <field type="checkbox" name="method1" label="Pairwise Structual Methods">
-          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+          <choices>sap_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
@@ -290,6 +290,7 @@
         <args>
           -in=${seqs}
           -mode=expresso
+          -blast=LOCAL
           -method=${method1} ${method2} ${method3}
           -pdb=${pdb1}
           -pdb=${pdb2}
@@ -344,7 +345,7 @@
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
         
         <field type="checkbox" name="method1" label="Pairwise Structual Methods">
-          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+          <choices>sap_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
@@ -398,8 +399,6 @@
           -in=${seqs} 
           -mode=psicoffee
           -blast=LOCAL
-          -pdb_db=${PDB_DB} 
-          -protein_db=${PROTEIN_DB}
           -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=150 
@@ -449,7 +448,7 @@
         <description>T-Coffee produces an alignment by combining the output of several alignment methods. Use this section to select the individual methods.</description>
         
         <field type="checkbox" name="method1" label="Pairwise Structual Methods">
-          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
+          <choices>sap_pair, TMalign_pair, mustang_pair </choices>
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
@@ -501,7 +500,8 @@
       <tcoffee >
         <args>
           -in=${seqs} 
-          -mode=accurate 
+          -mode=accurate
+          -blast=LOCAL
           -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=150 
@@ -650,17 +650,13 @@
           <title>Alignment Computation</title>
           <description>R-Coffee computes its alignments by combining a collection of Pairwise and Multiple Alignments named a Library. In this section you can select the methods you want to combine into the library. You can choose pairwise and multiple sequence alignment methods. </description>
           
-        <field type="checkbox" name="method1" label="Pairwise Structual Methods">
-          <choices>sap_pair, fugue_pair, TMalign_pair, mustang_pair </choices>
-        </field>
-        
-        <field type="checkbox" name="method2" label="Multiple Methods">
+        <field type="checkbox" name="method1" label="Multiple Methods">
           <value>mafft_msa muscle_msa probconsRNA_msa</value>
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
-        <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+        <field type="checkbox" name="method2" label="Pairwise Methods">
+          <choices>fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
           
     </fieldset>
@@ -703,7 +699,7 @@
       <tcoffee>
         <args >
           -in=${seqs}
-          -method=${method1} ${method2} ${method3} 
+          -method=${method1} ${method2} 
           -output=${output} 
           -maxnseq=150 
           -maxlen=2000 
@@ -734,8 +730,8 @@
   <input>
     <fieldset >
       <title>Sequences input</title>
-      <description>Upload each of the Multiple Sequence alignments you want to combine. The alignments must be in fasta or clustal format. You need at least two alignments.</description>
-      
+      <description>Upload each of the Multiple Sequence alignments you want to combine. The alignments must be in FASTA or ClustaW format. Click on &quot;show more options&quot; to combine more than 2 alignments.</description>
+       
       <field type='memo' name="aln1" label='Sequences alignment' >
             <validation required="true" />
             <sample >public/sample-clustalw.txt</sample>
@@ -746,15 +742,24 @@
             <sample >public/sample-clustalw.txt</sample>
       </field>
 
-      <field type='memo' name="aln3" label='Sequences alignment' >
-            <sample >public/sample-clustalw.txt</sample>
-      </field>
+    </fieldset>
+
+	<fieldset hideable="true">
+      <title>More sequences input</title>
+      <description>You can combine up to 6 alignments. The alignments must be in FASTA or ClustalW format. </description>
 
       <field type='memo' name="aln3" label='Sequences alignment' >
-            <sample >public/sample-clustalw.txt</sample>
       </field>
 
-      </fieldset>
+      <field type='memo' name="aln4" label='Sequences alignment' >
+      </field>
+
+      <field type='memo' name="aln5" label='Sequences alignment' >
+      </field>
+
+      <field type='memo' name="aln6" label='Sequences alignment' >
+      </field>
+	</fieldset>
 
     <fieldset hideable="true">
       <title>Output options</title>
@@ -797,6 +802,8 @@
         -in=${aln2}  
         -in=${aln3}  
         -in=${aln4}  
+        -in=${aln5}  
+        -in=${aln6}  
         -output=${output} 
         -evaluate_mode=t_coffee_slow 
         -maxnseq=80 

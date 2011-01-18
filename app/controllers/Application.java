@@ -36,6 +36,7 @@ public class Application extends CommonController {
 	@After 
 	static void release() {
 		Service.release();
+		
 	}
 	
 	/** 
@@ -45,7 +46,6 @@ public class Application extends CommonController {
     	redirect("Application._", bundle, "index.html");
     }
     
-
     /**
      * Handle request to display the <i>result</i> page
      * 
@@ -57,7 +57,10 @@ public class Application extends CommonController {
     	final Status status = ctx.getStatus();
 
     	if( status.isDone()) {
-			// if the file exists load the result object and show it
+    		// touch it to update the last access time 
+    		ctx.touch(); 
+		
+    		// if the file exists load the result object and show it
 			OutResult result = ctx.getResult();
 			renderArgs.put("rid", rid);
 			renderArgs.put("ctx", ctx);
@@ -75,7 +78,7 @@ public class Application extends CommonController {
 			render("Application/wait.html", rid );
 		}
 		else {
-			int maxDays = AppProps.instance().getRequestTimeToLive() / 60 / 60 / 24;
+			int maxDays = AppProps.instance().getRequestCacheDuration() / 60 / 60 / 24;
 	    	render("Application/oops.html", rid, maxDays);
 		}
  

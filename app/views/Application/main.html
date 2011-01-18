@@ -1,5 +1,10 @@
 #{extends 'layout.html' /}
 
+#{set 'meta'}
+<meta NAME="robots" CONTENT="NOFOLLOW" />
+#{/set}
+
+
 %{
   def cookiename = 'opts-' + service.name;
   def advDisplay = request.cookies[cookiename]?.value=='true' ? 'block' : 'none';

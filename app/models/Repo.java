@@ -71,8 +71,6 @@ public class Repo implements Serializable {
 				create(fRoot);
 			}
 		}
-		/* update the last access time */
-		touch();
 	}
 	
 	
@@ -217,12 +215,12 @@ public class Repo implements Serializable {
 		return folder;		
 	}
 	
-	void touch( Date date ) {
-		touch(date.getTime());
+	public void touch() {
+		touch(new Date());
 	}
 	
-	void touch() {
-		touch(new Date());
+	void touch( Date date ) {
+		touch(date.getTime());
 	}
 	
 	void touch( long millis ) {
@@ -262,8 +260,8 @@ public class Repo implements Serializable {
 	
 
 	public void drop(boolean forceKill) {
-		
 		if( forceKill ) {
+			Logger.info("Force KILL on repo: '%s'", fRoot);
 			/* 
 			 * kill all pending process that are locking the folder 
 			 * An alternative command to kill all process is: "fuser -k <file>" 
@@ -327,7 +325,7 @@ public class Repo implements Serializable {
 
 		Status status = getStatus();
 		if( status.isDone() || status.isFailed() ) {
-			return getLastAccessedTime() + (AppProps.instance().getRequestTimeToLive() *1000);
+			return getLastAccessedTime() + (AppProps.instance().getRequestCacheDuration() *1000);
 		}
 		else { 
 			throw new QuickException("Invalid property in current status (%s)", status);
@@ -413,7 +411,7 @@ public class Repo implements Serializable {
 		List<Repo> all = findByStatus(Status.DONE, Status.FAILED);
 		for( Repo repo : all ) {
 			if(repo.isExpired()) {
-				repo.drop(true);
+				repo.drop(false);
 			}
 		}
 	}

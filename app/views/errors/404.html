@@ -1,6 +1,11 @@
 #{extends 'layout.html' /}
 #{set title:'Not found ' /}
 
+#{set 'meta'}
+<meta NAME="robots" CONTENT="NOINDEX, NOFOLLOW" />
+#{/set}
+
+
 <h1>Not found</h1>
 <p>
 ${result.message}

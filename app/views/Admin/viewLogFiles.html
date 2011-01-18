@@ -1,0 +1,36 @@
+#{extends 'layout.html' /}
+#{set title:'Usage log download' /}
+
+<h1>Log files
+<small>
+Download the server log files
+</small>
+</h1>
+
+
+#{if logExists }
+<div class="box">
+<h2>
+<span>Usage log file</span>
+<small><span>The file of request submitted by the users</span></small>
+</h2>
+ 	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+ 	<span style="position:relative; left:1em; top: 1.6em;">
+ 	<a target="_blank" href="@{Admin.downloadUsageLog}" >Click to download</a>
+ 	</span> 
+</div>
+#{/if}
+
+<div class="box">
+<h2>
+<span>Application log file</span>
+<small><span>Contains application level warning and error messages</span> </small>
+</h2>
+
+	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+	<span style="position:relative; left:1em; top: 1.6em;">
+	<a target="_blank" href="@{Admin.downloadApplicationLog}" >Click to download</a>
+	</span> 
+
+</h2>
+</div>

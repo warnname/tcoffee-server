@@ -3,7 +3,7 @@
 
 <script type="text/javascript" >
 $('#${_arg.name}_sample').click(function(){ 
-	$.get('${_arg.sample}', function(data) { var text=$('textarea#${_arg.name}'); text.text(data); text.trigger('clearErrors'); text.trigger('keydown');  });
+	$.get('${_arg.sample}', function(data) { var field=$('textarea#${_arg.name}'); field.text(data); field.trigger('clearErrors'); field.trigger('keydown');  });
 });
 </script>
 #{/if} 

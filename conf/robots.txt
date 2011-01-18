@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /
-Allow: /$
-Allow: /apps/tcoffee/
-Allow: /public/
+Allow: /
+Disallow: /apps/*/history.html
+Disallow: /apps/*/result
+Disallow: /data/

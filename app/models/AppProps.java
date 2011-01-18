@@ -10,6 +10,7 @@ import java.util.Map;
 
 import play.Logger;
 import play.Play;
+import play.libs.Time;
 import play.mvc.Router;
 import util.Check;
 import util.ReloadableSingletonFile;
@@ -289,19 +290,20 @@ public class AppProps implements Serializable  {
 	 * 
 	 * @return The max age (in secs) for which the request is stored in the file system
 	 */
-	public int getRequestTimeToLive() {
-		Integer secs = getInteger("requestTimeToLive");
-		if( secs != null ) {
-			return secs;
+	public int getRequestCacheDuration() {
+		int defValue = 7 * 24 * 60 * 60; // <-- by default 1 week 
+		String duration = getProperty("request.cache.duration");
+		if( Utils.isEmpty(duration) ) { 
+			return defValue;
 		}
-
-		/* fallback on 'requestDaysToLive' prop */
-		Integer days = getInteger("requestDaysToLive");
-		if( days != null ) {
-			return days * 24 * 60 * 60;
+		
+		try { 
+			return Time.parseDuration(duration);
 		}
-
-		throw new QuickException("Missing request TTL property. Specificy a value for 'requestDaysToLive' or 'requestTimeToLive'");
+		catch( Exception e ) { 
+			Logger.warn(e, "Unable to parse duration string: '%s'", duration);
+			return defValue;
+		}
 	}
 	
 	public String getString(final String key) {

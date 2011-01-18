@@ -87,7 +87,7 @@ public class RepoTest extends UnitTest {
 		Repo repo = new Repo( "test-expired", true );
 		assertFalse( repo.isExpired() );
 
-		repo.touch( System.currentTimeMillis() - (AppProps.instance().getRequestTimeToLive()+10)*1000 );
+		repo.touch( System.currentTimeMillis() - (AppProps.instance().getRequestCacheDuration()+10)*1000 );
 		assertTrue( repo.isExpired() );
 		
 	} 
@@ -149,7 +149,7 @@ public class RepoTest extends UnitTest {
 		assertFalse( repo.isExpired() );
 		long atime = repo.getLastAccessedTime() ;
 		long etime = repo.getExpirationTime();
-		long ttl = AppProps.instance().getRequestTimeToLive() *1000;
+		long ttl = AppProps.instance().getRequestCacheDuration() *1000;
 		assertEquals( atime + ttl, etime );
 		assertFalse( repo.isExpired() );		
 		

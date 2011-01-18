@@ -892,7 +892,7 @@ public class Admin extends CommonController {
 	/** 
 	 * Show the Usage log file download page
 	 */
-	public static void usageLog() { 
+	public static void viewLogFiles() { 
 		renderArgs.put("logExists", AppProps.SERVER_LOG_FILE.exists());
 		render();
 	}
@@ -900,9 +900,16 @@ public class Admin extends CommonController {
 	/**
 	 * Invoke to download the usage log file
 	 */
-	public static void usageDownload() { 
+	public static void downloadUsageLog() { 
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		String filename = "tserver-usage-"+fmt.format(new Date())+".log";
+		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
+		renderBinary( AppProps.SERVER_LOG_FILE );
+	}
+
+	public static void downloadApplicationLog() { 
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+		String filename = "tserver-application-"+fmt.format(new Date())+".log";
 		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
 		renderBinary( AppProps.SERVER_LOG_FILE );
 	}
@@ -993,7 +1000,7 @@ public class Admin extends CommonController {
 	 */
 	public static void userUpdate( String element_id, String original_html, String update_value ) { 
 		final String sAction = element_id;
-		final String sUser = update_value;
+		final String sUser = update_value != null ? update_value.trim() : null;
 		
 		String result = update_value; // send back this value as confirmation
 		
