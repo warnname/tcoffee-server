@@ -478,19 +478,19 @@ public class UtilsTest extends UnitTest {
 
 	@Test
 	public void testAsTimeString() {
-		assertEquals( "500 ms", Utils.asTimeString(500));
-		assertEquals( "1 secs", Utils.asTimeString(1000));
-		assertEquals( "1 secs", Utils.asTimeString(1100));
-		assertEquals( "2 secs", Utils.asTimeString(1800));
+		assertEquals( "500 ms", Utils.asDuration(500));
+		assertEquals( "1 secs", Utils.asDuration(1000));
+		assertEquals( "1 secs", Utils.asDuration(1100));
+		assertEquals( "2 secs", Utils.asDuration(1800));
 
-		assertEquals( "1 mins", Utils.asTimeString(1 * 60 * 1000));
-		assertEquals( "2 mins", Utils.asTimeString(2 * 60 * 1000));
+		assertEquals( "1 mins", Utils.asDuration(1 * 60 * 1000));
+		assertEquals( "2 mins", Utils.asDuration(2 * 60 * 1000));
 
-		assertEquals( "1 hours", Utils.asTimeString(1 * 60 * 60 * 1000));
-		assertEquals( "2 hours", Utils.asTimeString(2 * 60 * 60 * 1000));
+		assertEquals( "1 hours", Utils.asDuration(1 * 60 * 60 * 1000));
+		assertEquals( "2 hours", Utils.asDuration(2 * 60 * 60 * 1000));
 
-		assertEquals( "1 days", Utils.asTimeString(25 * 60 * 60 * 1000));
-		assertEquals( "2 days", Utils.asTimeString(2 * 24 * 60 * 60 * 1000));
+		assertEquals( "1 days", Utils.asDuration(25 * 60 * 60 * 1000));
+		assertEquals( "2 days", Utils.asDuration(2 * 24 * 60 * 60 * 1000));
 		
 	}
 	

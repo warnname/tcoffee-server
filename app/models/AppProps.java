@@ -290,9 +290,9 @@ public class AppProps implements Serializable  {
 	 * 
 	 * @return The max age (in secs) for which the request is stored in the file system
 	 */
-	public int getRequestCacheDuration() {
+	public int getDataCacheDuration() {
 		int defValue = 7 * 24 * 60 * 60; // <-- by default 1 week 
-		String duration = getProperty("request.cache.duration");
+		String duration = getProperty("data.cache.duration");
 		if( Utils.isEmpty(duration) ) { 
 			return defValue;
 		}

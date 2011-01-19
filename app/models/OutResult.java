@@ -189,7 +189,7 @@ public class OutResult implements Serializable {
 	} 
 
 	public String getElapsedTimeFmt() {
-		return Utils.asTimeString( elapsedTime );
+		return Utils.asDuration( elapsedTime );
 	}
 
 	public void addWarnings( List<String> warns) {

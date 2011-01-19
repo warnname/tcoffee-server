@@ -62,7 +62,7 @@ public abstract class AbstractCommand<T> implements Serializable {
 	 */
 	public final boolean execute() throws CommandException {
 		if(ctx==null) {
-			Logger.warn("Context is null. It is required to invoke #init() method before execute the command!");
+			Logger.debug("Context is null. It is required to invoke #init() method before execute the command!");
 		}
 		 
 		startTime = System.currentTimeMillis();

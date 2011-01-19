@@ -24,6 +24,8 @@ public class Wiper extends Job {
 	
 	@Override
 	public void doJob() { 
+		Logger.debug("Running Wiper job");
+		
 		/* 
 		 * delete expired jobs 
 		 */

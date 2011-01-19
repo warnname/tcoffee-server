@@ -63,7 +63,7 @@ public class History {
 		Check.notEmpty(rid, "Argument rid cannot be empty for History class");
 		this.rid = rid;
 		this.begin = new Date();
-		this.expire = new Date( begin.getTime() + (AppProps.instance().getRequestCacheDuration() * 1000) );
+		this.expire = new Date( begin.getTime() + (AppProps.instance().getDataCacheDuration() * 1000) );
 		
 	}
 	
@@ -168,7 +168,7 @@ public class History {
 	public String getDuration() { 
 		if( duration == null ) { return "--"; }
 		
-		return Utils.asTimeString(duration);
+		return Utils.asDuration(duration);
 	}
 	
 	

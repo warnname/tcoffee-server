@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <bundle name="tcoffee" version="8.98"> 
-  <title>T-Coffee</title> 
+  <title>T-Coffee web server</title> 
   <description>A collection of tools for Computing, Evaluating and
     Manipulating Multiple Alignments of DNA, RNA, Protein Sequences and
     Structures</description>
@@ -291,6 +291,7 @@
           -in=${seqs}
           -mode=expresso
           -blast=LOCAL
+          -pdb_db=${PDB_DB}
           -method=${method1} ${method2} ${method3}
           -pdb=${pdb1}
           -pdb=${pdb2}
@@ -394,11 +395,11 @@
     <process>
       <qsub>  
       <tcoffee >
-        <env BLASTMAT="${BLASTMAT}" />
         <args>
           -in=${seqs} 
           -mode=psicoffee
           -blast=LOCAL
+          -protein_db=${PROTEIN_DB}
           -method=${method1} ${method2} ${method3} 
           -output=${output} 
           -maxnseq=150 

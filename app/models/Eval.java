@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import play.Logger;
 import plugins.AutoBean;
 import util.Check;
 import util.Utils;
@@ -53,6 +54,7 @@ public class Eval implements Serializable {
 			public Object get(String varname) {
 				Object obj = ctx.get(varname);
 				if( obj == null ) {
+					Logger.debug("Cannot resolve context variable '%s'", varname);
 					// if null just .. NULL
 					return null;
 				}

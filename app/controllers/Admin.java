@@ -247,7 +247,7 @@ public class Admin extends CommonController {
 			sStartTime = Utils.asString(dStartTime);
 			
 			long delta = System.currentTimeMillis() - lStartTime;
-			sStartTime += " (" + Utils.asTimeString(delta) + " ago)"; 
+			sStartTime += " (" + Utils.asDuration(delta) + " ago)"; 
 		}
 		
 		TreeMap<Object,Object> map1 = new TreeMap<Object,Object>(System.getProperties());

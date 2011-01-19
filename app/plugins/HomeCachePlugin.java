@@ -1,5 +1,6 @@
 package plugins;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import models.AppProps;
@@ -23,23 +24,14 @@ import util.Utils.MatchAction;
  */
 public class HomeCachePlugin  extends PlayPlugin {
 
-	static String sDuration;
+	private long time;
 	
-	static long time;
-	
-	public void beforeActionInvocation() { 
-		
-		/* 
-		 * Check if homepage cache is active and how long is its duration
-		 */
-		sDuration = AppProps.instance().getProperty("homepage.cache.duration");
-		if( Utils.isEmpty(sDuration) || "0".equals(sDuration.trim())) { 
-			Cache.delete("tcoffee_index_page");
-			return;
-		}
+	@Override
+    public void beforeActionInvocation(Method actionMethod) {
 		
 	}
 	
+	@Override
 	public void afterActionInvocation() { 
 		try { 
 			safeCache();
@@ -50,7 +42,7 @@ public class HomeCachePlugin  extends PlayPlugin {
 	
 	}
 	
-	static void safeCache() { 
+	private void safeCache() { 
 		/*
 		 * this feature is active only on T-Coffee home page
 		 */
@@ -59,12 +51,25 @@ public class HomeCachePlugin  extends PlayPlugin {
 			return;
 		}
 		
-		
-		/* check how much time is passed */
-		if( System.currentTimeMillis()-time < Time.parseDuration(sDuration)*1000 ) { 
+		/* 
+		 * Check if homepage cache is active and how long is its duration
+		 */
+		String sDuration = AppProps.instance().getProperty("homepage.cache.duration");
+		if( Utils.isEmpty(sDuration) || "0".equals(sDuration.trim())) { 
+			Logger.debug("Resetting tcoffee_index_page cache");
+			Cache.delete("tcoffee_index_page");
 			return;
 		}
 		
+		
+		/* check how much time is passed */
+		long delta = System.currentTimeMillis()-time;
+		if( sDuration == null || delta  < Time.parseDuration(sDuration)*1000 ) { 
+			Logger.debug("Homepage cache skipping (cache duration: %s - elapsed time: %s)", sDuration, Utils.asDuration(delta));
+			return;
+		}
+		
+		Logger.debug("Caching tcoffee_index_page element (cache duration: %s - elapsed time: %s)", sDuration, Utils.asDuration(delta));
 		String home = Response.current().out.toString();
 		Cache.set("tcoffee_index_page", fixPaths(home));		
 		time = System.currentTimeMillis();

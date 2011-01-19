@@ -117,13 +117,12 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		 * check if database has been specified for local blast 
 		 */
 		if( "LOCAL".equals(args.get("blast")) ) {
-			String db = args.get("pdb_db");
-			if( Utils.isEmpty(db) ) {
+			String pdb = args.get("pdb_db");
+			String prot = args.get("protein_db");
+			
+			if( Utils.isEmpty(pdb) && Utils.isEmpty(prot)) {
+				Logger.info("BLAST server is local but any database is specified. Adding default configuration.");
 				args.put("pdb_db", "${PDB_DB}");
-			} 
-				
-			db = args.get("protein_db");
-			if( Utils.isEmpty(db) ) {
 				args.put("protein_db", "${PROTEIN_DB}");
 			} 
 		}

@@ -2,6 +2,7 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +31,31 @@ public class TcoffeeHelper {
 		ResultHtml result = null; 
 		Matcher match = RE_TCOFFEE_HTML.matcher(html);
 		if(match.matches()) {
+			String style = match.group(1);
+			String body = match.group(2);;
+
+			/* replace all - (dash) text char with enity &dash; due to a bug in iOS html rendering for fixed fonts */ 
+			body = Utils.match(body, "(<[^>]+>)(\\-+)(</[^>]+>)", new Utils.MatchAction() {
+
+				public String replace(List<String> groups) { 
+					StringBuilder result = new StringBuilder();
+					result.append(groups.get(1)); 					
+					for( int i=0, c=groups.get(2).length(); i<c; i++ ) { 
+						result.append("&dash;");
+					}
+					result.append(groups.get(3));
+					return result.toString();
+				}
+			});
+			
+			/* remove the cpu time */
+			body = body.replaceFirst("<span[^>]*>CPU&nbsp;TIME:[^<]*</span><br>","");
+			
+			/* final assignment */
 			result = new ResultHtml();
-			result.style = match.group(1);
-			result.body = match.group(2);
+			result.style = style;
+			result.body = body;
+			
 		}
 		
 		return result;

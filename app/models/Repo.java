@@ -166,7 +166,18 @@ public class Repo implements Serializable {
 	
 	public boolean isExpired() {
 		Status status = getStatus();
-		return (status.isDone() || status.isFailed()) && (System.currentTimeMillis() > getExpirationTime());
+		long now = System.currentTimeMillis();
+		long exp = getExpirationTime();
+		boolean result = (status.isDone() || status.isFailed()) && (now > exp);
+		if( Logger.log4j.isDebugEnabled()) { 
+			Logger.debug("Repo '%s' isExpired: %s - status: %s - expiration time: %s - current time: %s", 
+					rid,
+					result, 
+					status, 
+					Utils.asString(new Date(exp)),
+					Utils.asString(new Date(now))   );
+		}
+		return result;
 	}
 	
 	/**
@@ -325,7 +336,7 @@ public class Repo implements Serializable {
 
 		Status status = getStatus();
 		if( status.isDone() || status.isFailed() ) {
-			return getLastAccessedTime() + (AppProps.instance().getRequestCacheDuration() *1000);
+			return getLastAccessedTime() + (AppProps.instance().getDataCacheDuration() *1000);
 		}
 		else { 
 			throw new QuickException("Invalid property in current status (%s)", status);

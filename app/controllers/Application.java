@@ -78,7 +78,7 @@ public class Application extends CommonController {
 			render("Application/wait.html", rid );
 		}
 		else {
-			int maxDays = AppProps.instance().getRequestCacheDuration() / 60 / 60 / 24;
+			int maxDays = AppProps.instance().getDataCacheDuration() / 60 / 60 / 24;
 	    	render("Application/oops.html", rid, maxDays);
 		}
  

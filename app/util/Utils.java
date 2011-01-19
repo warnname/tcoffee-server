@@ -1836,7 +1836,13 @@ public class Utils {
 		return false;
 	}
 	
-	public static String asTimeString( long millis ) {
+	/**
+	 * Converts an amount of time (specified as millisecond) in a duration string. For example:
+	 * 
+	 * @param millis the elapsed time in milliseconds 
+	 * @return time period as string e.g. 100 ms, 10 secs, 1 hour ..
+	 */
+	public static String asDuration( long millis ) {
 		
 		if( millis < 1000 ) {
 			return millis + " ms";
