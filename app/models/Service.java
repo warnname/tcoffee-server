@@ -428,12 +428,12 @@ public class Service implements Serializable {
 				.append( fOutResult!=null ? String.valueOf(fOutResult.elapsedTime) : "-") .append(",")
 				.append( fOutResult!=null && fOutResult.status!=null ? fOutResult.status.name() : "-");
 
-			PrintWriter out = new PrintWriter(new FileWriter(AppProps.SERVER_LOG_FILE, true), true);
+			PrintWriter out = new PrintWriter(new FileWriter(AppProps.SERVER_USAGE_FILE, true), true);
 			out.println(line.toString());
 			out.close();
 		} 
 		catch (IOException e) {
-			throw new QuickException(e, "Unable to trace request in log file: %s", AppProps.SERVER_LOG_FILE );
+			throw new QuickException(e, "Unable to trace request in log file: %s", AppProps.SERVER_USAGE_FILE );
 		}
 	}
 
