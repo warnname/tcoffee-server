@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 import play.Logger;
 import play.Play;
@@ -112,13 +118,15 @@ public class AppProps implements Serializable  {
 	//public static final File SERVER_CONF_FILE;
 
 	/** Alignment requests log file */
-	public static final File SERVER_LOG_FILE; 
+	public static final File SERVER_USAGE_FILE; 
+	
+	public static final File SERVER_APPLOG_FILE;
 	
 	/* singleton instance */
 	final private static ReloadableSingletonFile<AppProps> INSTANCE;
 	
 	static {
-
+		
     	/*
     	 * 1. local data workspace 
     	 * It could be specified by the property 'tserver.workspace.path'
@@ -145,22 +153,29 @@ public class AppProps implements Serializable  {
 		 */
 		SERVER_PROPS_FILE = getConfPath();
 
+		
 		/*
-		 * 3. log file name
+		 * 3. define application log file 
 		 */
-		String logFileName = Play.configuration.getProperty("tserver.usage.file", "usage.log");
-		SERVER_LOG_FILE = logFileName.startsWith( File.separator )
-						? new File(logFileName)
-						: new File(WORKSPACE_FOLDER, logFileName);
+		SERVER_APPLOG_FILE = getApplicationLogFile();
+		Logger.info("Using Applicatin log file: '%s'", SERVER_APPLOG_FILE);
+		
+		/*
+		 * 4. usage log file name
+		 */
+		String usageLogFile = Play.configuration.getProperty("tserver.usage.file", "usage.log");
+		SERVER_USAGE_FILE = usageLogFile.startsWith( File.separator )
+						? new File(usageLogFile)
+						: new File(WORKSPACE_FOLDER, usageLogFile);
 						
-		File parent = SERVER_LOG_FILE.getParentFile();
+		File parent = SERVER_USAGE_FILE.getParentFile();
 		if( !parent.exists() && !parent.getParentFile().mkdirs() ) { 
 			throw new QuickException("Cannot create log path: '%s' ", parent);
 		}
-		Logger.info("Using Log file: '%s'", SERVER_LOG_FILE);
+		Logger.info("Using Usage log file: '%s'", SERVER_USAGE_FILE);
 		
 		/*
-		 * 4. bundles path 
+		 * 5. bundles path 
 		 */
 		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
 		Logger.info("Using Bundles path: %s", BUNDLES_FOLDER);
@@ -171,7 +186,7 @@ public class AppProps implements Serializable  {
 		
 		
 		/*
-		 * 5. Define the other default folder that can be overriden at runtime
+		 * 6. Define the other default folder that can be overriden at runtime
 		 */
 				
 		
@@ -179,7 +194,7 @@ public class AppProps implements Serializable  {
 		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
 
 		/*
-		 * 5. create the AppProps singleton
+		 * 7. create the AppProps singleton
 		 */
 		INSTANCE = new ReloadableSingletonFile<AppProps>(SERVER_PROPS_FILE) {
 			
@@ -190,7 +205,7 @@ public class AppProps implements Serializable  {
 		};
 		
 		/*
-		 * 6. add 'tserver's properties from application.conf
+		 * 8. add 'tserver's properties from application.conf
 		 */
 		
 		
@@ -207,6 +222,7 @@ public class AppProps implements Serializable  {
 			}
 		}
 
+		
 
 	}
 
@@ -228,7 +244,72 @@ public class AppProps implements Serializable  {
 		return false;
 	}
 				
-	
+	/*
+	 * Strategy: 
+	 * 1) look for an Log4j FileAppender 
+	 * 2) if it is found extract the appender file name 
+	 * 3) otherwise define a new file appender using the properties 
+	 * in the qpplication.conf
+	 */
+	private static File getApplicationLogFile() {
+
+		File logFile = null;
+		FileAppender appender = null;
+		
+		String logFileName = Play.configuration.getProperty("tserver.applog.file");
+		String pattern = Play.configuration.getProperty("tserver.applog.pattern", "%d{ISO8601} %-5p ~ %m%n");
+		String maxFileSize = Play.configuration.getProperty("tserver.applog.maxFileSize", "10MB");
+		String maxBackupIndex = Play.configuration.getProperty("tserver.applog.maxBackupIndex", "10");
+		
+		/*
+		 * try to discorver a FileAppender
+		 */
+		Enumeration iterator = Logger.log4j.getRootLogger().getAllAppenders();
+		while( iterator.hasMoreElements()  ) { 
+			Appender item = (Appender) iterator.nextElement();
+			if( item instanceof FileAppender ) { 
+				appender = (FileAppender)item;
+				break;
+			}
+		}
+
+		/* 
+		 * if a log4j file appender exists use to find out the log file name 
+		 */
+		if( appender != null ) { 
+			logFileName = appender.getFile();
+			logFile = new File(logFileName);
+			
+		}
+		else { 
+			/* 
+			 * otherwise use the specified file name in the properties or a new default one 
+			 */
+			if( Utils.isEmpty(logFileName ) ) { 
+				logFileName = "application.log";
+			}
+
+			/* if the specified file is a relative path, it will relative to application
+			 * workspace path */
+			logFile = logFileName.startsWith( File.separator )
+						? new File(logFileName)
+						: new File(WORKSPACE_FOLDER, logFileName);
+			
+
+			/* define a new log file appender */
+			RollingFileAppender rolling = new RollingFileAppender();
+			rolling.setFile(logFile.getAbsolutePath());
+			rolling.setLayout(new PatternLayout(pattern));
+			rolling.setAppend(true);
+			rolling.setMaxFileSize(maxFileSize);
+			rolling.setMaxBackupIndex(Integer.parseInt(maxBackupIndex));
+			rolling.activateOptions();
+			Logger.log4j.addAppender(rolling);
+		}
+
+		return logFile;
+	}
+
 	@XStreamImplicit(itemFieldName="property")
 	List<Property> properties;
 

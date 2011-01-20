@@ -893,7 +893,8 @@ public class Admin extends CommonController {
 	 * Show the Usage log file download page
 	 */
 	public static void viewLogFiles() { 
-		renderArgs.put("logExists", AppProps.SERVER_LOG_FILE.exists());
+		renderArgs.put("usageLogFile", AppProps.SERVER_USAGE_FILE.exists() ? AppProps.SERVER_USAGE_FILE.getAbsoluteFile() : null );
+		renderArgs.put("appLogFile", AppProps.SERVER_APPLOG_FILE != null && AppProps.SERVER_APPLOG_FILE.exists() ? AppProps.SERVER_APPLOG_FILE.getAbsolutePath() : null);
 		render();
 	}
 	
@@ -904,14 +905,20 @@ public class Admin extends CommonController {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		String filename = "tserver-usage-"+fmt.format(new Date())+".log";
 		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
-		renderBinary( AppProps.SERVER_LOG_FILE );
+		renderBinary( AppProps.SERVER_USAGE_FILE );
 	}
 
 	public static void downloadApplicationLog() { 
+
+		if( AppProps.SERVER_APPLOG_FILE == null ) { 
+			notFound("Cannot find file: %s", AppProps.SERVER_APPLOG_FILE);
+		}
+		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		String filename = "tserver-application-"+fmt.format(new Date())+".log";
 		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
-		renderBinary( AppProps.SERVER_LOG_FILE );
+		renderBinary( AppProps.SERVER_APPLOG_FILE );
+		
 	}
 	
 	

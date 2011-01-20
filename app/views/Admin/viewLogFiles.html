@@ -8,19 +8,21 @@ Download the server log files
 </h1>
 
 
-#{if logExists }
+#{if usageLogFile }
 <div class="box">
 <h2>
 <span>Usage log file</span>
 <small><span>The file of request submitted by the users</span></small>
 </h2>
  	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
- 	<span style="position:relative; left:1em; top: 1.6em;">
- 	<a target="_blank" href="@{Admin.downloadUsageLog}" >Click to download</a>
+ 	<span style="position:relative; left:1em; ">
+ 	${usageLogFile} <br/> 
+ 	<a target="_blank" href="@{Admin.downloadUsageLog}" >Click to donwload</a>
  	</span> 
 </div>
 #{/if}
 
+#{if appLogFile }
 <div class="box">
 <h2>
 <span>Application log file</span>
@@ -28,9 +30,9 @@ Download the server log files
 </h2>
 
 	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
-	<span style="position:relative; left:1em; top: 1.6em;">
+	<span style="position:relative; left:1em; ">
+	${appLogFile} <br/>
 	<a target="_blank" href="@{Admin.downloadApplicationLog}" >Click to download</a>
 	</span> 
-
-</h2>
 </div>
+#{/if}
