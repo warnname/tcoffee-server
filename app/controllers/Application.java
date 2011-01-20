@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import play.mvc.After;
 import play.mvc.Before;
 import util.XStreamHelper;
 import bundle.BundleRegistry;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * The main application controller 
@@ -26,7 +26,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class Application extends CommonController {
 	
-	static List<String> PAGES = Arrays.asList(new String[]{"index", "history", "references", "help", "contacts" });
+	static List<String> PAGES = Arrays.asList("index", "history", "references", "help", "contacts");
 	
 	@Before
 	static void before() { 

@@ -425,7 +425,7 @@ public class Service implements Serializable {
 				.append( this.bundle.name ).append(",")
 				.append( this.name ).append(",")
 				.append( this.fRid ).append(",")
-				.append( fOutResult!=null ? String.valueOf(fOutResult.elapsedTime) : "-") .append(",")
+				.append( fOutResult!=null ? Utils.asDuration(fOutResult.elapsedTime) : "-") .append(",")
 				.append( fOutResult!=null && fOutResult.status!=null ? fOutResult.status.name() : "-");
 
 			PrintWriter out = new PrintWriter(new FileWriter(AppProps.SERVER_USAGE_FILE, true), true);

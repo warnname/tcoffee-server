@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -56,7 +58,13 @@ public class Data extends CommonController {
 		
 		OutResult result = repo.getResult();
 		File zip = File.createTempFile("download", ".zip", repo.getFile());
-		zipThemAll(result.getItems(), zip);
+		// get the list of files to download 
+		List<File> files = new ArrayList<File>( result.getItems().size() );
+		for( OutItem item : result.getItems() ) { 
+			files.add(item.file);
+		}
+		// zip them and download
+		zipThemAll(files, zip, null);
 
 		String attachName = String.format("tcoffee-all-files-%s.zip",rid);
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + attachName+ "\"");
@@ -64,19 +72,61 @@ public class Data extends CommonController {
 		renderBinary(zip);
 	}
 	
-	static void zipThemAll( List<OutItem> items, File file ) {
+	/**
+	 * Handy method to zip all datafolder content and download it
+	 * 
+	 * @param rid request identifier
+	 */
+	public static void zipDataFolder( String rid ) throws IOException { 
+		File folder = new File(AppProps.instance().getDataPath(), rid);
+		if( !folder.exists() ) { 
+			notFound("Data path '%s' does not exist on the server", folder);
+		}
+		
+		Collection allFiles = FileUtils.listFiles(folder, null, true);
+		File zip = File.createTempFile("folder", ".zip");
+		
+		String parent = folder.getAbsolutePath();
+		if( !parent.endsWith("/")) { 
+			parent += "/";
+		}
+		zipThemAll(allFiles, zip, parent);
+		
+		String attachName = String.format("all-data-files-%s.zip",rid);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + attachName+ "\"");
+		renderStaticResponse();
+		renderBinary(zip);
+		
+	}
+
+	
+	static void zipThemAll( Collection<File> items, File targetZip, String basePath ) {
 
 		try {
-			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file));
+			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(targetZip));
 			
-			for( OutItem item : items ) { 
-				if( item.file==null || !item.file.exists() ) { continue; }
+			for( File item : items ) { 
+				if( item==null || !item.exists() ) { continue; }
 				
 				// add a new zip entry
-				zip.putNextEntry( new ZipEntry(item.file.getName()) );
+				String entryName; 
+				if( basePath == null ) { 
+					/* use just the file name as entry name (w/o path information) */
+					entryName = item.getName();
+				}
+				else { 
+					/* make relative to the basePath */
+					entryName = item.getAbsolutePath();
+					if( entryName.startsWith(basePath)) { 
+						entryName = entryName.substring(basePath.length());
+					}
+				}
+				
+				
+				zip.putNextEntry( new ZipEntry(entryName) );
 				
 				// append the file content
-				FileInputStream in = new FileInputStream(item.file);
+				FileInputStream in = new FileInputStream(item);
 				IO.write(in, zip);
 	 
 				// Complete the entry 
@@ -87,7 +137,7 @@ public class Data extends CommonController {
 			zip.close();					
 		}
 		catch (IOException e) {
-			throw new QuickException(e, "Unable to zip content to file: '%s'", file);
+			throw new QuickException(e, "Unable to zip content to file: '%s'", targetZip);
 		}
 	} 
 		

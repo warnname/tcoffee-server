@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import play.Logger;
 import util.Check;
 import util.Utils;
 import util.XStreamHelper;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import exception.QuickException;
 
 public class Repo implements Serializable {
@@ -385,7 +385,7 @@ public class Repo implements Serializable {
 	 * @return a list of {@link Repo} instances or an empty list if nothing is found 
 	 */
 	public static List<Repo> findAllExcept(Status... exception) {
-		List<String> status = Arrays.asList(Status.values());
+		List<Status> status = Arrays.asList( Status.values() );
 
 		if( exception != null )
 			status.removeAll( Arrays.asList(exception) );

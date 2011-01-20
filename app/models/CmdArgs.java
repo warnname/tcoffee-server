@@ -1,6 +1,8 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import plugins.AutoBean;
@@ -8,9 +10,6 @@ import util.Check;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 @AutoBean 
 @XStreamAlias("args")

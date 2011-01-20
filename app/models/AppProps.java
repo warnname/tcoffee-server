@@ -261,15 +261,17 @@ public class AppProps implements Serializable  {
 		String maxFileSize = Play.configuration.getProperty("tserver.applog.maxFileSize", "10MB");
 		String maxBackupIndex = Play.configuration.getProperty("tserver.applog.maxBackupIndex", "10");
 		
-		/*
-		 * try to discorver a FileAppender
-		 */
-		Enumeration iterator = Logger.log4j.getRootLogger().getAllAppenders();
-		while( iterator.hasMoreElements()  ) { 
-			Appender item = (Appender) iterator.nextElement();
-			if( item instanceof FileAppender ) { 
-				appender = (FileAppender)item;
-				break;
+		if( Play.mode.equals( Play.Mode.PROD ) ) { 
+			/*
+			 * try to discorver a FileAppender
+			 */
+			Enumeration iterator = Logger.log4j.getRootLogger().getAllAppenders();
+			while( iterator.hasMoreElements()  ) { 
+				Appender item = (Appender) iterator.nextElement();
+				if( item instanceof FileAppender ) { 
+					appender = (FileAppender)item;
+					break;
+				}
 			}
 		}
 
