@@ -99,7 +99,14 @@ public class Data extends CommonController {
 		
 	}
 
-	
+	/**
+	 * Zip the collections of files as a unique zip file
+	 * 
+	 * @param items a collections of files to be zipped 
+	 * @param targetZip the target zip file
+	 * @param basePath if <code>null</code> all files are zipped in a plain archive (only file name is used) 
+	 * otherwise this string value will be considered the prefix of the files absulte path to be removed 
+	 */
 	static void zipThemAll( Collection<File> items, File targetZip, String basePath ) {
 
 		try {

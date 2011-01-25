@@ -15,8 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,7 @@ import models.Service;
 import models.TCoffeeCommand;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Level;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -893,10 +896,81 @@ public class Admin extends CommonController {
 	 * Show the Usage log file download page
 	 */
 	public static void viewLogFiles() { 
+		/*
+		 * find out current defined loggers 
+		 */
+		Enumeration items = Logger.log4j.getLoggerRepository().getCurrentLoggers();
+		Map<String,String> loggers = new HashMap<String,String>();
+		while( items.hasMoreElements() ) { 
+			org.apache.log4j.Logger logger = (org.apache.log4j.Logger) items.nextElement();
+			if( logger.getLevel() != null ) { 
+				loggers.put(logger.getName(), logger.getLevel().toString());
+			}
+		}
+		loggers.put("rootLogger", Logger.log4j.getRootLogger().getLevel().toString());
+
+		renderArgs.put("loggers", loggers);
+		
+		/* the usage file */
+		
 		renderArgs.put("usageLogFile", AppProps.SERVER_USAGE_FILE.exists() ? AppProps.SERVER_USAGE_FILE.getAbsoluteFile() : null );
+		
+		/* the application log file */
 		renderArgs.put("appLogFile", AppProps.SERVER_APPLOG_FILE != null && AppProps.SERVER_APPLOG_FILE.exists() ? AppProps.SERVER_APPLOG_FILE.getAbsolutePath() : null);
+		
+		/* render the page */
 		render();
 	}
+	
+	  
+    /**
+     * This method is invoked when a property value is update using by an ajax request.
+     * <p>
+     * Please NOTE: changing parameters name will break the code (they must match the javascript plugin definition)
+     * </p>
+     * 
+     * 
+     * @param element_id the property key hash code
+     * @param original_html the previous property value 
+     * @param update_value the new property value
+     */
+    public static void updateLogger( String element_id, String original_html, String update_value) { 
+    	Logger.debug("updateLogger(%s, %s, %s)", element_id, original_html, update_value);
+    	
+    	if( Utils.isEmpty(element_id )) { 
+    		return;
+    	}
+    	
+    	/* 
+    	 * replace special char '%' used to replace dots in logger identificator 
+    	 */
+    	final String loggerName = element_id.replace('|', '.');
+    	final String newLevel = update_value; 
+
+    	/* get the logger instance */
+    	org.apache.log4j.Logger logger=null;
+    	if( "rootLogger".equals( loggerName )) { 
+        	logger = Logger.log4j.getRootLogger();
+    	}
+    	else { 
+    		logger = Logger.log4j.getLogger(loggerName);
+    	}
+    	
+    	/* update level */
+    	if( logger != null ) { 
+    		logger.setLevel(Level.toLevel(newLevel));
+    		
+    		/* render back the updated value as confirmation */
+    		Logger.info("Logger '%s' switched to level '%s' ", loggerName, newLevel);
+    		renderText(update_value);
+
+    	}
+    	else { 
+    		Logger.warn("Unable to update logger level. Unknown logger name: '%s'", loggerName);
+			renderText("Invalid logger : " + loggerName);
+    	}
+    	
+    }
 	
 	/**
 	 * Invoke to download the usage log file
@@ -1045,6 +1119,5 @@ public class Admin extends CommonController {
 		
 	}
 	
-
  }
 

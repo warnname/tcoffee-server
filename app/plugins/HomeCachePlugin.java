@@ -76,7 +76,8 @@ public class HomeCachePlugin  extends PlayPlugin {
 	}
 	
 	static boolean isAbsolute( String path ) { 
-		return path != null && ( path.startsWith("/") || path.startsWith("http:") || path.startsWith("#"));
+		return path != null && 
+			( path.startsWith("/") || path.startsWith("http:") || path.startsWith("https:") || path.startsWith("#"));
 	}
 	
 	/**

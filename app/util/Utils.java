@@ -1850,21 +1850,40 @@ public class Utils {
 		
 		double secs = millis / (double)1000;
 		if( secs < 60 ) {
-			return String.format("%.0f secs", secs);
+			return String.format("%.0f sec", secs);
 		}
 		
 		double mins = secs / 60;
 		if( mins < 60 ) {
-			return String.format("%.0f mins", mins);
+			double i = Math.floor(mins);
+			double r = ((mins-i) * 60);
+			String result = String.format( "%.0f min", i);
+			if( r > 0 ) { 
+				result += String.format( " %.0f sec", r);
+			}
+			return result;
 		}
 		
 		double hours = mins / 60;
 		if( hours < 24 ) {
-			return String.format("%.0f hours", hours);
+			double i = Math.floor(hours);
+			double r = ((hours-i) * 60);
+			String result = String.format( "%.0f hour", i);
+			if( r > 0 ) { 
+				result += String.format( " %.0f min", r);
+			}
+			return result;
 		}
 		
 		double days = hours / 24;
-		return String.format("%.0f days", days);
+		double i = Math.floor(days);
+		double r = ((days-i) * 24);
+		String result = String.format( "%.0f day", i);
+		if( r > 0 ) { 
+			result += String.format( " %.0f hour", r);
+		}
+		return result;
+
 	}
 
 	public static String camelize( String str ) {

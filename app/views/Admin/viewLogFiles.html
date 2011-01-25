@@ -36,3 +36,58 @@ Download the server log files
 	</span> 
 </div>
 #{/if}
+
+<div class="box" >
+<h2><span>Loggers</span>
+<small><span>Manage installed loggers</span></small>
+</h2>
+
+
+<table id="box-table-a">
+<thead>
+<tr><th>Logger</th><th>Level</th></tr>
+</thead>
+<tbody>
+#{each  loggers }
+<tr  >
+<td>${_key}</td> <td id="${_key.replaceAll('\\.','|')}" class="cellval">${_value}</td>
+</tr>
+#{/each}
+</tbody>
+</table>
+
+<small>In order to change logger level click on the column level, select a new level value and press ENTER to confim, or ESC to cancel.</small>
+</div>
+
+<div id="feedback">
+</div>
+
+<div class="box-warn" style="display:none">
+</div>
+
+
+*{
+ More about the Edit-in-place plugin ()
+ http://code.google.com/p/jquery-in-place-editor/
+}*
+<script type="text/javascript" src="@{'/public/javascripts/jquery.editinplace.js'}" ></script>
+<script>
+
+function notifySuccess(level) { 
+	$("#feedback").addClass("box-info").text("Logger level updated to " + level) . fadeIn(150) .delay(4000).fadeOut(); 
+}
+
+function notifyError(idOfEditor, errorString) { 
+	$("#feedback").addClass("box-error").text(errorString) . fadeIn(150) .delay(4000).fadeOut(); 
+}
+
+$(document).ready(function(){
+	$('.cellval').editInPlace({
+		url:"@{Admin.updateLogger}", 
+		field_type: "select", 
+		select_options: "OFF,FATAL,ERROR,WARN,INFO,DEBUG,TRACE,ALL",
+		success: notifySuccess,
+		error_sink: notifyError
+	})
+} )
+</script>

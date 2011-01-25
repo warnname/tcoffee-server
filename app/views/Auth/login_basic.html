@@ -1,0 +1,33 @@
+#{extends 'layout.html' /}
+
+<h1>Authentication required</h1>
+
+#{if flash.error}
+<div class="box-error">
+${flash.error}
+</div>
+#{/if}
+ 
+<form action="@{Auth.validate()}" method="POST">
+ 	
+<fieldset>
+	<label>User name</label>
+	<div class="c-input"> 
+	<input type="text" name="user" />
+	</div>
+	<div class="spacer" ></div>
+
+
+	<label>Password</label>
+	<div class="c-input"> 
+	<input type="password" name="password" />
+	</div>
+	<div class="spacer" ></div>
+
+
+	<label>&nbsp;</label>&nbsp;&nbsp;
+    <input class="button" type="submit" value="&nbsp;Login&nbsp;" />
+		
+</fieldset>
+
+</form>
