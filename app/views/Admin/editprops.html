@@ -22,16 +22,19 @@ View and edit application properties &amp; configuration
 
 <table id="box-table-a">
 <thead>
-<tr><th>PARAM</th><th>VALUE</th></tr>
+<tr><th>Name</th><th>Value</th><th>Action</th></tr>
 </thead>
 <tbody>
 #{list names, as:'key'}
-<tr  >
-<td>${key}</td> <td id="${key.hashCode()}" class="cellval">${props.getProperty(key)}</td>
+<tr >
+<td>${key}</td> <td id="${key.hashCode()}" class="cellval">${props.getProperty(key)}</td> <td> [ <a href="javascript:del('${key}','${key.hashCode()}')" >delete</a> ] </td>
+	
 </tr>
 #{/list}
 </tbody>
 </table>
+
+<div id="__add" >Click here to add a new property</div>
 </div>
 
 <form method="post">
@@ -45,12 +48,37 @@ View and edit application properties &amp; configuration
  http://code.google.com/p/jquery-in-place-editor/
 }*
 <script type="text/javascript" src="@{'/public/javascripts/jquery.editinplace.js'}" ></script>
-<script>
-function activeSubmit() {
+<script type="text/javascript">
+/* show the confirm button */
+function enable() {
 	$('#submit').removeAttr('disabled').removeClass('disabled');
 }
 
+/* update the property value */
 $(document).ready(function(){
-	$('.cellval').editInPlace({url:"@{Admin.updateproperty}", success:activeSubmit })
-} )
+	$('.cellval').editInPlace({url:"@{Admin.updateProperty}", success: enable })
+});
+
+/* delete a property from the table */
+function del(key,item) { 
+	$.ajax( {
+		url: "@{Admin.updateProperty}?element_id=__del&original_html="+key, 
+		success: function() { $('#'+item).closest('tr').remove(); enable(); }
+	});	
+}
+
+/* add a new property */
+$('#__add').editInPlace({
+	url:"@{Admin.updateProperty()}", 
+	default_text:'(name=value)', 
+	success: function(text) {
+		var pair = text.split('=');
+		$('#box-table-a tr:last').after("<tr><td>"+pair[0]+"</td><td>"+pair[1]+"</td><td></td></tr>");
+		enable();
+		$(this).text("Click to enter a new property")
+	},
+
+	error_sink: function(idOfEditor, errorString) { alert(errorString); $(this).text("Click to enter a new property") }   
+
+	});
 </script>

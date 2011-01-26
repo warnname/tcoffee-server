@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.security.Security;
 import java.text.SimpleDateFormat;
@@ -211,11 +212,48 @@ public class Admin extends CommonController {
      * @param original_html the previous property value 
      * @param update_value the new property value
      */
-    public static void updateproperty( String element_id, String original_html, String update_value) { 
+    public static void updateProperty( String element_id, String original_html, String update_value) { 
+    	
+    	if( Utils.isEmpty(element_id) ) { 
+    		error("Empty element_id");
+    	}
+    	
     	
     	final String cachekey = session.getId() + "_appinfo";
     	AppProps props = (AppProps) Cache.get(cachekey);
 
+    	/*
+    	 * special action to add a property 
+    	 */
+    	if( "__add" .equals(element_id) ) { 
+    		if( Utils.isEmpty(update_value) ) { 
+    			error("Property have to be entered in the format 'name=value'");
+    		}
+    		
+    		String[] pair = update_value.split("=");
+    		if( pair==null || pair.length!=2 || Utils.isEmpty(pair[0].trim()) || Utils.isEmpty(pair[1].trim()) ) { 
+    			error("Property must be in the format 'name=value'");
+    		}
+    		
+    		// set the property
+    		props.setProperty(pair[0].trim(), pair[1].trim());
+    		Logger.info("Adding application property: %s", update_value);
+    		
+    		// this is requied to confirm the action
+    		renderText(update_value);
+    	}
+
+    	/*
+    	 * special element_id to delete a property 
+    	 */
+    	if( "__del" .equals(element_id) ) { 
+    		Logger.info("Deleting application property: %s", original_html);
+    		props.remove(original_html);
+
+    		// this is requied to confirm the action
+    		renderText(update_value);
+    	}
+    	
     	/* 
     	 * note: the element_id encode the property name hash code, so we need to map back to the property name 
     	 */
@@ -942,7 +980,7 @@ public class Admin extends CommonController {
     	}
     	
     	/* 
-    	 * replace special char '%' used to replace dots in logger identificator 
+    	 * replace special char '|' used to replace dots in logger identificator 
     	 */
     	final String loggerName = element_id.replace('|', '.');
     	final String newLevel = update_value; 
@@ -995,6 +1033,19 @@ public class Admin extends CommonController {
 		
 	}
 	
+	public static void previewUsageLog() throws IOException 
+	{
+		String sMax = Play.configuration.getProperty("preview.max.bytes", "3072");
+		long lMax = Utils.parseLong(sMax, 3072L);
+		renderText( tail( AppProps.SERVER_USAGE_FILE, lMax ) );
+	} 
+	
+	public static void previewApplicationLog() throws IOException 
+	{
+		String sMax = Play.configuration.getProperty("preview.max.bytes", "3072");
+		long lMax = Utils.parseLong(sMax, 3072L);
+		renderText( tail( AppProps.SERVER_APPLOG_FILE, lMax ) );
+	} 
 	
 	public static class SysMessage implements Serializable { 
 		public String value;
@@ -1117,6 +1168,24 @@ public class Admin extends CommonController {
     	/* render back the updated value as confirmation */
     	renderText(result);
 		
+	}
+	
+	private static String tail( File file, long maxBytes ) throws IOException { 
+		RandomAccessFile handler = new RandomAccessFile(file, "r");
+		long delta ;
+		if( (delta=handler.length()-maxBytes)>0 ) { 
+			handler.seek(delta);
+			// consume first line that may not start from beginning
+			handler.readLine();
+		}
+		
+		StringBuilder result = new StringBuilder();
+		String line;
+		while( (line=handler.readLine()) != null ) { 
+			result.append(line) .append("\n");
+		}
+		
+		return result.toString();
 	}
 	
  }

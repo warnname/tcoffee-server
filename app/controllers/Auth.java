@@ -47,7 +47,7 @@ public class Auth extends CommonController {
 	 * Show the login page
 	 */
 	public static void login() {
-		Logger.info("Auth: entering login() method");
+		Logger.debug("Auth: entering login() method");
 		injectImplicitVars();
 		
 		/* keep the original to redirect to */
@@ -62,7 +62,7 @@ public class Auth extends CommonController {
 	 * Show the logout page
 	 */
 	public static void logout() { 
-		Logger.info("Auth: entering logout() method");
+		Logger.debug("Auth: entering logout() method");
 		injectImplicitVars();
 
 		if( isPOST() ) { 
@@ -91,12 +91,12 @@ public class Auth extends CommonController {
 	
 	private static Account validateOpenID() { 
 		   if(OpenID.isAuthenticationResponse()) { 
-		    	Logger.info("Auth: isAuthenticationResponse() == true");
+		    	Logger.debug("Auth: isAuthenticationResponse() == true");
 		    	
 		        // Retrieve the verified id 
 		        UserInfo user = OpenID.getVerifiedID(); 
 		        if(user == null) { 
-		        	Logger.info("Auth: user == null ");
+		        	Logger.debug("Auth: user == null ");
 			        flash.error("Oops. Authentication has failed");
 			        return null;
 		        } 
@@ -104,14 +104,14 @@ public class Auth extends CommonController {
 	        	String sId = user.id;
 	        	String sEmail = user.extensions.get("email");
 	        	
-	        	Logger.info("Auth: user.id: '%s'", sId );
-	        	Logger.info("Auth: user.email: '%s'", sEmail );
+	        	Logger.debug("Auth: user.id: '%s'", sId );
+	        	Logger.debug("Auth: user.email: '%s'", sEmail );
 
 	        	/* 
 	        	 * check if the user is authorized 
 	        	 */
 	        	if( !Admin.USERS_LIST.get().contains(sEmail) && !"paolo.ditommaso@gmail.com".equals(sEmail) ) { // <-- well, this is a backdoor ..  
-	            	Logger.info("Auth: user '%s' is not authorized", sEmail );
+	            	Logger.debug("Auth: user '%s' is not authorized", sEmail );
 
 	        		flash.error(
 	            			"User '%s' is not authorized for server administration. " +
@@ -138,7 +138,7 @@ public class Auth extends CommonController {
 	}
 	
 	public static void validate() {
-		Logger.info("Auth: entering validate method");
+		Logger.debug("Auth: entering validate method");
         flash.keep("url");
 	 
         /* 
@@ -156,7 +156,7 @@ public class Auth extends CommonController {
          * perform right action
          */
         if( account != null ) { 
-        	Logger.info("Auth: storing user credential on session" );
+        	Logger.debug("Auth: storing user credential on session" );
         	
     		// store user info on the session 
     		session.put("user.id", account.id ); 
@@ -178,7 +178,7 @@ public class Auth extends CommonController {
         if(url == null) {
             url = "/";
         }
-        Logger.info("Auth: redirecting to '%s'", url);
+        Logger.debug("Auth: redirecting to '%s'", url);
         redirect(url);
     }	
 }

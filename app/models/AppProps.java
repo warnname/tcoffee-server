@@ -445,6 +445,16 @@ public class AppProps implements Serializable  {
 		return result;
 	}
 	
+	public boolean remove( String name ) { 
+		int p = indexOf(name);
+		if( p != -1 ) { 
+			properties.remove(p);
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public List<Property> list() {
 		return properties != null ? new ArrayList<Property>(properties) : Collections.<Property>emptyList();
 	}
