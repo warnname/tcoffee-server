@@ -50,7 +50,7 @@ public class Main extends CommonController {
 		
 		/* try to load a cached version of T-Coffee home page */
 		String home = (String) Cache.get("tcoffee_index_page");
-		if( home != null ) { 
+		if( home != null && Cache.get("sysmsg")==null ) { 
 			response.contentType = "text/html";
 			renderText(home);
 		}

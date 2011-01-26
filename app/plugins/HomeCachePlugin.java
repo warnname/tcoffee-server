@@ -61,6 +61,12 @@ public class HomeCachePlugin  extends PlayPlugin {
 			return;
 		}
 		
+		if( Cache.get("sysmsg") != null && Cache.get("tcoffee_index_page") != null ) { 
+			Logger.info("Invalidating home page because a system message is available");
+			Cache.delete("tcoffee_index_page");
+			return;
+		}
+		
 		
 		/* check how much time is passed */
 		long delta = System.currentTimeMillis()-time;
