@@ -1,6 +1,5 @@
-#{set title: 'Home' /}
-
 #{set 'meta'}
+<title>T-Coffee Server</title>
 <meta name="description" content="T-Coffee is a multiple sequence alignment server. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
 <meta name="keywords" content="t-coffee, tcoffee, t_coffee, T-Coffee server, web server, alignment server, server, msa, multiple sequence alignment, dna, rna, protein sequence, protein structure, Ceric Notredame, Comparative Bioinformatics" />
 <meta name="google-site-verification" content="h3pS1Y9xQdTbZlkoBNPeMtEt269Gdc_mDoia6kC0ASM" />
@@ -22,7 +21,7 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 #{list _bundle.getServicesByGroup(group) } 
 <tr>
 	<td class="c-lbl" >
-		<a href="@{Application.main(params.bundle,_.name)}">${_.title ?: '(unknown)'}</a>
+		<a href="@{Application.main(_.name)}">${_.title ?: '(unknown)'}</a>
 	</td>
 	
 	<td class="c-val">${_.description} 
@@ -53,6 +52,20 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 </td>
 <td class="c-val"> Documentation, tutorials and details about the T-Coffee multiple sequences aligner tool </td>
 </tr>
+
+<tr>
+<td class="c-lbl">
+	<a style="border: none" target="_blank" href="http://www.twitter.com/tcoffeemsa"><img src="public/images/twitter-small.png" alt="Follow T-Coffee on Twitter" width="24" height="24"/></a>
+</td>
+<td class="c-val"> Check it out for latest T-Coffee developments and new tips </td>
+</tr>
+
+<tr>
+<td class="c-lbl">
+<a href="http://en-gb.facebook.com/people/T-Coffee-Msa/100002039268111" target="_TOP" title="T-Coffee on Facebook" style="border: none" ><img src="public/images/facebook-icon.png" width="24" height="24" style="border: 0px;" /></a></td>
+<td class="c-val"> T-Coffee has a page on Facebook</td>
+</tr>
+
 </tbody>
 </table>
 
@@ -108,8 +121,8 @@ contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.
 </tr>
 
 <tr>
-<td class="c-lbl" ><a href="@{Application.index(params.bundle)}" > <img src="public/images/mirror_crg.png" width="24" height="24" /></a>&nbsp;</td>
-<td class="c-val"><a href="@{Application.index(params.bundle)}" >Centre for Genomic Regulation (CRG)</a> </td>
+<td class="c-lbl" ><a href="@{Application.index()}" > <img src="public/images/mirror_crg.png" width="24" height="24" /></a>&nbsp;</td>
+<td class="c-val"><a href="@{Application.index()}" >Centre for Genomic Regulation (CRG)</a> </td>
 </tr>
 
 </tbody>

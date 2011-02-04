@@ -43,7 +43,6 @@ public class BsubCommand extends AbstractShellCommand {
 	String jobname;
 	
 	
-	@XStreamOmitField private File fPbsFile; 
 	@XStreamOmitField private AbstractShellCommand command;
 
 	private String jobid;
@@ -66,10 +65,6 @@ public class BsubCommand extends AbstractShellCommand {
 	
 	String getJobName() {
 		return jobname;
-	}
-	
-	File getPbsFile() {
-		return fPbsFile;
 	}
 	
 	String getJobId() {

@@ -152,11 +152,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 
     	// save the command lie if the associated file has been specified 
     	if( fCmdFile != null ) {
-        	try {
-				IO.writeContent(fCmdLine, fCmdFile);
-			} catch (IOException e) {
-				throw new QuickException(e, "Fail saving CMD file named: %s", fCmdFile);
-			}
+			IO.writeContent(fCmdLine, fCmdFile);
     	}
 
 	}
@@ -215,14 +211,9 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
     		/* merge, overriding the system env with the task provided env */
     		all.putAll(local);
 
-    		try {
-    			all = new TreeMap<String, String>(all); // sort by natural key 
-    			String sEnv = Utils.asString(all, "\n");
-    			IO.writeContent(sEnv, fEnvFile);
-    		} 
-    		catch (IOException e) {
-    			throw new QuickException(e, "Fail on save ENV file named: '%s'", envfile);
-    		}
+			all = new TreeMap<String, String>(all); // sort by natural key 
+			String sEnv = Utils.asString(all, "\n");
+			IO.writeContent(sEnv, fEnvFile);
     	}
 
 	}

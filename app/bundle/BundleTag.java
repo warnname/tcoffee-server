@@ -11,8 +11,8 @@ import java.util.Map;
 import models.Bundle;
 import play.mvc.Scope;
 import play.templates.FastTags;
+import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.Template;
-import play.templates.Template.ExecutableTemplate;
 import play.vfs.VirtualFile;
 import util.Check;
 

@@ -191,6 +191,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			result.add(out);
 		}
 		
+		/* Check the std output */
 		if( success || existsLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
 			
 			/* add at least the tcoffee log file */
@@ -206,14 +207,18 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			result.addWarnings( _warnings );
 		}
 
-		if( !success &&  existsErrFile()) { 
-			
-			/* add at least the tcoffee log file */
-			OutItem out = new OutItem(getErrFile(), "error_file");
-			//TODO tis label should be parametrized
-			out.label = "Error file";
-			result.add(out); 
-			
+		/* check the error output */
+		if( existsErrFile()) { 
+			if( !success ) { 
+				/* add at least the tcoffee log file */
+				OutItem out = new OutItem(getErrFile(), "error_file");
+				//TODO tis label should be parametrized
+				out.label = "Error file";
+				result.add(out); 
+			}
+
+			// parse for warning in any case 
+			parseErrorFile(getErrFile());
 		}
 		
 		/* add the t_coffee.ErrorReport file */
@@ -227,6 +232,35 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		
 		OutItem html = result.getAlignmentHtml();
 		return success && html != null && html.exists();
+	}
+	
+	
+	/** 
+	 * Parse the error file for warning . . 
+	 * 
+	 * @param file
+	 */
+	void parseErrorFile( File file ) { 
+		try { 
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+
+			String line;
+			/* parse the output items */
+			while ((line = reader.readLine()) != null) {
+
+				// check for warnings 
+				String warn = parseForWarning(line);
+				if( Utils.isNotEmpty(warn)) { 
+					if( warn.startsWith("WARNING:")) { 
+						warn = warn.substring(8);
+					}
+					_warnings.add(warn.trim());
+				}
+			}
+		}
+		catch( Exception e ) { 
+			Logger.error(e, "Failing parsing T-coffee error file: %s", file);
+		}
 	}
 
 	List<OutItem> parseResultFile(File file) {

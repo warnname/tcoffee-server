@@ -97,7 +97,7 @@ public class TestHelper {
 			InputStream in = new FileInputStream(source);
 			OutputStream out = new FileOutputStream(target);
 			IO.write(in, out);
-			out.close();
+
 		} catch( IOException e ) {
 			throw new QuickException(e, "Unable to copy '%s' --> '%s'", source,target);
 		}

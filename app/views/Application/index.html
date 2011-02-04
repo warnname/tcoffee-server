@@ -9,7 +9,7 @@
 <tbody>
 #{list _bundle.services } 
 <tr>
-	<td class="c-lbl" ><a href="@{Application.main(params.bundle,_.name)}">${_.title ?: '(unknown)'}</a></td>
+	<td class="c-lbl" ><a href="@{Application.main(_.name)}">${_.title ?: '(unknown)'}</a></td>
 	<td class="c-val">${_.description}</td>
 	</tr>
 #{/list } 

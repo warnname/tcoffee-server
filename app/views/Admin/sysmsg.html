@@ -28,12 +28,19 @@ Use this to publish a message to all users
 <div class="c-input">
 	<button id="submit" class="button" >&nbsp;&nbsp;Publish&nbsp;&nbsp;</button>
 	&nbsp;&nbsp;
+	<button id="remove" class="button" >&nbsp;&nbsp;Remove message&nbsp;&nbsp;</button>
 	<a href="@{Admin.index}" title="Discard changes, if any, and back to index page">Cancel</a>
 </div>
-
-
 </fieldset>
-
-
 </form>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	if( $('textarea').val() == "" ) {
+		$('#remove').attr('disabled',true).addClass('disabled');
+	}
+	else { 
+		$('#remove').click(function() { $('textarea').val("") } );
+	}
+} )
+</script>

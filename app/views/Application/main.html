@@ -32,7 +32,7 @@
 
 <h1>${service.title} <small>${service.description}</small></h1>
 
-<form id="form" action="@{Application.main(params.bundle,service.name)}" method="POST" enctype="multipart/form-data">
+<form id="form" action="@{Application.main(service.name)}" method="POST" enctype="multipart/form-data">
 
 #{list service.input.fieldsets, as:'set'} 
 

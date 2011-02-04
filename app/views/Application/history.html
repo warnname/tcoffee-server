@@ -7,7 +7,7 @@
 
 <script type="text/javascript">
 function poll() {
-	$('#history').load('@{Application.historyTable(params.bundle)}', function() {  });
+	$('#history').load('@{Application.historyTable()}', function() {  });
 }
 
 $(document).ready(function(){

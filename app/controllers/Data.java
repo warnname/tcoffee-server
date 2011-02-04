@@ -134,11 +134,10 @@ public class Data extends CommonController {
 				
 				// append the file content
 				FileInputStream in = new FileInputStream(item);
-				IO.write(in, zip);
+				IO.copy(in, zip);
 	 
 				// Complete the entry 
 				zip.closeEntry(); 
-				in.close(); 		
 			}
 			
 			zip.close();					
@@ -149,7 +148,7 @@ public class Data extends CommonController {
 	} 
 		
 	/**
-	 * Manage user input file uploads
+	 * Manage upload of the input file
 	 * 
 	 * @param name the file name that is being uploaded
 	 */
@@ -201,4 +200,6 @@ public class Data extends CommonController {
 		}
 		
 	}	
+	
+
 }

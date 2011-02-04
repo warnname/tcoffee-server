@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.apache.log4j.Level;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
+import play.CorePlugin;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
@@ -58,7 +60,6 @@ import util.XStreamHelper;
 import bundle.BundleException;
 import bundle.BundleHelper;
 import bundle.BundleRegistry;
-import edu.emory.mathcs.backport.java.util.Collections;
 import exception.QuickException;
 
 /**
@@ -110,7 +111,7 @@ public class Admin extends CommonController {
 	}
 	
 	
-	@Before
+	@Before(unless={"bundleUpload"})
 	static void before() { 
 		injectImplicitVars();
 		/* clear alwasy sys message for admin pages */
@@ -386,8 +387,17 @@ public class Admin extends CommonController {
 	} 
 	
 	/**
+	 * Renders a page containing Play! runtime informantion 
+	 */
+	public static void playinfo() {
+		String info = CorePlugin.computeApplicationStatus(false);
+		render(info);
+	} 
+	
+	/**
 	 * Display the current version of t-coffee information
 	 */
+	@Deprecated
 	public static void tcoffeeinfo() {
 		Pattern pattern = Pattern.compile("PROGRAM: T-COFFEE \\((\\S+)\\)" );
 		
@@ -489,11 +499,14 @@ public class Admin extends CommonController {
 		/* it should reach this */
 		unsupportedMethod();
 	}
-	
-	static String ERROR( String message ) { 
-		return String.format("{error: '%s'}", JavaExtensions.escapeJavaScript(message));
-	}
-	
+
+	/**
+	 * Handle the upload of a bundle application file 
+	 * <p> 
+	 * @see Admin#bundleInstall(String)
+	 * 
+	 * @param qqfile the bundle application file name
+	 */
 	public static void bundleUpload(String qqfile) { 
 		Logger.debug("Bundle upload file name: '%s'", qqfile);
 		final String BUNDLE_KEY = Session.current().getId() + "_bundleupload";
@@ -511,7 +524,7 @@ public class Admin extends CommonController {
 			bundleZip = File.createTempFile("bundle_", ".zip", AppProps.TEMP_PATH);
 			OutputStream out = new BufferedOutputStream(new FileOutputStream(bundleZip));
 			IO.write(new BufferedInputStream(request.body), out);
-			out.close();
+			// ^ Stream closed by the write method
 			
 			/* default error result */
 			Logger.debug("Bundle upload save file: '%s'", bundleZip);
@@ -555,7 +568,7 @@ public class Admin extends CommonController {
 					}
 					
 					BufferedOutputStream stream =  new BufferedOutputStream(new FileOutputStream(file));
-					IO.write(zip.getInputStream(entry), stream);
+					IO.copy(zip.getInputStream(entry), stream);
 					stream.close();
 				} 
 
@@ -623,10 +636,17 @@ public class Admin extends CommonController {
 	
 	}
 	
+	private static String ERROR( String message ) { 
+		return String.format("{error: '%s'}", JavaExtensions.escapeJavaScript(message));
+	}		
+	
 	/**
 	 * Let to upload and install a new bundle in the system 
+	 * 
+	 * @see Admin#bundleUpload(String)
 	 */
 	public static void bundleInstall(String key) {
+		/* get the bundle zip fiel uploaded and store in the cache */
 		Bundle bundle = (Bundle) Cache.get(key);
 		BundleRegistry registry = BundleRegistry.instance();
 		Bundle installed = registry.get(bundle.name);
@@ -911,8 +931,7 @@ public class Admin extends CommonController {
 				if( file.isFile() ) { 
 					// append the file content
 					FileInputStream in = new FileInputStream(file);
-					IO.write(in, zip);
-					in.close(); 		
+					IO.copy(in, zip);
 				}
 				// Complete the entry 
 				zip.closeEntry(); 
@@ -1036,17 +1055,35 @@ public class Admin extends CommonController {
 	public static void previewUsageLog() throws IOException 
 	{
 		String sMax = Play.configuration.getProperty("preview.max.bytes", "3072");
-		long lMax = Utils.parseLong(sMax, 3072L);
+		Long lMax = Utils.parseLong(sMax, 3072L);
 		renderText( tail( AppProps.SERVER_USAGE_FILE, lMax ) );
 	} 
 	
 	public static void previewApplicationLog() throws IOException 
 	{
 		String sMax = Play.configuration.getProperty("preview.max.bytes", "3072");
-		long lMax = Utils.parseLong(sMax, 3072L);
+		Long lMax = Utils.parseLong(sMax, 3072L);
 		renderText( tail( AppProps.SERVER_APPLOG_FILE, lMax ) );
 	} 
 	
+	static String tail( File file, long maxBytes ) throws IOException { 
+		RandomAccessFile handler = new RandomAccessFile(file, "r");
+		Long delta ;
+		if( (delta=handler.length()-maxBytes)>0 ) { 
+			handler.seek(delta);
+			// consume first line that may not start from beginning
+			handler.readLine();
+		}
+		
+		StringBuilder result = new StringBuilder();
+		String line;
+		while( (line=handler.readLine()) != null ) { 
+			result.append(line) .append("\n");
+		}
+		
+		return result.toString();
+	}	
+		
 	public static class SysMessage implements Serializable { 
 		public String value;
 		public String type;
@@ -1068,6 +1105,8 @@ public class Admin extends CommonController {
 		}
 	}
 	
+	
+
 	/**
 	 * Publish a system message to all users 
 	 */
@@ -1091,7 +1130,7 @@ public class Admin extends CommonController {
 		 */
 		if( isPOST() ) { 
 			String feedback;
-			if( Utils.isEmpty(message)) { 
+			if( Utils.isEmpty(message) ) { 
 				Cache.delete("sysmsg");
 				feedback = "System message removed";
 			}
@@ -1169,24 +1208,7 @@ public class Admin extends CommonController {
     	renderText(result);
 		
 	}
-	
-	private static String tail( File file, long maxBytes ) throws IOException { 
-		RandomAccessFile handler = new RandomAccessFile(file, "r");
-		long delta ;
-		if( (delta=handler.length()-maxBytes)>0 ) { 
-			handler.seek(delta);
-			// consume first line that may not start from beginning
-			handler.readLine();
-		}
-		
-		StringBuilder result = new StringBuilder();
-		String line;
-		while( (line=handler.readLine()) != null ) { 
-			result.append(line) .append("\n");
-		}
-		
-		return result.toString();
-	}
+
 	
  }
 

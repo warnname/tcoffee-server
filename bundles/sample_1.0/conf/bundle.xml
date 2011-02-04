@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<bundle name="sample" version="1.0" >
+<bundle name="sample" version="1.0.1" >
 	<title>Sample</title>
 	<description>A sample bundle</description>
 

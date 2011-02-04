@@ -12,8 +12,9 @@ import models.Repo;
 import models.Service;
 import models.Status;
 import play.Logger;
-import play.mvc.After;
 import play.mvc.Before;
+import play.mvc.Finally;
+import util.Utils;
 import util.XStreamHelper;
 import bundle.BundleRegistry;
 
@@ -27,23 +28,47 @@ import bundle.BundleRegistry;
 public class Application extends CommonController {
 	
 	static List<String> PAGES = Arrays.asList("index", "history", "references", "help", "contacts");
+
+	static private ThreadLocal<Bundle> bundle = new ThreadLocal<Bundle>();
 	
 	@Before
-	static void before() { 
-		injectImplicitVars();
+	static void before(String bundle) { 
+		Logger.trace("Application#before(%s)", bundle);
+
+		/* 
+		 * some sanity checks
+		 */
+		if( Utils.isEmpty(bundle)) { 
+			error("Missing bundle argument");
+		}
+		
+		Bundle _bundle = BundleRegistry.instance().get(bundle);
+		if( _bundle == null ) { 
+			error("Cannot find bundle named: " + bundle);
+		}
+		
+		/* 
+		 * 1) save the bundle instance in the current context 
+		 * 2) save as route argument
+		 * 3) inject implict variables 
+		 */
+		Application.bundle.set(_bundle);
+		routeArgs.put("bundle", bundle);
+		injectImplicitVars(bundle);
 	}
 	
-	@After 
+	@Finally
 	static void release() {
+		Logger.trace("Application#release()");
 		Service.release();
-		
+		Application.bundle.remove();
 	}
 	
 	/** 
 	 * Renders the main application index page
 	 */
-    public static void index( String bundle ) {
-    	redirect("Application._", bundle, "index.html");
+    public static void index() {
+    	redirect("Application.html", "index.html");
     }
     
     /**
@@ -51,7 +76,7 @@ public class Application extends CommonController {
      * 
      * @param rid the unique request identifier 
      */
-    public static void result(String bundle, String rid, Boolean ... cached ) {		
+    public static void result(String rid, Boolean ... cached ) {		
     	
     	final Repo ctx = new Repo(rid,false);
     	final Status status = ctx.getStatus();
@@ -87,7 +112,7 @@ public class Application extends CommonController {
 	/**
 	 * Renders the history html table  
 	 */
-	public static void historyTable( String bundle ) {	
+	public static void historyTable() {	
 		List<History> recent = History.findAll();
 		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
 		responseNoCache();
@@ -95,18 +120,17 @@ public class Application extends CommonController {
 	}
 
 
-
 	/**
 	 * Check the current status for the alignment request specified by <code>rid</code>
 	 * 
 	 * @param rid the request unique identifier
 	 */
-	public static void status(String bundle, String rid) {
+	public static void status(String rid) {
 		Repo ctx = new Repo(rid,false);
 		renderText(ctx.getStatus().toString());
 	}
 	
-	public static void replay( String bundle, String rid ) {
+	public static void replay( String rid ) {
 	
 		/* 
 		 * 1. check if a result exists 
@@ -120,7 +144,7 @@ public class Application extends CommonController {
 		 * create the service and bind the stored values 
 		 */
 		String mode = repo.getResult().service;
-		Service service = service(bundle,mode);
+		Service service = service(bundle.get().name,mode);
 		service = service.copy();
 		Service.current(service);
 		service.input = XStreamHelper.fromXML(repo.getInputFile());
@@ -132,7 +156,7 @@ public class Application extends CommonController {
 		render("Application/main.html");		
 	}
 	
-	public static void submit( String bundle, String rid ) {
+	public static void submit( String rid ) {
 		/*
 		 * 1. check and load the repo context object 
 		 */
@@ -145,14 +169,14 @@ public class Application extends CommonController {
 		 * 2. create and bind the stored input values 
 		 */
 		OutResult result = repo.getResult(); 
-		Service service = service(bundle,result.service).copy();
+		Service service = service(bundle.get().name,result.service).copy();
 		Service.current(service);
 		service.input = XStreamHelper.fromXML(repo.getInputFile());
 		
 		/* 
 		 * 4. re-execute with caching feature disabled
 		 */
-		exec(bundle,service,false);
+		exec(bundle.get().name,service,false);
 	}
 	
 	/**
@@ -160,10 +184,20 @@ public class Application extends CommonController {
 	 * 
 	 * @param name the <i>service</i> name i.e. is unique identifier
 	 */
-	public static void main(String bundle,String name) {
+	public static void main(String name) {
 		
 		if( isGET() ) {
-			Service service = service(bundle,name);
+			BundleRegistry registry = BundleRegistry.instance();
+			/* if the name is missing use the first as default */
+			if( Utils.isEmpty(name) && registry.getNames().size()>0 ) { 
+				name = registry.getNames().get(0);
+			}
+			
+			if( Utils.isEmpty(name) ) { 
+				error("Missing service for name for bundle: " + bundle);
+			}
+			
+			Service service = service(bundle.get().name,name);
 			render(service);
 			return;
 		}
@@ -171,7 +205,7 @@ public class Application extends CommonController {
 		/*
 		 * process the submitted data
 		 */
-		Service service = service(bundle,name).copy();
+		Service service = service(bundle.get().name,name).copy();
 		Service.current(service);
 
 		if( !service.validate(params) ) {
@@ -181,7 +215,7 @@ public class Application extends CommonController {
 			return;
 		} 
 
-		exec(bundle,service, true);
+		exec(bundle.get().name,service, true);
 	}
 	
 	static void exec( String bundle, Service service, boolean enableCaching ) {
@@ -198,7 +232,7 @@ public class Application extends CommonController {
 		Status status = service.repo().getStatus();
 		if( !status.isReady() ) {
 	    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, service.rid());
-	    	result(bundle, service.rid(), service.repo().cached);
+	    	result(service.rid(), service.repo().cached);
 	    	return;
 		}
 
@@ -221,14 +255,13 @@ public class Application extends CommonController {
     	 * 5. forwards to the result page 
     	 */
     	Logger.debug("Forward to result page with rid: %s", service.rid());
-    	result(bundle, service.rid());			
+    	result(service.rid());			
 	}
 
 
-	public static void servePublic( String bundle, String path ) { 
-		Bundle oBundle = BundleRegistry.instance().get(bundle);
+	public static void servePublic( String path ) { 
 		renderStaticResponse();
-		renderFile(oBundle.publicPath, path);
+		renderFile(bundle.get().publicPath, path);
 	}
 	
 	/**
@@ -237,7 +270,7 @@ public class Application extends CommonController {
 	 * @param bundle 
 	 * @param path
 	 */
-	public static void _( String bundle, String page ) { 
+	public static void html( String page ) { 
 		renderBundlePage(page);
 	}
 	
@@ -249,7 +282,7 @@ public class Application extends CommonController {
 	 * @param args
 	 */
 	static void renderBundlePage( String page, Object... args) { 
-		Bundle bundle = (Bundle) renderArgs.get("_bundle");
+		Bundle bundle = Application.bundle.get();
 		if( bundle != null && bundle.pagesPath != null && bundle.pagesPath.child(page) .exists()) { 
 			renderArgs.put("_page", page);
 			render("Application/_wrapper.html", args);

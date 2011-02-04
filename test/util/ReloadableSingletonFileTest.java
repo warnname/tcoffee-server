@@ -1,7 +1,6 @@
 package util;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.junit.Test;
 
@@ -17,11 +16,7 @@ public class ReloadableSingletonFileTest extends UnitTest {
 		ReloadableSingletonFile<String> singleton = new ReloadableSingletonFile<String>(TestHelper.sampleFasta()) {
 			@Override
 			public String readFile(File file) {
-				try {
-					return IO.readContentAsString(file);
-				} catch (IOException e) {
-					throw new RuntimeException(e);  
-				}
+				return IO.readContentAsString(file);
 			}
 		}; 
 		

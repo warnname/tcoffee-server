@@ -43,8 +43,8 @@ public class HistoryTest extends UnitTest {
 		assertEquals("123", h.getRid());
 		assertEquals("tcoffee", h.getBundle());
 		assertEquals("expresso", h.getLabel());
-		assertEquals("23 Feb", h.getBegin());
-		assertEquals("24 Feb", h.getExpire());
+		assertEquals("23/02/2010", h.getBegin());
+		assertEquals("24/02/2010", h.getExpire());
 		assertEquals("500 ms", h.getDuration());
 		assertEquals("done", h.getStatus());
 	}
@@ -56,8 +56,8 @@ public class HistoryTest extends UnitTest {
 		History result = new History(cookie);
 		
 		assertEquals("3232", result.getRid());
-		assertEquals("23 Feb", result.getBegin());
-		assertEquals("24 Feb", result.getExpire());
+		assertEquals("23/02/2010", result.getBegin());
+		assertEquals("24/02/2010", result.getExpire());
 		assertEquals("--", result.getDuration());
 		assertEquals("Unknown", result.getStatus());
 	}

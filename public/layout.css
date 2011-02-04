@@ -135,12 +135,12 @@ html, body {
   font-family: 'Lobster';
   font-style: normal;
   font-weight: normal;
-  src: local('Lobster'), url('http://themes.googleusercontent.com/font?kit=9LpJGtNuM1D8FAZ2BkJH2Q') format('truetype');
+  src: local('Lobster'), url('http://themes.googleusercontent.com/font?kit=9LpJGtNuM1D8FAZ2BkJH2Q#') format('truetype');
 }
 
 @font-face {
   font-family: "Vera Mono";
-  src: url("fonts/VeraMono.ttf") format("truetype");
+  src: url("fonts/VeraMono.ttf#") format("truetype");
 }
 
 #content,

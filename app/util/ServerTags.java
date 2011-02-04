@@ -20,8 +20,8 @@ import java.util.Set;
 import models.Field;
 import play.Logger;
 import play.templates.FastTags;
+import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.JavaExtensions;
-import play.templates.Template.ExecutableTemplate;
 import util.TcoffeeHelper.ResultHtml;
 
 public class ServerTags extends FastTags {
@@ -118,7 +118,7 @@ public class ServerTags extends FastTags {
 
 		for (String line : new FileIterator(file)) {
 			if (escape) {
-				line = JavaExtensions.escapeHtml(line);
+				line = JavaExtensions.escapeHtml(line).toString();
 			}
 			out.println(line);
 		}

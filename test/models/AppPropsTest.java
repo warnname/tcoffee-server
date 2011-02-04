@@ -122,21 +122,18 @@ public class AppPropsTest extends UnitTest {
 		assertEquals( AppProps.WORKSPACE_FOLDER.getAbsolutePath(), props.getDataPath() );
 	}
 	
-	@Test
-	public void testRequestTimeToLive() {
-		props.add("requestTimeToLive", "100");
-		assertEquals(100, props.getDataCacheDuration());
-	}
-	
 	@Test 
-	public void testRequestDaysToLive() {
-		props.add("requestDaysToLive", "1");
-		assertEquals(24 * 60 * 60, props.getDataCacheDuration());
+	public void testGetDataCacheDuration() {
+		assertEquals(604800, props.getDataCacheDuration());
 
-		/* value 'requestTimeToLive' will override the value entered for 'requestDaysToLive' */
-		props.add("requestTimeToLive", "99");
-		assertEquals(99, props.getDataCacheDuration());
-		
+		// set to 1 seconds 
+		props.put("data.cache.duration", "1s");
+		assertEquals(1, props.getDataCacheDuration());
+
+		// set to 1 minute 
+		props.put("data.cache.duration", "1min");
+		assertEquals(60, props.getDataCacheDuration());
+	
 	} 
 
 	@Test
@@ -145,7 +142,7 @@ public class AppPropsTest extends UnitTest {
 		assertEquals("", props.contextPath);
 		
 		/* simulate a top level context path */
-		Router.routes.add(0, Router.getRoute("GET", "/root/path", "Main.index", null));
+		Router.routes.add(0, Router.getRoute("GET", "/root/path", "Main.index", null, null));
 		props.contextPath = null; // force re-evaluating
 		assertEquals("/root", props.contextPath);
 

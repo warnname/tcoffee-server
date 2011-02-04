@@ -10,6 +10,7 @@ import java.util.Map;
 
 import play.Logger;
 import play.Play;
+import play.exceptions.UnexpectedException;
 import play.libs.IO;
 import util.Check;
 import util.Utils;
@@ -40,14 +41,19 @@ public class QsubCommand extends AbstractShellCommand {
 	String jobname;
 	
 	/** the qsub script filename */
-	String scriptfile;
+	String jobfile;
 	
-	@XStreamOmitField private File fPbsFile; 
+	@XStreamOmitField private File fJobFile; 
 	@XStreamOmitField private AbstractShellCommand command;
 
 	private String jobid;
 	
 	public Boolean disabled;
+	
+	/** 
+	 * template string can be used to 'post-process' the command to be executed in the qsub script
+	 */
+	public String wrapper;
 	
 	/** The default constructor */
 	public QsubCommand() {}
@@ -57,7 +63,7 @@ public class QsubCommand extends AbstractShellCommand {
 		this._commands = Utils.copy(that._commands);
 		this.queue = that.queue;
 		this.jobname = that.jobname;
-		this.scriptfile = that.scriptfile;
+		this.jobfile = that.jobfile;
 	}
 	
 	String getQueue() {
@@ -68,8 +74,8 @@ public class QsubCommand extends AbstractShellCommand {
 		return jobname;
 	}
 	
-	File getPbsFile() {
-		return fPbsFile;
+	File getJobFile() {
+		return fJobFile;
 	}
 	
 	String getJobId() {
@@ -84,6 +90,14 @@ public class QsubCommand extends AbstractShellCommand {
 		String result = AppProps.instance().getProperty("qsub.disabled");
 		disabled = result != null ? "true".equals(result) : Play.mode.equals( Play.Mode.DEV );
 		return disabled;
+	}
+	
+	public String getWrapper() { 
+		if( wrapper != null ) { 
+			return wrapper;
+		}
+		
+		return wrapper = AppProps.instance().get("qsub.wrapper","").trim();
 	}
 	
 	@Override
@@ -109,7 +123,7 @@ public class QsubCommand extends AbstractShellCommand {
 		if( Utils.isEmpty(errfile) ) errfile = "_qsub.err.log";
 		if( Utils.isEmpty(envfile) ) envfile = "_qsub.env.txt";
 		if( Utils.isEmpty(cmdfile) ) cmdfile = "_qsub.cmd.txt";
-		if( Utils.isEmpty(scriptfile) ) scriptfile = "_qsub.pbs";
+		if( Utils.isEmpty(jobfile) ) jobfile = "_qsub.pbs";
 		
 		super.init(ctx); 
 	}
@@ -157,7 +171,7 @@ public class QsubCommand extends AbstractShellCommand {
 		/*
 		 * 1. create the PBD script file to be submited in the cluster queue
 		 */
-		fPbsFile = new File(ctxfolder,scriptfile);
+		fJobFile = new File(ctxfolder,jobfile);
 		StringBuilder script = new StringBuilder();
 		script.append("#!/bin/sh\n");
 
@@ -177,9 +191,14 @@ public class QsubCommand extends AbstractShellCommand {
 		}
 
 		/* write the command and save */
-		script.append(command.getCmdLine());
-		Utils.write(script, fPbsFile);
-	
+		String cmd = command.getCmdLine();
+		if( Utils.isNotEmpty(wrapper)) { 
+			cmd = String.format(wrapper, cmd);
+		}
+		script.append(cmd);
+
+		/* save the qsub script */
+		Utils.write(script, fJobFile);
 		
 
 		/*
@@ -207,7 +226,7 @@ public class QsubCommand extends AbstractShellCommand {
 			result.append("-N ") .append(jobname) .append(" ");
 		}
 
-		result.append( fPbsFile.getName() );
+		result.append( fJobFile.getName() );
 		return  result.toString();
 	}
 	
@@ -258,7 +277,7 @@ public class QsubCommand extends AbstractShellCommand {
 		try {
 			error = IO.readContentAsString(file);
 		} 
-		catch (IOException e) {
+		catch (UnexpectedException e) {
 			Logger.error(e, "Enable to read qsub error file: '%s'", file);
 			error = "(qsub reports problems but the error file cannot be read)";
 		}

@@ -42,9 +42,8 @@ public class CommonController extends Controller {
 	 * <li><code>_main_title</code>: descriptive label sued as top page title </li>
 	 * 
 	 */
-	static void injectImplicitVars() {
+	static void injectImplicitVars(String sBundle) {
 		Bundle bundle = null;
-		String sBundle = params.get("bundle");
 		if( Utils.isNotEmpty(sBundle) ) { 
 			bundle = BundleRegistry.instance().get(sBundle);
 			if( bundle == null ) { 
@@ -114,6 +113,10 @@ public class CommonController extends Controller {
 		renderArgs.put("_main_sysmsg", Cache.get("sysmsg"));
 		
 	}	
+	
+	static void injectImplicitVars() {
+		injectImplicitVars(null);
+	}
 	
 	static boolean isGET() {
 		return "GET".equals(request.method.toUpperCase());

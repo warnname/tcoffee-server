@@ -1,6 +1,6 @@
 package models;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -71,7 +71,8 @@ public class BsubCommandTest extends UnitTest {
 		bsub.init();
 		
 		
-		assertEquals( "bsub -K -rn -q queuename -J jobname -o out.log -e err.log < cmd.log", bsub.getCmdLine() );
+		final String cmd = String.format("bsub -K -cwd %s -q queuename -J jobname -o out.log -e err.log < cmd.log", bsub.ctxfolder);
+		assertEquals( cmd, bsub.getCmdLine() );
 		
 	}
 
@@ -84,7 +85,7 @@ public class BsubCommandTest extends UnitTest {
 		args.put("mode", "regular");
 		args.put("in", "sample.fasta" );
 		
-		TCoffeeCommand tcoffee = new TCoffeeCommand();
+		final TCoffeeCommand tcoffee = new TCoffeeCommand();
 		tcoffee.errfile = "err.log";
 		tcoffee.logfile = "out.log";
 		tcoffee.cmdfile = "cmd.log";
@@ -95,24 +96,22 @@ public class BsubCommandTest extends UnitTest {
 		BsubCommand bsub = new BsubCommand() {
 			public boolean run() throws CommandException {
 
-				try {
-					IO.writeContent("T-Coffee result output .. ", _commands.get(0).getLogFile());
-					
-					/* 
-					 * MOCK the bsub out file 
-					 */
-					final String RESULT = 	
-						"Job <12345> is submitted to default queue <normal>.\n" +
-						"<<Waiting for dispatch ...>>\n" +
-						"<<Job is finished>>";
-					
-		
-					IO.writeContent(RESULT, getLogFile());
-					
-				} 
-				catch (IOException e) {
-					throw new CommandException(e, "Cannot write error file");
-				}
+				/* 
+				 * mock a sample t_coffee output
+				 */
+				TestHelper.copy( TestHelper.sampleLog(), tcoffee.getLogFile() );
+				IO.writeContent("<html> blah blah </html>", new File(tcoffee.ctxfolder, "tcoffee.score_html"));
+				
+				/* 
+				 * MOCK the bsub out file 
+				 */
+				final String RESULT = 	
+					"Job <12345> is submitted to default queue <normal>.\n" +
+					"<<Waiting for dispatch ...>>\n" +
+					"<<Job is finished>>";
+				
+	
+				IO.writeContent(RESULT, getLogFile());
 				return true;
 			};
 		}; 
@@ -128,7 +127,7 @@ public class BsubCommandTest extends UnitTest {
 		
 		bsub.execute();
 
-		assertFalse(bsub.isOK());
+		assertTrue(bsub.isOK());
 		assertEquals( "12345", bsub.getJobId() );
 		
 		

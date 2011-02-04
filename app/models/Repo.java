@@ -3,6 +3,8 @@ package models;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -144,7 +146,7 @@ public class Repo implements Serializable {
 		if( fResult.exists() ) {
 			try {
 				OutResult out = XStreamHelper.fromXML(fResult);
-				return out.status;
+				return out.status!=null ? out.status : Status.UNKNOWN;
 			} 
 			catch( Exception e ) {
 				Logger.warn(e, "Error on parsing result file: '%s'", fResult);
@@ -166,16 +168,21 @@ public class Repo implements Serializable {
 	
 	public boolean isExpired() {
 		Status status = getStatus();
+		if( status == null ) { return false; }
+		
 		long now = System.currentTimeMillis();
 		long exp = getExpirationTime();
 		boolean result = (status.isDone() || status.isFailed()) && (now > exp);
 		if( Logger.log4j.isDebugEnabled()) { 
-			Logger.debug("Repo '%s' isExpired: %s - status: %s - expiration time: %s - current time: %s", 
+			DateFormat fmt = new SimpleDateFormat("dd/MMM HH:mm:ss");
+			String sExp = fmt.format(exp);
+			String sDelta = exp>now ? Utils.asDuration(exp-now) : "0";
+			Logger.debug("Repo '%s' - Expired: %s (status: '%s' - exp time: '%s' - delta: %s)", 
 					rid,
 					result, 
 					status, 
-					Utils.asString(new Date(exp)),
-					Utils.asString(new Date(now))   );
+					sExp,
+					sDelta);
 		}
 		return result;
 	}
@@ -300,8 +307,51 @@ public class Repo implements Serializable {
 		/*
 		 * remove all files 
 		 */
-		if( !FileUtils.deleteQuietly(fRoot) ) {
-			Logger.error("Unable to delete folder: '%s'", fRoot);
+		String sRoot = fRoot.getAbsolutePath();
+		Logger.debug("Deleting Repo folder: '%s'", sRoot);
+		
+		try {
+			/* sanity check
+			 * the path to delete HAVE TO BE a subfolder of the workspace path 
+			 */
+			String sWork = AppProps.WORKSPACE_FOLDER.getAbsolutePath();
+			if( !sRoot.startsWith(sWork)) { 
+				Logger.warn("Cannot delete a Repo folder outside of the workspace: %s", sRoot );
+				return;
+			}
+			
+			String check = sRoot.substring(sWork.length());
+			if( check.startsWith(File.separator) ) {
+				check = check.substring(1);
+			}
+			
+			if( check.endsWith(File.separator)) { 
+				check = check.substring(0,check.length()-1);
+			}
+			
+			if( !check.equals(rid) ) { 
+				Logger.error("Cannot delete Repo: '%s'. Sanity check failed: ", rid, check);
+				return;
+			}
+			
+			
+			/* 
+			 * OK proceed 
+			 */
+			String rm = String.format("rm -rf %s", sRoot);
+			Logger.debug("Executing remove command: %s", rm);
+			Process proc = Runtime.getRuntime().exec(rm);
+			int exitcode = proc.waitFor();
+			if( exitcode != 0 ) { 
+				Logger.warn("Cannot execute: '%s'; exitcode: %s", sRoot, exitcode);
+			}
+			else { 
+				Logger.info("Deleted Repo: '%s'", rid);
+			}
+			
+		}
+		catch( Exception e ) { 
+			Logger.error("Cannot delete Repo folder: '%s'", sRoot);
 		}
 	}
 	
@@ -315,7 +365,8 @@ public class Repo implements Serializable {
 	} 
 
 	public String getCreationTimeFmt() {
-		return Utils.asString( new Date(getCreationTime()) );
+		Date date = new Date(getCreationTime());
+		return new SimpleDateFormat("dd MMM yyyy, HH:MM (z)").format(date);
 	}
 	
 	/**
@@ -330,16 +381,16 @@ public class Repo implements Serializable {
 	}
 	
 	/**
-	 * @return The repository expiration timestamp.  
+	 * @return The repository expiration timestamp millis or {@link Long#MAX_VALUE} if repository state is invalid.  
 	 */
 	public long getExpirationTime() {
 
 		Status status = getStatus();
-		if( status.isDone() || status.isFailed() ) {
+		if( status != null && (status.isDone() || status.isFailed()) ) {
 			return getLastAccessedTime() + (AppProps.instance().getDataCacheDuration() *1000);
 		}
 		else { 
-			throw new QuickException("Invalid property in current status (%s)", status);
+			return Long.MAX_VALUE;
 		}
 	
 	}
@@ -422,7 +473,7 @@ public class Repo implements Serializable {
 		List<Repo> all = findByStatus(Status.DONE, Status.FAILED);
 		for( Repo repo : all ) {
 			if(repo.isExpired()) {
-				repo.drop(false);
+				repo.drop();
 			}
 		}
 	}

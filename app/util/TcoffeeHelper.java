@@ -1,14 +1,17 @@
 package util;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import play.libs.IO;
-import exception.QuickException;
 
+/**
+ * Utility class for T-Coffee related operations 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 public class TcoffeeHelper {
 	
 	public static class ResultHtml {
@@ -17,12 +20,9 @@ public class TcoffeeHelper {
 	}
 	
 
-	public static ResultHtml parseHtml( File file )  {
-		try {
-			return parseHtml(IO.readContentAsString(file));
-		} catch (IOException e) {
-			throw new QuickException(e, "Unable to parse html file: '%s'", file);
-		}
+	public static ResultHtml parseHtml( File file )  
+	{
+		return parseHtml(IO.readContentAsString(file));
 	}
 	
 	public static ResultHtml parseHtml(String html) {
@@ -34,22 +34,6 @@ public class TcoffeeHelper {
 			String style = match.group(1);
 			String body = match.group(2);;
 
-			/* 
-			 * replace all '-' chars with &ndash;
-			 */
-			body = Utils.match(body, "(<[^>]+>)(\\-+)(</[^>]+>)", new Utils.MatchAction() {
-
-				public String replace(List<String> groups) { 
-					StringBuilder result = new StringBuilder();
-					result.append(groups.get(1)); 					
-					for( int i=0, c=groups.get(2).length(); i<c; i++ ) { 
-						result.append("&ndash;");
-					}
-					result.append(groups.get(3));
-					return result.toString();
-				}
-			});			
-			
 			/* remove the cpu time */
 			body = body.replaceFirst("<span[^>]*>CPU&nbsp;TIME:[^<]*</span><br>","");
 			

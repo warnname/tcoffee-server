@@ -21,7 +21,7 @@ $(document).ready(function(){
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
 $(document).bind('close.facebox', function(){
-	window.location = "@{Application.index(params.bundle)}";
+	window.location = "@{Application.index()}";
 } );
 </script>
 
@@ -61,7 +61,7 @@ function run(){
     /* This requests the url "msgsrv.php" When it complete (or errors)*/
     $.ajax({
         type: "GET",
-        url: "@{Application.status(params.bundle)}?rid=${rid}",
+        url: "@{Application.status(rid)}",
 
         async: true, /* If set to non-async, browser shows page as "Loading.."*/
         cache: false,
@@ -74,7 +74,7 @@ function run(){
             }
             else if( status=='DONE' || status=='FAILED' ) {
                 // otherwise move to the result page
-			 	window.location.replace("@{Application.result(params.bundle)}?rid=${rid}");
+			 	window.location.replace("@{Application.result(rid)}");
             }
             else {
             	jQuery(document).trigger('close.facebox');

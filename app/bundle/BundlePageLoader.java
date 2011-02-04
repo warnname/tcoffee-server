@@ -7,8 +7,10 @@ import java.util.Map;
 
 import models.Bundle;
 import play.exceptions.TemplateNotFoundException;
+import play.templates.BaseTemplate;
+import play.templates.GroovyTemplate;
+import play.templates.GroovyTemplateCompiler;
 import play.templates.Template;
-import play.templates.TemplateCompiler;
 import play.templates.TemplateLoader;
 import play.vfs.VirtualFile;
 
@@ -60,21 +62,21 @@ public class BundlePageLoader extends TemplateLoader {
     public static Template load(Bundle bundle, VirtualFile file) {
     	
         if( templates == null ) { 
-    		templates = new HashMap<String, Template>();
+    		templates = new HashMap<String, BaseTemplate>();
         }
 		
 		String key = (file.relativePath().hashCode()+"").replace("-", "M");
         if (!templates.containsKey(key) || templates.get(key).compiledTemplate == null) {
-            Template template = new Template(file.relativePath(), file.contentAsString());
+            BaseTemplate template = new GroovyTemplate(file.relativePath(), file.contentAsString());
             if(template.loadFromCache()) {
                 templates.put(key, template);
             } else {
-                templates.put(key, TemplateCompiler.compile(file));
+                templates.put(key, new GroovyTemplateCompiler().compile(file));
             }
         } else {
-            Template template = templates.get(key);
+            BaseTemplate template = templates.get(key);
             if (template.timestamp < file.lastModified()) {
-                templates.put(key, TemplateCompiler.compile(file));
+                templates.put(key, new GroovyTemplateCompiler().compile(file));
             }
         }
         if (templates.get(key) == null) {

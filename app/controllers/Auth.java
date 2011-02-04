@@ -115,7 +115,7 @@ public class Auth extends CommonController {
 
 	        		flash.error(
 	            			"User '%s' is not authorized for server administration. " +
-	            			"Please note: to use another account you have to sign out from Google", sEmail );
+	            			"Note: to use another account you have to sign out from the current <a href='https://www.google.com/accounts/' target='_blank'>Google Account</a> ", sEmail );
 
 	    	        return null;
 	        	}

@@ -1,18 +1,19 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import play.Logger;
 import play.Play;
 import play.libs.IO;
 import play.libs.Mail;
-import play.mvc.*;
+import play.mvc.Controller;
 import play.templates.Template;
 import play.templates.TemplateLoader;
-import play.test.*;
-import play.vfs.*;
+import play.test.TestEngine;
 
 /**
  * This controller is required only to run test in headless mode. 
@@ -79,11 +80,7 @@ public class SlimTestRunner extends Controller {
 
     static void finalize( String result ) {
         File testResults = Play.getFile("test-result/result." + result);
-		try {
-			IO.writeContent(result, testResults);
-		} catch (IOException e) {
-			Logger.error(e,"Unable to write content to file: %s", testResults);
-		}
+		IO.writeContent(result, testResults);
     }
 
     static boolean run(String test)  {
@@ -102,11 +99,7 @@ public class SlimTestRunner extends Controller {
         options.put("results", results);
         String result = resultTemplate.render(options);
         File testResults = Play.getFile("test-result/" + test + ".java" + (results.passed ? ".passed" : ".failed") + ".html");
-        try {
-			IO.writeContent(result, testResults);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		IO.writeContent(result, testResults);
 
         return results.passed;
     }

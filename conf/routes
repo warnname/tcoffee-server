@@ -42,11 +42,11 @@ GET		/apps/{bundle}/replay				Application.replay
 GET		/apps/{bundle}/submit				Application.submit
 GET		/apps/{bundle}/status				Application.status
 GET		/apps/{bundle}/history				Application.historyTable
-GET		/apps/{bundle}/index.html			Application._(page:'index.html')
-GET		/apps/{bundle}/{<.+\.html>page}		Application._
+GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
+GET		/apps/{bundle}/{<.+\.html>page}		Application.html
 GET		/apps/{bundle}/public/{<.+>path}	Application.servePublic
 
-
-GET		/{action}				Main.{action}
-
+#
+#GET		/{action}				Main.{action}
+#
 

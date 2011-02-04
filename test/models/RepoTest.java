@@ -123,6 +123,7 @@ public class RepoTest extends UnitTest {
 		
 		/* test again */
 		Repo test = new Repo("test-accessed-date", false);
+		test.touch();
 		assertEquals( ctime, test.getCreationTime() );
 		assertTrue( atime < test.getLastAccessedTime() );
 		assertTrue( test.getLastAccessedTime() < System.currentTimeMillis() );
@@ -132,10 +133,7 @@ public class RepoTest extends UnitTest {
 	@Test 
 	public void testExpirationTime() {
 		Repo repo = new Repo("test-expireation-time", true);
-		try {
-			repo.getExpirationTime();
-			fail(); // must fail because #getExpirationTime() is not supported in this state
-		} catch( Exception e ) { }
+		assertEquals( Long.MAX_VALUE, repo.getExpirationTime() );
 		
 		/* in any case the following test is false */
 		assertFalse( repo.isExpired() );

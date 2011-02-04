@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import models.Bundle;
@@ -10,6 +9,7 @@ import play.Play;
 import play.cache.Cache;
 import play.libs.IO;
 import play.mvc.Before;
+import play.mvc.RouterFix;
 import bundle.BundleRegistry;
 
 /**
@@ -23,7 +23,7 @@ public class Main extends CommonController {
 
 	@Before
 	static void before() { 
-		injectImplicitVars();
+		injectImplicitVars(null);
 	}
 	
 	
@@ -41,11 +41,7 @@ public class Main extends CommonController {
 		File indexPage = new File(Play.applicationPath, "public/index.html");
 		if( indexPage.exists() ) { 
 			response.contentType = "text/html";
-			try {
-				renderText( IO.readContentAsString(indexPage) );
-			} catch (IOException e) {
-				Logger.error(e, "Unable to read index file: '%s'", indexPage);
-			}
+			renderText( IO.readContentAsString(indexPage) );
 		}
 		
 		/* try to load a cached version of T-Coffee home page */
@@ -56,7 +52,7 @@ public class Main extends CommonController {
 		}
 
 		/* fallback on the dynamic index page */
-		redirect("Application.index", "tcoffee");
+		redirect( RouterFix.reverse("Application.index", "bundle=tcoffee").toString()  );
 	}
 	
 	public static void list() { 
@@ -98,12 +94,13 @@ public class Main extends CommonController {
 	 */
 	public static void robots() {
 		final String conf = "/conf/robots.txt";
-		try {
-			renderText( IO.readContentAsString(Play.getFile(conf)) );
-		} catch (IOException e) {
-			Logger.error(e, "Unable to render 'robots.txt' file");
-			notFound(String.format("Unable to find '%s'", conf));
-		} 
+		File robots = Play.getFile(conf);
+
+		if( !robots.exists())  { 
+			Logger.error("Missing robots.txt. It should be placed in $PLAY/conf/robots.txt folder");
+			notFound();
+		}
+		
 	} 
 	
 
