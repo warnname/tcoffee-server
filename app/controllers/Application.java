@@ -187,10 +187,9 @@ public class Application extends CommonController {
 	public static void main(String name) {
 		
 		if( isGET() ) {
-			BundleRegistry registry = BundleRegistry.instance();
 			/* if the name is missing use the first as default */
-			if( Utils.isEmpty(name) && registry.getNames().size()>0 ) { 
-				name = registry.getNames().get(0);
+			if( Utils.isEmpty(name) && bundle.get().services!=null && bundle.get().services.size()>0 ) { 
+				name = bundle.get().services.get(0).name;
 			}
 			
 			if( Utils.isEmpty(name) ) { 

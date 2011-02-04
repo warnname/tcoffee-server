@@ -7,10 +7,10 @@
 
 <table class="c-home" >
 <tbody>
-#{list bundles, as:'bundle'} 
+#{list bundles } 
 <tr>
-	<td class="c-lbl" ><a href="@{Application.index()}">${bundle.title}</a></td>
-	<td class="c-val">${bundle.description}</td>
+	<td class="c-lbl" ><a href="${play.mvc.RouterFix.reverse('Application.index',['bundle':_.name])}">${_.title}</a></td>
+	<td class="c-val">${_.description}</td>
 	</tr>
 #{/list } 
 </tbody>
