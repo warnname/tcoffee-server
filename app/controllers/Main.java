@@ -65,28 +65,28 @@ public class Main extends CommonController {
 	 * Quick access link to PSI-coffee
 	 */
 	public static void psicoffee() { 
-		redirect("Application.main", "tcoffee", "psicoffee" );
+		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=psicoffee").toString() );
 	}
 	
 	/**
 	 * Quick link to R-coffee
 	 */
 	public static void rcoffee() { 
-		redirect("Application.main", "tcoffee", "rcoffee" );
+		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=rcoffee").toString() );
 	}
 	
 	/**
 	 * Quick link to M-coffee
 	 */
 	public static void mcoffee() { 
-		redirect("Application.main", "tcoffee", "mcoffee" );
+		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=mcoffee").toString() );
 	}
 	
 	/**
 	 * Quick link Expresso
 	 */
 	public static void expresso() { 
-		redirect("Application.main", "tcoffee", "expresso" );
+		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=expresso").toString() );
 	}
 	
 	/**
@@ -101,6 +101,7 @@ public class Main extends CommonController {
 			notFound();
 		}
 		
+		renderText(IO.readContentAsString(robots));
 	} 
 	
 
@@ -108,7 +109,7 @@ public class Main extends CommonController {
      * fake page used for tests purpose only   
      */
     public static void sandbox() {
-    	render();
+    	render("Main/_sandbox.html");
     }
     
     

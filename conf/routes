@@ -14,6 +14,7 @@ GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots
 GET 	/@list 					Main.list
+GET 	/@sandbox 				Main.sandbox
 
 # Downloadable data
 GET		/data/zip				Data.zip
@@ -47,7 +48,4 @@ GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
 GET		/apps/{bundle}/{<.+\.html>page}		Application.html
 GET		/apps/{bundle}/public/{<.+>path}	Application.servePublic
 
-#
-#GET		/{action}				Main.{action}
-#
 
