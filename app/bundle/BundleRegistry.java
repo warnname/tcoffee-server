@@ -298,11 +298,6 @@ public class BundleRegistry {
 			if( hotfiles.contains( file.getName() ) ) { 
 				hash = Utils.hash(hash, file.lastModified());
 				hash = Utils.hash(hash, file.length());
-				
-				// update the last modified time as well 
-				if( file.lastModified() > bundle.lastModified ) { 
-					bundle.lastModified = file.lastModified(); 
-				}
 			}
 		}
 

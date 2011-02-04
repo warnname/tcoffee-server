@@ -40,6 +40,7 @@ import exception.QuickException;
 @XStreamAlias("bundle")
 public class Bundle implements Serializable {
 
+	
 	/** declares the name of this bundle */
 	@XStreamAsAttribute
 	public String name;
@@ -76,13 +77,28 @@ public class Bundle implements Serializable {
 	@XStreamOmitField
 	public File conf;
 
+	public void setConf( File file ) { 
+		this.conf = file;
+		this.lastModified = Math.max(lastModified, file.lastModified());
+	}
+	
 	/** the 'bundle.env' (or 'bundle.environment') file */
 	@XStreamOmitField
 	public File envFile;
 
+	public void setEnvFile( File file ) { 
+		this.envFile = file;
+		this.lastModified = Math.max(lastModified, file.lastModified());
+	}
+	
 	/** the 'bundle.properties' file */
 	@XStreamOmitField
 	public File propFile;
+	
+	public void setPropFile( File file ) { 
+		this.propFile = file;
+		this.lastModified = Math.max(lastModified, file.lastModified());
+	}
 	
 	@XStreamOmitField
 	public Properties environment;
@@ -393,7 +409,8 @@ public class Bundle implements Serializable {
 	        	bundle.envFile  = env.getRealFile();
 	        	try {
 					bundle.environment = IO.readUtf8Properties( new FileInputStream(bundle.envFile));
-				} catch (IOException e) {
+				} 
+	        	catch (IOException e) {
 					Logger.warn("Unable to read bundle environment file: '%s'", bundle.envFile);
 				}
 	        }
