@@ -1,0 +1,25 @@
+#
+# CRG
+#
+%crg.application.mode=PROD
+%crg.application.log=INFO
+%crg.application.log.path=/log4j.crg
+%crg.application.auth=openid
+%crg.XForwardedSupport=192.168.101.80
+
+%crg.tserver.workspace.path=/data/tomcat/tcoffee/workspace
+%crg.tserver.bundles.path=/data/tomcat/tcoffee/bundles
+%crg.tserver.usage.file=/data/tomcat/tcoffee/logs/usage.log
+
+%crg.tserver.SGE_QUEUE=web
+%crg.tserver.BLASTMAT=/data/tomcat/tcoffee/matrix/aa
+%crg.tserver.PDB_DB=/data/tomcat/tcoffee/pdb/pdb
+%crg.tserver.PROTEIN_DB=/db/ncbi/nr/nr
+
+%crg.tserver.homepage.cache.duration=5min
+
+%crg.mail.smtp.host=smtp.gmail.com
+%crg.mail.smtp.user=tcoffee.msa
+%crg.mail.smtp.pass=t_coffee
+%crg.mail.smtp.channel=ssl
+%crg.tserver.webmasterEmail=tcoffee.msa@gmail.com

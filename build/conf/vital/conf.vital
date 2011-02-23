@@ -1,0 +1,19 @@
+#
+# VITAL-IT configuration
+#
+
+%vital.application.mode=PROD
+%vital.application.log=INFO
+%vital.application.log.path=/log4j.vital
+
+%vital.mail.smtp.host=localhost
+%vital.mail.smtp.user=tcoffee@vital-it.ch
+
+%vital.XForwardedSupport=10.0.30.38,10.0.16.3,130.223.128.13
+
+%vital.tserver.bundles.path=/var/lib/tcoffee/bundles
+%vital.tserver.workspace.path=/scratch/frt/tcoffee/Tmp/
+%vital.tserver.usage.file=/var/log/tcoffee/usage.log
+%vital.tserver.PDB_DB=/scratch/frt/blastnet/database/pdb
+%vital.tserver.PROTEIN_DB=/scratch/frt/blastnet/database/UniRef100
+%vital.tserver.webmasterEmail=tcoffee@vital-it.ch

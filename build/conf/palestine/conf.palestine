@@ -1,0 +1,14 @@
+#
+# PALESTINE 
+#
+
+%palestine.application.mode=PROD
+%palestine.tserver.bundles.path=/users/cn/ptommaso/workspace/bundles
+%palestine.tserver.workspace.path=/users/cn/ptommaso/workspace/data
+%palestine.tserver.SGE_QUEUE=ws_cn@palestine
+
+%palestine.mail.smtp.host=smtp.gmail.com
+%palestine.mail.smtp.user=tcoffee.msa
+%palestine.mail.smtp.pass=t_coffee
+%palestine.mail.smtp.channel=ssl
+%palestine.tserver.webmasterEmail=tcoffee.msa@gmail.com
