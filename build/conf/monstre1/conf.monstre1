@@ -1,0 +1,20 @@
+
+#
+# MONSTRE1 specific configuration  
+#
+%monstre1.application.mode=PROD
+%monstre1.application.log=INFO
+%monstre1.application.log.path=/log4j.monstre1
+
+%monstre1.deploy.conf.file=false
+%monstre1.deploy.props.file=false
+
+%monstre1.tserver.workspace.path=/users/rg/gmaster/tcoffee-data
+%monstre1.tserver.bundles.path=/users/cn/ptommaso/Public/tserver/bundles
+%monstre1.tserver.SGE_QUEUE=tcoffee_queue
+%monstre1.tserver.SGE_EXECD_PORT=6445
+%monstre1.tserver.SGE_QMASTER_PORT=6444
+%monstre1.tserver.SGE_CELL=default
+%monstre1.tserver.SGE_ROOT=/usr/local/Install/gridengine
+%monstre1.tserver.SGE_CLUSTER_NAME=rusc1
+
