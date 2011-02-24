@@ -30,28 +30,30 @@ $(document).bind('close.facebox', function(){
 
 <div id="dialog-content">
 
-<h2>Your job ticket is <b>${rid}</b> 
+<h2>Your request ID is <b>${rid}</b> 
 </h2>
 
 <p>
 <img src="@{'/public/images/ajax-loader.gif'}" width="28" height="28" />&nbsp;&nbsp;Wait please ...
 </p>
  
-
 <p>
-Do not reload this page. If you don't want wait just navigate away.    
+Do not reload this page. If you have provided your email you can close 
+it, you will be notified by e-mail when your job is completed.
 </p>
 
-<p>You will be notified by email on job completion if you entered your email address. Otherwise your can bookmark this page and back later to retrieve the alignment result. </p>
-
-<p>Moreover your requests history is kept in a cookie on your browser. You can access it at any moment using the <b>History</b> link on the main menu to check request status or retrieve a previous results.</p>
+<p>If you have not provided an e-mail, you can close this page and come back 
+later to check the completion of your job. Your server history is kept in a cookie on 
+your browser and you can access it at any moment using the History link on the main 
+menu to check request status or retrieve a previous results.
+</p>
 
 </div>
 </div>
 
 <div id="failure" style="display: none" >
 <h1>Oops .. <small><span>something went wrong ..</span></small></h1>
-<h2>Your job ticket ${rid} </h2>
+<h2>Your request ID is ${rid} </h2>
 <div id="message"></div>
 </div> 
 

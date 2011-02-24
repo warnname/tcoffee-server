@@ -165,7 +165,7 @@ function make_distribution()
 	# Copy 'log4j.properties' file is exists
 	#
 	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID ]; then 
-	cat $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID > $SERVER_DIR/tserver/conf/log4j.properties
+	cp $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID $SERVER_DIR/tserver/conf/
 	fi
 	
 } 
@@ -220,9 +220,9 @@ function make_war()
 #
 # Depends on: pack_server
 #  
-function test_server() 
+function test_server_local() 
 {
-	echo "[ test_server ]"
+	echo "[ test_server_local ]"
 
  	# clean required directories
 	rm -rf $SANDBOX/web
@@ -233,31 +233,16 @@ function test_server()
 	unzip $DIST_DIR/$SERVER_NAME.zip -d $SANDBOX > /dev/null
 	mv $SANDBOX/$SERVER_NAME $SANDBOX/web
 
-	# kill tcoffee test server instance if ANY
-	kill -9 `ps -ef  | grep 'play test' | grep -v grep | awk '{ print $2 }'` || true
-	kill -9 `ps -ef  | grep 'play.jar' | grep -v grep | awk '{ print $2 }'` || true
-
 	# start a play instance and invoke tests
 	cd $SANDBOX/web
-	echo "Starting play tests .. "
-	./$PLAY_VER/play test tserver &
- 	echo "Waiting play starts .. " `date` 
-	sleep 10
-	echo "Running tests .. " `date`
-	wget http://localhost:9000/@tests/all -O index.html -t 6
-	echo ""
-	mv index.html $SANDBOX/web/tserver/test-result/index.html
-
-	# kill tcoffee test server instance 
-	kill -9 `ps -ef  | grep 'play test' | grep -v grep | awk '{ print $2 }'`
-	kill -9 `ps -ef  | grep 'play.jar' | grep -v grep | awk '{ print $2 }'`
+	./$PLAY_VER/play auto-test tserver 
 
 	# publish the tests
 	rm -rf $WORKSPACE/test-result
 	cp -r $SANDBOX/web/tserver/test-result $WORKSPACE/test-result
 
 	# check if the failure file exists
-	#if [ -e $WORKSPACE/test-result/result.failed ]; then exit 1; fi 
+	if [ -e $WORKSPACE/test-result/result.failed ]; then exit 1; fi 
 }
 
 
@@ -380,15 +365,14 @@ function all() {
 	env
 	clean
 	get_play
+	
 	pack_server_local
+	test_server_local 
+
 	pack_server_vital
 	pack_server_palestine
 	pack_server_crg
 	pack_bundles
-
-	if [ $DO_TEST == 1 ]; then
-	test_server_local 
-	fi
 
 }
 

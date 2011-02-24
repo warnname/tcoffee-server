@@ -1,2 +1,3 @@
-0:plugins.AutoBeanPlugin
-1:plugins.HomeCachePlugin
+10:plugins.AutoBeanPlugin
+20:plugins.HomeCachePlugin
+30:plugins.TracePlugin

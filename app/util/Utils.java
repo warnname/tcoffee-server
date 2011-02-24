@@ -139,12 +139,14 @@ public class Utils {
 		value.setTime(date);
 		
 		DateFormat fmt; 
-		if( value.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) ) {
-			// in the same day use just the hours 
-			fmt = new SimpleDateFormat("HH:mm");
-		} 
-		else if( value.get(Calendar.YEAR) == now.get(Calendar.YEAR) ) {
-			fmt = new SimpleDateFormat("dd MMM");
+		if( value.get(Calendar.YEAR) == now.get(Calendar.YEAR) ) {
+			if( value.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) ) {
+				// in the same day use just the hours 
+				fmt = new SimpleDateFormat("HH:mm");
+			} 
+			else  {
+				fmt = new SimpleDateFormat("dd MMM");
+			}
 		}
 		else {
 			fmt = new SimpleDateFormat("dd/MM/yyyy");

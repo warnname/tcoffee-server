@@ -83,6 +83,7 @@ $(document).ready(function() {
 
 #{if _bundle && _bundle.javascriptPath }
 <script type="text/javascript" charset="utf-8"><!--
+var Play = { "id": "${play.Play.id}", "isDev": ${play.Play.mode.isDev()}, "isProd": ${play.Play.mode.isProd()} };
 #{includefile _bundle.javascriptPath /}
 //--></script> 
 #{/if}

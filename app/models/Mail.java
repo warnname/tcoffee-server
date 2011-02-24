@@ -14,6 +14,7 @@ import org.apache.commons.mail.SimpleEmail;
 
 import play.Logger;
 import play.data.validation.EmailCheck;
+import plugins.AutoBean;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -22,12 +23,18 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import exception.CommandException;
 
 
+@AutoBean
 @XStreamAlias("mail")
 public class Mail extends AbstractCommand {
 
 	@XStreamOmitField
-	private EmailCheck check = new EmailCheck();
+	EmailCheck check = new EmailCheck();
 
+	@XStreamOmitField
+	transient Email fEmail;
+	
+	@XStreamOmitField
+	transient boolean fSent;
 	
 	public Eval subject;
 	
@@ -42,6 +49,9 @@ public class Mail extends AbstractCommand {
 	
 	/** Addresses on carbon copy */
 	public Eval cc;
+
+	/** Addresses on blind carbon copy */
+	public Eval bcc;
 	
 	/** The message content */
 	public Eval body;
@@ -50,16 +60,7 @@ public class Mail extends AbstractCommand {
 	public Mail() {}
 	
 	/** The copy constructor */
-	public Mail(Mail that) {
-		super(that);
-		this.subject = Utils.copy(that.subject);
-		this.from = Utils.copy(that.from);
-		this.reply = Utils.copy(that.reply);
-		this.to = Utils.copy(that.to);
-		this.cc = Utils.copy(that.cc);
-		this.body = Utils.copy(that.body);
-	}
-	
+
 	@Override
 	public boolean run() throws CommandException {
 		
@@ -67,17 +68,19 @@ public class Mail extends AbstractCommand {
 		String _reply = reply != null ? reply.eval() : Service.current().bundle.email;
 		String _to = to != null ? to.eval() : null;
 		String _cc = cc != null ? cc.eval() : null;
+		String _bcc = bcc != null ? bcc.eval() : null;
 		String _subject = subject != null ? subject.eval() : null;
 		String _body = body != null ? body.eval() : null;
 		
 		try {
     		
+			/* if 'reply-to' is still empty just use the 'from' field */
     		if( Utils.isEmpty(_reply)) _reply = _from;
     		
         	/*
-        	 * create teh email object
+        	 * create the email object
         	 */
-        	Email email = new SimpleEmail();
+        	fEmail = new SimpleEmail();
         	
         	
     		/* 
@@ -87,45 +90,50 @@ public class Mail extends AbstractCommand {
     			Logger.error("Cannot send mail with missing sender");
     			return false;
     		}	
-    		if( invalid(_from) ) {
-    			Logger.error("Cannot send mail with invalid FROM address: '%s'", _from);
-    			return false;
+    		
+        	fEmail.setFrom(_from);
+
+    		/*
+    		 * reply-to 
+    		 */
+    		List<InternetAddress> listReply;
+    		if( Utils.isNotEmpty(_reply) && (listReply = asList(_reply))!=null) {
+				fEmail.setReplyTo(listReply);
     		}
     		
-        	email.setFrom(_from);
-
         	
+    		List<InternetAddress> listTo = asList(_to);
+    		List<InternetAddress> listCc = asList(_cc);
+    		List<InternetAddress> listBcc= asList(_bcc);
+
     		/* 
-    		 * check TO address 
+    		 * check if at least one target recipient exists, otherwise just skip the email submit returning TRUE
     		 */
-    		if( Utils.isEmpty(_to) ) {
-    			/* just skip the mail send and return TRUE */
+    		if( listTo == null && listCc == null && listBcc == null  ) {
     			return true;
     		}
     		
-    		List<InternetAddress> listTo = asList(_to);
-    		if( listTo == null ) {
-    			Logger.error("Cannot send mail with invalid TO address: '%s'", _to);
-    			return false;
+    		/* 
+    		 * set TO address 
+    		 */
+    		if( listTo != null ) {
+        		fEmail.setTo(listTo);
     		}
 
-    		email.setTo(listTo);
 
     		/* 
     		 * check CC addresses 
     		 */
-    		List<InternetAddress> listCc;
-    		if( Utils.isNotEmpty(_cc) && (listCc=asList(_cc)) != null ) {
-    			email.setCc(listCc);
+    		if( listCc != null ) {
+    			fEmail.setCc(listCc);
     		}
-    		
-    		/*
-    		 * reply 
+
+    		/* 
+    		 * check BCC addresses 
     		 */
-    		List<InternetAddress> listReply;
-    		if( Utils.isNotEmpty(_reply) && (listReply = asList(_reply))!=null) {
-				email.setReplyTo(listReply);
-    		}
+    		if( listBcc != null ) {
+    			fEmail.setBcc(listBcc);
+    		}  		
     		
     		
     		/*
@@ -135,18 +143,20 @@ public class Mail extends AbstractCommand {
     			return true;
     		}
     	
-        	email.setSubject(_subject);
-        	email.setMsg(_body);
+        	fEmail.setSubject(_subject);
+        	fEmail.setMsg(_body);
 
-    		Logger.debug("Sending e-mail From: '%s', Reply: '%s', To: '%s', Cc: '%s'",
+    		Logger.debug("Sending e-mail From: '%s', Reply: '%s', To: '%s', Cc: '%s', Bcc: '%s', Subject: %s",
 					_from,
 					_reply,
 					_to,
-					_cc );
+					_cc, 
+					_bcc,
+					_subject);
 	
         	
-        	Future<Boolean> result = play.libs.Mail.send(email);
-            return result.get();
+        	Future<Boolean> result = play.libs.Mail.send(fEmail);
+            return fSent=result.get();
         } 
         catch (InterruptedException e) {
             Logger.error(e, "Error while waiting Mail.send result");
@@ -163,11 +173,17 @@ public class Mail extends AbstractCommand {
 	}
 
 	
-	private boolean invalid(String address) {
-		return !check.isSatisfied(null,address, null, null);
-	}  
-	
-	List<InternetAddress> asList( String recipients ) { 
+	/**
+	 * Convert a comma separated string of email address and converts to a list of {@link InternetAddress} instances 
+	 * 
+	 * @param recipients multiple email addresses separated bu a comma ',' or a semicolon ';' char
+	 * @return a list containing at least one {@link InternetAddress} or null otherwise (if empty)
+	 */
+	List<InternetAddress> asList( String recipients ) 
+	{ 
+		if( recipients == null ) { return null; }
+		
+		
 		recipients = recipients.replace(",", ";"); // <-- normalize to semicolon separetor
 		String[] items = recipients.split(";");
 		

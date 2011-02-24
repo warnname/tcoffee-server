@@ -19,7 +19,7 @@ GET 	/@sandbox 				Main.sandbox
 # Downloadable data
 GET		/data/zip				Data.zip
 *		/data/upload			Data.upload
-GET		/data/{rid}/@get		Data.zipDataFolder
+GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource
 
 # Authentication
