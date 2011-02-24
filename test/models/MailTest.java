@@ -82,7 +82,7 @@ public class MailTest extends UnitTest {
 		mail.from = new Eval("paolo.ditommaso@gmail.com");
 
 		assertTrue(mail.execute());
-		assertFalse(!mail.fSent);
+		assertFalse(mail.fSent);
 	}
 	
 
