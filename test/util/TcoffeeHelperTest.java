@@ -23,4 +23,10 @@ public class TcoffeeHelperTest extends UnitTest {
 		assertEquals( TEST_BODY, result.body.trim() .substring(0,TEST_BODY.length()) );
 	}
 	
+	@Test
+	public void parseConsensus() { 
+		
+		TcoffeeHelper.parseConsensus(TestHelper.file("/sample-alignment.html"));
+	}
+	
 }

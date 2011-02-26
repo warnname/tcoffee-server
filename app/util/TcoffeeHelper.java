@@ -1,6 +1,8 @@
 package util;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +34,7 @@ public class TcoffeeHelper {
 		Matcher match = RE_TCOFFEE_HTML.matcher(html);
 		if(match.matches()) {
 			String style = match.group(1);
-			String body = match.group(2);;
+			String body = match.group(2);
 
 			/* remove the cpu time */
 			body = body.replaceFirst("<span[^>]*>CPU&nbsp;TIME:[^<]*</span><br>","");
@@ -47,6 +49,24 @@ public class TcoffeeHelper {
 		return result;
 	}
 
-
+	public static List<Integer> parseConsensus( File html ) { 
+		return parseConsensus(IO.readContentAsString(html));
+	}
+	
+	public static List<Integer> parseConsensus( String html ) { 
+		List<Integer> result = new ArrayList<Integer>(10);
+		
+		Pattern REGION = Pattern.compile("[\\s\\S]*<span class=valuedefault>cons&nbsp;&nbsp;&nbsp;&nbsp;</span>(.+class=value\\d.+)+.+<br><br><br>");
+		Matcher matcher = REGION.matcher(html);
+		while( matcher.matches() ) { 
+			System.out.println(matcher.group(1));
+			System.out.println("end: " + matcher.regionEnd());
+			html = html .substring(matcher.regionEnd());
+			matcher = REGION.matcher(html);
+		}
+		
+		
+		return result;
+	}
 	
 }
