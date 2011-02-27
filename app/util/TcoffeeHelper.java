@@ -2,10 +2,13 @@ package util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import play.Logger;
 import play.libs.IO;
 
 /**
@@ -54,15 +57,45 @@ public class TcoffeeHelper {
 	}
 	
 	public static List<Integer> parseConsensus( String html ) { 
+		
+		Map<String,Integer> convert = new HashMap<String,Integer>();
+		convert.put("0", 0);
+		convert.put("1", 1);
+		convert.put("2", 2);
+		convert.put("3", 3);
+		convert.put("4", 4);
+		convert.put("5", 5);
+		convert.put("6", 6);
+		convert.put("7", 7);
+		convert.put("8", 8);
+		convert.put("9", 9);
+		convert.put("default", -1);
+		convert.put("gap", -2);
+		convert.put("ink", -3);
+		
 		List<Integer> result = new ArrayList<Integer>(10);
 		
-		Pattern REGION = Pattern.compile("[\\s\\S]*<span class=valuedefault>cons&nbsp;&nbsp;&nbsp;&nbsp;</span>(.+class=value\\d.+)+.+<br><br><br>");
-		Matcher matcher = REGION.matcher(html);
-		while( matcher.matches() ) { 
-			System.out.println(matcher.group(1));
-			System.out.println("end: " + matcher.regionEnd());
-			html = html .substring(matcher.regionEnd());
-			matcher = REGION.matcher(html);
+		Pattern patternRow = Pattern.compile("<span class=valuedefault>cons&nbsp;&nbsp;&nbsp;&nbsp;</span>(<span class=[^<>]+>[^<>]+</span>)+<br><br><br>");
+		Pattern patternValue = Pattern.compile("<span class=value(\\d|default|gap|ink)>((?:&nbsp;|\\.|\\:|\\*)+)</span>");
+		Matcher matcherRow = patternRow.matcher(html);
+
+		while( matcherRow.find() ) { 
+			String row = matcherRow.group(0);
+			
+			Matcher matcherValue = patternValue.matcher(row);
+			while( matcherValue.find() ) { 
+				String sVal = matcherValue.group(1);
+				Integer val = convert.get(sVal);
+				if( val == null ) { 
+					Logger.warn("Unknow consensus class value: \"%s\"", sVal);
+					continue;
+				}
+				
+				String sItems = matcherValue.group(2).replace("&nbsp;","_"); 
+				for( int i=0, c=sItems.length(); i<c; i++ ) { 
+					result.add(val);
+				}
+			}
 		}
 		
 		
