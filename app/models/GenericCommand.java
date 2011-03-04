@@ -3,24 +3,43 @@ package models;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("exec")
 public class GenericCommand extends AbstractShellCommand {
 
+	/** the application binary to be executed */
+	@XStreamAsAttribute
+	public Eval program;
+
+	/** the command line argument to be used to execute the program */
+	public CmdArgs args;
+
 	/** The command line to be executed */
+	@Deprecated
 	public Eval cmd;
 	
 	/** The default constructor */
 	public GenericCommand() {}
 	
-	public GenericCommand(String cmd) {
-		this.cmd = new Eval(cmd);
+	public GenericCommand(String programWithArguments ) { 
+		String val = programWithArguments.trim();
+		int i = val.indexOf(' ');
+		if( i == -1 ) { 
+			this.program = new Eval(val);
+		}
+		else { 
+			this.program = new Eval(val.substring(0,i));
+			this.args = new CmdArgs( val.substring(i+1) );
+		}
 	}
 	
 	/** The copy constructor */
-	public GenericCommand( GenericCommand obj ) {
-		super(obj);
-		this.cmd = Utils.copy(obj.cmd);
+	public GenericCommand( GenericCommand that ) {
+		super(that);
+		this.cmd = Utils.copy(that.cmd);
+		this.program = Utils.copy(that.program);
+		this.args = Utils.copy(that.args);
 	}
 	
 	@Override
@@ -31,7 +50,28 @@ public class GenericCommand extends AbstractShellCommand {
 	
 	@Override
 	protected String onInitCommandLine(String cmdLine) {
-		return cmd != null ? cmd.eval() : "";
+		StringBuilder result = new StringBuilder();
+		
+		if( program != null ) { 
+			// append the program to be executed 
+			result.append(program.eval());
+			
+			// apped the program arguments 
+			if( args != null ) { 
+				result.append(" ") .append( args.toCmdLine() );
+			}
+			
+		}
+		else if( cmd != null ) { 
+			// fallback to be previous command specification
+			result.append(cmd.eval());
+		}
+		else { 
+			// otheriwse just an empty string 
+			result.append("");
+		}
+		
+		return result.toString();
 	}
 	
 	

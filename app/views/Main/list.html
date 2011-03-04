@@ -9,7 +9,7 @@
 <tbody>
 #{list bundles } 
 <tr>
-	<td class="c-lbl" ><a href="${play.mvc.RouterFix.reverse('Application.index',['bundle':_.name])}">${_.title}</a></td>
+	<td class="c-lbl" ><a href="${Utils.reverse('Application.index',['bundle':_.name])}">${_.title}</a></td>
 	<td class="c-val">${_.description}</td>
 	</tr>
 #{/list } 

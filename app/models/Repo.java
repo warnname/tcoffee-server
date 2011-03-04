@@ -377,7 +377,7 @@ public class Repo implements Serializable {
 	}
 	
 	public String getLastAccessTimeFmt() {
-		return Utils.asString( new Date(getLastAccessedTime()) );
+		return Utils.asSmartString( new Date(getLastAccessedTime()) );
 	}
 	
 	/**
@@ -396,7 +396,7 @@ public class Repo implements Serializable {
 	}
 	
 	public String getExpirationTimeFmt() {
-		return Utils.asString( new Date(getExpirationTime()) );
+		return Utils.asSmartString( new Date(getExpirationTime()) );
 	}
 	
 	/**

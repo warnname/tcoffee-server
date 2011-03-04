@@ -5,38 +5,11 @@
 .preview { width: 90%; overflow-x: scroll; display: none; margin-top: 2em } 
 </style>
 
-<h1>Log files
+<h1>Log file
 <small>
-Download the server log files
+Download the server log file
 </small>
 </h1>
-
-
-*{ 
- USAGE FILE BOX 
- }*
-
-#{if usageLogFile }
-<div class="box">
-<h2>
-<span>Usage log file</span>
-<small><span>The file of request submitted by the users</span></small>
-</h2>
- 	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
- 	<span style="position:relative; left:1em; ">
- 	${usageLogFile} <br/> 
- 	<a target="_blank" href="@{Admin.downloadUsageLog}" >Click to donwload</a> - 
- 	<a id="usagePreviewLink" href="javascript:void(0)" >Preview</a>
- 	</span> 
- 	<div style="clear:both; " ></div>
- 	
-	<div id="usagePreview" class="preview" >
-	<img src="@{'/public/images/ajax-grey.gif'}" width="16" height="16" />
-	<pre>
-	</pre>
-	</div>
-</div>
-#{/if}
 
 
 *{ 
@@ -126,28 +99,6 @@ $(document).ready(function(){
 		error_sink: notifyError
 	})
 } );
-
-/*
- * Usage Preview Function 
- */
-
-var usagePreviewInterval=null;
-
-$('#usagePreviewLink').click(function(){ $('#usagePreview').toggle(200, function() {
-
-	var link=$('#usagePreviewLink');
-	var load = function() { $.get('@{Admin.previewUsageLog()}', function(data) { $('#usagePreview pre').text(data); }); } 
-	var isVisible = $(this).is(':visible'); 
-	if(isVisible) { 
-		load();
-		usagePreviewInterval = setInterval( load, 5000 );  
-		link.text("Hide")
-	}
-	else {
-		link.text("Preview")
-		clearInterval(usagePreviewInterval)
-	}
-} ) });   
 
 /*
  * Application log preview 

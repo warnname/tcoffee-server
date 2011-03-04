@@ -22,7 +22,7 @@ public class TcoffeeHelper {
 	public static class ResultHtml {
 		public String style;
 		public String body;
-	}
+	} 
 	
 
 	public static ResultHtml parseHtml( File file )  
@@ -101,5 +101,30 @@ public class TcoffeeHelper {
 		
 		return result;
 	}
+	
+	public static String jsonConsensus( File file ) { 
+		List<Integer> list = parseConsensus(IO.readContentAsString(file));
+		
+		boolean appendComma=false;
+		StringBuilder result = new StringBuilder();
+		result.append("[");
+		for( int i=0; i<list.size(); i++ ) { 
+			int value = list.get(i);
+			if( value>=0 ) { 
+				if( appendComma ) { result.append(","); }
+				
+ 				result
+ 				.append("[") 
+				.append(i+1) .append(",") 
+				.append(value)
+				.append("]");
+ 				
+ 				appendComma = true; // <-- append a comma on next iteration
+			}
+		}
+		result.append("]");
+		
+		return result.toString();
+	} 
 	
 }

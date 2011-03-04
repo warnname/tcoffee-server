@@ -35,6 +35,7 @@ import models.PageContent;
 import models.Repo;
 import models.Service;
 import models.TCoffeeCommand;
+import models.UsageLog;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
@@ -52,7 +53,13 @@ import play.mvc.With;
 import play.mvc.results.Result;
 import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
+import query.AggregationMap;
+import query.UsageFilter;
+import query.GridResult;
+import query.QueryHelper;
+import query.TimeSeries;
 import util.Check;
+import util.CookieHelper;
 import util.FileIterator;
 import util.ReloadableSingletonFile;
 import util.Utils;
@@ -286,7 +293,7 @@ public class Admin extends CommonController {
 		Long lStartTime = (Long) Cache.get("server-start-time");
 		if( lStartTime != null ) { 
 			Date dStartTime = new Date(lStartTime);
-			sStartTime = Utils.asString(dStartTime);
+			sStartTime = Utils.asSmartString(dStartTime);
 			
 			long delta = System.currentTimeMillis() - lStartTime;
 			sStartTime += " (" + Utils.asDuration(delta) + " ago)"; 
@@ -968,10 +975,6 @@ public class Admin extends CommonController {
 
 		renderArgs.put("loggers", loggers);
 		
-		/* the usage file */
-		
-		renderArgs.put("usageLogFile", AppProps.SERVER_USAGE_FILE.exists() ? AppProps.SERVER_USAGE_FILE.getAbsoluteFile() : null );
-		
 		/* the application log file */
 		renderArgs.put("appLogFile", AppProps.SERVER_APPLOG_FILE != null && AppProps.SERVER_APPLOG_FILE.exists() ? AppProps.SERVER_APPLOG_FILE.getAbsolutePath() : null);
 		
@@ -1029,15 +1032,6 @@ public class Admin extends CommonController {
     	
     }
 	
-	/**
-	 * Invoke to download the usage log file
-	 */
-	public static void downloadUsageLog() { 
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-		String filename = "tserver-usage-"+fmt.format(new Date())+".log";
-		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
-		renderBinary( AppProps.SERVER_USAGE_FILE );
-	}
 
 	public static void downloadApplicationLog() { 
 
@@ -1051,13 +1045,6 @@ public class Admin extends CommonController {
 		renderBinary( AppProps.SERVER_APPLOG_FILE );
 		
 	}
-	
-	public static void previewUsageLog() throws IOException 
-	{
-		String sMax = Play.configuration.getProperty("preview.max.bytes", "3072");
-		Long lMax = Utils.parseLong(sMax, 3072L);
-		renderText( tail( AppProps.SERVER_USAGE_FILE, lMax ) );
-	} 
 	
 	public static void previewApplicationLog() throws IOException 
 	{
@@ -1209,6 +1196,247 @@ public class Admin extends CommonController {
 		
 	}
 
+	/**
+	 * Statistic management 
+	 */
+	
+	public static void stats() { 
+
+		/* 
+		 * some cookies 
+		 */
+		String sChoice = CookieHelper.get("stats_choice", "tcoffee");
+		String sSinceDate = CookieHelper.get("stats_since");
+		String sUntilDate = CookieHelper.get("stats_until");
+		
+		/*
+		 * Populate the 'select' map with the list of all avalable bundle-service pairs. 
+		 * the select control will contain an entry for the bundle and - if more than one service 
+		 * is available - and entry for each bundle-service pair 
+		 * 
+		 */
+		Map<String,String> select = new TreeMap<String, String>();
+
+		BundleRegistry reg = BundleRegistry.instance();
+		Map<String, List<String>> aggregation = QueryHelper.findUsageServiceMap();
+		
+		for( Map.Entry<String, List<String>> entry : aggregation.entrySet() ) { 
+			String bundle = entry.getKey();
+			String bundleTitle = reg.getBundleTitle(bundle);
+			if( Utils.isEmpty(bundleTitle) ) { 
+				bundleTitle = bundle; // fallback on the bundle name if is missing 
+			}
+
+			List<String> services = entry.getValue();
+			if( services.size() > 1 ) { 
+				select.put( bundleTitle + " (all)" , bundle );
+				
+				for( String service: services ) { 
+					String serviceTitle = reg.getServiceTitle(bundle, service);
+					if( Utils.isEmpty(serviceTitle) ) { serviceTitle=service; }
+					select.put( bundleTitle+" ~ "+serviceTitle, bundle+":"+service);
+				}
+			}
+			else { 
+				select.put( bundleTitle, bundle );
+			}
+		}
+		
+		/* 
+		 * some dates 
+		 */
+		Date now = new Date();
+		Date minDate = QueryHelper.findUsageMinDate();
+		Date untilDate = Utils.parseDate( sUntilDate, now );
+		Date defaultSinceDate = new Date( untilDate.getTime() - 30 * 24 * 60 * 60 * 1000L ); // <-- 1 month before today
+		Date sinceDate = Utils.parseDate(sSinceDate, defaultSinceDate);
+
+		if( minDate == null ) { 
+			minDate = sinceDate;
+		}
+		else if( sinceDate.getTime() < minDate.getTime() ) { 
+			sinceDate = minDate;
+		}
+		
+		renderArgs.put("choices", select);
+		renderArgs.put("defChoice", sChoice);
+		renderArgs.put("minDate", Utils.asString(minDate) );
+		renderArgs.put("sinceDate", Utils.asString(sinceDate) );
+		renderArgs.put("untilDate", Utils.asString(untilDate) );
+		render();
+	}
+	
+
+	
+
+	static void writeTimeSerie( StringBuilder result, TimeSeries serie, String name, String label ) { 
+
+		result.append("{");
+		result.append("\"label\": \"") .append(label) .append("\", " );
+		result.append("\"_name\": \"") .append(name) .append("\", ");
+		
+		result.append("\"data\": [");
+		Integer i=0;
+		for( Map.Entry<Date, Integer> entry : serie.entrySet() ) { 
+			
+			if( i++ > 0 ) { result.append(", "); }
+			
+			result
+				.append("[") 
+				.append( entry.getKey().getTime() ) .append(", ")
+				.append( entry.getValue() ) 
+				.append("]");
+		}
+		
+		result.append("]");
+		result.append("}");
+		
+	}
+
+
+ 	
+	/**
+	 * Render the JSON dataset for the usage chart graph
+	 * 
+	 * @param bundle the bundle name 
+	 * @param since the starting period or null if no beginning restriction is provided 
+	 * @param until the ending period or null if no end restriction is provided 
+	 */
+	public static void statsChartData( UsageFilter filter ) { 
+		
+		String fBundle = filter!=null ? filter.bundle : null;
+		String fService = filter!=null ? filter.service : null;
+
+		Boolean allBundles = Utils.isEmpty(fBundle);
+		String aggregationKey = Utils.isEmpty(fService) ? fBundle : fBundle+ ":" +fService;
+		
+
+		/* it returns an list of array, each arrays is composed with the following format: 
+		 *  [ count, bundle, service, status, date ]
+		 */
+		List<Object[]> data = QueryHelper.findUsageAggregation(filter);
+		
+		/* 
+		 * initialize the aggregation map 
+		 */
+		AggregationMap totals = new AggregationMap ();
+		
+		for( Object[] item : data  ) { 
+
+			Integer count = Integer.parseInt(item[0].toString());
+			String bundle = (String) item[1];
+			String service = (String) item[2];
+			String status = (String) item[3];
+			Date date = (Date) item[4];
+
+			if( allBundles ) { 
+				totals.put(bundle, date, count);		
+			}
+			else if( fBundle.equals(bundle) && (fService==null || fService.equals(service)) )  {
+				totals.put(aggregationKey, date, count);	  // group by service name 
+				if( "FAILED".equals(status)) { 				  // group failed jobs
+					totals.put(aggregationKey+"$FAILED", date, count);
+				}
+			}
+
+		}
+
+		
+		/*
+		 * now produce the json dataset 
+		 */
+		
+		StringBuilder result = new StringBuilder();
+		result.append("{ ");
+		result.append("\"series\": [");
+		
+		/* 
+		 * write the bundle serie 
+		 */ 
+		String[] series;
+		
+		/* 
+		 * detected with series to return
+		 */
+		if( allBundles ) {
+			series = totals.getIndexArray();
+		} 
+		else { 
+			series = new String[] { aggregationKey, aggregationKey+"$FAILED" };
+		}
+		
+		
+		/* 
+		 * now render the json dataset
+		 */
+		BundleRegistry reg = BundleRegistry.instance();
+		Integer i=0;
+		for( String key : series ) { 
+			TimeSeries serie = totals.get(key);
+			if( serie == null ) { 
+				serie = new TimeSeries();
+			}
+			if( i++ > 0 ) { result.append(", ");  }
+
+			writeTimeSerie(result, serie, key, reg.getTitle(key));
+			
+		}
+
+		result.append("]}");
+		
+		renderJSON(result.toString());
+	}
+	
+	/**
+	 * Render the JSON dataset used by the grid widget 
+	 * 
+	 * @param page the requested page to show
+	 * @param rp the result page size i.e. number of returned rows 
+	 * @param sortname (not used)
+	 * @param sortorder (not used)
+	 * @param query (the restriction query)
+	 * @param qtype (the restriction field)
+	 * 
+	 * @throws IOException
+	 */
+	public static void statsGridData( UsageFilter filter, Integer page, Integer rp, String sortname, String sortorder, String query, String qtype ) throws IOException { 
+
+		GridResult data = QueryHelper.findUsageGridData(filter, page, rp, sortname, sortorder, query, qtype);
+
+		/* 
+		 * {"page":"1", "total":1, "rows":[{"id":"VN","cell":["VN","Viet Nam","Viet Nam","VNM","704"]}] }
+		 */
+		
+		StringBuilder result = new StringBuilder();
+		result.append("{");
+		result.append("\"page\": " ) .append(page) .append(", ");
+		result.append("\"total\": ") .append(data.total) .append(", ");
+		result.append("\"rows\": [" );
+
+		Boolean firstRow = true;
+		for( UsageLog row : data.rows )  { 
+
+			if( firstRow ) { firstRow=false; } 
+			else { result.append(", "); } // <-- add a comma as row separator after the first row 
+			result.append("{");
+			result.append("\"id\": \"") .append(row.requestId) .append("\", ");
+			result.append("\"cell\": [") 
+				.append("\"") .append( row.requestId ) .append("\", ")
+				.append("\"") .append( row.bundle ) .append("\", ")
+				.append("\"") .append( row.service ) .append("\", ")
+				.append("\"") .append( row.status ) .append("\", ")
+				.append("\"") .append( row.duration ) .append("\", ")
+				.append("\"") .append( row.getCreationFmt() ) .append("\", ")
+				.append("\"") .append( row.ip ) .append("\" ")
+				.append("]");
+			result.append("}");
+		}
+		
+		result.append("] ");
+		result.append("}");
+		
+		renderJSON(result.toString());
+	}
 	
  }
 

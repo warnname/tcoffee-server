@@ -1,15 +1,19 @@
 package controllers;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import models.Bundle;
+import models.OutResult;
+import models.Repo;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
 import play.libs.IO;
 import play.mvc.Before;
-import play.mvc.RouterFix;
+import util.RouterFix;
 import bundle.BundleRegistry;
 
 /**
@@ -58,6 +62,17 @@ public class Main extends CommonController {
 	public static void list() { 
 		List<Bundle> bundles = BundleRegistry.instance().getBundles();
 		render(bundles);
+	}
+	
+	public static void result(String rid) { 
+    	final Repo repo = new Repo(rid,false);
+		final OutResult result = repo.hasResult() ? repo.getResult() : null; 
+
+    	Map<String,Object> args = new HashMap<String, Object>(2);
+    	args.put("bundle", result != null ? result.bundle : "tcoffee" );
+    	args.put("rid", rid);
+    	redirect( RouterFix.reverse("Application.result", args).toString() );
+    	
 	}
 	
 	

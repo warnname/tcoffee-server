@@ -1,0 +1,377 @@
+#{extends 'layout.html' /}
+#{set title:'Usage Stats' /}
+
+#{set 'moreStyles' }
+  <link rel="stylesheet" type="text/css" href="@{'/public/jquery-ui-1.8.7.custom.css'}">
+  <link rel="stylesheet" type="text/css" href="@{'/public/flexigrid/css/flexigrid/flexigrid.css'}">
+#{/set}
+
+#{set 'moreScripts' }
+ <script language="javascript" type="text/javascript" src="@{'/public/javascripts/jquery-ui-1.8.7.custom.min.js'}"></script>
+ <!--[if IE]>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/excanvas.min.js'}"></script>
+ <![endif]-->
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}"></script>
+ <script language="javascript" type="text/javascript" src="@{'/public/flexigrid/flexigrid.pack.js'}"></script>
+#{/set}
+
+<h1>Usage statistics 
+<small>Analyze submitted requests from users</small>
+</h1>
+
+<style type="text/css">
+#form { padding-bottom: 2em; }
+#form select { width: 22em; position: relative; top: 0px; font-size: .9em } 
+#form input[type='text'] { width: 7em; position: relative; top: 0px; font-size: .9em  }
+#form button { position: relative; top: 0px; font-size: .9em; margin-left: 8px;  }  
+#form a { font-size: .8em  } 
+#addSection { padding-top: .8em; height: 2em; }  
+</style>
+
+<!--  for to select restriction data -->
+<div id="form" class="box">
+<h2>
+<span>Data filter</span>
+<small><span>Refine the dataset selecting service and time period in which you are interested</span></small></h2>
+
+	<div>
+	Service:&nbsp; 
+	<select id="choice" name="choice" class="query">
+	<option value="$all" >(all)</option>
+	#{each choices }
+	<option value="${_value}" #{if _value==defChoice }selected #{/if} >${_key}</option>
+	#{/each}
+	</select>
+	
+	&nbsp;&nbsp;Starting from: <input id="since" name="since" type="text" value="${sinceDate}" >
+	&nbsp;&nbsp;to: <input type="text" id="until" name="until" value="${untilDate}" >
+	
+	<button class="button" id="apply" >Apply</button>
+</div>
+
+<select id="hiddenChoice" class="query" style="display: none">
+<option value="0"  ><span style="color: #999">(choose one)</span></option>
+#{each choices }
+<option value="${_value}"  >${_key}</option>
+#{/each}
+</select>
+
+<div id="addSection"> 
+	<a href="javascript:void(0)" id="add" >Compare with another service</a>
+	<span id="addSeries" style="display: none" >
+	Service:&nbsp; 
+	<span id="addPlace"></span>
+	<a href="javascript:void(0)" id="clear">clear</a>
+	</span>
+</div>
+</div>
+
+<div id="chart" style="width:920px; height:400px;"></div>
+<div style="padding-top: 1em; ">
+<small >
+The chart display the number of submitted requests for each day in the specified period. 
+Click on the chart hotspots to view the request details on the selected date in the grid below. 
+</small>
+</div>
+
+<div style="padding-top: 2em; padding-left: 1.5em">
+<table id="grid" style="display:none"></table>
+</div>
+
+<div style="padding-top: 1.5em" >
+<small>The above grid display the details for requests submitted in the selected time period. 
+You can navigate the dataset using the 'Forward' and 'Backward' arrows. <br><br>
+You can search for a specific request detail clicking on the 'Lens' icon and entering your query details e.g. the search value 
+and the seach field. Note the search will be applied on the current selection, not on all submitted requests.
+</small>
+</div>
+
+<script language="javascript" type="text/javascript"><!--
+/* 
+ * Declare some urls used to fetch data 
+ */
+var urlResultPage = #{jsAction @Main.result(':rid') /}
+
+var urlChartData = function(args) { 
+	var url = "@{Admin.statsChartData()}"; var q="";
+	if( args != null && typeof(args) == "object" ) { 
+		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
+	}  
+	return url + q; 
+} 
+
+var urlGridData = function(args) { 
+	var url = "@{Admin.statsGridData()}"; var q="";
+	if( args != null && typeof(args) == "object" ) { 
+		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
+	}  
+	return url + q; 
+} 
+
+var _choice=null;
+var _since=null;
+var _until=null;
+var _index=null;
+
+var dataSeries = [];
+var addedSeries = [];
+
+
+function _args() {
+	var result = {};
+	var p;
+
+	addedSeries.push(_choice);
+	
+	if( _choice == "$all" ) {
+		result['filter.bundle'] = null;
+		result['filter.service'] = null;
+	}
+	else if ( (p=_choice.indexOf(":")) != -1 ) {
+		result['filter.bundle'] = _choice.substring(0,p)
+		result['filter.service'] = _choice.substring(p+1)
+	} 
+	else {
+		result['filter.bundle'] = _choice;
+		result['filter.service'] = null;
+	}  
+
+	result['filter.since'] = _since;
+	result['filter.until'] = _until;
+	result['filter.status'] = null;
+
+	return result;
+} 
+
+
+$(document).ready(function () {
+
+	/* 
+	 * Initialize url arguments 
+	 */
+	 _choice = $('#choice').val();
+	 _since = $('#since').val();
+	 _until = $('#until').val();
+	 
+	/* 
+	 * Grid control initialization  
+	 * See http://code.google.com/p/flexigrid/
+	 */
+	function onRowSelect(div, id) {
+		$('tr#row'+id).dblclick( function () { window.open(urlResultPage({rid:id}),'_blank')  } );
+	} 
+
+	$("#grid").flexigrid
+		(
+		{
+		url: urlGridData(_args()),
+		dataType: 'json',
+		colModel : [
+			{display: 'Request ID', name : 'rid', width : 80, process: onRowSelect },
+			{display: 'Bundle', name : 'bundle', width : 80  },
+			{display: 'Service', name : 'service', width : 80  },
+			{display: 'Status', name : 'status', width : 80  },
+			{display: 'Duration', name : 'duration', width : 80, align: 'right'  },
+			{display: 'Date', name : 'date', width : 120  },
+			{display: 'Ip Address', name : 'ip', width : 80  }
+			],
+		searchitems : [
+		   	{display: 'Request ID', name : 'rid'},
+			{display: 'Bundle', name : 'bundle'},
+			{display: 'Service', name : 'service', isdefault: true},
+			{display: 'Date', name : 'date'},
+			{display: 'Ip Address', name : 'ip'}
+			],
+		usepager: true,
+		useRp: false,
+		rp: 100,
+		width: 900,
+		height: 400
+		}
+		);
+
+	
+	/* 
+	 *  date picker initialization 
+	 *  see http://jqueryui.com/demos/datepicker/#date-range
+	 */
+	var dates = $( "#since, #until" ).datepicker({
+			defaultDate: "${sinceDate}",
+			changeMonth: true,
+			numberOfMonths: 3,
+			dateFormat: "dd/mm/yy",
+			minDate: "${minDate}",
+			maxDate: "0", /* <-- today */ 
+			showButtonPanel: true,
+			onSelect: function( selectedDate ) {
+				var option = this.id == "since" ? "minDate" : "maxDate";
+				var instance = $( this ).data( "datepicker" );
+				var date = $.datepicker.parseDate( instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings );
+				dates.not(this).datepicker( "option", option, date );
+			}
+		});
+
+	/* 
+	 * On click the apply button the graph as well as the grid control are refreshed  
+	 */
+	function load() {
+		loadChartData();
+		loadGridData();
+	} 
+	
+	function choiceChange() 
+	{ 
+		dataSeries=[]; 
+		addedSeries=[]; 
+		_choice=$('#choice').val(); 
+		$.cookie('stats_choice', _choice)
+		load() 
+	} 
+
+	function applyButtonClick() { 	
+		dataSeries=[]; 
+		addedSeries=[]; 
+		_choice = $('#choice').val(); 
+		_since = $('#since').val(); 
+		_until = $('#until').val(); 
+		$.cookie('stats_since', _since)
+		$.cookie('stats_until', _until)
+		load() 
+	} 
+	
+	function addNewSeries() 
+	{ 
+		_choice=$(this).val(); 
+		loadChartData(); 
+		$(this).remove(); 
+		$('#addSeries').hide(); 
+		$('#add').show("slow") 
+	}	
+
+	$('#choice').change(choiceChange); 
+	$('#apply').click(applyButtonClick);   
+	
+	/* display the select box to add a new series */
+	$('#add').click( function() {
+		var copy=$('#hiddenChoice').clone();
+		copy.removeAttr('id');
+		copy.appendTo("#addPlace");
+		copy.val(0);
+		copy.show();
+		copy.change(addNewSeries)
+		for( var i=0; i<addedSeries.length; i++ ) {  copy.children("option[value='"+addedSeries[i]+"']").remove();   }
+		$(this).hide();
+		$('#addSeries').show("slow");
+	});
+
+	/* hide the select box to add new series */
+	$('#clear').click(function() {
+		$('#addSeries').hide();
+		$('#add').show("slow");
+	} )
+	
+	/*
+	 * Chart initialization 
+	 * see http://code.google.com/p/flot/
+	 */ 
+	 
+	 var chartOptions = {
+	      xaxis: { mode: "time", timeformat: "%d %b %y", minTickSize: [1, "day"] },
+	      yaxis: { tickDecimals: 0 }, 
+	      grid: {
+	            backgroundColor: { colors: ["#fff", "#eee"] },
+	            hoverable: true, 
+	            clickable: true
+	        }          
+	 }; 
+
+	 
+    var chart = $("#chart");
+    $.plot(chart, dataSeries, chartOptions);
+
+    /* 
+     * Event invoked clicking a point on the chart 
+     */
+    chart.bind("plotclick", function (event, pos, item) {
+        if (item) {
+            var date = new Date(item.datapoint[0]);
+			var sDate = $.datepicker.formatDate( "dd/mm/yy", date);
+			var args = _args();
+			args['filter.since'] = sDate;
+			args['filter.until'] = sDate;
+
+			var p;
+			var seriesName = item.series._name;
+			
+			if( (p=seriesName.indexOf("$"))!=-1 ) { // <-- status separator 
+				args['filter.status'] = seriesName.substring(p+1)
+				seriesName = seriesName.substring(0,p)
+			}
+			
+			if( (p=seriesName.indexOf(":"))!=-1 ) {
+				args['filter.bundle'] = seriesName.substring(0,p)
+				args['filter.service'] = seriesName.substring(p+1)
+			}             
+			else { 
+				args['filter.bundle'] = seriesName;
+			}
+			 
+
+			loadGridData(args);
+        }
+    });
+
+	function onChartDataReceived(data) 
+	{
+		var isEmpty = dataSeries==null || dataSeries.length==0;
+		
+		/* apply visual style on result dataset */
+		for( var i=0; i<data.series.length; i++ ) {
+			var s = data.series[i];
+			if( s._name.indexOf('$FAILED')==-1) {
+				// line style 
+				 s.lines = { show: true, fill: isEmpty }
+				 s.points = { show: true };
+			}
+			else { 
+				// use red bar 
+				 s.bars = { show: true, barWidth: 18 * 60 * 60 * 1000, align: 'center' };
+				 s.color = 'red';
+				 s.label = "Failed request(s)";
+			}  
+		} 
+
+		if( isEmpty ) { dataSeries = data.series; } 
+		else { dataSeries.push( data.series[0] ); }
+
+		$.plot(chart, dataSeries, chartOptions);
+	}
+
+
+	function loadChartData( args )  
+	{
+		if( args == null ) { args = _args() } 
+
+		$.ajax({
+		    url: urlChartData(args),
+		    cache: true,
+		    method: 'GET',
+		    dataType: 'json',
+		    success: onChartDataReceived 
+		});    
+	}
+
+	function loadGridData( args ) 
+	{
+		if( args == null ) { args = _args() } 
+	    $('#grid').flexOptions({url: urlGridData(args), page: 1}).flexReload();
+	} 
+	
+    loadChartData();
+  
+});
+
+</script>
+
+
+

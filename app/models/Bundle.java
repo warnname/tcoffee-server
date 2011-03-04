@@ -200,8 +200,8 @@ public class Bundle implements Serializable {
 				return m;
 			}
  		}
-		
-		throw new QuickException("Unable to find service named: '%s'", name);
+
+		return null;
 	}
 
 	

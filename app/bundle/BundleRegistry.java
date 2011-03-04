@@ -11,6 +11,7 @@ import java.util.Set;
 
 import models.AppProps;
 import models.Bundle;
+import models.Service;
 
 import org.apache.commons.io.FileUtils;
 
@@ -305,5 +306,64 @@ public class BundleRegistry {
 		
 		return hash;
 	} 	
+	
+	
+	/**
+	 * @return map containing bundle <name, title> pairs
+	 */
+	public Map<String,String> getTitlesMap() { 
+		Map<String,String> result = new HashMap<String, String>();
+		
+		for( String name : getNames() ) { 
+			result.put(name, get(name).title );
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * @param bundle the name of an existing {@link Bundle} instance
+	 * @return the title string for the specified <code>bundle</code> name or null if not exists 
+	 */
+	public String getBundleTitle( String bundle ) { 
+		Bundle oBundle = get(bundle);
+		return oBundle != null ? oBundle.title : null;
+	}
+
+	/**
+	 * 
+	 * @param bundle the name of an existing {@link Bundle} instance
+	 * @param service the name of an existing {@link Service} instance for that bundle 
+	 * @return the title string for the specified <code>bundle,serice</code> pair or null if not exists 
+	 */
+	public String getServiceTitle( String bundle, String service ) { 
+		Bundle oBundle = get(bundle);
+		Service oService = oBundle != null ? oBundle.getService(service) : null;
+		return oService != null ? oService.title : null;
+	}
+	
+	/**
+	 * Quick access to bundle/service name using a composed string notation 
+	 * 
+	 * @param fullyQualifiedName it could be the name of a {@link Bundle} or a service name prefixed 
+	 * by the bundle name, using the format <code>bundle-name:service-name</code>
+	 * @return
+	 */
+	public String getTitle( String fullyQualifiedName ) { 
+		String result;
+		
+		String[] parts = fullyQualifiedName.split("\\:");
+		if( parts == null || parts.length==0 ) { 
+			result = null;
+		}
+		else if( parts.length == 1 ) { 
+			result = getBundleTitle(parts[0]);
+		}
+		else { 
+			result = getServiceTitle(parts[0], parts[1]);
+		}
+		
+		return Utils.isEmpty(result) ? fullyQualifiedName : result;
+	}
 
 }

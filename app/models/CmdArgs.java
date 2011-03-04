@@ -15,10 +15,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("args")
 public class CmdArgs {
 
-	static final String PREFIX = "-";
-
 	List<Arg> items = new ArrayList<Arg>();
-	
+
 	public CmdArgs() {}
 	
 	public CmdArgs( String content ) {
@@ -31,16 +29,27 @@ public class CmdArgs {
 
 	
 	public void parse( String content ) {
-		if( content==null || Utils.isEmpty(content=content.trim())) return;
-		
-		content = content.trim();
-		if( content.startsWith(PREFIX)) {
-			content = content.substring(PREFIX.length());
+		if( content==null || Utils.isEmpty(content=content.trim())) {
+			return;
 		}
 		
-		String[] items = content.split(PREFIX);
-		for( String item : items ) {
-			put(item);
+		// normalize the command line to be sure that start with only and only one blank
+		content = " " + content.trim();
+		
+		String[] allItems = content.split(" -");
+		for( String item : allItems ) {
+			if( Utils.isEmpty(item)) { 
+				continue;
+			}
+			
+			item = item.trim();
+			if( item.startsWith("-")) { 
+				item = item.substring(1);
+				put(item) .prefix = "--";
+			} 
+			else { 
+				put(item);
+			}
 		}
 
 	}
@@ -86,15 +95,18 @@ public class CmdArgs {
 
 	}	
 	
-	public void put( String name, String value ) {
+	public Arg put( String name, String value ) {
 		if( items == null ) {
 			items = new ArrayList<Arg>();
 		}
-		items.add( new Arg(name,value) );
+		
+		Arg result = new Arg(name,value) ;
+		items.add(result);
+		return result;
 	}
 	
-	public void put( String pair ) {
-		if( pair==null || Utils.isEmpty(pair=pair.trim()) ) { return; }
+	public Arg put( String pair ) {
+		if( pair==null || Utils.isEmpty(pair=pair.trim()) ) { return null; }
 		
 		// pair separator is equals char (=)
 		int p = pair.indexOf('=');
@@ -116,7 +128,8 @@ public class CmdArgs {
 		if( value == null && p!=-1) {
 			value = "";
 		}
-		put(name,value);
+		
+		return put(name,value);
 	}
 	
 	public void putAll( String... pairs ) {

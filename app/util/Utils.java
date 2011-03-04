@@ -56,6 +56,9 @@ public class Utils {
 
 	public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
 
+	public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	
+	
 	private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{(.+?)\\}"); 
 	
 	public interface MapValue<K,V> {
@@ -133,6 +136,28 @@ public class Utils {
 	
 	public static String asString( Date date ) { 
 		if( date == null ) { return ""; }
+		return SHORT_DATE_FORMAT.format(date);
+	}
+
+	public static String asString( java.sql.Date date ) { 
+		if( date == null ) { return ""; }
+		return SHORT_DATE_FORMAT.format(date);
+	}
+
+	public static String asString( java.sql.Timestamp date ) { 
+		if( date == null ) { return ""; }
+		return SHORT_DATE_FORMAT.format(date);
+	}
+	
+	public static String asString( Date date, String fmt ) { 
+		if( date == null ) { return ""; }
+
+		DateFormat formatter = isEmpty(fmt) ? SHORT_DATE_FORMAT : new SimpleDateFormat(fmt);
+		return formatter.format(date);
+	}
+	
+	public static String asSmartString( Date date ) { 
+		if( date == null ) { return ""; }
 		
 		Calendar now = new GregorianCalendar();
 		Calendar value = new GregorianCalendar();
@@ -149,12 +174,12 @@ public class Utils {
 			}
 		}
 		else {
-			fmt = new SimpleDateFormat("dd/MM/yyyy");
+			fmt = SHORT_DATE_FORMAT;
 		}
 		
 		return fmt.format(date);
 	}
-
+	
 	public static <T> String asString( T[] vals ) { 
 		return asString(vals,", ");
 	}
@@ -1775,6 +1800,33 @@ public class Utils {
 		return result.get(0);
  	}
 	
+	/**
+	 * Extract from a collection of arrays the ones for which the i-th array component is equals the specified value
+	 * 
+	 * @param <T>
+	 * @param list
+	 * @param index
+	 * @param value
+	 * 
+	 * @return the list of arrays for which the condition is matched 
+	 * 
+	 */
+	public static <T> List<T[]> getItems(final Collection<T[]> list, final int index, final Object value ) { 
+		List<T[]> result = new ArrayList<T[]>();
+		
+		for( T[] array : list ) { 
+			if( isEquals( array[index], value ) ) { 
+				result.add(array);
+			}
+		}
+		return null;
+	}
+	
+	public static <T> T[] getItem(final Collection<T[]> list, final int index, final Object value ) { 
+		List<T[]> result = getItems(list,index,value);
+		return result.size()>0 ? result.get(0) : null;
+	}
+
 	public static <T> boolean contains(T[] array, T value) {
 		if( array == null ) return false;
 		
@@ -1886,6 +1938,43 @@ public class Utils {
 		}
 		return result;
 
+	}
+	
+	/** 
+	 * Decode an duration string to its millis representatio 
+	 * 
+	 * @param duration
+	 * @return
+	 */
+	
+	private static final Map<String,Long> DURATION_UNIT;
+	
+	static { 
+		DURATION_UNIT = new HashMap<String,Long>(5);
+		DURATION_UNIT.put("ms", 1L); 
+		DURATION_UNIT.put("sec", 1000L); 
+		DURATION_UNIT.put("min", 60 * 1000L); 
+		DURATION_UNIT.put("hour", 60 * 60 * 1000L); 
+		DURATION_UNIT.put("day", 24 * 60 * 60 * 1000L); 
+
+	}
+	
+	public static long toDuration( String duration ) { 
+		String[] items = duration.split(" ");
+		int v1 = Integer.parseInt(items[0]);
+		String u1 = items[1];
+
+		long result = v1 * DURATION_UNIT.get(u1);
+		
+		if( items.length>2 ) { 
+			int v2 = Integer.parseInt(items[2]);
+			String u2 = items[3];
+			result += v2 * DURATION_UNIT.get(u2);
+		}
+		
+		
+		return  result; 
+		
 	}
 
 	public static String camelize( String str ) {

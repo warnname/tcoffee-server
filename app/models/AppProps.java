@@ -117,9 +117,6 @@ public class AppProps implements Serializable  {
 	/** Reference the server properties file <code>tserver.conf.xml</code> */
 	//public static final File SERVER_CONF_FILE;
 
-	/** Alignment requests log file */
-	public static final File SERVER_USAGE_FILE; 
-	
 	public static final File SERVER_APPLOG_FILE;
 	
 	/* singleton instance */
@@ -160,22 +157,9 @@ public class AppProps implements Serializable  {
 		SERVER_APPLOG_FILE = getApplicationLogFile();
 		Logger.info("Using Applicatin log file: '%s'", SERVER_APPLOG_FILE);
 		
-		/*
-		 * 4. usage log file name
-		 */
-		String usageLogFile = Play.configuration.getProperty("tserver.usage.file", "usage.log");
-		SERVER_USAGE_FILE = usageLogFile.startsWith( File.separator )
-						? new File(usageLogFile)
-						: new File(WORKSPACE_FOLDER, usageLogFile);
-						
-		File parent = SERVER_USAGE_FILE.getParentFile();
-		if( !parent.exists() && !parent.getParentFile().mkdirs() ) { 
-			throw new QuickException("Cannot create log path: '%s' ", parent);
-		}
-		Logger.info("Using Usage log file: '%s'", SERVER_USAGE_FILE);
 		
 		/*
-		 * 5. bundles path 
+		 * 4. bundles path 
 		 */
 		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
 		Logger.info("Using Bundles path: %s", BUNDLES_FOLDER);
@@ -186,7 +170,7 @@ public class AppProps implements Serializable  {
 		
 		
 		/*
-		 * 6. Define the other default folder that can be overriden at runtime
+		 * 5. Define the other default folder that can be overriden at runtime
 		 */
 				
 		
@@ -194,7 +178,7 @@ public class AppProps implements Serializable  {
 		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
 
 		/*
-		 * 7. create the AppProps singleton
+		 * 6. create the AppProps singleton
 		 */
 		INSTANCE = new ReloadableSingletonFile<AppProps>(SERVER_PROPS_FILE) {
 			
@@ -205,10 +189,9 @@ public class AppProps implements Serializable  {
 		};
 		
 		/*
-		 * 8. add 'tserver's properties from application.conf
+		 * 7. add 'tserver's properties from application.conf
 		 */
-		
-		
+				
 		for( Object obj : Play.configuration.keySet() ) {
 			String key = (String)obj;
 			
@@ -221,8 +204,6 @@ public class AppProps implements Serializable  {
 				}  
 			}
 		}
-
-		
 
 	}
 
@@ -374,7 +355,7 @@ public class AppProps implements Serializable  {
 	 * @return The max age (in secs) for which the request is stored in the file system
 	 */
 	public int getDataCacheDuration() {
-		int defValue = 7 * 24 * 60 * 60; // <-- by default 1 week 
+		int defValue = 10 * 24 * 60 * 60; // <-- by default 10 days
 		String duration = getProperty("data.cache.duration");
 		if( Utils.isEmpty(duration) ) { 
 			return defValue;

@@ -18,6 +18,9 @@ public class Arg implements Serializable {
 	public String name;
 
 	public String value;
+	
+	/* default argument separator */
+	public String prefix = "-"; 
 
 	public Arg() {}
 	
@@ -78,7 +81,7 @@ public class Arg implements Serializable {
 		 * if no value as been specified just return argument as a flag
 		 */
 		if( Utils.isEmpty(value) ) {
-			return CmdArgs.PREFIX + name;
+			return prefix + name;
 		}
 		
 		/*
@@ -88,7 +91,7 @@ public class Arg implements Serializable {
 		for( String v : getAll() ) {
 			if( result.length()>0 ) result.append(" ");
 			result
-				.append(CmdArgs.PREFIX) 
+				.append(prefix) 
 				.append(name)
 				.append("=")
 				.append(v);
@@ -112,7 +115,7 @@ public class Arg implements Serializable {
 	}
 
 	public String toRawString() {
-		String result = CmdArgs.PREFIX  + name;
+		String result = prefix  + name;
 		if( Utils.isNotEmpty(value) ) {
 			result += "=" + value;
 		} 

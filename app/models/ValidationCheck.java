@@ -149,7 +149,7 @@ public class ValidationCheck implements Serializable {
 		}
 
 		
-		if( TEXT.equals(format) || EMAIL.equals(format) ) {
+		if( TEXT.equals(format) ) {
 			Integer min = getMinAsInteger();
 			Integer max = getMaxAsInteger();
 			if( min != null && ( value==null || value.trim().length()<min ) ) {
@@ -167,13 +167,45 @@ public class ValidationCheck implements Serializable {
 				Validation.addError(name, message, new String[] {value});
 			}
 			
-			if( EMAIL.equals(format) ) {
-				boolean isValid = new EmailCheck().isSatisfied(null, value, null, null);
+
+		}
+
+		
+		/*
+		 * EMAIL FIELDS 
+		 */
+		else if( EMAIL.equals(format)  ) { 
+		
+			/* the value string can contains multiple addresses separated by a comma or a semicolon 
+			 * split the string to check email address syntax one-by-one 
+			 */
+			String sEmail = value != null ? value : "";
+			sEmail = sEmail.replace(",", ";"); // <-- normalize the comma 
+			String[] addresses = sEmail.split(";");
+			for( String addr : addresses ) { 
+				addr = addr.trim();
+				boolean isValid = new EmailCheck().isSatisfied(null, addr, null, null);
 				if( !isValid ) {
 					String message = Utils.isNotEmpty(formatError) ? formatError : "validation.email.format";
-					Validation.addError(name, message, new String[] {value});
+					Validation.addError(name, message, new String[] {addr});
+					break;
 				}
 			}
+			
+			/* optional 'min' and 'max' attribute can be entered to specify the numeber of accepted email addresses  */
+			Integer min = getMinAsInteger();
+			Integer max = getMaxAsInteger();
+			
+			if( min != null && ( addresses.length < min ) ) {
+				String message = Utils.isNotEmpty(minError) ? minError : "validation.minSize";
+				Validation.addError(name, message, new String[] {value});
+			}
+			
+			if( max != null && ( addresses.length > max ) ) {
+				String message = Utils.isNotEmpty(maxError) ? maxError : "validation.maxSize";
+				Validation.addError(name, message, new String[] {value});
+			}
+			
 			
 		}
 		

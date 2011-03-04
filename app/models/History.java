@@ -150,7 +150,7 @@ public class History {
 	
 	
 	public String getBegin() {
-		return Utils.asString(begin);
+		return Utils.asSmartString(begin);
 	}
 	
 	Date getBeginDate() { 
@@ -158,7 +158,7 @@ public class History {
 	}
 	
 	public String getExpire() { 
-		return Utils.asString(expire);
+		return Utils.asSmartString(expire);
 	}
 
 	Date getExpireDate() { 

@@ -1,12 +1,9 @@
 package models;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -392,13 +389,15 @@ public class Service implements Serializable {
     			 * run the alignment job
     			 */
     			Service.current(Service.this);
+    			final long logid = trace(null).id;
+    			
     			try {
     				/* run the job */
     				Service.this.run();
     			}
     			finally  {
     				try { Service.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
-    				try { Service.this.trace(); } catch( Exception e ) { Logger.error(e, "Failure on request logging"); }
+    				try { Service.this.trace(logid); } catch( Exception e ) { Logger.error(e, "Failure on request logging"); }
     				Service.release();
     			}
     		}
@@ -416,25 +415,34 @@ public class Service implements Serializable {
 	 * 
 	 * <start time>, <user ip>, <bundle name>, <service name>, <request id>, <elapsed time>, <status> 
 	 */
-	void trace() {
-		try {
-			DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			StringBuilder line = new StringBuilder();
-			line.append( fmt.format(fStartTime) ).append(",")
-				.append( fRemoteAddress ).append(",")
-				.append( this.bundle.name ).append(",")
-				.append( this.name ).append(",")
-				.append( this.fRid ).append(",")
-				.append( fOutResult!=null ? Utils.asDuration(fOutResult.elapsedTime) : "-") .append(",")
-				.append( fOutResult!=null && fOutResult.status!=null ? fOutResult.status.name() : "-");
-
-			PrintWriter out = new PrintWriter(new FileWriter(AppProps.SERVER_USAGE_FILE, true), true);
-			out.println(line.toString());
-			out.close();
-		} 
-		catch (IOException e) {
-			throw new QuickException(e, "Unable to trace request in log file: %s", AppProps.SERVER_USAGE_FILE );
+	UsageLog trace( Long id ) {
+		
+		UsageLog usage = null;
+		if( id == null ) { 
+			usage = new UsageLog();
+			usage.creation = new Timestamp(fStartTime.getTime());
+			usage.ip = fRemoteAddress;
+			usage.bundle = this.bundle.name;
+			usage.service = this.name;
+			usage.requestId = this.fRid;
+			usage.status = "RUNNING";
+			
+			Logger.debug("Creating usage log for request # %s", this.fRid );
 		}
+		else { 
+			usage = UsageLog.findById( id );
+			
+			if( fOutResult != null ) { 
+				usage.duration = Utils.asDuration(fOutResult.elapsedTime);
+				usage.status = fOutResult.status.name() ;
+				usage.elapsed = fOutResult.elapsedTime/1000;
+			}
+
+			Logger.debug("Updating usage log for request # %s", this.fRid );
+		}
+
+
+		return usage.save();
 	}
 
 	void run() {

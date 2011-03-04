@@ -1,4 +1,4 @@
-package play.mvc;
+package util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -11,8 +11,10 @@ import jregex.Matcher;
 import jregex.Pattern;
 import play.exceptions.NoRouteFoundException;
 import play.exceptions.UnexpectedException;
+import play.mvc.Http;
+import play.mvc.Router;
+import play.mvc.Scope;
 import play.utils.Default;
-import util.Utils;
 
 /** 
  * Fix a problem in the priority of router arguments. 
