@@ -394,7 +394,7 @@ ul.list {
   display:                 inline-block;
   font-family:            "helvetica neue", helvetica, arial, freesans, "liberation sans", "numbus sans l", sans-serif;
   font-size:               13px;
-  outline                  0;
+  outline:                 0;
   padding:                 5px 8px 5px;
   text-align:              center;
   text-decoration:         none;
@@ -539,7 +539,7 @@ table.c-home td.c-lbl {
  * skin 
  */
  
-body  {
+body {
 	background: white url(images/bg.gif) repeat-x 0% 0%;
 	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
 	text-align: center;
@@ -599,4 +599,5 @@ body.admin #header #placeholder {
  
 body.admin #navigation li {
 	padding-left: 14px;
-} 
+}
+
