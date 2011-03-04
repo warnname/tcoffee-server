@@ -2,5 +2,5 @@
 # For exemple, for french create a messages.fr file
 #
 validation.fasta=You must enter the sequeces to align in fasta format - OR - upload a file
-
+validation.email.format=The value "%2$s" is not a valid internet e-mail address
    

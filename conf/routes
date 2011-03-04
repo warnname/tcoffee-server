@@ -4,6 +4,7 @@
 
 # Home page
 GET     /						Main.index
+GET		/result					Main.result
 GET 	/tcoffee				Main.index
 GET		/tcoffee/				Main.index
 GET		/psicoffee				Main.psicoffee
