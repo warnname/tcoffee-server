@@ -6,12 +6,6 @@ import play.test.UnitTest;
 
 public class AdminTest extends UnitTest {
 
-	@Test 
-	public void testLoadModule() {
-		/* empty */
-	}
-	
-	
-
+	@Test public void empt() {}
 
 }

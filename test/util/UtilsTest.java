@@ -112,10 +112,25 @@ public class UtilsTest extends UnitTest {
 		Date now = new Date();
 		c.setTime(now);
 		
-		/* today - short format */
-		assertEquals( String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)), Utils.asString(now));
+	}
+	
+	public void testAsSmartString() { 
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, 2010);
+		c.set(Calendar.MONTH, 1);
+		c.set(Calendar.DAY_OF_MONTH, 23);
+		c.set(Calendar.HOUR_OF_DAY, 14);
+		c.set(Calendar.MINUTE, 30);
+		
+		assertEquals("23/02/2010 14:30", Utils.asSmartString(c.getTime()));
+		assertEquals("", Utils.asSmartString((Date)null));
+		
+		Date now = new Date();
+		c.setTime(now);
 
-		assertEquals( String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)), Utils.asString(now));
+		/* today - short format */
+		assertEquals( String.format("%s:%s", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)), Utils.asSmartString(now));
+
 		
 	}
 	
@@ -538,6 +553,31 @@ public class UtilsTest extends UnitTest {
 		assertEquals(new File("/root/x.y.z/name.1.tar.gz"), Utils.nextUniqueFile(new File("/root/x.y.z/name.tar.gz")));
 		assertEquals(new File("/root/x.y.z/name.10.tar.gz"), Utils.nextUniqueFile(new File("/root/x.y.z/name.9.tar.gz")));
 		
+	}
+	
+	
+	@Test 
+	public void testAsDuration() { 
+		assertEquals( "9 ms", Utils.asDuration(9) );
+		assertEquals( "11 sec", Utils.asDuration(11 * 1000) );
+		assertEquals( "23 min", Utils.asDuration(23 * 60 * 1000) );
+		assertEquals( "23 min 2 sec", Utils.asDuration(23 * 60 * 1000 + 2 * 1000) );
+		assertEquals( "2 hour", Utils.asDuration(2 * 60 * 60 * 1000));
+		assertEquals( "2 hour 5 min", Utils.asDuration(2 * 60 * 60 * 1000 + 5 * 60 * 1000));
+		assertEquals( "3 day", Utils.asDuration(3 * 24 * 60 * 60 * 1000 ));
+		assertEquals( "3 day 2 hour", Utils.asDuration(3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000 ));
+	}
+	
+	@Test
+	public void testToDuration() { 
+		assertEquals( 9, Utils.toDuration("9 ms") );
+		assertEquals( 11 * 1000, Utils.toDuration("11 sec") );
+		assertEquals( 23 * 60 * 1000, Utils.toDuration("23 min") );
+		assertEquals( 23 * 60 * 1000 + 2 * 1000, Utils.toDuration("23 min 2 sec") );
+		assertEquals( 2 * 60 * 60 * 1000, Utils.toDuration("2 hour"));
+		assertEquals( 2 * 60 * 60 * 1000 + 5 * 60 * 1000, Utils.toDuration("2 hour 5 min"));
+		assertEquals( 3 * 24 * 60 * 60 * 1000 , Utils.toDuration("3 day"));
+		assertEquals( 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000 , Utils.toDuration("3 day 2 hour"));
 		
 	}
 

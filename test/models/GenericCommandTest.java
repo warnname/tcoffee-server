@@ -13,7 +13,7 @@ public class GenericCommandTest extends UnitTest {
 	
 	@Before
 	public void init() {
-		TestHelper.init("field1=value 1", "field2=value 2");
+		TestHelper.init("field1=uno", "field2=dos");
 	}
 	
 
@@ -21,7 +21,8 @@ public class GenericCommandTest extends UnitTest {
 	public void testGenericCommand() {
 		
 		String xml = 
-			"<exec>" +
+			"<exec program='job.sh' >" +
+			    "<args>-arg=${field2}</args>" +
 				"<logfile>out.txt</logfile> " +
 				"<errfile>err.txt</errfile> " +
 				"<envfile>env.txt</envfile> " +
@@ -29,8 +30,6 @@ public class GenericCommandTest extends UnitTest {
 				"<validCode>1</validCode> " +
 			
 				"<env var1='${field1}' var2='dos' var3='tres' />" + 
-
-				"<cmd>job.sh -arg=${field2}</cmd>" +
 			"</exec>";
 
 		
@@ -41,14 +40,16 @@ public class GenericCommandTest extends UnitTest {
 		assertEquals("env.txt", cmd.envfile);
 		assertEquals("cmd.txt", cmd.cmdfile);
 		assertEquals(1, cmd.validCode );
-		assertEquals("job.sh -arg=value 2", cmd.cmd.eval());
+		assertEquals("job.sh", cmd.program.eval());
+		assertEquals("-arg=dos", cmd.args.toCmdLine());
 		
 	}
 	
 	@Test 
 	public void testExecuteOK() throws Exception {
 		GenericCommand cmd = new GenericCommand();
-		cmd.cmd = new Eval("ls -la");
+		cmd.program = new Eval("ls");
+		cmd.args = new CmdArgs("-la");
 		cmd.logfile = "outfile.txt";
 		cmd.errfile = "errfile.txt";
 		cmd.cmdfile = "cmdfile.txt";
@@ -72,7 +73,7 @@ public class GenericCommandTest extends UnitTest {
 	@Test 
 	public void testExecuteFail() {
 		GenericCommand cmd = new GenericCommand();
-		cmd.cmd = new Eval("xxx");
+		cmd.program = new Eval("xxx");
 		cmd.init();
 		boolean result;
 		try {
@@ -84,28 +85,25 @@ public class GenericCommandTest extends UnitTest {
 		assertFalse(result);
 	} 
 	
-//	@Test 
-//	public void testSetPath() {
-//		
-//		Runtime runtime = Runtime.getRuntime();
-//
-//		boolean result=false;
-//		File local = Module.current().folder();
-//		try {
-//			IO.writeContent("export PATH=/Users/ptommaso/tools/play-1.0.1/tcoffee/osx\npoa", new File(local,"runner.sh"));
-//			Process process = runtime.exec("bash runner.sh", null, local);
-//			FileOutputStream out = new FileOutputStream(new File(local,"result.txt"));
-//			IO.write(process.getErrorStream(), out);
-//			result = 0==process.waitFor();
-//			
-//			out.close();
-//		}
-//		catch( Exception e ) {
-//			e.printStackTrace();
-//			fail();
-//		}
-//		
-//		assertTrue(result);
-// 	} 
+	@Test
+	public void testConstructorWithProgram() { 
+		GenericCommand cmd = new GenericCommand("ls");
+		assertEquals( "ls", cmd.program.eval() );
+		assertEquals( null, cmd.args );
+		
+		cmd = new GenericCommand("ls -la");
+		assertEquals( "ls", cmd.program.eval() );
+		assertEquals( "-la", cmd.args.toCmdLine() );
+		
+	}
 	
+	@Test
+	public void testProgramWithFlagArgument() { 
+		GenericCommand cmd = new GenericCommand("protogene --something=${field1} --flag=${missing}");
+		cmd.init();
+		
+		assertEquals( "protogene --something=uno", cmd.getCmdLine() );
+	}
+	
+
 }

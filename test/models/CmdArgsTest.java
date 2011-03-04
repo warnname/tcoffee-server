@@ -14,7 +14,7 @@ public class CmdArgsTest extends UnitTest {
 	
 	@Before
 	public void register() {
-		TestHelper.init("field1=Value 1", "x=1", "x=2", "x=3");
+		TestHelper.init("field1=Value 1", "x=1", "x=2", "x=3", "xy=99");
 	}
 	
 	@Test 
@@ -175,9 +175,9 @@ public class CmdArgsTest extends UnitTest {
 	
 	@Test 
 	public void testCmdLineMultiple() {
-		CmdArgs cmd = new CmdArgs("-a=${field1} -b -c= -d value -x=${x}");
+		CmdArgs cmd = new CmdArgs("-a=${field1} -b -c= -d value --x=${x} --x-y=${xy}");
 		
-		assertEquals("-a=Value 1 -b -c -d=value -x=1 -x=2 -x=3", cmd.toCmdLine()); 
+		assertEquals("-a=Value 1 -b -c -d=value --x=1 --x=2 --x=3 --x-y=99", cmd.toCmdLine()); 
 	}
-
+	
 }
