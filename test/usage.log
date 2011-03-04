@@ -1,0 +1,15 @@
+#
+# Usage data for testing 
+#
+#
+2011-02-01 11:40:42,172.17.47.187,tcoffee,expresso,e63796f6,1 min 14 sec,DONE
+2011-02-01 16:05:00,172.18.1.16,tcoffee,regular,6fa1cd32,2 sec,DONE
+2011-02-01 17:35:35,172.17.47.165,catrapid,catrapid,f675caa,38 min 4 sec,DONE
+2011-02-01 18:12:40,172.17.47.165,catrapid,catrapid,255aba00,36 min 37 sec,DONE
+#
+2011-02-02 10:40:52,132.64.161.235,tcoffee,regular,3e3eb15,10 sec,DONE
+2011-02-02 11:42:34,193.145.39.154,tcoffee,regular,4fc5f0ca,13 sec,DONE
+2011-02-02 15:06:41,203.200.217.180,tcoffee,mcoffee,da23d4a4,1 min 20 sec,DONE
+2011-02-02 15:07:12,203.200.217.180,catrapid,catrapid,f8a47b42,7 min 37 sec,DONE
+#
+2011-02-03 11:44:16,172.17.47.187,tcoffee,expresso,843b8325,1 min 28 sec,FAILED
