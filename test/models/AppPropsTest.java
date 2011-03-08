@@ -124,7 +124,7 @@ public class AppPropsTest extends UnitTest {
 	
 	@Test 
 	public void testGetDataCacheDuration() {
-		assertEquals(604800, props.getDataCacheDuration());
+		assertEquals(864000, props.getDataCacheDuration());
 
 		// set to 1 seconds 
 		props.put("data.cache.duration", "1s");

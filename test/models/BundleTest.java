@@ -7,7 +7,6 @@ import org.junit.Test;
 import play.test.UnitTest;
 import util.TestHelper;
 import util.XStreamHelper;
-import exception.QuickException;
 
 public class BundleTest extends UnitTest {
 
@@ -23,14 +22,10 @@ public class BundleTest extends UnitTest {
 		Service m = c.getService("b");
 		assertEquals("b", m.name );
 		
-		try {
-			c.getService("wrong name");
-			fail("method 'mudule' have to raise exception but it didn't");
-		}
-		catch( QuickException e ) {
-			// IT MUST RAISE AN EXCEPTION  
-		}
-		
+		/*
+		 * looking up a wrong name result in a null 
+		 */
+		assertNull( c.getService("wrong name") );
 	}
 
 	@Test 
