@@ -205,7 +205,7 @@ function make_war()
 	# replacing default ServletWrapper with own one
 	#
 	cat WEB-INF/web.xml | sed -e 's/play\.server\.ServletWrapper/server.TServerServlet/' > WEB-INF/web.new
-	cp WEB-INF/web.new WEB-INF/web.xml
+	mv WEB-INF/web.new WEB-INF/web.xml
 	
 	#
 	# packing 

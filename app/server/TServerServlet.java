@@ -1,7 +1,7 @@
 package server;
 
 import java.io.File;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import javax.servlet.ServletContextEvent;
 
@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import play.Play;
 import play.exceptions.UnexpectedException;
+import play.mvc.Router;
 import play.server.ServletWrapper;
 
 /**
@@ -43,15 +44,20 @@ public class TServerServlet extends ServletWrapper {
         }
     }
     
+    
+    
     private void loadRouter(String contextPath) {
-    	Method method;
+
 		try {
-			method = ServletWrapper.class.getDeclaredMethod("loadRouter", String.class);
-	    	method.setAccessible(true);
-	    	method.invoke(null, contextPath);
+	        Play.ctxPath = contextPath;
+	        Router.load(contextPath);
+	        Field field = ServletWrapper.class.getDeclaredField("routerInitializedWithContext");
+	        field.setAccessible(true);
+	        field.set(null, Boolean.TRUE);
 		} 
 		catch (Exception e) {
-			throw new RuntimeException("Cannot invoke 'laodRoter' method", e);
+			Logger.error(e,"Cannot invoke 'Router' method");
+			throw new RuntimeException("Cannot invoke 'Router' method", e);
 		}
     }
  
