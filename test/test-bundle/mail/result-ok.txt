@@ -1,7 +1,0 @@
-Your alignment has been completed. 
-
-Click here to view the result --> ${url} 
-
-
-Cheers, 
-T-Coffee team
