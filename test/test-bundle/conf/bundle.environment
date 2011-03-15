@@ -1,0 +1,29 @@
+#
+# Bundle environment template file. The following entries will be included 
+# in the host environment for each executed service.
+#  
+# Available variables:
+# - bundle.name:
+# - bundle.version:
+# - bundle.title:
+# - bundle.email:
+# - bundle.author: 
+# - bundle.path: bundle root dir 
+# - bundle.bin.path: bundle binaries path
+# - application.path: 
+# - workspace.path: server root data path shared between all services
+# - data.path: service working directory 
+# - all other properties defined in bundle.properties 
+#
+# Relatives paths are located starting from 'bundle.path' 
+# 
+PATH=${bundle.path}/bin:${settings.BLASTPLUS_HOME}/bin:${env.PATH}
+HOME=${data.path}
+EMAIL_4_TCOFFEE=${bundle.email}
+DIR_4_TCOFFEE=${workspace.path}/.t_coffee/
+TMP_4_TCOFFEE=${data.path}/_tmp/
+LOCKDIR_4_TCOFFEE=${data.path}/_lck/
+CACHE_4_TCOFFEE=${data.path}/_cache/
+MCOFFEE_4_TCOFFEE=${bundle.path}/matrix/
+MAFFT_BINARIES=${bundle.path}/bin
+PERL5LIB=${bundle.path}/perl

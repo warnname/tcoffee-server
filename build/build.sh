@@ -194,12 +194,22 @@ function make_war()
 	mkdir -p $SERVER_WAR
 	
 	#
-	# prod version 
+	# creating war
 	#
 	echo Creating PROD war
 	cd $SERVER_DIR
 	$PLAY_HOME/play war ./tserver -o $SERVER_WAR/tcoffee --%$CONFID
 	cd $SERVER_WAR/tcoffee
+	
+	#
+	# replacing default ServletWrapper with own one
+	#
+	cat WEB-INF/web.xml | sed -e 's/play\.server\.ServletWrapper/server.TServerServlet/' > WEB-INF/web.new
+	cp WEB-INF/web.new WEB-INF/web.xml
+	
+	#
+	# packing 
+	#
 	zip -r ../$SERVER_NAME.war * > /dev/null
 	mv ../$SERVER_NAME.war $DIST_DIR
 	
@@ -260,7 +270,7 @@ function pack_server_local() {
 	#
 	# precompile the server application
 	#
-	$PLAY_HOME/play precompile $SERVER_DIR/tserver
+	#$PLAY_HOME/play precompile $SERVER_DIR/tserver
 	
 	# 
 	# copy required bundles
@@ -272,7 +282,7 @@ function pack_server_local() {
 	# 
 	# create start/stop script 
 	#
-	echo "./$PLAY_VER/play start ./tserver --%prod -Dprecompiled=true" > $SERVER_DIR/start.sh
+	echo "./$PLAY_VER/play start ./tserver --%prod " > $SERVER_DIR/start.sh
 	echo "for i in {5..1}; do echo -n -e \"\r\"; echo -n '~ T-Coffee is warming-up. Your browser will open in '; echo -n \"\$i secs  \"; sleep 1; done;" >> $SERVER_DIR/start.sh
 	echo "" >> $SERVER_DIR/start.sh
 	echo "python -c \"import webbrowser; webbrowser.open('http://localhost:9000/')\" 2> /dev/null" >> $SERVER_DIR/start.sh
@@ -308,11 +318,6 @@ function pack_server_vital()
 	# 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver-bundles/vital-it/* $SERVER_DIR/bundles
-
-	# Replacing 'qsub' cluster command with 'bsub'
-	#cat $SERVER_DIR/bundles/tcoffee/conf/bundle.xml | sed -e 's/qsub>/bsub>/' > $SERVER_DIR/bundles/tcoffee/conf/bundle.vital
-	#cp $SERVER_DIR/bundles/tcoffee/conf/bundle.vital $SERVER_DIR/bundles/tcoffee/conf/bundle.xml
-
 
 	#
 	# Create the final zip file 
