@@ -117,4 +117,8 @@ public class TestHelper {
 			Thread.currentThread().sleep(millis);
 		} catch (InterruptedException e) { }
 	}
+	
+	public static Bundle bundle() { 
+		return Bundle.read( new File(Play.applicationPath, "test/test-bundle") );
+	}
 }

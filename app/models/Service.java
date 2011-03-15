@@ -19,7 +19,6 @@ import play.data.validation.Validation;
 import play.jobs.Job;
 import play.mvc.Http.Request;
 import play.mvc.Router;
-import play.mvc.Scope;
 import play.mvc.Scope.Params;
 import play.mvc.Scope.Session;
 import util.Utils;
@@ -38,6 +37,17 @@ public class Service implements Serializable {
 	/** the parent configuration object */
 	@XStreamOmitField
 	public Bundle bundle; 
+
+	/**  a string indicating the origin of this request e.g. <code>web</code>, <code>email</code>, etc */
+	@XStreamOmitField
+	public String source = "web";
+	
+	@XStreamOmitField
+	public String sessionId;
+
+	@XStreamOmitField
+	public String userEmail;
+	
 	
 	@XStreamOmitField Map<String,Object> fCtx;
 	@XStreamOmitField String fRid;
@@ -147,8 +157,9 @@ public class Service implements Serializable {
 		
 		int hash = input.hashFields();
 		hash = Utils.hash(hash, this.name);
-		hash = Utils.hash(hash, Session.current().getId());
+		hash = Utils.hash(hash, this.sessionId);
 		hash = Utils.hash(hash, this.bundle.getLastModified());
+		hash = Utils.hash(hash, this.userEmail);
 
 		/* 
 		 * Avoid clash on existing folder with unknown status, 
@@ -166,6 +177,7 @@ public class Service implements Serializable {
 				check = new Repo(result,false);
 			}
 			else {
+				Logger.info("Re-using and existing request-id: '%s' - caching: %s - status: '%s' - expired: '%s'", result, enableCaching, status, check.isExpired());
 				break;
 			}
 		}
@@ -310,11 +322,31 @@ public class Service implements Serializable {
 	 */
 	public void init( boolean enableCaching ) {
 		
+		// TODO the following information coul be injected using a service context provider .. 
+		
 		/*
 		 * 0. generic initialization 
 		 */
 		fStartTime = new Date();
-		fRemoteAddress = Request.current().remoteAddress;
+		if( fRemoteAddress == null && Request.current() != null) { 
+			fRemoteAddress = Request.current().remoteAddress;
+		}
+
+		if( sessionId == null && Session.current() != null ) { 
+			sessionId = Session.current().getId();
+		}
+		
+		if( userEmail == null && input != null ) { 
+			/* Try to discover the user email looking on the email field, 
+			 * anyway this is really a dirty trick because it is tied to the field name used in the 
+			 * bundle.xml configuration. If that name chage, this link will be broken 
+			 * TODO find something better 
+			 */
+			Field field = input.getField("email");
+			if( field != null ) { 
+				userEmail = field.value;
+			}
+		}
 		
 		/*
 		 * 1. create the context repository folder for this execution 
@@ -356,13 +388,13 @@ public class Service implements Serializable {
 
 	
 	String getResultURL() {
-		String bundle = Scope.Params.current().get("bundle");
-		String rid = rid();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("bundle", bundle);
-		params.put("rid", rid);
+		params.put("bundle", bundle.name);
+		params.put("rid", fRid);
 		
-		return Request.current().getBase() + Router.reverse("Application.result", params).toString();
+		String host = AppProps.instance().getHostName();
+		String path = Router.reverse("Application.result", params).toString();
+		return "http://" + host + path;
 	}
 	
 	public boolean start() {
@@ -389,9 +421,10 @@ public class Service implements Serializable {
     			 * run the alignment job
     			 */
     			Service.current(Service.this);
-    			final long logid = trace(null).id;
     			
+    			long logid=-1;
     			try {
+        			logid = trace(null).id;
     				/* run the job */
     				Service.this.run();
     			}
@@ -420,16 +453,18 @@ public class Service implements Serializable {
 		UsageLog usage = null;
 		if( id == null ) { 
 			usage = new UsageLog();
-			usage.creation = new Timestamp(fStartTime.getTime());
-			usage.ip = fRemoteAddress;
+			usage.creation = new Timestamp(this.fStartTime.getTime());
+			usage.ip = this.fRemoteAddress;
 			usage.bundle = this.bundle.name;
 			usage.service = this.name;
 			usage.requestId = this.fRid;
 			usage.status = "RUNNING";
+			usage.source = this.source;
+			usage.email = this.userEmail;
 			
 			Logger.debug("Creating usage log for request # %s", this.fRid );
 		}
-		else { 
+		else if( id >=0 ){ 
 			usage = UsageLog.findById( id );
 			
 			if( fOutResult != null ) { 
@@ -450,7 +485,7 @@ public class Service implements Serializable {
 		/* 
 		 * initialize the process 
 		 */
-		process.init(new CommandCtx( fCtx )); // <-- pass to the command context the save variables
+		process.init(new CommandCtx(fCtx)); // <-- pass to the command context the save variables
 		
 		/* 
 		 * the main execution 
@@ -486,6 +521,7 @@ public class Service implements Serializable {
 				 * execute the result events 
 				 */
 				if( branch.hasEvents() ) {
+					branch.events.init(new CommandCtx(fCtx));	// init with the current context
 					branch.events.execute();
 					if( branch.events.getResult() != null ) {
 						branch.result.addAll( branch.events.getResult() );
@@ -623,19 +659,19 @@ public class Service implements Serializable {
             StringBuffer newValue = new StringBuffer();
             while (matcher.find()) {
                 String var = matcher.group(1);
-                String r = null;
+                String replace = null;
                 if( var != null && var.startsWith("env.")) { 
-                	r = System.getenv(var.substring(4));
+                	replace = System.getenv(var.substring(4));
                 }
                 else if( fCtx != null ) { 
-                	r = fCtx.get(var) != null ? fCtx.get(var).toString() : null; 
+                	replace = fCtx.get(var) != null ? fCtx.get(var).toString() : null; 
                 }
                 
-                if (r == null) {
-                    Logger.warn("Cannot replace %s in configuration (%s=%s)", var, key, value);
-                    continue;
+                if (replace == null) {
+                    Logger.warn("Cannot replace variable \"%s\" in entry \"%s\" = \"%s\"", var, key, value);
+                    replace = "";
                 }
-                matcher.appendReplacement(newValue, r.replaceAll("\\\\", "\\\\\\\\"));
+                matcher.appendReplacement(newValue, replace.replaceAll("\\\\", "\\\\\\\\"));
             }
             matcher.appendTail(newValue);
             result.put(key.toString(), newValue.toString());

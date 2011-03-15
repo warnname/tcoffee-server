@@ -1,5 +1,5 @@
 
-<table class="one-col">
+<table class="one-col" summary="List of items">
 #{list _arg.aggregations(), as:'ag'} 
 %{	
 	def items = _arg.filter(ag); 

@@ -65,8 +65,6 @@ public class BundleRegistry {
 		return bundles.get(name);
 	}
 	
-	
-
 
     public Bundle load( File file ) { 
     	Bundle result = Bundle.read(file);
@@ -108,7 +106,7 @@ public class BundleRegistry {
 		roots.remove(bundle.root);
 		
 		/* clean template cache */
-		BundlePageLoader.cleanCacheForBundle(bundle);
+		BundleTemplateLoader.cleanCacheForBundle(bundle);
 	}
 	
 	/**
@@ -290,7 +288,8 @@ public class BundleRegistry {
 		List<String> hotfiles = java.util.Arrays.asList("bundle.xml", "bundle.properties","bundle.environment","bundle.env"); 
 		
 		int hash = Utils.hash();
-		File[] files = new File( bundle.root, "conf").listFiles();
+		File[] files = new File(bundle.root, "conf").listFiles();
+		
 		for( File file : files ) { 
 			
 			hash = Utils.hash(hash, file.getName());

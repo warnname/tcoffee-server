@@ -141,6 +141,14 @@ public class QueryHelper {
 		else if( "rid".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			where.and( "requestId", "like", qvalue );
 		}
+
+		else if( "email".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "email", "like", qvalue );
+		}
+
+		else if( "source".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "source", "=", qvalue );
+		}
 		
 		/* 
 		 * counting the total result items 

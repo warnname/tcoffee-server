@@ -1465,10 +1465,10 @@ public class Utils {
 		return result;
 	}
 	
-	public static Map<String,String> asStringMap(String...values) {
+	public static Map<String,Object> asMap(String...values) {
 		if( values == null ) return null;
 		
-		Map<String,String> result = new HashMap<String, String>();
+		Map<String,Object> result = new HashMap<String,Object>();
 		for( String pair : values ) {
 			if( pair == null ) { continue; }
 			
@@ -2093,6 +2093,21 @@ public class Utils {
 		// default value
 		return i==max ? args[i] : null;
 	}
+	
+	
+    /** 
+     * remove leading whitespace 
+     */
+    public static String ltrim(String source) {
+        return source != null ? source.replaceAll("^\\s+", "") : null;
+    }
+
+    /** 
+     * remove trailing whitespace 
+     */
+    public static String rtrim(String source) {
+        return source != null ? source.replaceAll("\\s+$", "") : null;
+    }	
 	
 }
  

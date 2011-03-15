@@ -42,6 +42,16 @@ public class QueryHelperTest extends UnitTest {
 		
 	}
 	
+	public void testFindGridResultWithRestrictions() { 
+		GridResult result = QueryHelper.findUsageGridData(null, 1, 5, null, null, "rid", "e63796f6");
+		assertEquals( new Long(1), result.total );
+		assertEquals( "e63796f6", result.rows.get(0).requestId );
+
+		result = QueryHelper.findUsageGridData(null, 1, 5, null, null, "source", "web");
+		assertEquals( new Long(9), result.total );
+	
+	}
+	
 	@Test 
 	public void testFindUsageAggregationWithBundle() { 
 		List result = QueryHelper.findUsageAggregation(null);

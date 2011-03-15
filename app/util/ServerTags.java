@@ -11,18 +11,24 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import models.Bundle;
 import models.Field;
 import play.Logger;
+import play.mvc.Scope;
 import play.templates.FastTags;
 import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.JavaExtensions;
+import play.templates.Template;
+import play.vfs.VirtualFile;
 import util.TcoffeeHelper.ResultHtml;
+import bundle.BundleTemplateLoader;
 
 public class ServerTags extends FastTags {
 
@@ -302,4 +308,50 @@ public class ServerTags extends FastTags {
 		}
 	}
 
+	
+	/**
+	 * Renders a bundle provided page
+	 * 
+	 * @param args
+	 * @param body
+	 * @param out
+	 * @param template
+	 * @param fromLine
+	 */
+	public static void _bundlepage(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
+
+		if (!args.containsKey("arg") || args.get("arg") == null) {
+			throw new QuickException("Missing bundle page name. You should provide a page name to render like {bundlepage 'page-to-render.html' /}");
+        }
+
+		/* check that all required parameters have been specified */
+		Object _arg = args.get("arg");
+        Check.notNull(_arg, "Missing parameter on {bundlepage /} tag");
+        
+        /* retrieve the current bundle */
+        Bundle bundle = (Bundle) Scope.RenderArgs.current().get("_bundle");
+        Check.notNull(bundle, "Missing bundle object invoking {bundlepage /} tag");
+
+        Template t;
+        if( _arg instanceof File ) { 
+        	t = BundleTemplateLoader.load(bundle, VirtualFile.open((File)_arg));
+        }
+        else if (_arg instanceof VirtualFile) { 
+        	t = BundleTemplateLoader.load(bundle, (VirtualFile)_arg);
+        }
+        else { 
+        	t = BundleTemplateLoader.load(bundle, _arg.toString());
+        }
+        
+        /* invoke the page template */
+        Map newArgs = new HashMap();
+        newArgs.putAll(template.getBinding().getVariables());
+        newArgs.put("_isInclude", true);
+        t.render(newArgs);
+		
+	}
+	
+	
+
+	
 }

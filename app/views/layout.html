@@ -1,5 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
 <head>
 #{if title || (_main_title && !meta?.contains('<title>')) }
 <title>
@@ -7,14 +7,15 @@
 </title>
 #{/if}
 
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
-<meta name="application-name" content="${_main_title}"/>
-<meta name="application-url" content="${_main_index}"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta name="application-name" content="${_main_title}">
+<meta name="application-url" content="${_main_index}">
 
 #{get 'meta' /}
 
-<link rel="shortcut icon" type="image/x-icon" href="@{'/public/images/favicon.ico'}"  /> 
-<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="image/x-icon" href="@{Main.favicon()}"> 
+<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css">
 #{if _bundle && _bundle.cssPath } 
 <style type="text/css">
 #{includefile _bundle.cssPath /}
@@ -22,7 +23,7 @@
 #{/if}
  #{get 'moreStyles' /}
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" ></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" ></script>
 <script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" ></script>
 #{get 'moreScripts' /}
 
@@ -46,17 +47,12 @@ $(document).ready(function() {
 <body class="${_main_class}">
 
 <div id="wrapper"> 
-	<div id="header"> 
-		<h1 id="logo"><a href="${_main_index}" >${_main_title}</a></h1> 
-		<span id="placeholder"></span>
-
+	<div id="header">
+		#{include 'page.header.html' /}
 		<div id="navigation" class="${_main_action}">
-		#{if _bundle && _bundle.navigatorPath }
-		#{include_bundle _bundle.navigatorPath /}
-		#{/if}
+		#{if _bundle && _bundle.navigatorPath } #{bundlepage _bundle.navigatorPath /} #{/if}
 		</div>
 	</div> 
-
 
 	<div id="content" >
 	#{if _main_sysmsg && request.cookies['sysmsg_closed']?.value != _main_sysmsg.hash }
@@ -72,20 +68,14 @@ $(document).ready(function() {
 </div>
 
 <div id="footer"> 
-    <div class="separator" ></div>
-	<p class="copy-note" >
-	<img src="@{'/public/images/crg.png'}" height="18" width="18" /> ${_main_title} is hosted by the <a href="http://www.crg.es" target="_blank">Centre for Genomic Regulation</a> (CRG) of Barcelona 
-	</p>
-	<p class="fly-away">
-		<a href="#">Back to top</a>
-	</p>
+	#{include 'page.footer.html' /}
 </div> 
 
 #{if _bundle && _bundle.javascriptPath }
-<script type="text/javascript" charset="utf-8"><!--
+<script type="text/javascript" charset="utf-8">
 var Play = { "id": "${play.Play.id}", "isDev": ${play.Play.mode.isDev()}, "isProd": ${play.Play.mode.isProd()} };
 #{includefile _bundle.javascriptPath /}
-//--></script> 
+</script> 
 #{/if}
 </body>
 </html>

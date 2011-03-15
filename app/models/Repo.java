@@ -193,7 +193,7 @@ public class Repo implements Serializable {
 	 */
 
 	public OutResult getResult() {
-		return XStreamHelper.fromXML(fResult);
+		return (OutResult) (fResult.exists() ? XStreamHelper.fromXML(fResult) : null);
 	}
 	
 	/**
@@ -343,7 +343,10 @@ public class Repo implements Serializable {
 			Process proc = Runtime.getRuntime().exec(rm);
 			int exitcode = proc.waitFor();
 			if( exitcode != 0 ) { 
-				Logger.warn("Cannot execute: '%s'; exitcode: %s", sRoot, exitcode);
+				Logger.warn("Cannot execute: '%s'; exitcode: %s", rm, exitcode);
+			}
+			else if( new File(sRoot).exists() ) { 
+				Logger.warn("Unable to remove Repo: '%s'", rid);
 			}
 			else { 
 				Logger.info("Deleted Repo: '%s'", rid);
@@ -351,7 +354,7 @@ public class Repo implements Serializable {
 			
 		}
 		catch( Exception e ) { 
-			Logger.error("Cannot delete Repo folder: '%s'", sRoot);
+			Logger.error(e, "Error deleting Repo folder: '%s'", sRoot);
 		}
 	}
 	

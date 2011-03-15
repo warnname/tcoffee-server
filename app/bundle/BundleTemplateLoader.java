@@ -14,7 +14,7 @@ import play.templates.Template;
 import play.templates.TemplateLoader;
 import play.vfs.VirtualFile;
 
-public class BundlePageLoader extends TemplateLoader {
+public class BundleTemplateLoader extends TemplateLoader {
 
 	/** 
 	 * maintains a list of keys for cached template to be able to free the cached for a specified template 
@@ -55,6 +55,7 @@ public class BundlePageLoader extends TemplateLoader {
 		return load(bundle,file);
 	}	
 	
+	
 	/**
 	 * Override this to make it able to re-compile bundle provided template at runtime
 	 * 
@@ -88,4 +89,25 @@ public class BundlePageLoader extends TemplateLoader {
         
         return templates.get(key);
      }	
+    
+    
+	/**
+	 * Load a mail template in the bundle mail path 
+	 * 
+	 * @param bundle
+	 * @param templateFileName
+	 * @return
+	 */
+	public static Template mail( Bundle bundle, String templateFileName ) { 
+		if( bundle.mailPath == null ) { 
+			throw new TemplateNotFoundException(templateFileName);
+		}
+		
+		VirtualFile file = bundle.mailPath.child(templateFileName);
+		if( !file.exists() ) { 
+			throw new TemplateNotFoundException(templateFileName);
+		}
+		
+		return load(bundle,file);		
+	}  
 }

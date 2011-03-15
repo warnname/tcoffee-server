@@ -168,6 +168,15 @@ function make_distribution()
 	cp $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID $SERVER_DIR/tserver/conf/
 	fi
 	
+	#
+	# Copy the favicon to the target path
+	#   find . -name "*.txt" -type f  -exec cp  '{}' ./test \;
+	#
+	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/favicon.ico.$CONFID ]; then 
+	cp $WORKSPACE/tserver/build/conf/$CONFID/favicon.ico.$CONFID $SERVER_DIR/tserver/conf/
+	fi
+
+	
 } 
 
 

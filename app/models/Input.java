@@ -105,6 +105,28 @@ public class Input implements Serializable {
 		return __fields = result;
 	}
 	
+	public List<Field> fields( String selectByName ) { 
+		List<Field> all = fields();
+
+		if( Utils.isEmpty(selectByName) ) { 
+			return all;
+		}
+		
+		List<Field> result = new ArrayList<Field>();
+		for( Field field : all ) { 
+			if( selectByName.equals(field.name)) { 
+				result.add(field);
+			}
+		}
+		
+		return result;
+	}
+	
+	public Field getField( String name ) { 
+		List<Field> fields = fields(name);
+		return fields!=null && fields.size()>0 ? fields.get(0) : null;
+	}
+	
 	public void validate() {
 		for( Field f : fields() ) {
 			f.validate();
@@ -135,6 +157,5 @@ public class Input implements Serializable {
 	public void save( File file ) {
 		XStreamHelper.toXML(this, file);
 	}
-
 	
 }

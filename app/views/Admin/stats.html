@@ -167,20 +167,24 @@ $(document).ready(function () {
 		url: urlGridData(_args()),
 		dataType: 'json',
 		colModel : [
-			{display: 'Request ID', name : 'rid', width : 80, process: onRowSelect },
-			{display: 'Bundle', name : 'bundle', width : 80  },
-			{display: 'Service', name : 'service', width : 80  },
-			{display: 'Status', name : 'status', width : 80  },
-			{display: 'Duration', name : 'duration', width : 80, align: 'right'  },
-			{display: 'Date', name : 'date', width : 120  },
-			{display: 'Ip Address', name : 'ip', width : 80  }
+			{display: 'Request ID', name : 'rid', width: 80, process: onRowSelect },
+			{display: 'Bundle', name : 'bundle', width: 80  },
+			{display: 'Service', name : 'service', width: 80  },
+			{display: 'Status', name : 'status', width: 50  },
+			{display: 'Duration', name : 'duration', width: 50, align: 'right'  },
+			{display: 'Date', name : 'date', width: 50  },
+			{display: 'Source', name : 'source', width: 50  },
+			{display: 'Ip Address', name : 'ip', width : 80  },
+			{display: 'Email', name : 'email', width : 150  }
 			],
 		searchitems : [
 		   	{display: 'Request ID', name : 'rid'},
 			{display: 'Bundle', name : 'bundle'},
 			{display: 'Service', name : 'service', isdefault: true},
 			{display: 'Date', name : 'date'},
-			{display: 'Ip Address', name : 'ip'}
+			{display: 'Source', name : 'source'},
+			{display: 'Ip Address', name : 'ip'},
+			{display: 'Email', name : 'email'}
 			],
 		usepager: true,
 		useRp: false,

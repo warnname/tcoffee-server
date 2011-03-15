@@ -177,6 +177,7 @@ public class QsubCommandTest extends UnitTest {
 	
 	@Test 
 	public void testWrapperProperty() { 
+		AppProps.instance().remove("qsub.wrapper");
 		QsubCommand qsub = new QsubCommand();
 		assertTrue( Utils.isEmpty(qsub.wrapper) );
 

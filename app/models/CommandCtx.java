@@ -33,7 +33,7 @@ public class CommandCtx implements Serializable {
 	
 	
 	public CommandCtx( String ... pairs ) { 
-		ctx = new HashMap<String, Object>( Utils.asStringMap(pairs));
+		ctx = new HashMap<String, Object>( Utils.asMap(pairs));
 	}
 	
 	public CommandCtx(CommandCtx that) {

@@ -87,8 +87,8 @@ public class QsubCommand extends AbstractShellCommand {
 			return disabled;
 		}
 		
-		String result = AppProps.instance().getProperty("qsub.disabled");
-		disabled = result != null ? "true".equals(result) : Play.mode.equals( Play.Mode.DEV );
+		String result = AppProps.instance().getString("qsub.disabled");
+		disabled = result != null ? "true".equals(result) : Play.mode.isDev();
 		return disabled;
 	}
 	
@@ -97,7 +97,7 @@ public class QsubCommand extends AbstractShellCommand {
 			return wrapper;
 		}
 		
-		return wrapper = AppProps.instance().get("qsub.wrapper","").trim();
+		return wrapper = AppProps.instance().getString("qsub.wrapper","").trim();
 	}
 	
 	@Override

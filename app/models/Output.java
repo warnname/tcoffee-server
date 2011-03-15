@@ -23,6 +23,22 @@ public class Output implements Serializable {
 		this.fail = Utils.copy(that.fail);
 	}
 	
+	public void addToValid( AbstractCommand<OutResult> cmd ) { 
+		if( cmd == null ) { return; }
+		if( valid == null) { 
+			valid = new OutSection();
+		}
+		valid.add(cmd);
+	}
+
+	public void addToFail( AbstractCommand<OutResult> cmd ) { 
+		if( cmd == null ) { return; }
+		if( fail == null) { 
+			fail = new OutSection();
+		}
+		fail.add(cmd);
+	}
+	
 	
 	public String toString() { 
 		return Utils.dump(this,"valid","fail");

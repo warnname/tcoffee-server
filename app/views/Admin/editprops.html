@@ -27,7 +27,7 @@ View and edit application properties &amp; configuration
 <tbody>
 #{list names, as:'key'}
 <tr >
-<td>${key}</td> <td id="${key.hashCode()}" class="cellval">${props.getProperty(key)}</td> <td> [ <a href="javascript:del('${key}','${key.hashCode()}')" >delete</a> ] </td>
+<td>${key}</td> <td id="${key.hashCode()}" class="cellval">${props.getString(key)}</td> <td> [ <a href="javascript:del('${key}','${key.hashCode()}')" >delete</a> ] </td>
 	
 </tr>
 #{/list}

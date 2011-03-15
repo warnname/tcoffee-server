@@ -77,6 +77,15 @@ public class ServiceTest extends UnitTest {
 		assertEquals( "plain@email.com", env.get("email") );
 	}
 	
+	@Test 
+	public void testGetUrl() { 
+		Service service = new Service();
+		service.bundle =  new Bundle("tcoffee");
+		service.fRid = "999";
+		String url = service.getResultURL();
+		
+		assertEquals( "http://localhost:9000/apps/tcoffee/result?rid=999", url );
+	}
 	
 	
 }

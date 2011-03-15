@@ -1,13 +1,17 @@
 package models;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
@@ -16,16 +20,12 @@ import org.apache.log4j.RollingFileAppender;
 
 import play.Logger;
 import play.Play;
+import play.libs.IO;
 import play.libs.Time;
 import play.mvc.Router;
 import util.Check;
 import util.ReloadableSingletonFile;
 import util.Utils;
-import util.XStreamHelper;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
-
 import exception.QuickException;
 
 
@@ -35,39 +35,14 @@ import exception.QuickException;
  * @author Paolo Di Tommaso
  *
  */
-@XStreamAlias("props")
+
 public class AppProps implements Serializable  {
 
-	static File getConfPath() {
-		final String confProp = "app.properties.file";
-		File result;
-		String propsFileName = Play.configuration.getProperty(confProp,"tserver.properties.xml");
-		
-		if( propsFileName.startsWith( File.separator ) ) {
-			/* when an absolute path is specified just use it */
-			result = new File(propsFileName);
-		}
-		else {
-			/* try to find it on the data folder */
-			result = new File(WORKSPACE_FOLDER,propsFileName);
-			
-			/* if does not exist fallback on the application conf path */
-			if( !result .exists() ) {
-				File conf = new File(Play.applicationPath,"conf");
-				result = new File(conf,propsFileName);
-			}
-		}
+	Properties properties;
 
-		if( result.exists() ) {
-			Logger.info("Detected %s file: %s", confProp, result);
-		}
-		else {
-			Logger.warn("Missing %s file: %s", confProp, result);
-		}
-		
-		return result;
-		
-	}
+	List<String> changed = new ArrayList<String>();
+	
+	public String contextPath;
 	
 	
 	static File getWorkPath( final String propertyName, final String defaultLocation ) { 
@@ -98,25 +73,28 @@ public class AppProps implements Serializable  {
 	}
 	
 	/**
-	 * The application main <i>data</i> folder. It contains application 
-	 * properties <code>tserver.properties.xml></code>, tcoffee configuration file
-	 * <code>tserver.conf.xml</code> and application temporary data
+	 * The application main <i>data</i> folder. 
 	 */
 	public static final File WORKSPACE_FOLDER;
 
-	/** The path where all application bundles are located */
+	/** 
+	 * The path where application bundles are located 
+	 */
 	public static final File BUNDLES_FOLDER;
 	
+	/**
+	 * Where temporaries files are stored 
+	 */
 	public static final File TEMP_PATH;
 	
-	static final Map<String,String> DEF_PROPS;
-
-	/** Reference the server properties file <code>tserver.properties.xml</code> */
+	/** 
+	 * Location of the file containing server specific configuration
+	 */
 	public static final File SERVER_PROPS_FILE;
 
-	/** Reference the server properties file <code>tserver.conf.xml</code> */
-	//public static final File SERVER_CONF_FILE;
-
+	/**
+	 * Location of server log file 
+	 */
 	public static final File SERVER_APPLOG_FILE;
 	
 	/* singleton instance */
@@ -126,10 +104,10 @@ public class AppProps implements Serializable  {
 		
     	/*
     	 * 1. local data workspace 
-    	 * It could be specified by the property 'tserver.workspace.path'
+    	 * It could be specified by the property 'settings.workspace.path'
     	 * - or - if it is missing it wiull be used the path {application.path}/data
     	 */
-		String path = Play.configuration.getProperty("tserver.workspace.path");   
+		String path = Play.configuration.getProperty("settings.workspace.path");   
 		WORKSPACE_FOLDER = Utils.isNotEmpty(path) 
 				    ? new File(path)
 		 			: new File(Play.applicationPath,"data");
@@ -148,24 +126,30 @@ public class AppProps implements Serializable  {
 		/*
 		 * 2. define the properties file 
 		 */
-		SERVER_PROPS_FILE = getConfPath();
+		final String propsFileName = Play.configuration.getProperty("settings.properties.file", "tserver.properties");
+		
+		/* when an absolute file name is specified just use it */
+		SERVER_PROPS_FILE = propsFileName.startsWith(File.separator)  
+				? new File(propsFileName)
+				: new File(WORKSPACE_FOLDER, propsFileName);
 
+		Logger.info("Using Application properties file: '%s'",SERVER_PROPS_FILE );
 		
 		/*
 		 * 3. define application log file 
 		 */
 		SERVER_APPLOG_FILE = getApplicationLogFile();
-		Logger.info("Using Applicatin log file: '%s'", SERVER_APPLOG_FILE);
+		Logger.info("Using Application log file: '%s'", SERVER_APPLOG_FILE);
 		
 		
 		/*
 		 * 4. bundles path 
 		 */
-		BUNDLES_FOLDER = getWorkPath("tserver.bundles.path", "bundles");
+		BUNDLES_FOLDER = getWorkPath("settings.bundles.path", "bundles");
 		Logger.info("Using Bundles path: %s", BUNDLES_FOLDER);
 
 		/* create temporary path */
-		TEMP_PATH = getWorkPath("tserver.temp.path", ".temp");
+		TEMP_PATH = getWorkPath("settings.temp.path", ".temp");
 		Logger.info("Using Temp path: %s", TEMP_PATH);
 		
 		
@@ -174,9 +158,6 @@ public class AppProps implements Serializable  {
 		 */
 				
 		
-		DEF_PROPS = new HashMap<String,String>();
-		DEF_PROPS.put("requestDaysToLive", "7"); // = The max age (in days) for which the request is stored in the file system
-
 		/*
 		 * 6. create the AppProps singleton
 		 */
@@ -184,47 +165,17 @@ public class AppProps implements Serializable  {
 			
 			@Override
 			public AppProps readFile(File file) {
-				return file.exists() ? super.readFile(file) : new AppProps();
+				AppProps result = new AppProps();
+				if( file.exists() ) { 
+					result.load(file);
+				}
+				return result;
 			}
 		};
-		
-		/*
-		 * 7. add 'tserver's properties from application.conf
-		 */
-				
-		for( Object obj : Play.configuration.keySet() ) {
-			String key = (String)obj;
-			
-			if( key != null ) {
-				if( key.startsWith("mail.smtp.") || key.startsWith("tserver.")) {
-					/*
-					 * add all "mail.smtp.xxx" and "tserver.xxx" properties  
-					 */
-					addPropertyIfNotAlreadyExists(INSTANCE.get(), key);
-				}  
-			}
-		}
+
 
 	}
 
-	static boolean addPropertyIfNotAlreadyExists( final AppProps props, final String key ) {
-		String value = Play.configuration.getProperty(key);
-		
-		String name = key;
-		// remove "tserver." prefix
-		if( name.startsWith("tserver.")) {
-			name = name.substring("tserver.".length());
-		}
-		
-		// add to properties if not already exists and has a valid value 
-		if( Utils.isNotEmpty(value) && !props.containsKey(name) ) {
-			props.add(name, value);
-			return true;
-		}
-		
-		return false;
-	}
-				
 	/*
 	 * Strategy: 
 	 * 1) look for an Log4j FileAppender 
@@ -237,10 +188,10 @@ public class AppProps implements Serializable  {
 		File logFile = null;
 		FileAppender appender = null;
 		
-		String logFileName = Play.configuration.getProperty("tserver.applog.file");
-		String pattern = Play.configuration.getProperty("tserver.applog.pattern", "%d{ISO8601} %-5p ~ %m%n");
-		String maxFileSize = Play.configuration.getProperty("tserver.applog.maxFileSize", "10MB");
-		String maxBackupIndex = Play.configuration.getProperty("tserver.applog.maxBackupIndex", "10");
+		String logFileName = Play.configuration.getProperty("settings.log.file");
+		String pattern = Play.configuration.getProperty("settings.log.pattern", "%d{ISO8601} %-5p ~ %m%n");
+		String maxFileSize = Play.configuration.getProperty("settings.log.maxFileSize", "10MB");
+		String maxBackupIndex = Play.configuration.getProperty("settings.log.maxBackupIndex", "10");
 		
 		if( Play.mode.equals( Play.Mode.PROD ) ) { 
 			/*
@@ -293,29 +244,66 @@ public class AppProps implements Serializable  {
 		return logFile;
 	}
 
-	@XStreamImplicit(itemFieldName="property")
-	List<Property> properties;
-
-	/** lazy loadable accessor method */ 
-	protected List<Property> properties() {
-		if( properties == null ) {
-			properties = new ArrayList<Property>();
-		}
-		return properties;
-	}
 	
-	/** The default constructor */
+	/** 
+	 * This constructur will create an instance of current Play configuration object,
+	 * containg oly the properties prefixed with the current application id
+	 * 
+	 */
 	public AppProps() {
+		this.properties = new Properties();
+		
+    	String id = Play.id;
+    	Logger.info("Intercepting conf properties for '%s'", id);
+
+    	Properties playConf = IO.readUtf8Properties(Play.conf.inputstream());
+        Pattern pattern = Pattern.compile("^%"+id+"\\.(.*)$");
+
+        for (Object key : playConf.keySet()) {
+            Matcher matcher = pattern.matcher(key.toString());
+            if (matcher.matches()) {
+            	String name = matcher.group(1);
+            	String value = playConf.getProperty(key.toString());
+            	Logger.debug("Retaining propery: %s=%s", name, value);
+            	properties.put(name, value);
+            }
+        }
+	
 	}
 	
-	/** The copy constructor */
+	/**
+	 * Load the 
+	 * @param file
+	 */
+	public void load( File file ) { 
+		Logger.info("Loading server properties from file: '%s'", file);
+		Properties prop = new Properties();
+		try {
+			prop.load( new FileInputStream(file) );
+		} 
+		catch (IOException e) {
+			Logger.error("Unable to read properties file: '%s'", file);
+			return;
+		}
+		
+		for( Entry<Object, Object> entry : prop.entrySet() ) { 
+			Object key = entry.getKey();
+			Object val = entry.getValue();
+			Logger.debug("Loading property: %s=%s", key, val);
+			this.put(
+						key != null ? key.toString() : null, 
+						val != null ? val.toString() : null);
+		}
+	}
+	
+	/** 
+	 * The copy constructor 
+	 */
 	public AppProps( AppProps that ) {
-		this.properties = Utils.copy(that.properties);
-	}
-	
-	/** Factory method to create an istance from its xml representation */
-	static AppProps create(File file) {
-		return XStreamHelper.fromXML(SERVER_PROPS_FILE);
+		this.properties = new Properties();
+		this.properties.putAll(that.properties);
+		this.changed = new ArrayList<String>(that.changed);
+		this.contextPath = that.contextPath;
 	}
 	
 	/** Singleton instance accessor */
@@ -324,17 +312,29 @@ public class AppProps implements Serializable  {
 	} 
 	
 	/**
-	 * Save this properties in the server properties <code>tserver.properties.xml</code>
+	 * Save this properties in the server properties file
 	 * 
 	 * @see {@link #SERVER_PROPS_FILE} 
 	 */
 	public void save() {
-		XStreamHelper.toXML(this, SERVER_PROPS_FILE);
+		try {
+			/* 
+			 * note save only the properties which name is in the 'changed' list
+			 */
+			Properties copy = new Properties();
+			for( String key : changed ) { 
+				copy.put(key, properties.get(key));
+			}
+			copy.store( new FileOutputStream(SERVER_PROPS_FILE), null);
+		} 
+		catch (IOException e) {
+			throw new QuickException(e, "Unable to save properties to file: '%s'", SERVER_PROPS_FILE);
+		}
 	}
 	
 
 	public String getWebmasterEmail() {
-		return getString("webmasterEmail");
+		return getString("settings.webmaster");
 	}
 	
 	/**
@@ -347,7 +347,6 @@ public class AppProps implements Serializable  {
 	public File getDataFolder() {
 		return WORKSPACE_FOLDER;
 	}
-	
 
 	
 	/**
@@ -356,7 +355,7 @@ public class AppProps implements Serializable  {
 	 */
 	public int getDataCacheDuration() {
 		int defValue = 10 * 24 * 60 * 60; // <-- by default 10 days
-		String duration = getProperty("data.cache.duration");
+		String duration = getString("data.cache.duration");
 		if( Utils.isEmpty(duration) ) { 
 			return defValue;
 		}
@@ -371,18 +370,10 @@ public class AppProps implements Serializable  {
 	}
 	
 	public String getString(final String key) {
-		return get(key, DEF_PROPS.get(key));
+		return getString(key, null);
 	}
 
-	/**
-	 * Just a synonim for {@link #getString(String)} method
-	 * 
-	 * @param name the property unique key
-	 * @return the string value for the required property name
-	 */
-	public String getProperty(final String name) { 
-		return get(name, DEF_PROPS.get(name));
-	}
+
 	
 	/**
 	 * Just a synonim for {@link #put(String, String)}
@@ -393,8 +384,8 @@ public class AppProps implements Serializable  {
 		put(name,value);
 	}
 	
-	Integer getInteger(final String key) {
-		String value = get(key, DEF_PROPS.get(key));
+	public Integer getInteger(final String key) {
+		String value = getString(key, null);
 		if( Utils.isEmpty(value) ) { 
 			return null;
 		}
@@ -402,123 +393,36 @@ public class AppProps implements Serializable  {
 		return Integer.parseInt(value);
 	}
 	
-	public String get(String key, final String defValue) {
+	public String getString(String key, final String defValue) {
 		Check.notNull(key, "Argument 'key' cannot be null");
 		if( properties == null ) return defValue;
 		
-		for( Property prop : properties ) {
-			if( key.equals(prop.getName())) {
-				return prop.getValue();
-			}
-		}
-		
-		return defValue;
+		String value = properties.getProperty(key);
+		return value != null ? value : defValue;
 	}
 
 	public List<String> getNames() {
-
-		List<String> result = new ArrayList<String>();
-		
-		if( properties != null ) 
-		for( Property prop : properties ) {
-			result.add(prop.getName());
-		}
-		return result;
+		return new ArrayList( properties.keySet() );
 	}
 	
 	public boolean remove( String name ) { 
-		int p = indexOf(name);
-		if( p != -1 ) { 
-			properties.remove(p);
-			return true;
-		}
-		
-		return false;
+		Object val = properties.remove(name);
+		return val != null;
 	}
 	
-	public List<Property> list() {
-		return properties != null ? new ArrayList<Property>(properties) : Collections.<Property>emptyList();
-	}
-	
-	public int indexOf( String key ) {
-		if( properties == null ) return -1;
-
-		int i=0;
-		for( Property prop : properties ) {
-			if( key.equals(prop.getName())) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
 	
 	public boolean containsKey( String key ) {
-		return indexOf(key) != -1;
+		return properties.containsKey(key);
 	}
 
 	public void put(String key, String value) {
-		put(new Property(key,value));
-	}
-	
-	public void put( Property property ) {
-		Check.notNull(property, "Argument 'property' cannot be null");
-		
-		int p = indexOf(property.getName());
-		if( p != -1 ) {
-			properties().remove(p);
-			properties().add(p, property);
+		properties.put(key, value);
+		Play.configuration.put(key, value);
+		if( !changed.contains(key) ) { 
+			changed.add(key);
 		}
-		else {
-			properties().add(property);
-		}
-		
 	}
 
-	public void add(String key, String value) {
-		properties().add(new Property(key, value));
-	}
-	
-	public boolean addIfNotExists(String key, String value) {
-
-		if( !containsKey(key) ) {
-			properties().add(new Property(key, value));
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Put all prorties in the specified instance to this instance. 
-	 * If a property with the same name exists in this instance it will 
-	 * be overriden.  
-	 * 
-	 * @param props the instance to copy from 
-	 */
-	public void putAll( AppProps props ) {
-		if( props == null ) return;
-		
-		for( Property current : props.list() ) {
-			this.put(current.name, current.value);
-		}
-	} 
-
-	/**
-	 * Put all prorties in the specified instance to this instance. 
-	 * 
-	 * @param props the instance to copy from 
-	 */
-	public void putOnlyIfNotExist( AppProps props ) {
-		if( props == null ) return;
-		
-		for( Property current : props.list() ) {
-			if( !containsKey(current.getName()) ) {
-				put(current.name, current.value);
-			}
-		}
-	} 
-	
-	public String contextPath;
 	
 	public String getContextPath() { 
 		if( contextPath != null ) { 
@@ -549,9 +453,11 @@ public class AppProps implements Serializable  {
 			contextPath = "";
 		}
 		return contextPath;
+	}
 
 
-
+	public String getHostName() {
+		return getString("settings.hostname");
 	}
 	
 }

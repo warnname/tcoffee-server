@@ -148,9 +148,9 @@ public class UtilsTest extends UnitTest {
 	@Test
 	public void testAsStringMap() {
 		
-		assertNull( Utils.asStringMap((String[])null) );
+		assertNull( Utils.asMap((String[])null) );
 		
-		Map<String,String> map = Utils.asStringMap("x=1", "y=2", null, "z=3", "a=", "b");
+		Map<String,Object> map = Utils.asMap("x=1", "y=2", null, "z=3", "a=", "b");
 		assertEquals( 5, map.size() );
 		assertEquals("1", map.get("x"));
 		assertEquals("2", map.get("y"));
@@ -581,4 +581,12 @@ public class UtilsTest extends UnitTest {
 		
 	}
 
+	@Test
+	public void testLtrim() { 
+		assertEquals( "xxx   ", Utils.ltrim("   xxx   ") );
+		assertEquals( null, Utils.ltrim(null) );
+		
+		assertEquals( "   xxx", Utils.rtrim("   xxx") );
+		assertEquals( null, Utils.rtrim(null) );
+	}
 }

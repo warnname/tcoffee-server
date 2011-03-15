@@ -179,7 +179,7 @@ public class Mail extends AbstractCommand {
 	 * @param recipients multiple email addresses separated bu a comma ',' or a semicolon ';' char
 	 * @return a list containing at least one {@link InternetAddress} or null otherwise (if empty)
 	 */
-	List<InternetAddress> asList( String recipients ) 
+	public static List<InternetAddress> asList( String recipients ) 
 	{ 
 		if( recipients == null ) { return null; }
 		
@@ -200,5 +200,18 @@ public class Mail extends AbstractCommand {
 		}
 
 		return result.size() > 0 ? result : null;
+	}
+	
+	public static String toString( List<InternetAddress> addresses ) { 
+		if( addresses == null ) { 
+			return null;
+		}
+		
+		List<String> list = new ArrayList<String>(addresses.size());
+		for( InternetAddress addr : addresses ) { 
+			list.add(addr.getAddress());
+		}
+		
+		return Utils.asString(list);
 	}
 }

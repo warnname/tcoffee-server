@@ -28,10 +28,11 @@ public class UsageLog extends Model {
 	public String status;
 	
 	public Long elapsed;
-
-	public String location;
 	
-	public String hostname;
+	public String source = "web";
+
+	public String email;
+	
 	
 	public String getCreationFmt() { 
 		return creation != null ? Utils.asSmartString(creation) : null;

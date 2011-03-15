@@ -65,6 +65,12 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		makePath( map.get("TMP_4_TCOFFEE") );
 		makePath( map.get("LOCKDIR_4_TCOFFEE") );
 		makePath( map.get("CACHE_4_TCOFFEE") );
+
+		/* add the user email in the environment */
+		if( Utils.isNotEmpty(Service.current().userEmail)) { 
+			map.put("EMAIL_4_TCOFFEE", Service.current().userEmail);
+		}
+		
 	}
 
 	
@@ -122,8 +128,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			
 			if( Utils.isEmpty(pdb) && Utils.isEmpty(prot)) {
 				Logger.info("BLAST server is local but any database is specified. Adding default configuration.");
-				args.put("pdb_db", "${PDB_DB}");
-				args.put("protein_db", "${PROTEIN_DB}");
+				args.put("pdb_db", "${settings.PDB_DB}");
+				args.put("protein_db", "${settings.PROTEIN_DB}");
 			} 
 		}
 		

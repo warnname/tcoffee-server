@@ -23,7 +23,7 @@ public class UsageImport extends Job {
 	@Override
 	public void doJob() { 
 		
-		String fFile = Play.configuration.getProperty("import.usage.file");
+		String fFile = Play.configuration.getProperty("settings.import.usage.file");
 		if( fFile == null ) return;
 		
 		File fileToImport = new File(fFile);

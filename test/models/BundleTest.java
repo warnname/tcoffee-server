@@ -98,18 +98,37 @@ public class BundleTest extends UnitTest {
 	@Test
 	public void testBundleReadProperties() { 
 		Bundle bundle = new Bundle();
-		bundle.readProperties( TestHelper.file("/bundle.properties"), "TEST" );
+		bundle.readProperties( TestHelper.file("/bundle.properties") );
 		
 		assertEquals( "1", bundle.properties.get("alpha") );
 		assertEquals( "2", bundle.properties.get("beta") );
 		assertEquals( "3", bundle.properties.get("delta") );
 
-		bundle = new Bundle();
-		bundle.readProperties( TestHelper.file("/bundle.properties"), "DEMO" );
 		
-		assertEquals( "1", bundle.properties.get("alpha") );
-		assertEquals( "2", bundle.properties.get("beta") );
-		assertEquals( "4", bundle.properties.get("delta") );
+	}
+	
+	@Test 
+	public void testRead() { 
+		Bundle bundle = TestHelper.bundle();
+		
+		assertNotNull(bundle);
+		assertNotNull(bundle.author);
+		assertNotNull(bundle.description);
+		assertNotNull(bundle.email);
+		assertNotNull(bundle.name);
+		assertNotNull(bundle.title);
+		assertNotNull(bundle.version);
+
+		assertTrue(bundle.root.exists());
+		assertTrue(bundle.binPath.exists());
+		assertTrue(bundle.conf.exists());
+		assertTrue(bundle.cssPath.exists());
+		assertTrue(bundle.envFile.exists());
+		assertTrue(bundle.javascriptPath.exists());
+		assertTrue(bundle.mailPath.exists());
+		assertTrue(bundle.navigatorPath.exists());
+		assertTrue(bundle.pagesPath.exists());
+		assertTrue(bundle.publicPath.exists());
 		
 	}
 	

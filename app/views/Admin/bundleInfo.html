@@ -63,6 +63,7 @@ table#box-table-a { margin-bottom: 3em; }
 
 <h2>
 <span>Configuration files</span>
+<small><span>Installation path=${bundle.root}</span></small>
 </h2>
 
 <table class="one-col">
@@ -70,32 +71,39 @@ table#box-table-a { margin-bottom: 3em; }
 
 <tr>
 <td>Conf file</td>
-<td><a href="@{Admin.editfile(bundle.conf)}" >${bundle.conf}</a></td></tr>
+<td><a href="@{Admin.editfile(bundle.conf)}" >${bundle.conf?.relativeTo(bundle)}</a></td></tr>
 
 <tr>
 <td>Properties file</td>
-<td><a href="@{Admin.editfile(bundle.propFile)}" >${bundle.propFile}</a></td></tr>
+<td><a href="@{Admin.editfile(bundle.propFile)}" >${bundle.propFile?.relativeTo(bundle)}</a></td></tr>
 
 <tr>
 <td>Environment file</td>
-<td><a href="@{Admin.editfile(bundle.envFile)}" >${bundle.envFile}</a></td></tr>
+<td><a href="@{Admin.editfile(bundle.envFile)}" >${bundle.envFile?.relativeTo(bundle)}</a></td></tr>
 
 <tr>
 <td>Navigation menu</td>
-<td><a href="@{Admin.editfile(bundle.navigatorPath)}">${bundle.navigatorPath}</a> </td></tr>
+<td><a href="@{Admin.editfile(bundle.navigatorPath)}">${bundle.navigatorPath?.relativeTo(bundle)}</a> </td></tr>
 
 <tr>
 <td>CSS file</td>
-<td><a href="@{Admin.editfile(bundle.cssPath)}" >${bundle.cssPath}</a></td></tr>
+<td><a href="@{Admin.editfile(bundle.cssPath)}" >${bundle.cssPath?.relativeTo(bundle)}</a></td></tr>
 
 <tr>
 <td>Javascript file</td>
-<td><a href="@{Admin.editfile(bundle.javascriptPath)}" >${bundle.javascriptPath}</a></td></tr>
+<td><a href="@{Admin.editfile(bundle.javascriptPath)}" >${bundle.javascriptPath?.relativeTo(bundle)}</a></td></tr>
 
 
 </tbody>
-</table>
+<tfoot>
+<tr>
+<td colspan="2" style="border-style: none; background: inherit;">
+<small>Note: paths are relative to the bundle installation path</small>
 
+</td>
+</tr>
+</tfoot>
+</table>
 <!-- 
 	Components 
 	 -->

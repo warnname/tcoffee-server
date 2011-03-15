@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import models.Bundle;
 import play.templates.JavaExtensions;
 
 /**
@@ -41,5 +42,18 @@ public class ServerExtension extends JavaExtensions {
 
 		return value;
 
+	}
+	
+	public static String relativeTo( File file, Bundle bundle ) { 
+		if( file == null ) return null;
+		if( bundle == null ) file.toString();
+		
+		String root = bundle.root.getAbsolutePath();
+		String path = file.getAbsolutePath();
+		
+		return path.startsWith(root) 
+			? path.substring(root.length())
+			: path;
+		
 	}
  }

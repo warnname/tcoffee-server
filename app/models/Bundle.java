@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -68,6 +66,10 @@ public class Bundle implements Serializable {
 	/** the path containing templates */
 	@XStreamOmitField
 	public VirtualFile pagesPath;
+
+	/** the path containing mails template */
+	@XStreamOmitField
+	public VirtualFile mailPath;
 	
 	/** the bin path to be added to PATH env variables */
 	@XStreamOmitField
@@ -109,12 +111,21 @@ public class Bundle implements Serializable {
 	@XStreamOmitField
 	public File publicPath;
 
+	/**
+	 * The file containing the CSS contribution to the page
+	 */
 	@XStreamOmitField
 	public File cssPath;
 	
+	/**
+	 * The file containing the JavaScript contribution to the page
+	 */
 	@XStreamOmitField
 	public File javascriptPath;
 	
+	/** 
+	 * The file that hold the page navigation menu html fragment 
+	 */
 	@XStreamOmitField
 	public File navigatorPath;
 	
@@ -157,27 +168,7 @@ public class Bundle implements Serializable {
 	public List<Service> services = new ArrayList<Service>(); 
 
 	
-//	public boolean equals( Object obj ) { 
-//		Bundle that = Utils.castIfEquals( this, obj );
-//		
-//		return Utils.isEquals( this.name, that.name )
-//			&& Utils.isEquals( this.version, that.version );
-//	}
-//
-//	public int hashCode() { 
-//		int result = Utils.hash();
-//		Utils.hash(result, name);
-//		Utils.hash(result, version);
-//		return result;
-//	}
-//	
-//	public int compareTo( Bundle that ) { 
-//		if( this.equals(that) ) { 
-//			return 0;
-//		}
-//		
-//		return (name + version).compareTo( that.name + that.version ); 
-//	}
+
 	public Definition getDef() {
 		if( def == null ) {
 			def = new Definition();
@@ -204,13 +195,7 @@ public class Bundle implements Serializable {
 		return null;
 	}
 
-	
-	/**
-	 * @return the current configuration file
-	 */
-	public static File getFile() {
-		return Play.getFile("conf/tserver.conf.xml"); 
-	}
+
 	
 	/**
 	 * Descriptive label, if null fallback on the mandatory name attribute 
@@ -255,23 +240,35 @@ public class Bundle implements Serializable {
 		return lastModified;
 	}
 	
-	public void readProperties( File conf ) { 
-		readProperties(conf, Play.id);
-	}
-	
-	void readProperties( File conf, String id ) { 
+	void readProperties( File conf ) { 
 
 		Properties result = new Properties();
 		
 		/* add by default all App properties */
 		AppProps props = AppProps.instance();
 		for( String key : props.getNames() ) { 
-			String val = props.get(key,null);
+			String val = props.getString(key,null);
 			if( val != null ) { 
 				result.put(key,val);
 			}
 		}
 
+	
+		/* load the properties file if exists */
+		if( conf != null && conf.exists() ) { 
+	        try {
+	            Properties local = IO.readUtf8Properties(new FileInputStream(conf));
+	            
+	            /* add the properties and set the file */
+	            result.putAll(local);
+	            this.propFile = conf;
+	            	
+	        } 
+	        catch (IOException ex) {
+	            throw new BundleException("Cannot read bundle properties file: '%s'", conf);
+	        }
+		}
+        
 		/* 
 		 * predefined properties 
 		 */
@@ -287,54 +284,20 @@ public class Bundle implements Serializable {
 		if( email != null ) result.put("bundle.email", email);
 		if( author != null ) result.put("bundle.author", author);
 
-		
-		/* load the properties file if exists */
-		if( conf != null && conf.exists() ) { 
-	        try {
-	            Properties local = IO.readUtf8Properties(new FileInputStream(conf));
-	            
-	            /*
-	             * first load all properties without any prefix 
-	             */
-	            Properties newConfiguration = new Properties();
-	            Pattern pattern = Pattern.compile("^%([a-zA-Z0-9_\\-]+)\\.(.*)$");
-	            for (Object key : local.keySet()) {
-	                Matcher matcher = pattern.matcher(key + "");
-	                if (!matcher.matches()) {
-	                    newConfiguration.put(key, local.get(key).toString().trim());
-	                }
-	            }
-
-	            /*
-	             * then override with all prefixed properties
-	             */
-	            for (Object key : local.keySet()) {
-	                Matcher matcher = pattern.matcher(key + "");
-
-	                if (matcher.matches()) {
-	                    String instance = matcher.group(1);
-	                    if (instance.equals(id)) {
-	                        newConfiguration.put(matcher.group(2), local.get(key).toString().trim());
-	                    }
-	                }
-	            }	            
-	            
-	            /* add the properties and set the file */
-	            result.putAll(newConfiguration);
-	            this.propFile = conf;
-	            	
-	        } 
-	        catch (IOException ex) {
-	            throw new BundleException("Cannot read bundle properties file: '%s'", conf);
-	        }
-		}
-        
-        
+	        
         this.properties = result;
 	}
 		
 
-	
+	/**
+	 * Load a bundle with the specified name in the current bundles.path location 
+	 * 
+	 * @param bundleName the name of the bundle e.i. the folder name containing the bundle
+	 * @return the {@link Bundle} instance
+	 */
+	public static Bundle read( String bundleName ) { 
+		return read( new File(AppProps.BUNDLES_FOLDER, bundleName) );
+	}
 
 	/**
 	 * Load a bundle on the file system 
@@ -374,7 +337,7 @@ public class Bundle implements Serializable {
 	        if( root.child("conf/bundle.menu.html").exists() ) { 
 	        	bundle.navigatorPath = root.child("conf/bundle.menu.html").getRealFile();
 	        }
-	        
+
 	        /* 
 	         * load other subdirectories 
 	         */
@@ -382,6 +345,13 @@ public class Bundle implements Serializable {
 	            bundle.pagesPath = root.child("pages");
 	        }
 
+	        /* 
+	         * load other subdirectories 
+	         */
+	        if (root.child("mail").exists()) {
+	            bundle.mailPath = root.child("mail");
+	        }
+	        
 	        /*
 	         * the bundle internal path for binaries 
 	         */

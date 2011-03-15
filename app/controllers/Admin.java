@@ -54,10 +54,10 @@ import play.mvc.results.Result;
 import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 import query.AggregationMap;
-import query.UsageFilter;
 import query.GridResult;
 import query.QueryHelper;
 import query.TimeSeries;
+import query.UsageFilter;
 import util.Check;
 import util.CookieHelper;
 import util.FileIterator;
@@ -201,8 +201,8 @@ public class Admin extends CommonController {
     	if( props == null ) { 
     		error("Missing application properties");
     	}
-    	
     	List<String> names = props.getNames();
+    	System.out.println(names);
     	Collections.sort(names);
 	
 		/* just render the form */
@@ -1427,7 +1427,9 @@ public class Admin extends CommonController {
 				.append("\"") .append( row.status ) .append("\", ")
 				.append("\"") .append( row.duration ) .append("\", ")
 				.append("\"") .append( row.getCreationFmt() ) .append("\", ")
-				.append("\"") .append( row.ip ) .append("\" ")
+				.append("\"") .append( row.source ) .append("\", ")
+				.append("\"") .append( row.ip != null ? row.ip : "--" ) .append("\", ")
+				.append("\"") .append( row.email != null ? row.email : "--"  ) .append("\" ")
 				.append("]");
 			result.append("}");
 		}

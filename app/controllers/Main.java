@@ -11,6 +11,7 @@ import models.Repo;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
+import play.cache.CacheFor;
 import play.libs.IO;
 import play.mvc.Before;
 import util.RouterFix;
@@ -128,6 +129,21 @@ public class Main extends CommonController {
     }
     
     
- 	
+	/**
+	 * Returns the bundle favicon 
+	 */
+    @CacheFor("10d")
+	public static void favicon () { 
+		File icon = new File(Play.applicationPath,"conf/favicon.ico");
+		if( icon == null || !icon.exists() ) { 
+			Logger.warn("Missing favicon.ico file. It should be placed in conf path: '%s'", icon.getParent());
+			notFound("Favicon.ico not available");
+		}
+		
+		response.contentType = "image/x-icon";
+		renderBinary(icon);
+	}
+
+	
 	
 }

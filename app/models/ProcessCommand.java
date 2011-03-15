@@ -84,6 +84,15 @@ public class ProcessCommand extends AbstractCommand<OutResult> implements Serial
 		return success;
 	}
 	
+	public void add( AbstractCommand<OutResult> cmd ) { 
+		if( cmd == null ) return;
+
+		if( commands == null ) {
+			commands = new ArrayList<AbstractCommand<OutResult>>();
+		}
+		commands.add(cmd);
+	}
+	
 	public void addAll( ProcessCommand that ) {
 		
 		if( that == null || that.commands == null ) { return; } 
