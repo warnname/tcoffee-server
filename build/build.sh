@@ -240,7 +240,7 @@ function test_server_local()
 	cd $SANDBOX/web
 	./$PLAY_VER/play auto-test tserver 
 	count=`ls ./tserver/test-result/*.html | wc -l`
-	if [[ $count==0 ]]; then
+	if [ $count == 0 ]; then
 	  cat ./tserver/test-result/application.log
 	  exit 1;
 	fi 
