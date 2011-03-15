@@ -48,7 +48,7 @@ $(document).ready(function() {
 
 <div id="wrapper"> 
 	<div id="header">
-		#{include 'page.header.html' /}
+		#{include 'conf/page.header.html' /}
 		<div id="navigation" class="${_main_action}">
 		#{if _bundle && _bundle.navigatorPath } #{bundlepage _bundle.navigatorPath /} #{/if}
 		</div>
@@ -68,7 +68,7 @@ $(document).ready(function() {
 </div>
 
 <div id="footer"> 
-	#{include 'page.footer.html' /}
+	#{include 'conf/page.footer.html' /}
 </div> 
 
 #{if _bundle && _bundle.javascriptPath }

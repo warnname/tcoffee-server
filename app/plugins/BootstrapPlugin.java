@@ -1,10 +1,11 @@
 package plugins;
 
 import play.Logger;
-import play.Play;
 import play.PlayPlugin;
 import play.cache.Cache;
 import play.jobs.Job;
+import play.templates.Template;
+import play.templates.TemplateLoader;
 import play.vfs.VirtualFile;
 import bot.BotListener;
 import bot.BotListener.Config;
@@ -18,7 +19,7 @@ public class BootstrapPlugin extends PlayPlugin {
 	 */
 	@Override
 	public void onApplicationStart() { 
-		Play.templatesPath.add( VirtualFile.open(Play.applicationPath).child("conf") );
+	//	Play.templatesPath.add( VirtualFile.open(Play.applicationPath).child("conf") );
 	}
 	
 	/**
@@ -70,6 +71,26 @@ public class BootstrapPlugin extends PlayPlugin {
 		Logger.info(">>> Stopping server");
 		terminated = true;
 	}
+
+	
+	/**
+	 * Load "/conf" provided templates
+	 */
+	@Override
+    public Template loadTemplate(VirtualFile file) {
+
+		/* 
+		 * interpect templates in the /conf path 
+		 */
+		if( !file.relativePath().startsWith("/conf/") ) { 
+			return null;
+		}
+
+		Logger.debug("Laoading template: '%s'",  file.relativePath() );
+        String key = (file.relativePath().hashCode() + "").replace("-", "M");
+        return TemplateLoader.load( key, file.contentAsString() );
+    }
+
 	
 	
 }

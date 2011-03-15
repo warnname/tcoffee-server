@@ -143,38 +143,22 @@ function make_distribution()
 	find $SERVER_DIR -name .svn | xargs rm -rf
 	find $SERVER_DIR -name .settings | xargs rm -rf
 	find $SERVER_DIR -name .project | xargs rm -rf
+
+	#
+	# Copy the configuration specific /conf files
+	#
+	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/ ]; then 
+	find $WORKSPACE/tserver/build/conf/$CONFID/ -name "*" -type f  -exec cp  '{}' $SERVER_DIR/tserver/conf/ \;
+	fi	
 	
 	# 
 	# Add specific configuration to 'application.conf' file
 	#
 	APPCONF=$SERVER_DIR/tserver/conf/application.conf
-
-	# append the application specific configuration 
-	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/conf.$CONFID ]; then 
-	cat "$WORKSPACE/tserver/build/conf/$CONFID/conf.$CONFID" >> $APPCONF
-	fi
-	 
-	# append build timestamp 
 	echo >> $APPCONF
 	echo '# Build information' >> $APPCONF
 	echo application.server.version=$VERSION >> $APPCONF
 	echo application.server.build.time=$BUILD_TIME >> $APPCONF
-
-
-	#
-	# Copy 'log4j.properties' file is exists
-	#
-	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID ]; then 
-	cp $WORKSPACE/tserver/build/conf/$CONFID/log4j.$CONFID $SERVER_DIR/tserver/conf/
-	fi
-	
-	#
-	# Copy the favicon to the target path
-	#   find . -name "*.txt" -type f  -exec cp  '{}' ./test \;
-	#
-	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/favicon.ico.$CONFID ]; then 
-	cp $WORKSPACE/tserver/build/conf/$CONFID/favicon.ico.$CONFID $SERVER_DIR/tserver/conf/
-	fi
 
 	
 } 
@@ -363,6 +347,7 @@ function pack_bundles()
 	# Copy required bundles 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver-bundles/crg/* $SERVER_DIR/bundles
+	find $SERVER_DIR/bundles -name .svn | xargs rm -rf
 
 	# Create the zip package
 	make_zip	
