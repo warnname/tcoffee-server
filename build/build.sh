@@ -239,6 +239,11 @@ function test_server_local()
 	# start a play instance and invoke tests
 	cd $SANDBOX/web
 	./$PLAY_VER/play auto-test tserver 
+	count=`ls ./tserver/test-result/*.html | wc -l`
+	if [[ $count==0 ]]; then
+	  cat ./tserver/test-result/application.log
+	  exit 1;
+	fi 
 
 	# publish the tests
 	rm -rf $WORKSPACE/test-result
