@@ -7,19 +7,47 @@
 %crg.application.auth=openid
 %crg.XForwardedSupport=192.168.101.80
 
-%crg.tserver.workspace.path=/data/tomcat/tcoffee/workspace
-%crg.tserver.bundles.path=/data/tomcat/tcoffee/bundles
-%crg.tserver.usage.file=/data/tomcat/tcoffee/logs/usage.log
+#
+# settings 
+#
+%crg.settings.hostname=tcoffee.crg.cat
+%crg.settings.workspace.path=/data/tomcat/tcoffee/workspace
+%crg.settings.bundles.path=/data/tomcat/tcoffee/bundles
+%crg.settings.homepage.cache.duration=5min
+%crg.settings.webmaster=tcoffee.msa@gmail.com
 
-%crg.tserver.SGE_QUEUE=web
-%crg.tserver.BLASTMAT=/data/tomcat/tcoffee/matrix/aa
-%crg.tserver.PDB_DB=/data/tomcat/tcoffee/pdb/pdb
-%crg.tserver.PROTEIN_DB=/db/ncbi/nr/nr
+#
+# some variables 
+#
+%crg.settings.SGE_QUEUE=web
+%crg.settings.BLASTMAT=/data/tomcat/tcoffee/matrix/aa
+%crg.settings.PDB_DB=/data/tomcat/tcoffee/pdb/pdb
+%crg.settings.PROTEIN_DB=/db/ncbi/nr/nr
+%crg.settings.BLAST_HOME=/data/tomcat/tcoffee/blast-2.2.24
+%crg.settings.BLASTPLUS_HOME=/data/tomcat/tcoffee/blast+
 
-%crg.tserver.homepage.cache.duration=5min
+#
+# usage log db configuration
+#
+%crg.settings.import.usage.file=/data/tomcat/tcoffee/logs/usage.log
+%crg.db.url=jdbc:h2:/data/tomcat/tcoffee/db/db
+%crg.db.driver=org.h2.Driver
+%crg.jpa.dialect=org.hibernate.dialect.H2Dialect
 
+#
+# mail server 
+#
 %crg.mail.smtp.host=smtp.gmail.com
 %crg.mail.smtp.user=tcoffee.msa
 %crg.mail.smtp.pass=t_coffee
 %crg.mail.smtp.channel=ssl
-%crg.tserver.webmasterEmail=tcoffee.msa@gmail.com
+
+#
+# the mail bot settings 
+#
+%crg.settings.bot.host=imap.gmail.com
+%crg.settings.bot.user=run.tcoffee
+%crg.settings.bot.pass=t_coffee
+%crg.settings.bot.delay=30s
+%crg.settings.bot.active=true
+
