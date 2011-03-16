@@ -134,20 +134,20 @@ public class QsubCommand extends AbstractShellCommand {
 		super.onInitEnv(map);
 
 		/*
-		 * add the SGV_ROOT env variable if exists 
+		 * add the SGE_ROOT env variable if exists 
 		 */
-		addIfNotEmpty(map, "SGE_ROOT");
-		addIfNotEmpty(map, "SGE_EXECD_PORT");
-		addIfNotEmpty(map, "SGE_CLUSTER_NAME");
-		addIfNotEmpty(map, "SGE_QMASTER_PORT");
-		addIfNotEmpty(map, "SGE_CELL");
+		addEnvironmentVariableIfPropertyExists(map, "SGE_ROOT");
+		addEnvironmentVariableIfPropertyExists(map, "SGE_EXECD_PORT");
+		addEnvironmentVariableIfPropertyExists(map, "SGE_CLUSTER_NAME");
+		addEnvironmentVariableIfPropertyExists(map, "SGE_QMASTER_PORT");
+		addEnvironmentVariableIfPropertyExists(map, "SGE_CELL");
 	
 	}
 	
-	private void addIfNotEmpty(Map<String,String> map, String key) {
+	private void addEnvironmentVariableIfPropertyExists(Map<String,String> map, String key) {
 		if( map.containsKey(key)) return;
 		
-		String val = AppProps.instance().getString(key);
+		String val = AppProps.instance().getString("settings." + key);
 		if( Utils.isNotEmpty(val)) {
 			map.put(key,val);
 		}
@@ -160,7 +160,7 @@ public class QsubCommand extends AbstractShellCommand {
 		 * 0. validation 
 		 */
 		if( Utils.isEmpty(queue) ) {
-			queue = AppProps.instance().getString("SGE_QUEUE");
+			queue = AppProps.instance().getString("settings.SGE_QUEUE");
 			Check.notEmpty(queue, "Qsub queue parameter cannot be empty");
 		}
 		
