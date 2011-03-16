@@ -47,21 +47,21 @@ body { background-image: none }
 	</p>
 
 	<p>
-	This exception has been logged with id <strong>${exception.id}</strong>.
+	This exception has been logged with id <strong>${exception?.id}</strong>.
 	</p>
 	
 	<a id="show" href="javascript:void(0)" onclick="" >Error details</a>
 
 	<div id="details" class="box" style="display: none">
 	
-	<h2><span>${exception.errorTitle} </span></h2>
+	<h2><span>${exception?.errorTitle} </span></h2>
 	<p>
-	${exception.errorDescription.raw()}
+	${exception?.errorDescription.raw()}
 	</p>
 
 	<p>	
-	 #{if exception.sourceAvailable && exception.lineNumber }
-	 Check <code>${exception.sourceFile}</code> (around line ${exception.lineNumber})
+	 #{if exception?.sourceAvailable && exception?.lineNumber }
+	 Check <code>${exception?.sourceFile}</code> (around line ${exception?.lineNumber})
 	 #{/if}
 	</p>
 	
