@@ -46,15 +46,15 @@ public class ServletAdapter extends ServletWrapper {
     
     
     private void loadRouter(String contextPath) {
-    	Method method;
+    	
+    	Method method = null;
 		try {
 			method = ServletWrapper.class.getDeclaredMethod("loadRouter", String.class);
 	    	method.setAccessible(true);
-	    	method.invoke(null, contextPath);
+	    	method.invoke(this, contextPath);
 		} 
 		catch (Exception e) {
-			Logger.error(e, "Unable to invoke 'loadRouter' method");
-			throw new RuntimeException("Cannot invoke 'loadRouter' method", e);
+			throw new RuntimeException(String.format("Cannot invoke 'loadRouter' method: %s with context: '%s'", method, contextPath), e);
 		}
     }
     
