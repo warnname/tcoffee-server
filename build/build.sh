@@ -143,6 +143,9 @@ function make_distribution()
 	find $SERVER_DIR -name .svn | xargs rm -rf
 	find $SERVER_DIR -name .settings | xargs rm -rf
 	find $SERVER_DIR -name .project | xargs rm -rf
+	find $SERVER_DIR -name *.svn-base | xargs rm -rf
+	find $SERVER_DIR -name all-wcprops | xargs rm -rf
+	
 
 	#
 	# Copy the configuration specific /conf files
@@ -201,11 +204,13 @@ function make_war()
 	$PLAY_HOME/play war ./tserver -o $SERVER_WAR/tcoffee --%$CONFID
 	cd $SERVER_WAR/tcoffee
 	
-	#
+	# 
 	# replacing default ServletWrapper with own one
 	#
-	cat WEB-INF/web.xml | sed -e 's/play\.server\.ServletWrapper/server.TServerServlet/' > WEB-INF/web.new
+	cat WEB-INF/web.xml | sed -e 's/play\.server\.ServletWrapper/server.ServletAdapter/' > WEB-INF/web.new
 	mv WEB-INF/web.new WEB-INF/web.xml
+	cp -r WEB-INF/application/precompiled/java/server/ WEB-INF/classes/server
+	rm -rf WEB-INF/application/precompiled
 	
 	#
 	# packing 
