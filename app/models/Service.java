@@ -482,19 +482,20 @@ public class Service implements Serializable {
 
 	void run() {
 		
-		/* 
-		 * initialize the process 
-		 */
-		process.init(new CommandCtx(fCtx)); // <-- pass to the command context the save variables
-		
-		/* 
-		 * the main execution 
-		 */
-		fOutResult = null;
-		boolean success = false; 
-		
 		
 		try {
+			/* 
+			 * initialize the process 
+			 */
+			process.init(new CommandCtx(fCtx)); // <-- pass to the command context the save variables
+			
+			/* 
+			 * the main execution 
+			 */
+			fOutResult = null;
+			boolean success = false; 
+
+			
 			/* run the main job */
 			try {
 				success = process.execute();
