@@ -185,7 +185,7 @@ public class QsubCommand extends AbstractShellCommand {
 		if( targetEnv != null && targetEnv.size()>0 ) {
 			for( Map.Entry<String,String> entry : targetEnv.entrySet() ) {
 				script.append("#$ -v ");
-				script.append(entry.getKey()).append("=").append(entry.getValue());
+				script.append(entry.getKey()).append("=\"").append(entry.getValue()) .append("\"");
 				script.append("\n"); // <-- don't forget the blank
 			}
 		}

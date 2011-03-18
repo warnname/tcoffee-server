@@ -323,7 +323,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				for( Object item : fEnv.keySet()) {
 					String name = (String) item;
 					String value = (String) fEnv.get(name);
-					shell.append("export ") .append(name) .append("=") .append(value) 
+					shell.append("export ") .append(name) .append("=\"") .append(value) .append("\"") 
 					     .append("\n");
 				}
 				shell.append( fCmdLine );

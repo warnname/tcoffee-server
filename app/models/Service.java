@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityTransaction;
 
 import org.apache.commons.io.FileUtils;
@@ -345,9 +346,15 @@ public class Service implements Serializable {
 			 * bundle.xml configuration. If that name chage, this link will be broken 
 			 * TODO find something better 
 			 */
-			Field field = input.getField("email");
-			if( field != null ) { 
-				userEmail = field.value;
+			try { 
+				Field field = input.getField("email");
+				if( field != null ) { 
+					List<InternetAddress> list = Mail.asList(field.value);
+					userEmail = list != null && list.size()>0 ? list.get(0).getAddress() : null;
+				}
+				
+			} catch ( Exception e) { 
+				Logger.warn(e, "Unable to parse user email from input fields");
 			}
 		}
 		
