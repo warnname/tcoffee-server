@@ -1,14 +1,14 @@
-%{ def isDev = (play.mode.name() == 'DEV') }% 
+%{ def isDev = play.mode.isDev()
+   def webmaster = play.configuration.getProperty("settings.webmaster") }% 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Application error | T-Coffee</title>
+    <title>Error 500</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
 #{if !isDev }
-	<link rel="shortcut icon" type="image/x-icon" href="@{'/public/images/favicon.ico'}"  /> 
-	<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="@{'/public/javascripts/jquery-1.4.4.min.js'}" charset="utf-8"></script>
+	<link  href="http://fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css" >
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" ></script>
 #{/if}
 </head>
 <body>
@@ -25,32 +25,51 @@ body { background-image: none }
 #wrapper { margin: 0 auto; }
 
 #content {
-	background-image: url(@{'/public/images/geek2.jpg'}) ;
-	background-repeat: no-repeat;
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	color: #666;
+	font-size: 14px;
+	font-weight: lighter;
+	line-height: 1.5;
+	text-align: center;
 
-	position: relative;
-	top: 20%;
-	padding-left: 300px;
-	padding-right: 50px;
-	min-height: 300px;
-	height: 400px;
+	margin: 0 auto;
+	min-width: 500px;
 }
+
+h1 {
+  font-family: 'Cabin Sketch', serif;
+  font-size: 56px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: 2px 2px 2px #aaa;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0.044em;
+  word-spacing: 0em;
+  line-height: 1.2;
+
+} 
+
+.small { 
+	margin: 0 auto;
+	width: 50%;
+ } 
+ 
 
 </style>
 
 <div id="wrapper">
 	<div id="content">
-	<h1>Wow guy .. you find a bug!</h1>
-	
-	<p>
-	Try to reload the page, if the problem persist send a email to T-coffee web master reporting the following error code and problem details descriptions.
-	</p>
+	<h1>Oops! Something went wrong ...</h1>
 
-	<p>
-	This exception has been logged with id <strong>${exception?.id}</strong>.
+	<div class="small">
+	<p >
+	Try to reload the page in the next few seconds. If the problem persists, report the problem to the webmaster 
+	sending an email to the following address <a href="mailto:${webmaster}?subject=T-Coffee server error 500 [${exception?.id}]">${webmaster}</a> providing a description 
+	of what your submitted request. <br><a id="show" href="javascript:void(0)" onclick="" >Error details</a>
 	</p>
-	
-	<a id="show" href="javascript:void(0)" onclick="" >Error details</a>
+	</div>
+
 
 	<div id="details" class="box" style="display: none">
 	
@@ -63,6 +82,10 @@ body { background-image: none }
 	 #{if exception?.sourceAvailable && exception?.lineNumber }
 	 Check <code>${exception?.sourceFile}</code> (around line ${exception?.lineNumber})
 	 #{/if}
+	</p>
+	
+	<p>
+	This exception has been logged with id <strong>${exception?.id}</strong>.
 	</p>
 	
 	</div>
