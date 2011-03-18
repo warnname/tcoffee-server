@@ -12,26 +12,53 @@ import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.Play;
+import play.db.jpa.JPA;
 import play.jobs.Job;
-import play.jobs.OnApplicationStart;
 import util.FileIterator;
 import util.Utils;
 
-@OnApplicationStart
-public class UsageImport extends Job {
+public class UsageImportJob extends Job  {
 
+	private File fileToImport;
+
+	public UsageImportJob( File fileToImport ) { 
+		this.fileToImport = fileToImport;
+	}
+	
 	@Override
 	public void doJob() { 
 		
-		String fFile = Play.configuration.getProperty("settings.import.usage.file");
-		if( fFile == null ) return;
 		
-		File fileToImport = new File(fFile);
-		if( !fileToImport.exists() ) { 
-			Logger.warn("Import file does not exist: '%s'", fileToImport);
-			return;
+		/* 
+		 * import the file to the database
+		 */
+		JPA.em().getTransaction().begin();
+		try { 
+			doTheWork(fileToImport);
+			JPA.em().getTransaction().commit();
+		}
+		catch( Exception e ) { 
+			Logger.error(e, "Unable to import usage file: %s", fileToImport);
+			JPA.em().getTransaction().rollback();
 		}
 		
+		/* 
+		 * backing up the imported file 
+		 */
+		
+		if( Play.mode.isProd() ) { 
+			try {
+				File bak = new File(fileToImport.getParentFile(), fileToImport.getName()+".bck");
+				FileUtils.moveFile(fileToImport, bak);
+			} 
+			catch (IOException e) {
+				Logger.error(e, "Failed to backup usage file");
+			}
+		}
+		Logger.info("Usage file import DONE");
+	}
+
+	static void doTheWork(File fileToImport) {
 		int i=0;
 		for( String line : new FileIterator(fileToImport) ) { 
 			try {
@@ -58,20 +85,7 @@ public class UsageImport extends Job {
 			
 			
 		}
-		
-		if( Play.mode.isProd() ) { 
-			/* 
-			 * backing up the imported file 
-			 */
-			try {
-				File bak = new File(fileToImport.getParentFile(), fileToImport.getName()+".bck");
-				FileUtils.moveFile(fileToImport, bak);
-			} 
-			catch (IOException e) {
-				Logger.error(e, "Failed to backup usage file");
-			}
-		}
-		Logger.info("Usage file import DONE");
+
 	}
 
 	static class StatRow  { 

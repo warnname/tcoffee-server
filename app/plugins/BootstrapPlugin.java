@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
+import job.UsageImportJob;
+
 import play.Logger;
 import play.Play;
 import play.PlayPlugin;
@@ -97,11 +99,33 @@ public class BootstrapPlugin extends PlayPlugin {
 		 */
 		Cache.set("server-start-time", System.currentTimeMillis());
 		
+		/* 
+		 * Import the usage file 
+		 */
+		importUsageFile();
 		
 		/* 
 		 * installing a mail listener if it is configured 
 		 */
 		startMailListener();
+	}
+
+	private void importUsageFile() {
+		/* 
+		 * check if is there a file to import
+		 */
+		String fFile = Play.configuration.getProperty("settings.import.usage.file");
+		if( fFile == null ) return;
+		
+		File fileToImport = new File(fFile);
+		if( !fileToImport.exists() ) { 
+			Logger.warn("Import file does not exist: '%s'", fileToImport);
+			return;
+		}
+
+		UsageImportJob job = new UsageImportJob(fileToImport);
+		job.now();
+		
 	}
 
 	private void startMailListener() {

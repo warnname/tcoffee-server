@@ -27,7 +27,9 @@ public class Repo implements Serializable {
 	private static final String RESULT_FILE_NAME = "_result";
 
 	private static final String INPUT_FILE_NAME = "_input";
-
+	
+	private static final String CREATION_FILE_NAME = ".creation-time";
+	
 	String rid;
 	
 	File fRoot;
@@ -39,6 +41,8 @@ public class Repo implements Serializable {
 	File fMarker;
 	
 	File fInput;
+	
+	File fCreationTime;
 	
 	/** reports that this repository context contains a cached alignment result */
 	public boolean cached = false;
@@ -58,10 +62,11 @@ public class Repo implements Serializable {
 		Check.notNull(folder,"Repo folder cannot be null");
 		
 		this.fRoot = folder;
-		this.fLock = new File(fRoot,LOCK_FILE_NAME);
-		this.fResult = new File(fRoot,RESULT_FILE_NAME);
-		this.fMarker = new File(fRoot,MARKER_FILE_NAME);
+		this.fLock = new File(fRoot, LOCK_FILE_NAME);
+		this.fResult = new File(fRoot, RESULT_FILE_NAME);
+		this.fMarker = new File(fRoot, MARKER_FILE_NAME);
 		this.fInput = new File(fRoot, INPUT_FILE_NAME);
+		this.fCreationTime = new File(fRoot, CREATION_FILE_NAME);
 		
 		this.rid = folder.getName();
 		
@@ -215,6 +220,23 @@ public class Repo implements Serializable {
 			throw new QuickException("Fail on creating repo folder: '%s'", folder);
 		}
 		
+		/* 
+		 * the creation time file 
+		 */
+		if( fCreationTime.exists() ) { 
+			fCreationTime.setLastModified( System.currentTimeMillis() );
+		}
+		else { 
+			try {
+				fCreationTime.createNewFile();
+			} catch (IOException e) {
+				throw new QuickException(e, "Unable to create file: '%s'", fCreationTime);
+			}
+		}
+ 		
+		/* 
+		 * create the marker file 
+		 */
 		if( fMarker.exists() ) {
 			return folder;
 		} 
@@ -364,6 +386,14 @@ public class Repo implements Serializable {
 	 *  
 	 */
 	public long getCreationTime() {
+		if( fCreationTime != null && fCreationTime.exists() ) { 
+			return fCreationTime.lastModified();
+		}
+		if( fInput != null && fInput.exists() ) { 
+			return fInput.lastModified();
+		}
+		
+		Logger.warn("Missing creation time for repo: '%s'", fRoot.getName());
 		return fRoot.lastModified();
 	} 
 
