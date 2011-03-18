@@ -113,10 +113,16 @@ public class Application extends CommonController {
 	 * Renders the history html table  
 	 */
 	public static void historyTable() {	
+		String contextPath = AppProps.instance().getContextPath();
+		if( contextPath == null ) contextPath = "/";
+		else if( !contextPath.startsWith("/") ) { 
+			contextPath = "/" + contextPath;
+		}
+		
 		List<History> recent = History.findAll();
 		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
 		responseNoCache();
-		render(recent);
+		render(recent, contextPath);
 	}
 
 

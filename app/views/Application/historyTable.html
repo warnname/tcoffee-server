@@ -42,7 +42,7 @@
  
 <script type="text/javascript">
 function remove(cname) {
-	$.cookie(cname, '--', {expires:-1, path:'/'});
+	$.cookie(cname, '--', {expires:-1, path:'${contextPath}'});
 }
 
 $(document).ready(function() {
