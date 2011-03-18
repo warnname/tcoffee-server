@@ -41,6 +41,7 @@ public class AppProps implements Serializable  {
 	Properties properties;
 
 	List<String> changed = new ArrayList<String>();
+	List<String> removed = new ArrayList<String>();
 	
 	public String contextPath;
 	
@@ -405,8 +406,18 @@ public class AppProps implements Serializable  {
 		return new ArrayList( properties.keySet() );
 	}
 	
-	public boolean remove( String name ) { 
-		Object val = properties.remove(name);
+	public boolean remove( String key ) { 
+		Object val = properties.remove(key);
+		Play.configuration.remove(key);
+		
+		if( !removed.contains(key) ) { 
+			removed.add(key);
+		}
+
+		if( changed.contains(key) ) { 
+			changed.remove(key);
+		}
+	
 		return val != null;
 	}
 	

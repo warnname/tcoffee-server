@@ -112,6 +112,14 @@ public class Mail extends AbstractCommand {
     		if( listTo == null && listCc == null && listBcc == null  ) {
     			return true;
     		}
+    		if( listTo == null && listCc == null && listBcc != null ) { 
+    			listTo = new ArrayList<InternetAddress>(1);
+    			listTo.add( listBcc.get(0) );
+    			listBcc.remove(0);
+    			if( listBcc.size() == 0 ) { 
+    				listBcc = null;
+    			}
+    		}
     		
     		/* 
     		 * set TO address 
