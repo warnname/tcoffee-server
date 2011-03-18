@@ -104,13 +104,16 @@ public class XStreamHelper {
 		catch (IOException e) {
 			throw new QuickException(e);
 		}
-		
-		try {
-			if( writer != null ) writer.close();
-		} 
-		catch (IOException e) {
-			Logger.warn("Error on closing file: '%s'", file);
+		finally { 
+			if( writer != null ) try { 
+				writer.flush();
+				writer.close();
+			}
+			catch( Exception e) { 
+				Logger.warn(e, "Error closing writer on file: %s", file);
+			}
 		}
+		
 	}
 	
 }

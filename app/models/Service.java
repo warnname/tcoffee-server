@@ -12,10 +12,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityTransaction;
+
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.data.validation.Validation;
+import play.db.jpa.JPA;
 import play.jobs.Job;
 import play.mvc.Http.Request;
 import play.mvc.Router;
@@ -422,15 +425,18 @@ public class Service implements Serializable {
     			 */
     			Service.current(Service.this);
     			
-    			long logid=-1;
+    			UsageLog log = safeTrace(null);
+    			Long logid = log != null ? log.id : null;
+    			
     			try {
-        			logid = trace(null).id;
     				/* run the job */
     				Service.this.run();
     			}
     			finally  {
     				try { Service.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
-    				try { Service.this.trace(logid); } catch( Exception e ) { Logger.error(e, "Failure on request logging"); }
+    				if( logid != null ) { 
+    					safeTrace(logid);
+    				}
     				Service.release();
     			}
     		}
@@ -476,8 +482,23 @@ public class Service implements Serializable {
 			Logger.debug("Updating usage log for request # %s", this.fRid );
 		}
 
-
 		return usage.save();
+	}
+	
+	UsageLog safeTrace( Long id ) { 
+		UsageLog result=null;
+		EntityTransaction tx = JPA.em().getTransaction();
+		try { 
+			tx.begin();
+			result = trace(id);
+			tx.commit();
+			return result;
+		} 
+		catch( Exception e ) { 
+			Logger.error(e, "Error on tracing request-id: %s ", fRid);
+			try { tx.rollback(); } catch( Exception fail ) { Logger.warn(fail, "Error rolling back transaction"); } 
+			return result;
+		}
 	}
 
 	void run() {

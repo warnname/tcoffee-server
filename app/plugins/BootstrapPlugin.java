@@ -1,12 +1,20 @@
 package plugins;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
 import play.Logger;
+import play.Play;
 import play.PlayPlugin;
 import play.cache.Cache;
+import play.db.jpa.JPAPlugin;
 import play.jobs.Job;
 import play.templates.Template;
 import play.templates.TemplateLoader;
 import play.vfs.VirtualFile;
+import util.Utils;
 import bot.BotListener;
 import bot.BotListener.Config;
 
@@ -15,20 +23,78 @@ public class BootstrapPlugin extends PlayPlugin {
 	Boolean terminated = false;
 	
 	/**
-	 * Append the /conf path a location containing page templates
+	 * Add a runtime shutdown hook, to clean exit on hard kill
 	 */
 	@Override
 	public void onApplicationStart() { 
-	//	Play.templatesPath.add( VirtualFile.open(Play.applicationPath).child("conf") );
+		
+		/*
+		 * disable JPA auto transaction handling
+		 */
+		JPAPlugin.autoTxs = false;
+		
+		/* 
+		 * check if database already exists
+		 */
+		createDatabaseIfNotExists();
+		
+		/*
+		 * add runtime shutdown hook to intercept hard application killing 
+		 */
+		Runtime.getRuntime().addShutdownHook( new Thread() {
+			@Override
+			public void run() {
+				/* if not yet invoked the application stop() method, do now */
+				Logger.debug(">> Invoking shutdown hook");
+				Play.stop();
+			}
+		});
+
 	}
 	
+	private void createDatabaseIfNotExists() {
+		String strategy = Play.configuration.getProperty("jpa.ddl","create-if-not-exists");
+		Logger.debug(">> Database creation strategy: %s", strategy);
+		if( !"create-if-not-exists".equals(strategy) ) { 
+			return;
+		}
+		
+		String url = Play.configuration.getProperty("db.url");
+		if( Utils.isEmpty(url)) { 
+			Logger.debug(">> Nothing to do on database url is empty!");
+			return;
+		}
+		
+		if( url.contains("h2:mem:")) { 
+			Logger.debug(">> Nothing to do on in-memory database");
+			return;
+		}
+		
+		int p=url.lastIndexOf(":");
+		if( p==-1 ) { 
+			Logger.warn(">> Unrecognized db.url format: %s", url);
+			return;
+		}
+		
+		String fileName = url.substring(p+1);
+		Logger.debug(">> Database file: %s", fileName);
+		File db = new File(fileName+".h2.db");
+
+		String mode = db.exists() ? "none" : "create";
+		Logger.info(">> Setting jpa.ddl=%s", mode);
+		Play.configuration.setProperty("jpa.ddl", mode);
+		
+	}
+
 	/**
 	 * Notify application starts event
 	 */
 	@Override
     public void afterApplicationStart() {
 		
-		/* add current timestamp */
+		/* 
+		 * add current timestamp 
+		 */
 		Cache.set("server-start-time", System.currentTimeMillis());
 		
 		
@@ -68,8 +134,26 @@ public class BootstrapPlugin extends PlayPlugin {
 	 */
 	@Override
     public void onApplicationStop() {
+		if( terminated ) { 
+			return;
+		}
+		
 		Logger.info(">>> Stopping server");
 		terminated = true;
+		
+		/* 
+		 * Shutdown H2 database 
+		 */
+		try {
+			Connection conn = DriverManager.getConnection(Play.configuration.getProperty("db.url"));
+            Statement stat = conn.createStatement();
+            stat.execute("SHUTDOWN");
+            stat.close();
+            conn.close();
+		} 
+		catch( Exception e ) { 
+			Logger.warn(e, "Error shutting down H2 database");
+		}
 	}
 
 	
