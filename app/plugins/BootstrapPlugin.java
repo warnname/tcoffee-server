@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 import job.UsageImportJob;
-
 import play.Logger;
 import play.Play;
 import play.PlayPlugin;
@@ -55,39 +54,61 @@ public class BootstrapPlugin extends PlayPlugin {
 	}
 	
 	private void createDatabaseIfNotExists() {
-		String strategy = Play.configuration.getProperty("jpa.ddl","create-if-not-exists");
+		String strategy = Play.configuration.getProperty("jpa.ddl");
 		Logger.debug(">> Database creation strategy: %s", strategy);
 		if( !"create-if-not-exists".equals(strategy) ) { 
 			return;
 		}
 		
 		String url = Play.configuration.getProperty("db.url");
-		if( Utils.isEmpty(url)) { 
-			Logger.debug(">> Nothing to do on database url is empty!");
+		
+		File db = getDatabaseFileFromUrl(url);
+		if( db == null ) { 
+			Play.configuration.remove("jpa.ddl");
 			return;
 		}
 		
-		if( url.contains("h2:mem:")) { 
-			Logger.debug(">> Nothing to do on in-memory database");
-			return;
-		}
-		
-		int p=url.lastIndexOf(":");
-		if( p==-1 ) { 
-			Logger.warn(">> Unrecognized db.url format: %s", url);
-			return;
-		}
-		
-		String fileName = url.substring(p+1);
-		Logger.debug(">> Database file: %s", fileName);
-		File db = new File(fileName+".h2.db");
-
 		String mode = db.exists() ? "none" : "create";
 		Logger.info(">> Setting jpa.ddl=%s", mode);
 		Play.configuration.setProperty("jpa.ddl", mode);
 		
 	}
 
+	static File getDatabaseFileFromUrl( String url ) { 
+
+		if( Utils.isEmpty(url)) { 
+			Logger.debug(">> Nothing to do on database url is empty!");
+			return null;
+		}
+		
+		if( !url.startsWith("jdbc:h2:")) { 
+			Logger.debug("Wrong database url. It should be a valid H2 url (starting with 'jdbc:h2:')");
+			return null;
+		}
+		
+		if( url.startsWith("jdbc:h2:mem:")) { 
+			Logger.debug(">> Nothing to do on in-memory database");
+			return null;
+		}
+	
+		
+		int p=url.lastIndexOf(":");
+		if( p==-1 ) { 
+			Logger.warn(">> Unrecognized db.url format: %s", url);
+			return null;
+		}
+		
+		String fileName = url.substring(p+1);
+		p = fileName.indexOf(";");
+		if( p != -1 ) { 
+			fileName = fileName.substring(0,p);
+		}
+		
+		Logger.debug(">> Database file: %s", fileName);
+		return new File(fileName+".h2.db");
+	}
+	
+	
 	/**
 	 * Notify application starts event
 	 */
