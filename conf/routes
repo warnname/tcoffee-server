@@ -14,7 +14,7 @@ GET		/rcoffee				Main.rcoffee
 GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots
-GET		/favicon.ico			Main.favicon()
+GET		/favicon.ico			Main.favicon
 GET 	/@list 					Main.list
 GET 	/@sandbox 				Main.sandbox
 
