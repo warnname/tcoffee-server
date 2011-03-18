@@ -165,7 +165,7 @@ public class QsubCommand extends AbstractShellCommand {
 		}
 		
 		if( Utils.isEmpty(jobname)) {
-			jobname = "t-server-"+ ctx.get("_rid") ;
+			jobname = "t-"+ ctx.get("_rid") ;
 		}
  		
 		/*
