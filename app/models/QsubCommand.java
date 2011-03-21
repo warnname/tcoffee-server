@@ -125,6 +125,18 @@ public class QsubCommand extends AbstractShellCommand {
 		if( Utils.isEmpty(cmdfile) ) cmdfile = "_qsub.cmd.txt";
 		if( Utils.isEmpty(jobfile) ) jobfile = "_qsub.pbs";
 		
+		/* 
+		 * default max-duration
+		 */
+		String maxDuration;
+		if( duration == null  && (maxDuration=AppProps.instance().getString("qsub.duration"))!=null ) { 
+			Logger.debug("Setting qsub.max-duration to: '%s'", maxDuration);
+			duration = maxDuration;
+		}
+		
+		/*
+		 * invoke the parent initialization 
+		 */
 		super.init(ctx); 
 	}
 	
