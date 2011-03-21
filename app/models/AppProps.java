@@ -374,7 +374,29 @@ public class AppProps implements Serializable  {
 		return getString(key, null);
 	}
 
+	/**
+	 * 
+	 * @see Time#parseDuration(String)
+	 * 
+	 * @param key
+	 * @return Parse a duration property and return the duration expressed as number of seconds 
+	 * 
+	 */
+	public Integer getDuration( final String key ) { 
+		String value = getString(key, null);
+		if( Utils.isEmpty(value) ) { 
+			return null;
+		}
 
+		try { 
+			return Time.parseDuration(value);
+		}
+		catch( IllegalArgumentException e ) { 
+			Logger.warn("Invalid duration value: '%s' for property: '%s'", value, key);
+			return null;
+		}
+		
+	}
 	
 	/**
 	 * Just a synonim for {@link #put(String, String)}
