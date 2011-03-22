@@ -19,7 +19,7 @@
     </input>
     
     <process>
-		<exec><cmd>ls -la ${path}</cmd></exec>
+		<exec program="ls -la ${path}" />
     </process>
     
   </service>
