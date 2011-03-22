@@ -337,6 +337,15 @@ function pack_server_crg()
 	make_war
 }
 
+function pack_server_stage() 
+{ 
+	echo "[ pack_server_stage ]"
+
+	init "stage"
+	make_distribution 
+	make_war
+}
+
 function pack_server_palestine() 
 {
 	echo "[ pack_server_palestine ]"
@@ -373,6 +382,7 @@ function all() {
 	pack_server_vital
 	pack_server_palestine
 	pack_server_crg
+	pack_server_stage
 	pack_bundles
 
 }
