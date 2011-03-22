@@ -313,6 +313,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 				}
 				
 				if(timeout > 0) { 
+					Logger.debug("Setting executor timeout: %s secs", timeout);
 					executor.setWatchdog(new ExecuteWatchdog(timeout * 1000));
 				}
 				
