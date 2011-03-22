@@ -73,7 +73,7 @@ public class BotWorkerTest extends UnitTest{
 		String from = AppProps.instance().getWebmasterEmail();
 		Email result = worker.loadMailTemplate("bot-cached-result.txt");
 		
-		assertEquals(  "test - T-Coffee request "+service.rid()+" (CACHED)", result.getSubject() );
+		assertEquals(  "test - T-COFFEE request "+service.rid()+" (CACHED)", result.getSubject() );
 		assertEquals(  from, result.getFromAddress().getAddress() );
 		assertEquals(  "pablo@host.com", ((InternetAddress)result.getToAddresses().get(0)).getAddress() );
 	}
@@ -85,7 +85,7 @@ public class BotWorkerTest extends UnitTest{
 		String from = AppProps.instance().getWebmasterEmail();
 		Email result = worker.loadMailTemplate("bot-result-ok.txt");
 		
-		assertEquals(  "test - T-Coffee request "+service.rid()+" (DONE)", result.getSubject() );
+		assertEquals(  "test - T-COFFEE request "+service.rid()+" (DONE)", result.getSubject() );
 		assertEquals(  from, result.getFromAddress().getAddress() );
 		assertEquals(  "pablo@host.com", ((InternetAddress)result.getToAddresses().get(0)).getAddress() );
 	}
@@ -97,7 +97,7 @@ public class BotWorkerTest extends UnitTest{
 		String from = AppProps.instance().getWebmasterEmail();
 		Email result = worker.loadMailTemplate("bot-result-fail.txt");
 		
-		assertEquals(  "test - T-Coffee request "+service.rid()+" (fail)", result.getSubject() );
+		assertEquals(  "test - T-COFFEE request "+service.rid()+" (fail)", result.getSubject() );
 		assertEquals(  from, result.getFromAddress().getAddress() );
 		assertEquals(  "pablo@host.com", ((InternetAddress)result.getToAddresses().get(0)).getAddress() );
 	}
@@ -109,7 +109,7 @@ public class BotWorkerTest extends UnitTest{
 		String from = AppProps.instance().getWebmasterEmail();
 		Email result = worker.loadMailTemplate("bot-invalid-data.txt");
 		
-		assertEquals(  "test - T-Coffee request (invalid data)", result.getSubject() );
+		assertEquals(  "test - T-COFFEE request (invalid data)", result.getSubject() );
 		assertEquals(  from, result.getFromAddress().getAddress() );
 		assertEquals(  "pablo@host.com", ((InternetAddress)result.getToAddresses().get(0)).getAddress() );
 	}
