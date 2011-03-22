@@ -215,7 +215,7 @@ public class BootstrapPlugin extends PlayPlugin {
 			return null;
 		}
 
-		Logger.debug("Laoading template: '%s'",  file.relativePath() );
+		Logger.debug("Loading template: '%s'",  file.relativePath() );
         String key = (file.relativePath().hashCode() + "").replace("-", "M");
         return TemplateLoader.load( key, file.contentAsString() );
     }
