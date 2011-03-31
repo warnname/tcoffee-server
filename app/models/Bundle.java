@@ -18,7 +18,6 @@ import play.Play;
 import play.libs.IO;
 import play.vfs.VirtualFile;
 import util.Check;
-import util.Utils;
 import util.XStreamHelper;
 import bundle.BundleException;
 
@@ -161,13 +160,17 @@ public class Bundle implements Serializable {
 	}
 	
 	
-	/** the common {@link Definition} instance */
+	/** 
+	 * the common {@link Definition} instance 
+	 */
 	public Definition def;
 	
+	/**
+	 * the list of services defined in this bundle
+	 */
 	@XStreamImplicit(itemFieldName="service")
 	public List<Service> services = new ArrayList<Service>(); 
 
-	
 
 	public Definition getDef() {
 		if( def == null ) {
@@ -272,12 +275,12 @@ public class Bundle implements Serializable {
 		/* 
 		 * predefined properties 
 		 */
-		result.put( "application.path", Utils.getCanonicalPath(Play.applicationPath));
+		result.put( "application.path", Play.applicationPath);
 		result.put( "application.mode", Play.configuration.getProperty("application.mode"));
-		result.put( "workspace.path", Utils.getCanonicalPath( AppProps.WORKSPACE_FOLDER ));
+		result.put( "workspace.path", AppProps.WORKSPACE_FOLDER.getAbsolutePath());
 
-		if( root != null ) result.put( "bundle.path", Utils.getCanonicalPath(root) );
-		if( binPath != null ) result.put( "bundle.bin.path", Utils.getCanonicalPath(binPath) );
+		if( root != null ) result.put( "bundle.path", root.getAbsolutePath() );
+		if( binPath != null ) result.put( "bundle.bin.path", binPath.getAbsolutePath() );
 		if( name != null ) result.put("bundle.name", name);
 		if( version != null ) result.put("bundle.version", version);
 		if( title != null ) result.put("bundle.title", title);
