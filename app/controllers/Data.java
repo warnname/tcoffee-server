@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import play.Logger;
 import play.libs.IO;
 import play.templates.JavaExtensions;
-import util.Utils;
 import exception.QuickException;
 
 
@@ -187,7 +186,7 @@ public class Data extends CommonController {
 			temp = new File(temp, file.getName());
 			
 			FileUtils.copyFile(file, temp);
-			String filename = Utils.getCanonicalPath(temp);
+			String filename = temp.getAbsolutePath();
 			renderText(String.format("{success:true, name:'%s', path:'%s', size:'%s'}", 
 						file.getName(),
 						JavaExtensions.escapeJavaScript(filename),
