@@ -375,7 +375,7 @@ public class Service implements Serializable {
 		}
 
 		/* the private folder for this service */
-		setVariable( "data.path", Utils.getCanonicalPath(fRepo.getFile()) );
+		setVariable( "data.path", fRepo.getPath() );
 
 		/* some 'special' variables */
 		setVariable("_rid", rid());
@@ -397,7 +397,7 @@ public class Service implements Serializable {
 	}
 
 	
-	String getResultURL() {
+	public String getResultURL() {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("bundle", bundle.name);
 		params.put("rid", fRid);
@@ -607,7 +607,7 @@ public class Service implements Serializable {
 		 * being so the 'framework path' is the prefix of the file full path
 		 */
 		String context = AppProps.instance().getContextPath();
-		String path = Utils.getCanonicalPath(file);
+		String path = file.getAbsolutePath();
 		String root = AppProps.instance().getDataPath();
 		
 		String result = null;
