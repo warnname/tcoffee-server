@@ -49,6 +49,7 @@ import play.cache.Cache;
 import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Scope.Session;
+import play.mvc.Util;
 import play.mvc.With;
 import play.mvc.results.Result;
 import play.templates.JavaExtensions;
@@ -318,7 +319,7 @@ public class Admin extends CommonController {
 			// consider it relative to data root 
 			if( !file.startsWith("/") ) {
 				File abs = new File(AppProps.instance().getDataPath(), file);
-				fullName = Utils.getCanonicalPath(abs);
+				fullName = abs.getAbsolutePath();
 			}
 			else {
 				fullName = file;
@@ -1422,14 +1423,14 @@ public class Admin extends CommonController {
 			result.append("\"id\": \"") .append(row.requestId) .append("\", ");
 			result.append("\"cell\": [") 
 				.append("\"") .append( row.requestId ) .append("\", ")
-				.append("\"") .append( row.bundle ) .append("\", ")
-				.append("\"") .append( row.service ) .append("\", ")
-				.append("\"") .append( row.status ) .append("\", ")
-				.append("\"") .append( row.duration ) .append("\", ")
+				.append("\"") .append(item(row.bundle)) .append("\", ")
+				.append("\"") .append(item(row.service)) .append("\", ")
+				.append("\"") .append(item(row.status)) .append("\", ")
+				.append("\"") .append(item(row.duration)) .append("\", ")
 				.append("\"") .append( row.getCreationFmt() ) .append("\", ")
-				.append("\"") .append( row.source ) .append("\", ")
-				.append("\"") .append( row.ip != null ? row.ip : "--" ) .append("\", ")
-				.append("\"") .append( row.email != null ? row.email : "--"  ) .append("\" ")
+				.append("\"") .append(item(row.source)) .append("\", ")
+				.append("\"") .append(item(row.ip)) .append("\", ")
+				.append("\"") .append(item(row.email)) .append("\" ")
 				.append("]");
 			result.append("}");
 		}
@@ -1438,6 +1439,11 @@ public class Admin extends CommonController {
 		result.append("}");
 		
 		renderJSON(result.toString());
+	}
+	
+	@Util
+	static String item( Object val ) { 
+		return val != null ? val.toString() : "--";
 	}
 	
  }
