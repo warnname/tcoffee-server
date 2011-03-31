@@ -15,6 +15,7 @@ GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots
 GET		/favicon.ico			Main.favicon
+GET		/google{siteId}.html	Main.googleSiteVerification
 GET 	/@list 					Main.list
 GET 	/@sandbox 				Main.sandbox
 
@@ -48,6 +49,8 @@ GET		/apps/{bundle}/status				Application.status
 GET		/apps/{bundle}/history				Application.historyTable
 GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
 GET		/apps/{bundle}/{<.+\.html>page}		Application.html
+GET		/apps/{bundle}/bundle.css		    Application.css
 GET		/apps/{bundle}/public/{<.+>path}	Application.servePublic
 
+* 		/api/{bundle}/{action} 				Remote.{action}
 
