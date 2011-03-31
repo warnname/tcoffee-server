@@ -135,7 +135,8 @@ public class Main extends CommonController {
     @CacheFor("10d")
 	public static void favicon () { 
 		File icon = new File(Play.applicationPath,"conf/favicon.ico");
-		if( icon == null || !icon.exists() ) { 
+		
+		if( !icon.exists() ) { 
 			Logger.warn("Missing favicon.ico file. It should be placed in conf path: '%s'", icon.getParent());
 			notFound("Favicon.ico not available");
 		}
@@ -144,6 +145,18 @@ public class Main extends CommonController {
 		renderBinary(icon);
 	}
 
-	
+    @CacheFor("10d")
+	public static void googleSiteVerification(String siteId) { 
+		String name = "google" + siteId + ".html";
+		File file = new File(Play.applicationPath,"conf/" + name);
+		
+		if( !file.exists() ) { 
+			Logger.warn("Missing %s file. It should be placed in conf path: '%s'", name, file.getParent());
+			notFound("Google site verification file does not exist");
+		}
+		
+		response.contentType = "text/html";
+		renderText(IO.readContentAsString(file));
+	}
 	
 }
