@@ -14,10 +14,6 @@ public class GenericCommand extends AbstractShellCommand {
 
 	/** the command line argument to be used to execute the program */
 	public CmdArgs args;
-
-	/** The command line to be executed */
-	@Deprecated
-	public Eval cmd;
 	
 	/** The default constructor */
 	public GenericCommand() {}
@@ -37,7 +33,6 @@ public class GenericCommand extends AbstractShellCommand {
 	/** The copy constructor */
 	public GenericCommand( GenericCommand that ) {
 		super(that);
-		this.cmd = Utils.copy(that.cmd);
 		this.program = Utils.copy(that.program);
 		this.args = Utils.copy(that.args);
 	}
@@ -62,10 +57,6 @@ public class GenericCommand extends AbstractShellCommand {
 			}
 			
 		}
-		else if( cmd != null ) { 
-			// fallback to be previous command specification
-			result.append(cmd.eval());
-		}
 		else { 
 			// otheriwse just an empty string 
 			result.append("");
@@ -81,7 +72,7 @@ public class GenericCommand extends AbstractShellCommand {
 		/*
 		 * add the stdout file to the result
 		 */
-		if( existsLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
+		if( hasLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
 			
 			/* add at least the tcoffee log file */
 			OutItem out = new OutItem(getLogFile(), "stdout");
@@ -93,7 +84,7 @@ public class GenericCommand extends AbstractShellCommand {
 		/*
 		 * add the stderr file to teh result if exists
 		 */
-		if( existsErrFile()) { 
+		if( hasErrFile()) { 
 			
 			OutItem out = new OutItem(getErrFile(), "stderr");
 			out.label = "Command stderr";

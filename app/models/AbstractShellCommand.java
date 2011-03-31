@@ -115,20 +115,32 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 		return fCmdFile;
 	}
 	
-	public boolean existsLogFile() {
-		return fLogFile != null && fLogFile.exists();
+	/**
+	 * @return <code>true</code> if the log file exists and it is not empty, <code>false<code> otherwise 
+	 */
+	public boolean hasLogFile() {
+		return fLogFile != null && fLogFile.length() > 0;
 	}
 	
-	public boolean existsErrFile() {
-		return fErrFile != null && fErrFile.exists();
+	/**
+	 * @return <code>true</code> if the error file exists and it is not empty, <code>false<code> otherwise 
+	 */
+	public boolean hasErrFile() {
+		return fErrFile != null && fErrFile.length() > 0;
 	}
 
-	public boolean existsCmdFile() {
-		return fCmdFile != null && fCmdFile.exists();
+	/**
+	 * @return <code>true</code> if the command file exists and it is not empty, <code>false<code> otherwise 
+	 */
+	public boolean hasCmdFile() {
+		return fCmdFile != null && fCmdFile.length() > 0;
 	}
 
-	public boolean existsEnvFile() {
-		return fEnvFile != null && fEnvFile.exists();
+	/**
+	 * @return <code>true</code> if the environment file exists and it is not empty, <code>false<code> otherwise 
+	 */
+	public boolean hasEnvFile() {
+		return fEnvFile != null && fEnvFile.length() > 0;
 	}
 	
 	

@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import play.Logger;
+import play.Play;
 import util.FileIterator;
 import util.Utils;
 
@@ -166,15 +167,50 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		return result += " " + args.toCmdLine();
 	}
 
+	/*
+	 * Some NFS can return false even the file exists, maybe for latency problem, try more than one time before return false  
+	 */
+	boolean safeLogFileCheck() { 
+		long begin = System.currentTimeMillis(); 
+		boolean result;
+		
+		
+		try { 
+			long timeout = Long.parseLong(Play.configuration.getProperty("settings.file.exists.fix.timeout", "-1"));
+			
+			while( !(result = hasLogFile() )) { // <-- until it return false, just wait 
+				
+				if( System.currentTimeMillis() - begin > timeout ) { 
+					break;
+				}
+				
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					Logger.warn(e.getMessage());
+				}
+			}
+			
+			return result;
+			
+		}
+		catch( Exception e ) { 
+			Logger.error(e, "Unable to check if log file exists");
+			return false;
+		}
+		
+	}
 	/**
 	 * on job termination parse the result file to discover tcoffee output
 	 */
 	@Override
 	protected boolean done(boolean success) {
 
+		boolean hasLogFile = safeLogFileCheck();
+		
 		/* the result file MUST exists */
 		/* check the result file does not contain an error */
-		if( success && existsLogFile()) {
+		if( success && hasLogFile) {
 			String firstLine = new FileIterator(getLogFile()).iterator().next();
 			success = firstLine != null && !firstLine.contains("ERROR:");
 		}
@@ -198,7 +234,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		}
 		
 		/* Check the std output */
-		if( success || existsLogFile()) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
+		if( success || hasLogFile) { // <-- note: it is OR condition to force an exception if the job has been processed BUT the out file does not exists
 			
 			/* add at least the tcoffee log file */
 			OutItem out = new OutItem(logfile, "system_file");
@@ -214,7 +250,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		}
 
 		/* check the error output */
-		if( existsErrFile()) { 
+		if( hasErrFile()) { 
 			if( !success ) { 
 				/* add at least the tcoffee log file */
 				OutItem out = new OutItem(getErrFile(), "error_file");
