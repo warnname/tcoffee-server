@@ -337,7 +337,7 @@ public class BundleRegistry {
 	 */
 	public String getServiceTitle( String bundle, String service ) { 
 		Bundle oBundle = get(bundle);
-		Service oService = oBundle != null ? oBundle.getService(service) : null;
+		Service oService = oBundle != null && service != null ? oBundle.getService(service) : null;
 		return oService != null ? oService.title : null;
 	}
 	
