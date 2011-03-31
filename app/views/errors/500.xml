@@ -1,0 +1,12 @@
+<response>
+<err>
+#{if exception instanceof play.exceptions.PlayException}
+	<code>${exception?.id}</code>
+#{/if}
+#{if exception instanceof play.mvc.results.Result}
+	<code>${exception.status}</code>
+#{/if}
+	<type>${exception?.class?.name}</type>
+	<message>${exception?.message}</message>
+</err>
+</response>
