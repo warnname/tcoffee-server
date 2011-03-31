@@ -89,6 +89,27 @@ public class Utils {
 		return !isEmpty(arr);
 	} 
 	
+	public static boolean isEmpty( File file ) { 
+		try { 
+			return !file.exists() || file.length()==0;
+		}
+		catch( Exception e ) { 
+			Logger.warn("Error check if isEmpty file: %s", file);
+			return true;
+		}
+	}
+	
+	public static boolean isNotEmpty( File file ) { 
+		try { 
+			return file.exists() || file.length()>0;
+		}
+		catch( Exception e ) { 
+			Logger.warn("Error check if isNotEmpty file: %s", file);
+			return true;
+		}
+		
+	}
+	
 	public static String asString( Object value ) {
 		return value != null ? value.toString() : null;
 	}
@@ -1410,19 +1431,6 @@ public class Utils {
 		}
 		return result.toString();
 	}
-	
-	/**
-	 * A shortcut method to retrieve the canonical path avoiding boring exception handling 
-	 */
-	public static String getCanonicalPath(File file) {
-		try {
-			return file != null ? file.getCanonicalPath() : null;
-		} catch (IOException e) {
-			Logger.error("Unable to retrieve canonical path for file: '%s'", file.toString());
-			return null;
-		}
-	}
-
 	
 
     static public boolean deleteFolder(File path) {
