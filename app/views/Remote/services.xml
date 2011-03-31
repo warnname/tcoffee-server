@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+
+#{list services}
+<service >
+  <name>${_.name}</name>
+  <group>${_.group?.escapeXml()}</group> 
+  <title>${_.title?.escapeXml()}</title> 
+  <description>${_.description?.escapeXml()}</description> 
+  <cite>${_.cite?.escapeXml()}</cite> 
+</service>
+#{/list}
+
+</response>

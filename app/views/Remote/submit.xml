@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+<submit >
+<request-id>${rid}</request-id>
+<status>${status}</status>
+<url><![CDATA[${url}]]></url>
+</submit>
+</response>

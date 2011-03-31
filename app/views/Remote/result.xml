@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+<result>
+
+<bundle>${result?.bundle}</bundle>
+<service>${result?.service}</service> 
+<title>${result?.title}</title>
+<elapsed-time>${elapsedTime}</elapsed-time> 
+<status>${status}</status> 
+
+#{list result?.items }
+<item>
+	<webpath>${_.webpath}</webpath>
+	<label>${_.label}</label>
+	<type>${_.type}</type> 
+	<name>${_.name}</name>
+	<format>${_.format}</format> 
+</item>
+#{/list}
+
+</result>
+</response>
