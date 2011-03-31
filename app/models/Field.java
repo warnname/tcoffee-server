@@ -286,7 +286,7 @@ public class Field implements Serializable {
 	 * The uploaded file path as string. Only for 'file' field type
 	 */
 	public String getFilePath() {
-		return fFile != null ? Utils.getCanonicalPath(fFile) : null;
+		return fFile != null ? fFile.getAbsolutePath() : null;
 	} 
 	
 	/**
