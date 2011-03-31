@@ -17,9 +17,7 @@
 <link rel="shortcut icon" type="image/x-icon" href="@{Main.favicon()}"> 
 <link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css">
 #{if _bundle && _bundle.cssPath } 
-<style type="text/css">
-#{includefile _bundle.cssPath /}
-</style>
+<link href="@{Application.css}" rel="stylesheet" type="text/css">
 #{/if}
  #{get 'moreStyles' /}
 

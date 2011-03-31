@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,8 @@ import models.Repo;
 import models.Service;
 import models.Status;
 import play.Logger;
+import play.cache.CacheFor;
+import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Finally;
 import util.Utils;
@@ -299,5 +302,18 @@ public class Application extends CommonController {
 	}
 
 
+	/** 
+	 * Render the bundle css content
+	 */
+	@CacheFor("10d")
+	public static void css() { 
+		File file = Application.bundle.get().cssPath;
+		if( file == null || !file.exists() ) { 
+			notFound("Cannot render CSS file for bundle: ", Application.bundle.get().name );
+		}
+		
+		response.contentType = "text/css";
+		renderText( IO.readContentAsString(file) );
+	}
 	
 }
