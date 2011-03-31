@@ -135,6 +135,10 @@ public class Repo implements Serializable {
 		return fRoot;
 	}
 	
+	public String getPath() { 
+		return fRoot != null ? fRoot.getAbsolutePath() : null;
+	}
+	
 	public File getFile( String path ) { 
 		return new File(fRoot, path);
 	}
