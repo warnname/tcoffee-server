@@ -1,0 +1,72 @@
+CLUSTAL W (1.83) multiple sequence alignment
+
+P08067          MLGIRSSVK-T------------CFKPMSLTSKRL--------------- 22
+P20788          MLSVAARSG-P------------FAPVLSATSRGVAGALRPLLQSAVPAT 37
+AAD55565        MAMITSRRAAAPCKAQATRRSRV--------------------------- 23
+P08980          MASFTLSSA-TPSQL-CSSKNGMFAPSLALAKAGRVNVL----------- 37
+P23136          MAEAEHTAS-T---------------PGGESS------------------ 16
+AAC84018        MDQNVSRR------------------------------------------ 8
+AAF02189        MVDENRR------------------------------------------- 7
+                *                                                 
+
+P08067          ----------------------------------ISQ-SLLASKS---TY 34
+P20788          SEPPVLDVKRPFLCRESLSGQAATRPLVATVGLNVPA-SVRYSHT---DI 83
+AAD55565        -----------------------------------MSV-VRAA---AVSS 34
+P08980          ------------ISKER-----------------IRGMKLTCQATSIPAD 58
+P23136          -------------------------------------------------- 16
+AAC84018        -------------------------------------------------- 8
+AAF02189        -------------------------------------------------- 7
+                                                                  
+
+P08067          RTPNFDDVLKE-----------NNDADKGRSYAYFMVGAMGLLSSAGA-- 71
+P20788          KVPDFSDYRRAEVLDSTKSSKESSE--ARKGFSYLVTATTTVGVAYAA-- 129
+AAD55565        EVPDMN---------------------KRNIMNLILLGGASLPVGSLA-- 61
+P08980          NVPDMQ---------------------KRETLNLLLLGALSLPTGYML-- 85
+P23136          ---------------------------RR---DFLIYGTTAVGAVG-V-- 33
+AAC84018        ---------------------------------KFLGGVIAIPTLAVLTA 25
+AAF02189        -----------------------------NTLKIFLGTTAALGAGMLA-- 26
+                                                  ::     :        
+
+P08067          -KST-------VETFISSM------------TATADVLAMAKVEVNLAAI 101
+P20788          -KNA-------VSQFVSSM------------SASADVLAMSKIEIKLSDI 159
+AAD55565        -LGY-------GAFFVPPSSGGGSGGQAAKDALGNDIKANAWL---ATHQ 100
+P08980          -LPY-------ASFFVPPGGGAGTGGTIAKDALGNDVIAAEWL---KTHA 124
+P23136          -ALA-------VWPFIDFM------------NPAADTLALASTEVDVSAI 63
+AAC84018        PLAA-------VGGFVYPPDRLLQPPQPKKIAKLADLKPM---------- 58
+AAF02189        -TPLVASVIGSKAGYIKPEPSGAIPVEICKD---------------VDSC 60
+                              ::                                  
+
+P08067          PLGKNVVV-KWQGKPVFIRHRTPH--EIQEANSVDMSALKDPQTDADR-- 146
+P20788          PEGKNMAF-KWRGKPLFVRHRTKK--EIDQEAAVEVSQLRDPQHDLER-- 204
+AAD55565        KGDRSLSQ-GLKGDPTYLIVTADG--TI---------------------- 125
+P08980          PGDRTLTQ-GLKGDPTYLVVESDK--TL---------------------- 149
+P23136          AEGQAITV-TWRGKPVFVRHRTQK--EIVVARAVDPASLRDPQTDEAR-- 108
+AAC84018        ---EALHF-DYNDVPCLAIKTGKG-------------------------- 78
+AAF02189        PKDYGVSLDELRNGPVFKLLKVNTMAIPAV-------------FGIVRAK 97
+                     :     .. *                                   
+
+P08067          VKDPQWLIMLGICTHLGCVPIGEA-----GD-FG--GWFCPCHGSHYDI- 187
+P20788          VKKPEWVILIGVCTHLGCVPIANA-----GD-FG--GYYCPCHGSHYDA- 245
+AAD55565        ----EKYGLNAVCTHLGCVVPWVA-----AE--N--KFKCPCHGSQYNA- 161
+P08980          ----ATFGINAVCTHLGCVVPFNA-----AE--N--KFICPCHGSQYNN- 185
+P23136          VQQAQWLVMVGVCTHLGCIPLGQKAGDPKGD-FD--GWFCPCHGSHYDS- 154
+AAC84018        ----EVIAYKLKCTHLGCTVDVPK-----GS-LEGKKLVCPCHGGQFDP- 117
+AAF02189        DGKEYPVAYVAICTHFGCPVNVSG-----GKYLI--GFNCPCHGSIFAIC 140
+                            ***:**           ..        *****. :   
+
+P08067          --------------SGRIRKGPAPLNLEIPAYEFD-G-DK---------- 211
+P20788          --------------SGRIRKGPAPLNLEVPTYEFTSG-DV---------- 270
+AAD55565        --------------EGKVVRGPAPLSLALAHCDVQEDGLVTFSTWSETDF 197
+P08980          --------------QGRVVRGPAPLSLALAHCDVDDG-KVVFVPWTETDF 220
+P23136          --------------AGRIRKGPAPLNLPVPPYAFTDD-TT---------- 179
+AAC84018        --------------EGNNVGGPPPKPLVRLQVAVENG-DVIVK------- 145
+AAF02189        NDPNGCPDYNAAFLEMYVSGGPAPRSLRAIKVAVKDG-VVYPL------- 182
+                                    **.*  *      .  .             
+
+P08067          -----V-IVG 215
+P20788          -----V-VVG 274
+AAD55565        RTGLEP-WWA 206
+P08980          RTGEAPWWSA 230
+P23136          -----V-LIG 183
+AAC84018        -----E-GVA 149
+AAF02189        -----V-AYI 186

@@ -27,6 +27,25 @@ public class UtilsTest extends UnitTest {
 		assertFalse( Utils.isEmpty("hola") );
 	}
 	
+	@Test 
+	public void  testIsEmptyFile() {
+		File file = new File("non-esisting-file");
+		assertTrue( Utils.isEmpty(file) );
+		
+		File empty = TestHelper.file("/empty-file");
+		assertTrue( empty.exists() );
+		assertTrue( Utils.isEmpty(empty) );
+	}
+	
+	@Test 
+	public void  testIsNotEmptyFile() {
+		File file = TestHelper.sampleFasta();
+		assertTrue( file.exists() );
+		assertTrue( Utils.isNotEmpty(file));
+	}
+
+	
+	
 	@Test
 	public void equalsArray() {
 		assertTrue( Utils.isEquals((Object[])null,null) );

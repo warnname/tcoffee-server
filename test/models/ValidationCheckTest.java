@@ -1,10 +1,8 @@
 package models;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import play.data.validation.Validation;
-import play.data.validation.Validation.Validator;
 import play.test.UnitTest;
 import util.Utils;
 import util.XStreamHelper;
@@ -38,7 +36,7 @@ public class ValidationCheckTest extends UnitTest {
 		
 		ValidationCheck check = XStreamHelper.fromXML(xml);
 		assertEquals( true, check.required );
-		assertEquals( ValidationFormat.TEXT, check.format );
+		assertEquals( "TEXT", check.format );
 		assertEquals( "5", check.min );
 		assertEquals( "50", check.max );
 		assertEquals( (Integer)0, check.minLength );
@@ -70,7 +68,7 @@ public class ValidationCheckTest extends UnitTest {
 		check.max = "99";
 		check.maxError = "Max message";
 		
-		check.format = ValidationFormat.TEXT;
+		check.format = "TEXT";
 		check.formatError = "String message";
 		
 		check.pattern = "xxx";
@@ -105,7 +103,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test 
 	public void testRequired() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.TEXT;
+		check.format = "TEXT";
 		check.required = true;
 		check.requiredError = "Field %s is required";
 		
@@ -121,7 +119,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test 
 	public void testMinSize() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.TEXT;
+		check.format = "TEXT";
 		check.min = "3";
 		check.minError = "Field should be at least 3 chars length";
 		
@@ -131,13 +129,14 @@ public class ValidationCheckTest extends UnitTest {
 		check.apply("fieldMinSize", " a ");
 		assertTrue( Validation.hasError("fieldMinSize"));
 		assertEquals( check.minError, Validation.error("fieldMinSize").message() );
+		
 	}
 	
 
 	@Test 
 	public void testMaxSize() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.TEXT;
+		check.format = "TEXT";
 		check.max = "3";
 		check.maxError = "Field should be at most 3 chars length";
 		
@@ -153,7 +152,7 @@ public class ValidationCheckTest extends UnitTest {
 	public void testPattern() {
 
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.TEXT;
+		check.format = "TEXT";
 		check.pattern = "a.*c";
 		check.patternError = "Field should follow the pattern";
 		
@@ -169,7 +168,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testEmail() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.EMAIL;
+		check.format = "EMAIL";
 		check.formatError = "Field is not a valid email address";
 			
 		check.apply("fieldEmail", "paolo@crg.es");
@@ -184,7 +183,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test 
 	public void testDateFormat() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DATE;
+		check.format = "DATE";
 		check.formatError = "Field is not a valid date format";
 			
 		check.apply("fieldDate", "13/2/2010");
@@ -198,7 +197,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testDateMin() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DATE;
+		check.format = "DATE";
 		check.formatError = "Field is not a valid date format";
 		
 		check.min = "2/2/2010";
@@ -218,7 +217,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testDateMax() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DATE;
+		check.format = "DATE";
 		check.formatError = "Field is not a valid date format";
 		
 		check.max = "2/2/2010";
@@ -238,7 +237,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testIntegerFormat() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.INTEGER;
+		check.format = "INTEGER";
 		check.formatError = "Field is not a valid INTEGER";
 
 		check.apply("fieldInteger", null);
@@ -255,7 +254,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testIntegerMin() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.INTEGER;
+		check.format = "INTEGER";
 		
 		check.min = "10";
 		check.minError = "Min accepted value is 10";
@@ -274,7 +273,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testIntegerMax() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.INTEGER;
+		check.format = "INTEGER";
 		
 		check.max = "10";
 		check.maxError = "MAX accepted value is 10";
@@ -293,7 +292,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testDecimalFormat() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DECIMAL;
+		check.format = "DECIMAL";
 		check.formatError = "Field is not a valid DECIMAL";
 			
 		check.apply("fieldDec", null);
@@ -310,7 +309,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testDecimalMin() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DECIMAL;
+		check.format = "DECIMAL";
 		
 		check.min = "9.99";
 		check.minError = "Min accepted value is 9.99";
@@ -329,7 +328,7 @@ public class ValidationCheckTest extends UnitTest {
 	@Test
 	public void testDecimalMax() {
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.DECIMAL;
+		check.format = "DECIMAL";
 		
 		check.max = "10";
 		check.maxError = "Max accepted value is 10";
@@ -356,7 +355,7 @@ public class ValidationCheckTest extends UnitTest {
 			"VPRNLLGLYP";
 		
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.FASTA;
+		check.format = "FASTA";
 		check.formatError = "Invalid FASTA format";
 		
 		
@@ -383,7 +382,7 @@ public class ValidationCheckTest extends UnitTest {
 			"VPRNLLGLYP\n";
 		
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.FASTA;
+		check.format = "FASTA";
 
 		check.maxNum = 3;
 		check.maxNumError = "Max sequence num error";
@@ -406,7 +405,7 @@ public class ValidationCheckTest extends UnitTest {
 			"NYITPVN\n";
 		
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.FASTA;
+		check.format = "FASTA";
 
 		check.minNum = 2;
 		check.minNumError = "Max sequence num error";
@@ -437,7 +436,7 @@ public class ValidationCheckTest extends UnitTest {
 			"NLFVALYDFVAS\n";		
 		
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.FASTA;
+		check.format = "FASTA";
 		check.formatError = "Invalid FASTA format";
 
 		check.minLength = 50;
@@ -469,7 +468,7 @@ public class ValidationCheckTest extends UnitTest {
 			"NLFVALYDFVAS\n";		
 		
 		ValidationCheck check = new ValidationCheck();
-		check.format = ValidationFormat.FASTA;
+		check.format = "FASTA";
 		check.formatError = "Invalid FASTA format";
 
 		check.maxLength = 50;
@@ -482,6 +481,83 @@ public class ValidationCheckTest extends UnitTest {
 		check.apply("fieldFastaMaxLength", SAMPLE_BAD);
 		assertTrue( Validation.hasError("fieldFastaMaxLength") );		
 		assertEquals( check.maxLengthError, Validation.error("fieldFastaMaxLength").message() );			
+	}
+	
+	@Test 
+	public void testClustalOK() { 
+		String GOOD = 
+			"CLUSTAL W (1.82) multiple sequence alignment\n" +
+			"\n" +
+			"1aboA  NGQGWVPSNYITPVN------\n" +
+			"1ycsB  DKEGYVPRNLLGLYP------\n" +
+			"1pht   GERGDFPGTYVEYIGRKKISP";		
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "CLUSTAL";
+		check.formatError = "Invalid FASTA format";
+
+		check.apply("fieldClustal", GOOD);
+		assertFalse( Validation.hasError("fieldClustal") );		
+	}
+	
+	@Test 
+	public void testClustalFail() { 
+		String BAD = 
+			"CLUSTAL W (1.82) multiple sequence alignment\n" +
+			"\n" +
+			"NGQGWVPSNYITPVN------ 20\n" +
+			"DKEGYVPRNLLGLYP------ 30\n" +
+			"GERGDFPGTYVEYIGRKKISP 20";		
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "CLUSTAL";
+		check.formatError = "Invalid FASTA format";
+
+		check.apply("fieldClustal", BAD);
+		assertTrue( Validation.hasError("fieldClustal") );		
+		assertEquals( check.formatError, Validation.error("fieldClustal").message() );			
+	}	
+	
+	@Test 
+	public void testFastaOrCLustal() { 
+	
+		/* 
+		 * first try with FASTA 
+		 */
+		final String FASTA = 
+			">1aboA \n" +
+			"NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPS\n" +
+			">1ycsB\n" +
+			"KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGY\n";
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "FASTA | CLUSTAL";  // <-- this means that the entry can be FASTA  - or -  CLUSTAL  
+
+		check.apply("field", FASTA);
+		assertFalse( Validation.hasError("field") );	
+		
+		/*
+		 * second try with clustal 
+		 */
+		String CLUSTAL = 
+			"CLUSTAL W (1.82) multiple sequence alignment\n" +
+			"\n" +
+			"1aboA  NGQGWVPSNYITPVN------\n" +
+			"1ycsB  DKEGYVPRNLLGLYP------\n" +
+			"1pht   GERGDFPGTYVEYIGRKKISP";		
+
+		check.apply("field", CLUSTAL);
+		assertFalse( Validation.hasError("field") );	
+		
+		/*
+		 * Third some shit 
+		 */
+		check.formatError = "Sequence have to be in FASTA or CLUSTAL format";
+		check.apply("field", "xxx");
+		assertTrue( Validation.hasError("field") );	
+		assertEquals( check.formatError, Validation.error("field").message() );			
+
+		
 	}
 
 }
