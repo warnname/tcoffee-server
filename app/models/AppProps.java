@@ -108,9 +108,9 @@ public class AppProps implements Serializable  {
     	 * It could be specified by the property 'settings.workspace.path'
     	 * - or - if it is missing it wiull be used the path {application.path}/data
     	 */
-		String path = Play.configuration.getProperty("settings.workspace.path");   
-		WORKSPACE_FOLDER = Utils.isNotEmpty(path) 
-				    ? new File(path)
+		String sPath = Play.configuration.getProperty("settings.workspace.path");   
+		WORKSPACE_FOLDER = Utils.isNotEmpty(sPath) 
+				    ? new File(sPath)
 		 			: new File(Play.applicationPath,"data");
 	
 		if( !WORKSPACE_FOLDER.exists() ) {
@@ -342,7 +342,7 @@ public class AppProps implements Serializable  {
 	 * The application data path. Statically defined cannot be overriden. 
 	 */
 	public String getDataPath() {
-		return Utils.getCanonicalPath(WORKSPACE_FOLDER);
+		return WORKSPACE_FOLDER.getAbsolutePath();
 	}
 
 	public File getDataFolder() {
@@ -383,9 +383,13 @@ public class AppProps implements Serializable  {
 	 * 
 	 */
 	public Integer getDuration( final String key ) { 
+		return getDuration(key,null);
+	}
+	
+	public Integer getDuration( final String key, Integer defValue ) { 
 		String value = getString(key, null);
 		if( Utils.isEmpty(value) ) { 
-			return null;
+			return defValue;
 		}
 
 		try { 
@@ -393,9 +397,8 @@ public class AppProps implements Serializable  {
 		}
 		catch( IllegalArgumentException e ) { 
 			Logger.warn("Invalid duration value: '%s' for property: '%s'", value, key);
-			return null;
+			return defValue;
 		}
-		
 	}
 	
 	/**
