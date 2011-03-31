@@ -292,8 +292,6 @@ public class BotWorker {
 			if( cc != null && cc.size() > 0 ) { 
 				mail.setCc(cc);
 			}
-			mail.setBcc( Arrays.asList(new InternetAddress(mailFrom)) );
-			
 
 			return mail;
 		
