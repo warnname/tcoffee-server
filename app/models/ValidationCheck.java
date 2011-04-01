@@ -244,9 +244,11 @@ public class ValidationCheck implements Serializable {
 		{
 			return applyClustalValidation(name, value);
 		} 		
-		
+		else if( Utils.isNotEmpty(value) ) {
+			Logger.warn("Unknown validation format: '%s'", format);
+		}
+
 		// no error 
-		Logger.warn("Unknown validation format: '%s'", format);
 		return null;
 	}
 
