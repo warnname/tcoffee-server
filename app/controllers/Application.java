@@ -13,7 +13,6 @@ import models.Repo;
 import models.Service;
 import models.Status;
 import play.Logger;
-import play.cache.CacheFor;
 import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Finally;
@@ -305,7 +304,6 @@ public class Application extends CommonController {
 	/** 
 	 * Render the bundle css content
 	 */
-	@CacheFor("10d")
 	public static void css() { 
 		File file = Application.bundle.get().cssPath;
 		if( file == null || !file.exists() ) { 
