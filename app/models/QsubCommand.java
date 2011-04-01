@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,11 @@ public class QsubCommand extends AbstractShellCommand {
 		this.queue = that.queue;
 		this.jobname = that.jobname;
 		this.jobfile = that.jobfile;
+	}
+	
+	public QsubCommand( AbstractShellCommand target ) { 
+		this._commands = new ArrayList<AbstractShellCommand>();
+		this._commands.add(target);
 	}
 	
 	String getQueue() {
