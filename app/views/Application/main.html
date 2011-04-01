@@ -57,7 +57,7 @@
 
 <label>&nbsp;</label> 
 <div class="c-input">
-<button id="submit" type="submit" class="button" >Submit</button>
+<button id="submit" type="submit" class="button" >Submit</button>&nbsp;&nbsp;&nbsp;<a id="reset" href="javascript:void(0)" title="Reset the form to default values">Resest</a>
 </div>
 </form>
 
@@ -99,6 +99,8 @@ $('#form').submit(function(){
 	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
 
 });
+
+$('#reset').click(function() { $('#form')[0].reset(); $('textarea').each(function(){ this.value='';} ) } )
 
 $(document).ready(function(){
 	$('#submit').removeAttr('disabled').removeClass('disabled').text('Submit');
