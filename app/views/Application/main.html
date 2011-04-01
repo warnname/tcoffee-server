@@ -100,7 +100,7 @@ $('#form').submit(function(){
 
 });
 
-$('#reset').click(function() { $('#form')[0].reset(); $('textarea').each(function(){ this.value='';} ) } )
+$('#reset').click(function() { $('#form')[0].reset(); $('textarea').each(function(){ this.value=''; $(this).trigger('clearErrors'); $(this).trigger('keydown'); } ) } )
 
 $(document).ready(function(){
 	$('#submit').removeAttr('disabled').removeClass('disabled').text('Submit');
