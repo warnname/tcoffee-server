@@ -10,6 +10,7 @@ import models.CmdArgs;
 import models.Input;
 import models.OutResult;
 import models.ProcessCommand;
+import models.QsubCommand;
 import models.Repo;
 import models.Service;
 import models.Status;
@@ -18,6 +19,7 @@ import models.TCoffeeCommand;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
+import play.Play;
 import play.data.validation.Error;
 import play.data.validation.Validation;
 import play.mvc.Before;
@@ -178,7 +180,7 @@ public class Remote extends CommonController {
 		}
 	
 		/*
-		 * 1. prepare for the execution
+		 * 1. create the tcoffee command 
 		 */
 		
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
@@ -187,11 +189,18 @@ public class Remote extends CommonController {
 			badreq("Argument 'other_pg' is not supported by the server");
 		}
 
+		/* 
+		 * the qsub wrapper 
+		 */
+		QsubCommand qsub = new QsubCommand(tcoffee);
+		qsub.disabled = Play.mode.isDev();
+		
+		
 		Service service = new Service();
 		service.bundle  = bundle.get();
 		service.input = new Input();
 		service.process = new ProcessCommand();
-		service.process.add( tcoffee );
+		service.process.add( qsub );
 		service.source = "cloud-coffee";
 		Service.current(service);
 		
