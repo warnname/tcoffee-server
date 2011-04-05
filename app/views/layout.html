@@ -54,7 +54,10 @@ $(document).ready(function() {
 
 	<div id="content" >
 	#{if _main_sysmsg && request.cookies['sysmsg_closed']?.value != _main_sysmsg.hash }
-	<div id="sysmsg" class="${_main_sysmsg.type}"><span style="float: right; position: relative; top: -10px; font-size: .8em" >[ <a class="close" href="#">X</a> ]</span>
+	<div id="sysmsg" class="${_main_sysmsg.type}">
+	  #{if !_main_sysmsg.sticky }
+	  <span style="float: right; position: relative; top: -10px; font-size: .8em" >[ <a class="close" href="#">X</a> ]</span>
+	  #{/if}
 	${_main_sysmsg.value}
 	</div>
 	#{/if}

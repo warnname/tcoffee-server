@@ -1075,10 +1075,12 @@ public class Admin extends CommonController {
 	public static class SysMessage implements Serializable { 
 		public String value;
 		public String type;
+		public Boolean sticky;
 
-		public SysMessage( String message, String type ) { 
+		public SysMessage( String message, String type, String sticky ) { 
 			this.value = message;
 			this.type = type;
+			this.sticky = (sticky != null && sticky.toLowerCase().equals("yes")) ;
 		}
 		
 		public int hashCode() { 
@@ -1098,7 +1100,7 @@ public class Admin extends CommonController {
 	/**
 	 * Publish a system message to all users 
 	 */
-	public static void sysmsg( String message, String type, String duration ) { 
+	public static void sysmsg( String message, String type, String duration, String sticky ) { 
 		Field fieldMessage = new Field("textarea", "message");
 		fieldMessage.label = "Message to publish";
 		fieldMessage.hint = "Enter here the message to publish";
@@ -1113,6 +1115,11 @@ public class Admin extends CommonController {
 		fieldExpires.label = "Duration";
 		fieldExpires.hint = "Specify how long this message will be visible e.g 10min, 1h, 1d";
 		
+		Field fieldSticky = new Field("radio", "sticky");
+		fieldSticky.label = "Sticky";
+		fieldSticky.hint = "If YES the message cannot be closed";
+		fieldSticky.choices = new String[] { "Yes", "No" };		
+		
 		/*
 		 * is POST apply the changes 
 		 */
@@ -1124,7 +1131,7 @@ public class Admin extends CommonController {
 			}
 			else { 
 				if( Utils.isEmpty(duration) ) { duration = null; }
-				Cache.safeSet("sysmsg", new SysMessage(message,type), duration);
+				Cache.safeSet("sysmsg", new SysMessage(message,type, sticky), duration);
 				feedback = "System message published";
 			}
 			
@@ -1135,8 +1142,9 @@ public class Admin extends CommonController {
 		SysMessage sysmsg = (SysMessage) Cache.get("sysmsg");
 		fieldMessage.value =  sysmsg != null ? sysmsg.value : null;
 		fieldType.value = type != null ? type : "box-warn";
+		fieldSticky.value = sysmsg != null ? (sysmsg.sticky ? "Yes" : "No") : "No";
 		
-		render(fieldMessage, fieldType, fieldExpires);
+		render(fieldMessage, fieldType, fieldExpires, fieldSticky);
 	}
 	
 	/**
@@ -1423,14 +1431,14 @@ public class Admin extends CommonController {
 			result.append("\"id\": \"") .append(row.requestId) .append("\", ");
 			result.append("\"cell\": [") 
 				.append("\"") .append( row.requestId ) .append("\", ")
-				.append("\"") .append(item(row.bundle)) .append("\", ")
-				.append("\"") .append(item(row.service)) .append("\", ")
-				.append("\"") .append(item(row.status)) .append("\", ")
-				.append("\"") .append(item(row.duration)) .append("\", ")
-				.append("\"") .append( row.getCreationFmt() ) .append("\", ")
-				.append("\"") .append(item(row.source)) .append("\", ")
-				.append("\"") .append(item(row.ip)) .append("\", ")
-				.append("\"") .append(item(row.email)) .append("\" ")
+				.append("\"") .append(def(row.bundle)) .append("\", ")
+				.append("\"") .append(def(row.service)) .append("\", ")
+				.append("\"") .append(def(row.status)) .append("\", ")
+				.append("\"") .append(def(row.duration)) .append("\", ")
+				.append("\"") .append(def(row.getCreationFmt())) .append("\", ")
+				.append("\"") .append(def(row.source)) .append("\", ")
+				.append("\"") .append(def(row.ip)) .append("\", ")
+				.append("\"") .append(def(row.email)) .append("\" ")
 				.append("]");
 			result.append("}");
 		}
@@ -1441,10 +1449,55 @@ public class Admin extends CommonController {
 		renderJSON(result.toString());
 	}
 	
-	@Util
-	static String item( Object val ) { 
-		return val != null ? val.toString() : "--";
+	/**
+	 * Exports stats data as CSV file 
+	 * 
+	 * @param filter
+	 * @param page
+	 * @param rp
+	 * @param sortname
+	 * @param sortorder
+	 * @param query
+	 * @param qtype
+	 * @throws IOException 
+	 */
+	public static void statsExportCsv(UsageFilter filter, String sortname, String sortorder, String query, String qtype) throws IOException { 
+		GridResult data = QueryHelper.findUsageGridData(filter, -1, -1, sortname, sortorder, query, qtype);
+		
+		File file = File.createTempFile("stats-", ".csv", AppProps.TEMP_PATH);
+		PrintWriter out = new PrintWriter(file);
+		for( UsageLog row : data.rows )  { 
+			StringBuilder line = new StringBuilder();
+
+			
+			line
+				.append( row.requestId ) .append(",")
+				.append(def(row.bundle)) .append(",")
+				.append(def(row.service)) .append(",")
+				.append(def(row.status)) .append(",")
+				.append(def(row.duration)) .append(",")
+				.append(def(row.getCreationFmt())) .append(",")
+				.append(def(row.source)) .append(",")
+				.append(def(row.ip)) .append(",")
+				.append(def(row.email));
+			
+			out.println(line);
+		}
+		
+		out.close();
+		
+		/*
+		 * provide a nice name and download
+		 */
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+		String filename = "tserver-stats-"+fmt.format(new Date())+".csv";
+		response.setHeader("Content-Disposition", "attachment; filename=\""+filename+"\"");
+		renderBinary(file);		
 	}
 	
+	@Util
+	static String def( Object val ) { 
+		return val != null ? val.toString() : "";
+	}	
  }
 

@@ -86,6 +86,16 @@ and the seach field. Note the search will be applied on the current selection, n
 </small>
 </div>
 
+
+<div style="padding-top: 1.5em" >
+<h2>
+<span>Export data</span>
+</h2>
+
+To download the above data in CVS format <a id="export" href="javascript:void(0)" >click here</a>
+</div>
+
+
 <script language="javascript" type="text/javascript"><!--
 /* 
  * Declare some urls used to fetch data 
@@ -108,10 +118,23 @@ var urlGridData = function(args) {
 	return url + q; 
 } 
 
+var urlExportCsv = function(args) { 
+	var url = "@{Admin.statsExportCsv()}"; var q="";
+	if( args != null && typeof(args) == "object" ) { 
+		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
+	}  
+	return url + q; 
+}
+
 var _choice=null;
 var _since=null;
 var _until=null;
 var _index=null;
+
+var _grid_query=null;
+var _grid_qtype=null;
+var _grid_sortname=null;
+var _grid_sortorder=null;
 
 var dataSeries = [];
 var addedSeries = [];
@@ -167,22 +190,22 @@ $(document).ready(function () {
 		url: urlGridData(_args()),
 		dataType: 'json',
 		colModel : [
-			{display: 'Request ID', name : 'rid', width: 70, process: onRowSelect },
-			{display: 'Bundle', name : 'bundle', width: 70  },
-			{display: 'Service', name : 'service', width: 70  },
-			{display: 'Status', name : 'status', width: 50  },
-			{display: 'Duration', name : 'duration', width: 60, align: 'right'  },
-			{display: 'Date', name : 'date', width: 50  },
-			{display: 'Source', name : 'source', width: 40  },
-			{display: 'Ip Address', name : 'ip', width : 80  },
-			{display: 'Email', name : 'email', width : 150  }
+			{display: 'Request ID', name: 'rid', width: 70, process: onRowSelect },
+			{display: 'Bundle', name: 'bundle', width: 70, sortable: true  },
+			{display: 'Service', name: 'service', width: 70, sortable: true  },
+			{display: 'Status', name: 'status', width: 50, sortable: true  },
+			{display: 'Duration', name: 'duration', width: 60, sortable: true, align: 'right'  },
+			{display: 'Date', name: 'creation', width: 50, sortable: true  },
+			{display: 'Source', name: 'source', width: 70, sortable: true  },
+			{display: 'Ip Address', name: 'ip', width: 80, sortable: true  },
+			{display: 'Email', name: 'email', width: 150, sortable: true  }
 			],
 		searchitems : [
 		   	{display: 'Request ID', name : 'rid'},
 			{display: 'Bundle', name : 'bundle'},
 			{display: 'Service', name : 'service', isdefault: true},
 			{display: 'Status', name : 'status'},
-			{display: 'Date', name : 'date'},
+			{display: 'Date', name : 'creation'},
 			{display: 'Source', name : 'source'},
 			{display: 'Ip Address', name : 'ip'},
 			{display: 'Email', name : 'email'}
@@ -191,7 +214,14 @@ $(document).ready(function () {
 		useRp: false,
 		rp: 100,
 		width: 900,
-		height: 400
+		height: 400,
+		onSubmit: function() { 
+			_grid_query=this.query; 
+			_grid_qtype=this.qtype; 
+			_grid_sortname=this.sortname; 
+			_grid_sortorder=this.sortorder;   
+			return true;
+			}  
 		}
 		);
 
@@ -373,7 +403,20 @@ $(document).ready(function () {
 	} 
 	
     loadChartData();
-  
+
+    /*
+     * export link 
+     */
+    $('#export').click(function() {
+		var a = _args();
+		a['query'] = _grid_query;
+		a['qtype'] = _grid_qtype;
+		a['sortname'] = _grid_sortname;
+		a['sortorder'] = _grid_sortorder;
+		
+		window.open(urlExportCsv(a),'_blank')	
+    })
+    
 });
 
 </script>

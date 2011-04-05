@@ -62,8 +62,8 @@ public class QueryHelper {
 	 * Fetch the dataset to be shoed in the usage grid control 
 	 * 
 	 * @param filter 
-	 * @param page
-	 * @param size
+	 * @param page the page index when pagination is used, the first page starts from 1
+	 * @param size the maximum number of records that a page can contain 
 	 * @param sortfield
 	 * @param sortorder
 	 * @param qvalue
@@ -72,17 +72,7 @@ public class QueryHelper {
 	 */
 	public static GridResult findUsageGridData( UsageFilter filter, int page, int size, String sortfield, String sortorder, String qvalue, String qfield ) { 
 		
-		if( page < 1 ) {
-			page = 1;
-			Logger.warn("Argument 'page' cannot be less than 1");
-		}
-		
-		if( size < 1 ) { 
-			size = 100;
-			Logger.warn("Argument 'size' cannot be less than 1");
-		}
-		
-		int skip = (page-1) * size;
+		int skip = (page>0 && size>0 ) ? (page-1) * size : -1;
 		
 		QueryBuilder where =  new QueryBuilder(UsageLog.class);
 		
@@ -124,7 +114,7 @@ public class QueryHelper {
 			where.and( "service", "like", qvalue );
 		}
 
-		else if( "date".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "creation".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			Date date = Utils.parseDate(qvalue, null);
 			if( date != null ) { 
 				where.and( "creation", "=", date );
@@ -149,6 +139,10 @@ public class QueryHelper {
 		else if( "source".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			where.and( "source", "=", qvalue );
 		}
+
+		else if( "status".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "status", "=", qvalue );
+		}	
 		
 		/* 
 		 * counting the total result items 
@@ -166,6 +160,9 @@ public class QueryHelper {
 		 * define the ordering 
 		 */
 		if( Utils.isNotEmpty(sortfield) && !"undefined".equals(sortfield) && !"null".equals(sortfield) ) { 
+			if( sortfield.equals("duration") ) { // 'duration' is the formatted version of the field 'elapsed'
+				sortfield = "elapsed";
+			}
 			where.order(sortfield, !"desc".equals(sortorder) );
 		}
 		
@@ -174,8 +171,12 @@ public class QueryHelper {
 		 * find the rows 
 		 */
 		query = JPA.em().createQuery(where.toString());
-		query.setFirstResult(skip);
-		query.setMaxResults(size);
+		if( skip > 0 ) { 
+			query.setFirstResult(skip);
+		}
+		if( size > 0 ) { 
+			query.setMaxResults(size);
+		}
 
 		where.setParams(query);
 
