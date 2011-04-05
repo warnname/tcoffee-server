@@ -132,4 +132,43 @@ public class FastaTest extends UnitTest {
 	}
 
 	
+	@Test 
+	public void testMissingName() { 
+		String seq = 
+			"> \n" +
+			"MAQSGGEARPGPKTAVQIRVAIQEAEDVDELEDEEEGAET\n" +
+			"RGAGDPARYLSPGWGSASEEEPSRGHSGTTASGGENERED\n" +
+			"\n" +
+			">beta\n" +
+			"LEQEWKPPDEELIKKLVDQIEFYFSDENLEKDAFLLKHVR\n" +
+			"RNKLGYVSVKLLTSFKKVKHLTRDWRTTAHALKYSVVLEL\n" +
+			"NEDHRKVRRTTPVPLFPNENLPSKMLLVYDLYLSPKLWAL\n";
+		
+		Fasta fasta = new Fasta(AminoAcid.INSTANCE);
+		fasta.parse(seq);
+		 
+		assertFalse(fasta.isValid());
+		
+	}
+	
+
+	@Test 
+	public void testWrongFormat() { 
+		String seq = 
+			"alpha>\n" +
+			"MAQSGGEARPGPKTAVQIRVAIQEAEDVDELEDEEEGAET\n" +
+			"RGAGDPARYLSPGWGSASEEEPSRGHSGTTASGGENERED\n" +
+			"\n" +
+			">beta\n" +
+			"LEQEWKPPDEELIKKLVDQIEFYFSDENLEKDAFLLKHVR\n" +
+			"RNKLGYVSVKLLTSFKKVKHLTRDWRTTAHALKYSVVLEL\n" +
+			"NEDHRKVRRTTPVPLFPNENLPSKMLLVYDLYLSPKLWAL\n";
+		
+		Fasta fasta = new Fasta(AminoAcid.INSTANCE);
+		fasta.parse(seq);
+		 
+		assertFalse(fasta.isValid());
+		
+	}	
+	
 }

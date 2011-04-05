@@ -35,7 +35,19 @@ public abstract class AbstractFormat {
 	}
 	
 	public boolean isValid() {
-		return !isEmpty() && minLength()>0;
+		boolean result = !isEmpty() && minLength()>0;
+		
+		/* check that all sequences have a non-empty name */
+		if( result && sequences != null ) for( Sequence seq : sequences )  { 
+
+			if( seq.header == null || "".equals(seq.header.trim()) ) { 
+				// on first sequence with empty name return false
+				error = "All sequence must have a valid non-empty name (ID)";
+				return false;
+			}
+		}
+		
+		return result;
 	} 	
 	
 	public boolean isEmpty() {
@@ -60,7 +72,7 @@ public abstract class AbstractFormat {
 		
 		return min!=Integer.MAX_VALUE ? min : 0;
 	}
-	
+		
 	public int maxLength() {
 		if( sequences==null ) {
 			return 0;
