@@ -8,6 +8,7 @@ import java.util.List;
 import models.Bundle;
 import models.CmdArgs;
 import models.Input;
+import models.OutItem;
 import models.OutResult;
 import models.ProcessCommand;
 import models.QsubCommand;
@@ -22,6 +23,7 @@ import play.Logger;
 import play.Play;
 import play.data.validation.Error;
 import play.data.validation.Validation;
+import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Finally;
 import play.mvc.Http.StatusCode;
@@ -40,7 +42,7 @@ public class Remote extends CommonController {
 	
 	@Before
 	static void before(String bundle) { 
-		Logger.trace("Rest#before(%s)", bundle);
+		Logger.trace("Remote#before(%s)", bundle);
 
 		/* 
 		 * preliminary checks
@@ -70,7 +72,7 @@ public class Remote extends CommonController {
 	
 	@Finally
 	static void release() {
-		Logger.trace("Rest#release()");
+		Logger.trace("Remote#release()");
 		Service.release();
 		Remote.bundle.remove();
 	}	
@@ -149,11 +151,20 @@ public class Remote extends CommonController {
 	   					? result.elapsedTime
 	   					: System.currentTimeMillis() - ctx.getCreationTime();
 		
+	   	/* read the command line file */
+	   	String cmdLine=null;
+	   	OutItem cmdItem; 
+	   	if( result != null && (cmdItem=result.getCommandLine())!= null && cmdItem.exists()) { 
+	   		cmdLine = IO.readContentAsString(cmdItem.file); 
+	   		if( cmdLine != null ) cmdLine = cmdLine.trim();
+	   	}
+	   	
 	   	// if the file exists load the result object and show it
 		renderArgs.put("ctx", ctx);
 		renderArgs.put("status", status);
 		renderArgs.put("result", result );
 		renderArgs.put("elapsedTime", elapsedTime);
+		renderArgs.put("cmdline", cmdLine);
 		response.contentType = "text/xml";
 		render("Remote/result.xml");
 		
