@@ -3,6 +3,7 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import models.Bundle;
@@ -196,8 +197,14 @@ public class Remote extends CommonController {
 		
 		TCoffeeCommand tcoffee = new TCoffeeCommand();
 		tcoffee.args = new CmdArgs(args);
-		if( tcoffee.args.contains("other_pg") ) { 
-			badreq("Argument 'other_pg' is not supported by the server");
+		
+		/* 
+		 * constraint on other_pg argument 
+		 */
+		List<String> valid = Arrays.asList(new String[] { "aln_compare", "seq_reformat", "trmsd", "extract_from_pdb" }); 
+		String other_pg = tcoffee.args.get("other_pg");
+		if( Utils.isNotEmpty(other_pg) && !valid.contains(other_pg)) { 
+			badreq("Argument '-other_pg=%s' is not supported by the server", other_pg);
 		}
 
 		/* 
