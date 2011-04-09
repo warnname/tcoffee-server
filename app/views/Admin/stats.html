@@ -355,6 +355,49 @@ $(document).ready(function () {
 			loadGridData(args);
         }
     });
+    
+    /* 
+     * chart popup 
+     */
+     var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" ]
+     var previousPoint=null;
+     chart.bind("plothover", function (event, pos, item) {
+		
+         if (item) {
+
+    		if (previousPoint != item.dataIndex) {
+                 previousPoint = item.dataIndex;
+                 
+                 $("#tooltip").remove();
+                 var date = new Date(item.datapoint[0]),
+                     value = item.datapoint[1];
+                 
+                 var sDate = days[date.getDay()] + ", " + date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();  
+                 var content  = sDate + "<br>Value: " + value; 
+                 $('<div id="tooltip">' + content + '</div>').css( {
+                     'position': 'absolute',
+                     'display': 'none',
+                     'top': item.pageY + 5,
+                     'left': item.pageX + 5,
+                     'border': '1px solid #fdd',
+                     'padding': '2px',
+                     'background-color': '#fee',
+                     'opacity': 0.80,
+                     'text-align': 'left'
+                 }).appendTo("body").fadeIn(200);
+
+    		}
+         }
+         else {
+             $("#tooltip").remove();
+             previousPoint = null;            
+         }
+
+         
+     });
+    
+     
 
 	function onChartDataReceived(data) 
 	{
