@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.List;
 
 import play.Logger;
@@ -25,7 +26,7 @@ public abstract class AbstractFormat {
 	final Alphabet alphabet;
 	
 	/** The list of sequences */
-	List<? extends Sequence> sequences;
+	public List<? extends Sequence> sequences = Collections.EMPTY_LIST;
 	
 	/** The error message if parsing fail */
 	String error; 
@@ -35,7 +36,7 @@ public abstract class AbstractFormat {
 	}
 	
 	public boolean isValid() {
-		boolean result = !isEmpty() && minLength()>0;
+		boolean result = (error==null) &&  !isEmpty() && (minLength()>0);
 		
 		/* check that all sequences have a non-empty name */
 		if( result && sequences != null ) for( Sequence seq : sequences )  { 

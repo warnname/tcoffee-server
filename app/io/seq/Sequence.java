@@ -2,11 +2,11 @@ package io.seq;
 
 import java.io.Serializable;
 
-class Sequence implements Serializable {
+public class Sequence implements Serializable {
 
-	String header;
+	public String header;
 	
-	String value;
+	public String value;
 
 	@Override
 	public String toString() {

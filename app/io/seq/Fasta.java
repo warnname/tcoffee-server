@@ -103,6 +103,10 @@ public class Fasta extends AbstractFormat {
 			
 			return result.toString();
 		}
+		
+		public String toString() { 
+			return ">" + this.header + "\n" + this.value;
+ 		}
 	}
 	
 
