@@ -137,7 +137,7 @@ public class QueryHelper {
 		}
 
 		else if( "source".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
-			where.and( "source", "=", qvalue );
+			where.and( "source", "like", qvalue );
 		}
 
 		else if( "status".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
