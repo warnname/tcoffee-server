@@ -143,4 +143,30 @@ public class OutItem implements Serializable {
 	public String toString() { 
 		return Utils.dump(this, "name", "label", "type", "file", "format", "webpath", "aggregation");
 	}
+	
+	
+	public OutItem label(String label) { 
+		this.label = label;
+		return this;
+	}
+	
+	public OutItem type( String type ) { 
+		this.type = type;
+		return this;
+	}
+	
+	public OutItem name( String name ) { 
+		this.name = name;
+		return this;
+	}
+	
+	public OutItem webpath( String webpath ) { 
+		this.webpath = webpath;
+		return this;
+	}
+	
+	public OutItem format( String format ) { 
+		this.format = format;
+		return this;
+	}
 }
