@@ -26,6 +26,23 @@
 #form button { position: relative; top: 0px; font-size: .9em; margin-left: 8px;  }  
 #form a { font-size: .8em  } 
 #addSection { padding-top: .8em; height: 2em; }  
+
+#tooltip {
+     position: absolute;
+     display: none;
+     border: 1px solid #666;
+     padding: 2px;
+     background-color: #f3f3f3;
+     opacity: 0.80;
+     text-align: left;
+	 -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 -webkit-border-radius: 6px; 
+	 -moz-border-radius: 6px; 
+	 border-radius: 6px;
+     padding: .7em;
+} 
 </style>
 
 <!--  for to select restriction data -->
@@ -233,7 +250,7 @@ $(document).ready(function () {
 	var dates = $( "#since, #until" ).datepicker({
 			defaultDate: "${sinceDate}",
 			changeMonth: true,
-			numberOfMonths: 3,
+			numberOfMonths: 2,
 			dateFormat: "dd/mm/yy",
 			minDate: "${minDate}",
 			maxDate: "0", /* <-- today */ 
@@ -363,36 +380,32 @@ $(document).ready(function () {
      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" ]
      var previousPoint=null;
      chart.bind("plothover", function (event, pos, item) {
-		
-         if (item) {
 
-    		if (previousPoint != item.dataIndex) {
-                 previousPoint = item.dataIndex;
-                 
-                 $("#tooltip").remove();
-                 var date = new Date(item.datapoint[0]),
-                     value = item.datapoint[1];
-                 
-                 var sDate = days[date.getDay()] + ", " + date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();  
-                 var content  = sDate + "<br>Value: " + value; 
-                 $('<div id="tooltip">' + content + '</div>').css( {
-                     'position': 'absolute',
-                     'display': 'none',
-                     'top': item.pageY + 5,
-                     'left': item.pageX + 5,
-                     'border': '1px solid #fdd',
-                     'padding': '2px',
-                     'background-color': '#fee',
-                     'opacity': 0.80,
-                     'text-align': 'left'
-                 }).appendTo("body").fadeIn(200);
+		if( !item ) {
+            $("#tooltip").remove();
+            previousPoint = null;
+            return;            
+		}
+    	 
+		if (previousPoint != item.dataIndex) {
+            previousPoint = item.dataIndex;
+            
+            $("#tooltip").remove();
+            var date = new Date(item.datapoint[0]),
+                value = item.datapoint[1];
+            
+            var sDate = days[date.getDay()] + ", " + date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();  
+            var 
+            elem  = '<div id="tooltip">';
+            elem += "<p>" + sDate + "</p>";
+            elem += "<p>Request(s): <b>" + value + "</b></p>"; 
+			 elem += '</div>';
+            $(elem).css( {
+                'top': item.pageY + 5,
+                'left': item.pageX + 5
+            }).appendTo("body").fadeIn(200);
 
-    		}
-         }
-         else {
-             $("#tooltip").remove();
-             previousPoint = null;            
-         }
+		}
 
          
      });
