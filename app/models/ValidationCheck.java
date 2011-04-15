@@ -185,6 +185,7 @@ public class ValidationCheck implements Serializable {
 		 * if any, report the error 
 		 */
 		if( error != null ) { 
+			Logger.info("Failed validation for field '%s':\n%s", name, value);
 			Validation.addError(error.fieldName, error.message, error.variables);
 		}
 		
@@ -287,7 +288,6 @@ public class ValidationCheck implements Serializable {
         	return error(name, message, new String[0]);
         }
    
-		Logger.warn("Unknown validation format: '%s'", format);
 		return null;
 	}
 
