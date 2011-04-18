@@ -1,10 +1,12 @@
 %{ def isDev = play.mode.isDev()
-   def webmaster = play.configuration.getProperty("settings.webmaster") }% 
+   def webmaster = play.configuration.getProperty("settings.webmaster") 
+   def errorCode = exception instanceof play.exceptions.PlayException ? exception.id : ( exception instanceof play.mvc.results.Result ? exception.status : "" ); 
+ }% 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Error 500</title>
+    <title>Error (500)</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>	
 #{if !isDev }
 	<link  href="http://fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css" >
@@ -65,12 +67,12 @@ h1 {
 	<div class="small">
 	<p >
 	Try to reload the page in the next few seconds. If the problem persists, report the problem to the webmaster 
-	sending an email to the following address <a href="mailto:${webmaster}?subject=T-Coffee server error 500 [${exception?.id}]">${webmaster}</a> providing a description 
+	sending an email to the following address <a href="mailto:${webmaster}?subject=T-Coffee server error 500 [${errorCode}]">${webmaster}</a> providing a description 
 	of what your submitted request. <br><a id="show" href="javascript:void(0)" onclick="" >Error details</a>
 	</p>
 	</div>
 
-
+#{if exception instanceof play.exceptions.PlayException}
 	<div id="details" class="box" style="display: none">
 	
 	<h2><span>${exception?.errorTitle} </span></h2>
@@ -96,6 +98,12 @@ h1 {
 		$('#details').toggle("fast");
 	} );
 	</script>	
+#{/if}	
+#{else}
+	<script type="text/javascript">
+	$('#show').hide();
+	</script>	
+#{/else}
 	</div>
 </div>
 
