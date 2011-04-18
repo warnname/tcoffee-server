@@ -26,7 +26,7 @@ public class FastaTest extends UnitTest {
 		
 		assertEquals("1aboA", fasta.sequences.get(0).header);
 		assertEquals("NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", fasta.sequences.get(0).value);
-		assertEquals(">1aboA|NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", fasta.sequences.get(0).toString());
+		assertEquals(">1aboA\nNLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", fasta.sequences.get(0).toString());
 		
 		assertEquals("1ycsB", fasta.sequences.get(1).header);
 		assertEquals("KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGYVPRNLLGLYP", fasta.sequences.get(1).value);
@@ -168,7 +168,32 @@ public class FastaTest extends UnitTest {
 		fasta.parse(seq);
 		 
 		assertFalse(fasta.isValid());
+
+		seq = 
+			">alpha\n" +
+			"MAQSGGEARPGPKTAVQIRVAIQEAEDVDELEDEEEGAET\n" +
+			"RGAGDPARYLSPGWGSASEEEPSRGHSGTTASGGENERED\n" +
+			"\n" +
+			"beta>\n" +
+			"LEQEWKPPDEELIKKLVDQIEFYFSDENLEKDAFLLKHVR\n" +
+			"RNKLGYVSVKLLTSFKKVKHLTRDWRTTAHALKYSVVLEL\n" +
+			"NEDHRKVRRTTPVPLFPNENLPSKMLLVYDLYLSPKLWAL\n";	
+		
+		fasta = new Fasta(AminoAcid.INSTANCE);
+		fasta.parse(seq);
+		 
+		assertFalse(fasta.isValid());
 		
 	}	
 	
+	@Test 
+	public void testWrongInput() { 
+		File  file = TestHelper.file("/input-2368513839367721000.txt");
+		assertNotNull(file);
+		assertFalse(Fasta.isValid(file, AminoAcid.INSTANCE));
+	}
+	
+	@Test public void testWrongInout2() { 
+		assertFalse( Fasta.isValid(TestHelper.file("/input-5321591033811707368.txt"), AminoAcid.INSTANCE) );
+	}
 }
