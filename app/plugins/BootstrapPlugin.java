@@ -72,6 +72,17 @@ public class BootstrapPlugin extends PlayPlugin {
 		Logger.info(">> Setting jpa.ddl=%s", mode);
 		Play.configuration.setProperty("jpa.ddl", mode);
 		
+		/* 
+		 * remote .lock file if exists 
+		 */
+		String sLock = db.getAbsolutePath();
+		sLock = sLock.replace(".h2.db", ".lock.db");
+		File lock = new File(sLock);
+		if( lock.exists() ) { 
+			Logger.warn(">> Deleting database lock file: %s ", sLock);
+			lock.delete();
+		}
+		
 	}
 
 	static File getDatabaseFileFromUrl( String url ) { 
