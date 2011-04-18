@@ -38,6 +38,8 @@ public class Data extends CommonController {
 	 * @param path
 	 */
 	public static void resource(String path) {
+		assertNotEmpty(path, "Missing 'path' argument on #resource action");
+
 		renderStaticResponse();
 		renderFile(AppProps.WORKSPACE_FOLDER, path);
 	}
@@ -49,6 +51,8 @@ public class Data extends CommonController {
 	 * @throws IOException 
 	 */
 	public static void zip( String rid ) throws IOException {
+		assertNotEmpty(rid, "Missing 'rid' argument on #zip action");
+		
 		Repo repo = new Repo(rid);
 		if( !repo.hasResult() ) {
 			notFound(String.format("The requested download is not available (%s) ", rid));
@@ -77,6 +81,8 @@ public class Data extends CommonController {
 	 * @param rid request identifier
 	 */
 	public static void zipDataFolder( String rid ) throws IOException { 
+		assertNotEmpty(rid, "Missing 'rid' argument on #zipDataFolder action");
+
 		File folder = new File(AppProps.instance().getDataPath(), rid);
 		if( !folder.exists() ) { 
 			notFound("Data path '%s' does not exist on the server", folder);
@@ -152,6 +158,8 @@ public class Data extends CommonController {
 	 * @param name the file name that is being uploaded
 	 */
 	public static void upload(String name) {
+		assertNotEmpty(name, "Missing 'name' argument on #upload action");
+		
 		/* default error result */
 		String ERROR = "{success:false}";
 		

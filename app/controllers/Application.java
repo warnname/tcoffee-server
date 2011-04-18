@@ -35,14 +35,7 @@ public class Application extends CommonController {
 	
 	@Before
 	static void before(String bundle) { 
-		Logger.trace("Application#before(%s)", bundle);
-
-		/* 
-		 * some sanity checks
-		 */
-		if( Utils.isEmpty(bundle)) { 
-			error("Missing bundle argument");
-		}
+		assertNotEmpty(bundle, "Missing bundle argument");
 		
 		Bundle _bundle = BundleRegistry.instance().get(bundle);
 		if( _bundle == null ) { 
@@ -61,7 +54,6 @@ public class Application extends CommonController {
 	
 	@Finally
 	static void release() {
-		Logger.trace("Application#release()");
 		Service.release();
 		Application.bundle.remove();
 	}
@@ -79,6 +71,7 @@ public class Application extends CommonController {
      * @param rid the unique request identifier 
      */
     public static void result(String rid, Boolean ... cached ) {		
+		assertNotEmpty(rid, "Missing 'rid' argument on #result action");
     	
     	final Repo ctx = new Repo(rid,false);
     	final Status status = ctx.getStatus();
@@ -134,11 +127,14 @@ public class Application extends CommonController {
 	 * @param rid the request unique identifier
 	 */
 	public static void status(String rid) {
+		assertNotEmpty(rid, "Missing 'rid' argument on #status action");
+
 		Repo ctx = new Repo(rid,false);
 		renderText(ctx.getStatus().toString());
 	}
 	
 	public static void replay( String rid ) {
+		assertNotEmpty(rid, "Missing 'rid' argument on #replay action");
 	
 		/* 
 		 * 1. check if a result exists 
@@ -165,6 +161,8 @@ public class Application extends CommonController {
 	}
 	
 	public static void submit( String rid ) {
+		assertNotEmpty(rid, "Missing 'rid' argument on #submit action");
+	
 		/*
 		 * 1. check and load the repo context object 
 		 */
@@ -267,6 +265,8 @@ public class Application extends CommonController {
 
 
 	public static void servePublic( String path ) { 
+		assertNotEmpty(path, "Missing 'path' argument on #servePublic action");
+
 		renderStaticResponse();
 		renderFile(bundle.get().publicPath, path);
 	}
@@ -278,6 +278,7 @@ public class Application extends CommonController {
 	 * @param path
 	 */
 	public static void html( String page ) { 
+		assertNotEmpty(page, "Missing 'path' argument on #html action");
 		renderBundlePage(page);
 	}
 	

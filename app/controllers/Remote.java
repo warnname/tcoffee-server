@@ -27,7 +27,6 @@ import play.data.validation.Validation;
 import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Finally;
-import play.mvc.Http.StatusCode;
 import util.Utils;
 import bundle.BundleRegistry;
 
@@ -259,7 +258,4 @@ public class Remote extends CommonController {
 	}
 	
 	
-	static void badreq( String message, Object ... args  ) { 
-		error( StatusCode.BAD_REQUEST, String.format(message, args));
-	}
  }
