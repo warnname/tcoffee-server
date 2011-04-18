@@ -601,3 +601,8 @@ body.admin #navigation li {
 	padding-left: 14px;
 }
 
+body.admin #content { 
+	color: #666;
+	font-size: 14px;
+	font-weight: lighter;
+}
