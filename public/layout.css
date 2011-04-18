@@ -147,9 +147,9 @@ html, body {
 #dialog-content
  {
 	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
-	color: #666;
-	font-size: 14px;
-	font-weight: lighter;
+	color: #444;
+	font-size: 15px;
+	font-weight: normal;
 	line-height: 1.5;
 }
 
