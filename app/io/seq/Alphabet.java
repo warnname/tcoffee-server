@@ -58,6 +58,11 @@ public interface Alphabet {
 			return aminos;
 		} 
 		
+		@Override
+		public String toString() { 
+			return "amino-acid";
+		}
+		
 	}
 	
 	/**
@@ -87,6 +92,11 @@ public interface Alphabet {
 		public char[] letters() {
 			return letters;
 		} 
+
+		@Override
+		public String toString() { 
+			return "nucleic-acid";
+		}
 		
 	}
 	
@@ -116,6 +126,11 @@ public interface Alphabet {
 			return letters;
 		} 
 		
+		@Override
+		public String toString() { 
+			return "dna-acid";
+		}
+		
 	}
 
 	/**
@@ -143,6 +158,11 @@ public interface Alphabet {
 		public char[] letters() {
 			return letters;
 		} 
+		
+		@Override
+		public String toString() { 
+			return "rna-acid";
+		}
 		
 	}
 		
