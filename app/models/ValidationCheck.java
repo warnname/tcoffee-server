@@ -56,7 +56,7 @@ public class ValidationCheck implements Serializable {
 	 * <li>rna</li>
 	 * 
 	 */
-	@XStreamAlias("type")
+	@XStreamAsAttribute
 	public String type;
 	
 	/** minimum value accepted for numbers and date and string values */
@@ -185,7 +185,7 @@ public class ValidationCheck implements Serializable {
 		 * if any, report the error 
 		 */
 		if( error != null ) { 
-			Logger.info("Failed validation for field '%s':\n%s", name, value);
+			Logger.info("Failed validation for field '%s' with the following message: '%s' \n%s\n---- END ----\n\n", name, value);
 			Validation.addError(error.fieldName, error.message, error.variables);
 		}
 		
