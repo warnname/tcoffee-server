@@ -6,6 +6,7 @@ import io.seq.Alphabet.NucleicAcid;
 import io.seq.Alphabet.Rna;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -195,5 +196,19 @@ public class FastaTest extends UnitTest {
 	
 	@Test public void testWrongInout2() { 
 		assertFalse( Fasta.isValid(TestHelper.file("/input-5321591033811707368.txt"), AminoAcid.INSTANCE) );
+	}
+	
+	@Test 
+	public void testFileRead() throws FileNotFoundException { 
+		File  file = TestHelper.file("/sample-proteins.fa");
+		Fasta fasta = Fasta.read(file);
+		assertTrue( fasta.isValid() );
+		
+	}
+	
+	@Test 
+	public void testRNA() { 
+		assertFalse(Fasta.isValid(TestHelper.file("/sample-proteins.fa"), NucleicAcid.INSTANCE));
+		assertTrue(Fasta.isValid(TestHelper.file("/sample-dna.fa"), NucleicAcid.INSTANCE));
 	}
 }
