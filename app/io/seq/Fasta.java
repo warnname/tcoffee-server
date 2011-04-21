@@ -1,5 +1,7 @@
 package io.seq;
 
+import io.seq.Alphabet.AminoAcid;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -111,6 +113,10 @@ public class Fasta extends AbstractFormat {
 	
 
 	/** The default constructor */
+	public Fasta() { 
+		this(AminoAcid.INSTANCE);
+	}
+	
 	public Fasta( Alphabet alphabet ) {
 		super(alphabet);
 		this.sequences = new ArrayList<FastaSequence>();
@@ -175,6 +181,16 @@ public class Fasta extends AbstractFormat {
 		return fasta.isValid();
 	}
 
+	public static Fasta read(File file) throws FileNotFoundException { 
+		Fasta fasta = new Fasta();
+		fasta.parse(file);
+		return fasta;
+	}
 
+	public static Fasta read(File file, Alphabet alphabet) throws FileNotFoundException { 
+		Fasta fasta = new Fasta(alphabet);
+		fasta.parse(file);
+		return fasta;
+	}
 
 }
