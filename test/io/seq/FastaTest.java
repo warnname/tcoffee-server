@@ -209,6 +209,6 @@ public class FastaTest extends UnitTest {
 	@Test 
 	public void testRNA() { 
 		assertFalse(Fasta.isValid(TestHelper.file("/sample-proteins.fa"), NucleicAcid.INSTANCE));
-		assertTrue(Fasta.isValid(TestHelper.file("/sample-dna.fa"), NucleicAcid.INSTANCE));
+		assertTrue(Fasta.isValid(TestHelper.file("/sample-rna.fa"), NucleicAcid.INSTANCE));
 	}
 }
