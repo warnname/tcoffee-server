@@ -514,6 +514,62 @@ public class Repo implements Serializable {
 			}
 		}
 	}
+
+	/**
+	 * This method to save disk space, remove as soon as possible the following paths created by T-Coffee 
+	 * <p>
+	 * <li>_cache/</li>
+	 * <li>_tmp/</li>
+	 * <li>_lck/</li>
+	 * </li>
+	 * 
+	 * <p>
+	 * These path  are defined in the 'bundle.environment' T-Coffee bundle configuration,
+	 * changing that configuration this code have to be update accordingly
+	 */
+	public static void cleanTcoffeeCache() { 
+
+		List<Repo> all = findByStatus(Status.DONE, Status.FAILED);
+		for( Repo repo : all ) {
+
+			if( repo.fLock.exists() ) { 
+				/* skip still running jobs .. */
+				continue; 
+			} 
+			
+			File path;
+			
+			/* 
+			 * remove '_cache'
+			 */
+			if( (path=new File(repo.fRoot, "_cache")).exists() ) { 
+				if( !FileUtils.deleteQuietly(path) ) { 
+					Logger.warn("Unable to delete cache path: '%s'", path);
+				}
+			}
+			
+			/* 
+			 * remove '_tmp'
+			 */
+			if( (path=new File(repo.fRoot, "_tmp")).exists() ) { 
+				if( !FileUtils.deleteQuietly(path) ) { 
+					Logger.warn("Unable to delete tmp path: '%s'", path);
+				}
+			}
+			
+			/* 
+			 * remove '_lck'
+			 */
+			if( (path=new File(repo.fRoot, "_lck")).exists() ) { 
+				if( !FileUtils.deleteQuietly(path) ) { 
+					Logger.warn("Unable to delete lock path: '%s'", path);
+				}
+			}
+		
+		
+		}
+		
+	}
 	
 	
 
