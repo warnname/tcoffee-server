@@ -54,7 +54,7 @@ public class HomeCachePlugin  extends PlayPlugin {
 		/* 
 		 * Check if homepage cache is active and how long is its duration
 		 */
-		String sDuration = AppProps.instance().getString("homepage.cache.duration");
+		String sDuration = AppProps.instance().getString("settings.homepage.cache.duration");
 		if( Utils.isEmpty(sDuration) || "0".equals(sDuration.trim())) { 
 			Logger.debug("Resetting tcoffee_index_page cache");
 			Cache.delete("tcoffee_index_page");
