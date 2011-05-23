@@ -3,7 +3,9 @@ package models;
 import org.junit.Test;
 
 import play.data.validation.Validation;
+import play.libs.IO;
 import play.test.UnitTest;
+import util.TestHelper;
 import util.Utils;
 import util.XStreamHelper;
 
@@ -560,4 +562,27 @@ public class ValidationCheckTest extends UnitTest {
 		
 	}
 
+	@Test 
+	public void testFastaValidationType() { 
+		/* 
+		 * this must pass 
+		 */
+		ValidationCheck check = new ValidationCheck();
+		check.format = "FASTA";
+		check.type = "rna";
+		check.apply("fieldDna1", IO.readContentAsString(TestHelper.file("/sample-rna.fa")));
+		assertFalse(Validation.hasError("fieldDna1"));
+
+		/*
+		 * this must FAIL 
+		 */
+		check = new ValidationCheck();
+		check.format = "FASTA";
+		check.type = "rna";
+		check.apply("fieldAminoAcid1", IO.readContentAsString(TestHelper.file("/sample-proteins.fa")));
+		assertTrue(Validation.hasError("fieldAminoAcid1"));
+
+	
+	}
+	
 }
