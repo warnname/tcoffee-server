@@ -42,19 +42,13 @@ public class Remote extends CommonController {
 	
 	@Before
 	static void before(String bundle) { 
-		Logger.trace("Remote#before(%s)", bundle);
-
 		/* 
 		 * preliminary checks
 		 */
-		if( Utils.isEmpty(bundle)) { 
-			badreq("Missing bundle argument");
-		}
-		
+		assertNotEmpty(bundle,"Missing 'bundle' parameter");
+
 		Bundle _bundle = BundleRegistry.instance().get(bundle);
-		if( _bundle == null ) { 
-			badreq("Missing bundle named '%s'", bundle);
-		}
+		assertNotNull(_bundle, "Missing bundle for name: '%s'", bundle);
 		
 		/* 
 		 * 1) save the bundle instance in the current context 
@@ -67,12 +61,10 @@ public class Remote extends CommonController {
 		request.format = "xml";
 		response.contentType = "text/xml";
 
-
 	}
 	
 	@Finally
 	static void release() {
-		Logger.trace("Remote#release()");
 		Service.release();
 		Remote.bundle.remove();
 	}	
