@@ -54,7 +54,7 @@ import exception.QuickException;
  */
 public class Utils {
 
-	public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
+	public static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	public static final DateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -1410,27 +1410,6 @@ public class Utils {
 		return false;
 	}
 	
-
-	
-	/**
-	 * This method returns a String composed by each character of input String <i>name</i> in 
-	 * Equivalent Class Regular Expression form (e.g. input name = 'franco' --> returned name = '[[=f=]][[=r=]][[=a=]][[=n=]][[=c=]][[=o=]]')
-	 * In this way users can generalise strings with special characters (e.g. HERN�NDEZ, ROMA�A, etc.)
-	 *   
-	 * @param value The {@link Staff} last name
-	 * @return the last name in Equivalent Class Regular Expression form 
-	 */
-	public static String toRegExpEquivalentClass(String value) {
-		if( value == null ) { 
-			return null;
-		}
-		
-		StringBuilder result = new StringBuilder("^"); // <-- note: the start of the string
-		for( int i=0, c=value.length(); i<c; i++ ) {
-			result.append("[[=") .append(value.charAt(i)) .append("=]]");
-		}
-		return result.toString();
-	}
 	
 
     static public boolean deleteFolder(File path) {
