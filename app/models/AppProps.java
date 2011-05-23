@@ -46,8 +46,8 @@ public class AppProps implements Serializable  {
 	public String contextPath;
 	
 	
-	static File getWorkPath( final String propertyName, final String defaultLocation ) { 
-		final String path = Play.configuration.getProperty(propertyName, defaultLocation);
+	static File getWorkPath( final String propertyName, final String defValue ) { 
+		final String path = Play.configuration.getProperty(propertyName, defValue);
 		
 		/* when an absolute file name is specified just use it */
 		if( path.startsWith(File.separator) ) { 
@@ -97,6 +97,10 @@ public class AppProps implements Serializable  {
 	 * Location of server log file 
 	 */
 	public static final File SERVER_APPLOG_FILE;
+	
+	public static final File VALIDATION_LOG_FILE;
+
+	
 	
 	/* singleton instance */
 	final private static ReloadableSingletonFile<AppProps> INSTANCE;
@@ -153,14 +157,23 @@ public class AppProps implements Serializable  {
 		TEMP_PATH = getWorkPath("settings.temp.path", ".temp");
 		Logger.info("Using Temp path: %s", TEMP_PATH);
 		
-		
 		/*
-		 * 5. Define the other default folder that can be overriden at runtime
+		 * 5. validation log file name
 		 */
-				
+		final String validationLogFile = Play.configuration.getProperty("settings.validation.log.file");
+		if( Utils.isNotEmpty(validationLogFile)) { 
+			VALIDATION_LOG_FILE = validationLogFile.startsWith(File.separator)  
+				? new File(validationLogFile)
+				: new File(WORKSPACE_FOLDER, validationLogFile);
+		}
+		else { 
+			VALIDATION_LOG_FILE = null;
+		}
+		Logger.info("Using Validation log file: %s", VALIDATION_LOG_FILE!=null ? VALIDATION_LOG_FILE : "(none)");
+		
 		
 		/*
-		 * 6. create the AppProps singleton
+		 * 5. create the AppProps singleton
 		 */
 		INSTANCE = new ReloadableSingletonFile<AppProps>(SERVER_PROPS_FILE) {
 			

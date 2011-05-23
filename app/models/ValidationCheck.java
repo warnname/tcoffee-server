@@ -4,6 +4,7 @@ import io.seq.Alphabet;
 import io.seq.Clustal;
 import io.seq.Fasta;
 
+import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 import play.Logger;
 import play.data.validation.EmailCheck;
 import play.data.validation.Validation;
+import play.mvc.Http.Request;
 import plugins.AutoBean;
 import util.Utils;
 
@@ -185,11 +187,40 @@ public class ValidationCheck implements Serializable {
 		 * if any, report the error 
 		 */
 		if( error != null ) { 
-			Logger.info("Failed validation for field '%s' with the following message: '%s' \n%s\n---- END ----\n\n", name, value);
+			logError(name, error.message, value);
 			Validation.addError(error.fieldName, error.message, error.variables);
 		}
 		
 	}
+
+	private void logError(String name, String message, String value) {
+		if( AppProps.VALIDATION_LOG_FILE == null ) { 
+			return;
+		}
+
+		try { 
+			FileWriter out = new FileWriter(AppProps.VALIDATION_LOG_FILE,true);
+			String msg = String.format(
+					"Failed validation for field '%s' with the following message: '%s' \n" +
+					"---- BEGIN ----\n" +
+					"%s\n" +
+					"---- END ----\n\n", name, message, value);
+			
+			out.write( Utils.DATE_TIME_FORMAT.format(new Date()) );
+			if( Request.current() != null ) { 
+				out.write(" - ");
+				out.write( Request.current().remoteAddress ); 
+			}
+			out.write(" ~ ");
+			out.write(msg);
+			out.close();
+			
+		} catch( Exception e) { 
+			Logger.warn(e, "Error logging validation error");
+		}
+	}
+
+
 
 	ErrorWrapper applyFormatValidation(String format, String name, String value) {
 
