@@ -72,6 +72,13 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			map.put("EMAIL_4_TCOFFEE", Service.current().userEmail);
 		}
 		
+		/* 
+		 * check if exists the msa_max_len variable
+		 */
+		String maxlen = ctx.get("msa_max_len");
+		if( Utils.isNotEmpty(maxlen) ) { 
+			map.put("ALN_LINE_LENGTH", maxlen);
+		}
 	}
 
 	
