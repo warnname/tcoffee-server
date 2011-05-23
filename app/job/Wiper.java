@@ -31,6 +31,11 @@ public class Wiper extends Job {
 		 */
 		Repo.deleteExpired();
 		
+		/*
+		 *  delete T-Coffee cache
+		 */
+		Repo.cleanTcoffeeCache();
+		
 		/* 
 		 * delete temporary files and upload
 		 */
