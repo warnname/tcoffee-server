@@ -41,7 +41,7 @@ set -x
 #
 SANDBOX=$WORKSPACE/sandbox
 
-PLAY_VER=play-1.1.1
+PLAY_VER=play-1.2.1
 PLAY_ZIP=$PLAY_VER.zip
 PLAY_URL=http://download.playframework.org/releases/$PLAY_ZIP
 PLAY_HOME=$WORKSPACE/$PLAY_VER
