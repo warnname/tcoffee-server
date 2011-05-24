@@ -158,7 +158,7 @@ public class Repo implements Serializable {
 				return out.status!=null ? out.status : Status.UNKNOWN;
 			} 
 			catch( Exception e ) {
-				Logger.warn(e, "Error on parsing result file: '%s'", fResult);
+				Logger.warn("Error on parsing result file: '%s'. Caused by: %s", fResult, e);
 				return Status.UNKNOWN;
 			}
 		}
@@ -529,7 +529,7 @@ public class Repo implements Serializable {
 	 */
 	public static void cleanTcoffeeCache() { 
 
-		List<Repo> all = findByStatus(Status.DONE, Status.FAILED);
+		List<Repo> all = findByStatus(Status.DONE, Status.FAILED, Status.UNKNOWN);
 		for( Repo repo : all ) {
 
 			if( repo.fLock.exists() ) { 
