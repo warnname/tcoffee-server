@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import play.Logger;
 import play.data.validation.EmailCheck;
 import play.data.validation.Validation;
+import play.mvc.Http;
 import play.mvc.Http.Request;
 import plugins.AutoBean;
 import util.Utils;
@@ -201,17 +202,22 @@ public class ValidationCheck implements Serializable {
 		try { 
 			FileWriter out = new FileWriter(AppProps.VALIDATION_LOG_FILE,true);
 			String msg = String.format(
-					"Failed validation for field '%s' with the following message: '%s' \n" +
-					"---- BEGIN ----\n" +
+					"\nFailed validation for field '%s::%s' with the following message: '%s' \n" +
+					">>>> BEGIN >>>>\n" +
 					"%s\n" +
-					"---- END ----\n\n", name, message, value);
+					"<<<<< END <<<<<\n\n", Service.current().name, name, message, value);
 			
 			out.write( Utils.DATE_TIME_FORMAT.format(new Date()) );
 			if( Request.current() != null ) { 
 				out.write(" - ");
 				out.write( Request.current().remoteAddress ); 
+				Http.Header agent = Request.current().headers.get("user-agent");
+				if( agent != null ) { 
+					out.write(" - ");
+					out.write( agent.value() );
+				}
 			}
-			out.write(" ~ ");
+
 			out.write(msg);
 			out.close();
 			
