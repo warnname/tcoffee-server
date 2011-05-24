@@ -12,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.Play;
-import play.db.jpa.JPA;
 import play.jobs.Job;
 import util.FileIterator;
 import util.Utils;
@@ -32,14 +31,11 @@ public class UsageImportJob extends Job  {
 		/* 
 		 * import the file to the database
 		 */
-		JPA.em().getTransaction().begin();
 		try { 
 			doTheWork(fileToImport);
-			JPA.em().getTransaction().commit();
 		}
 		catch( Exception e ) { 
 			Logger.error(e, "Unable to import usage file: %s", fileToImport);
-			JPA.em().getTransaction().rollback();
 		}
 		
 		/* 

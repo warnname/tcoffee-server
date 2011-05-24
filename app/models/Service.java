@@ -13,13 +13,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
-import javax.persistence.EntityTransaction;
 
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.data.validation.Validation;
-import play.db.jpa.JPA;
+import play.db.jpa.JPAPlugin;
+import play.db.jpa.NoTransaction;
 import play.jobs.Job;
 import play.mvc.Http.Request;
 import play.mvc.Router;
@@ -423,38 +423,40 @@ public class Service implements Serializable {
 		}
 		
 		
-		/* create an aysnc execution context */
-		Job<?> job = new Job() {
-    		@Override
-    		public void doJob() throws Exception {
-    			/*
-    			 * run the alignment job
-    			 */
-    			Service.current(Service.this);
-    			
-    			UsageLog log = safeTrace(null);
-    			Long logid = log != null ? log.id : null;
-    			
-    			try {
-    				/* run the job */
-    				Service.this.run();
-    			}
-    			finally  {
-    				try { Service.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
-    				if( logid != null ) { 
-    					safeTrace(logid);
-    				}
-    				Service.release();
-    			}
-    		}
-    	}; 
-    	
-    	/* 
-    	 * fire the job asynchronously 
-    	 */
-    	job.now();
+		/* 
+		 * create an aysnc execution context and fire the execution 
+		 */
+    	new ServiceJob().now();
     	return true;
 	}
+	
+	@NoTransaction
+	class ServiceJob extends Job  {
+		
+		@Override
+		public void doJob() throws Exception {
+			/*
+			 * run the alignment job
+			 */
+			Service.current(Service.this);
+			
+			UsageLog log = safeTrace(null);
+			Long logid = log != null ? log.id : null;
+			
+			try {
+				/* run the job */
+				Service.this.run();
+			}
+			finally  {
+				try { Service.this.fRepo.unlock(); } catch( Exception e ) { Logger.error(e, "Failure on context unlock"); }
+				if( logid != null ) { 
+					safeTrace(logid);
+				}
+				Service.release();
+			}
+		}
+	}; 
+	
 
 	/**
 	 * Append a line in the server requests log with the following format 
@@ -494,16 +496,15 @@ public class Service implements Serializable {
 	
 	UsageLog safeTrace( Long id ) { 
 		UsageLog result=null;
-		EntityTransaction tx = JPA.em().getTransaction();
+		JPAPlugin.startTx(false);
 		try { 
-			tx.begin();
 			result = trace(id);
-			tx.commit();
+			JPAPlugin.closeTx(false);
 			return result;
 		} 
 		catch( Exception e ) { 
 			Logger.error(e, "Error on tracing request-id: %s ", fRid);
-			try { tx.rollback(); } catch( Exception fail ) { Logger.warn(fail, "Error rolling back transaction"); } 
+			try { JPAPlugin.closeTx(true); } catch( Exception fail ) { Logger.warn(fail, "Error rolling back transaction"); } 
 			return result;
 		}
 	}

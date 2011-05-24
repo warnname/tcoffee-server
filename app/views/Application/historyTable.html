@@ -20,7 +20,7 @@
 #{list recent, as:'history'} 
 <tr class="clickable ${history_parity}" cn="RID_${rid=history.rid}" > 
 <td class='clickable'>${history.label}</td>
-<td class='clickable'><a href="${util.RouterFix.reverse('Application.result',['bundle':history.bundle,'rid':history.rid])}" >${history.rid}</a></td>
+<td class='clickable'><a href="@{Application.result(history.rid).add('bundle',history.bundle)}" >${history.rid}</a></td>
 <td class='clickable'>${history.status}</td>
 <td class='clickable'>${history.begin}</td>
 <td class='clickable'>${history.duration}</td>

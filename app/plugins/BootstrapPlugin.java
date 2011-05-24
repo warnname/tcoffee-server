@@ -10,7 +10,6 @@ import play.Logger;
 import play.Play;
 import play.PlayPlugin;
 import play.cache.Cache;
-import play.db.jpa.JPAPlugin;
 import play.jobs.Job;
 import play.templates.Template;
 import play.templates.TemplateLoader;
@@ -29,27 +28,10 @@ public class BootstrapPlugin extends PlayPlugin {
 	@Override
 	public void onApplicationStart() { 
 		
-		/*
-		 * disable JPA auto transaction handling
-		 */
-		JPAPlugin.autoTxs = false;
-		
 		/* 
 		 * check if database already exists
 		 */
 		createDatabaseIfNotExists();
-		
-		/*
-		 * add runtime shutdown hook to intercept hard application killing 
-		 */
-		Runtime.getRuntime().addShutdownHook( new Thread() {
-			@Override
-			public void run() {
-				/* if not yet invoked the application stop() method, do now */
-				Logger.debug(">> Invoking shutdown hook");
-				Play.stop();
-			}
-		});
 
 	}
 	
