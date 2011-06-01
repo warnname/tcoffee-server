@@ -27,7 +27,7 @@ public class FastaTest extends UnitTest {
 		
 		assertEquals("1aboA", fasta.sequences.get(0).header);
 		assertEquals("NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", fasta.sequences.get(0).value);
-		assertEquals(">1aboA\nNLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPSNYITPVN", fasta.sequences.get(0).toString());
+		assertEquals(">1aboA\nNLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPS\nNYITPVN\n", fasta.sequences.get(0).toString());
 		
 		assertEquals("1ycsB", fasta.sequences.get(1).header);
 		assertEquals("KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGYVPRNLLGLYP", fasta.sequences.get(1).value);
@@ -210,5 +210,56 @@ public class FastaTest extends UnitTest {
 	public void testRNA() { 
 		assertFalse(Fasta.isValid(TestHelper.file("/sample-proteins.fa"), NucleicAcid.INSTANCE));
 		assertTrue(Fasta.isValid(TestHelper.file("/sample-rna.fa"), NucleicAcid.INSTANCE));
+	}
+	
+	@Test
+	public void testHaderWithAnyCharacters() { 
+			String seq = 
+				">x t y  y dsa  d sfs | SA D\n" +
+				"MAQSGGEARPGPKTAVQIRVAIQEAEDVDELEDEEEGAET\n" +
+				"RGAGDPARYLSPGWGSASEEEPSRGHSGTTASGGENERED\n" +
+				"\n" +
+				">beta\n" +
+				"LEQEWKPPDEELIKKLVDQIEFYFSDENLEKDAFLLKHVR\n" +
+				"RNKLGYVSVKLLTSFKKVKHLTRDWRTTAHALKYSVVLEL\n" +
+				"NEDHRKVRRTTPVPLFPNENLPSKMLLVYDLYLSPKLWAL\n";
+			
+			Fasta fasta = new Fasta(AminoAcid.INSTANCE);
+			fasta.parse(seq);
+			 
+			assertTrue(fasta.isValid());
+			assertEquals("x t y  y dsa  d sfs | SA D", fasta.sequences.get(0).header);
+			assertEquals("beta", fasta.sequences.get(1).header);
+			
+	}
+	
+	@Test
+	public void testNormalization() { 
+			String seq = 
+				">alpha\n" +
+				"MAQSGGEARPGPKTAVQIRV AIQEAEDVDELEDEEEGAET\n" +
+				"RGAGDPARYLSPGWGSASEE EPSRGHSGTTASGGENERED\n" +
+				"\n" +
+				">beta\n" +
+				"LEQEWKPPDEELIKKLVDQI EFYFSDENLEKDAFLLKHVR\n" +
+				"RNKLGYVSVKLLTSFKKVKH LTRDWRTTAHALKYSVVLEL\n" +
+				"NEDHRKVRRTTPVPLFPNEN LPSKMLLVYDLYLSPKLWAL\n";
+			
+			Fasta fasta = new Fasta(AminoAcid.INSTANCE);
+			fasta.parse(seq);
+			 
+			assertTrue(fasta.isValid());
+			
+			
+			String normalized = 
+				">alpha\n" +
+				"MAQSGGEARPGPKTAVQIRVAIQEAEDVDELEDEEEGAET\n" +
+				"RGAGDPARYLSPGWGSASEEEPSRGHSGTTASGGENERED\n" +
+				">beta\n" +
+				"LEQEWKPPDEELIKKLVDQIEFYFSDENLEKDAFLLKHVR\n" +
+				"RNKLGYVSVKLLTSFKKVKHLTRDWRTTAHALKYSVVLEL\n" +
+				"NEDHRKVRRTTPVPLFPNENLPSKMLLVYDLYLSPKLWAL\n";
+
+			assertEquals( normalized, fasta.toString() );
 	}
 }

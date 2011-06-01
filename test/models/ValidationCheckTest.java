@@ -371,6 +371,35 @@ public class ValidationCheckTest extends UnitTest {
 		assertTrue( Validation.hasError("fieldFasta") );		
 		assertEquals( check.formatError, Validation.error("fieldFasta").message() );				
 	}
+
+	@Test 
+	public void testFastaNornmalization() {
+		final String SAMPLE = 
+			">1aboA \n" +
+			"NLFVALYDFVASGDNTLSITKGE KLRVLGYNHNGEWCEAQTKNGQGWVPS\n" +
+			"NYITPVN\n" +
+			">1ycsB\n" +
+			"KGVIYALWDYEPQNDDELPMKEG DCMTIIHREDEDEIEWWWARLNDKEGY\n" +
+			"VPRNLLGLYP";
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "FASTA";
+		check.formatError = "Invalid FASTA format";
+		
+		final String NORMALIZED = 
+			">1aboA \n" +
+			"NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPS\n" +
+			"NYITPVN\n" +
+			">1ycsB\n" +
+			"KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGY\n" +
+			"VPRNLLGLYP\n";
+		
+		check.apply("fieldFastaNormalization", SAMPLE);
+		assertFalse( Validation.hasError("fieldFastaNormalization") );		
+
+		assertEquals( NORMALIZED, check.getNormalizedValue() );
+	}
+	
 	
 	@Test
 	public void testFastaMaxNum() {
@@ -496,7 +525,7 @@ public class ValidationCheckTest extends UnitTest {
 		
 		ValidationCheck check = new ValidationCheck();
 		check.format = "CLUSTAL";
-		check.formatError = "Invalid FASTA format";
+		check.formatError = "Invalid CLUSTAL format";
 
 		check.apply("fieldClustal", GOOD);
 		assertFalse( Validation.hasError("fieldClustal") );		
@@ -513,11 +542,38 @@ public class ValidationCheckTest extends UnitTest {
 		
 		ValidationCheck check = new ValidationCheck();
 		check.format = "CLUSTAL";
-		check.formatError = "Invalid FASTA format";
+		check.formatError = "Invalid CLUSTAL format";
 
-		check.apply("fieldClustal", BAD);
-		assertTrue( Validation.hasError("fieldClustal") );		
-		assertEquals( check.formatError, Validation.error("fieldClustal").message() );			
+		check.apply("fieldClustalFail", BAD);
+		assertTrue( Validation.hasError("fieldClustalFail") );		
+		assertEquals( check.formatError, Validation.error("fieldClustalFail").message() );			
+	}	
+	
+	@Test 
+	public void testClustalNormalization() { 
+		String GOOD = 
+			"CLUSTAL W (1.82) multiple sequence alignment\n" +
+			"\n" +
+			"1aboA  NGQGWVPSNYITPVN------ 20\n" +
+			"1ycsB  DKEGYVPRNLLGLYP------ 30\n" +
+			"1pht   GERGDFPGTYVEYIGRKKISP 20\n" +
+			"         . : ..  * * . .         ";		
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "CLUSTAL";
+		check.formatError = "Invalid CLUSTAL format";
+
+		check.apply("fieldClustalNormalized", GOOD);
+		assertFalse( Validation.hasError("fieldClustalNormalized") );		
+
+		String NORMALIZED = 
+			"CLUSTAL W (1.82) multiple sequence alignment\n" +
+			"\n" +
+			"1aboA  NGQGWVPSNYITPVN------\n" +
+			"1ycsB  DKEGYVPRNLLGLYP------\n" +
+			"1pht   GERGDFPGTYVEYIGRKKISP\n";
+		
+		assertEquals( NORMALIZED, check.getNormalizedValue() );
 	}	
 	
 	@Test 

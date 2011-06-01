@@ -126,6 +126,10 @@ public class ValidationCheck implements Serializable {
 	@XStreamOmitField 
 	String fErrorMessage;
 	
+	Object fNormalizedValue;
+	
+	Boolean fIsValid;
+	
 	/** 
 	 * Default empty constructor 
 	 */
@@ -192,6 +196,8 @@ public class ValidationCheck implements Serializable {
 			Validation.addError(error.fieldName, error.message, error.variables);
 		}
 		
+
+		fIsValid = (error == null);
 	}
 
 	private void logError(String name, String message, String value) {
@@ -325,6 +331,9 @@ public class ValidationCheck implements Serializable {
         	return error(name, message, new String[0]);
         }
    
+        // normalize the fasta sequence 
+        fNormalizedValue = clustal.toString();
+  
 		return null;
 	}
 
@@ -375,6 +384,9 @@ public class ValidationCheck implements Serializable {
 			String message = Utils.isNotEmpty(maxLengthError) ? maxLengthError : "validation.fasta.maxlen";
         	return error(name, message, new String[0]);
         }
+        
+        // normalize the fasta sequence 
+        fNormalizedValue = fasta.toString();
         
         // no error
         return null;
@@ -507,6 +519,9 @@ public class ValidationCheck implements Serializable {
 			return error(name, message, new String[] {value});
 		}
 		
+		// nornalize the email address 
+		fNormalizedValue = value != null ? value.toLowerCase().trim() : null;
+		
 		// no error 
 		return null;
 		
@@ -577,5 +592,19 @@ public class ValidationCheck implements Serializable {
 			return Alphabet.AminoAcid.INSTANCE;
 		}
 	}
+	
+	
+	/**
+	 * Validator have the ability to normalize data to make them syntaxically correct  
+	 * 
+	 * @param <T> the value target type
+	 * @return the nomalized value or <code>null</code> if no value is available;
+	 */
+	public <T> T getNormalizedValue() { 
+		return (T) fNormalizedValue;
+	}
 
+	public boolean isValid() { 
+		return fIsValid;
+	}
 }
