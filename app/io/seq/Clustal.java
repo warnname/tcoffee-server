@@ -44,7 +44,7 @@ public class Clustal extends AbstractFormat {
 		StringBuilder sPattern = new StringBuilder();
 		sPattern.append("(\\S+)\\s+([");
 		for( char ch : alpha.letters() ) { 
-			/* the alphabet coudl include some special chars, do not include them */
+			/* the alphabet could include some special chars, do not include them */
 			if( ch >= 'a' && ch <= 'z' || (ch >= 'A' && ch <= 'Z')) { 
 				sPattern.append(ch);
 			}

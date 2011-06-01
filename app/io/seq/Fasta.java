@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class Fasta extends AbstractFormat {
 	
 	static public class FastaSequence extends Sequence {
 		
+		Integer length;
 		
 		void parse( PushbackReader reader, Alphabet alphabet ) {
 			StringBuilder block = new StringBuilder();   
@@ -42,8 +44,14 @@ public class Fasta extends AbstractFormat {
 						stop=true;
 						break;
 					}
+					line = line.replace(" ", "");
 					
 					block.append(line);
+					
+					// track the detected length
+					if( length == null && line.length()>=20 ) { 
+						length = line.length();
+					}
 					
 					/* what's next ? */
 					int ch = reader.read();
@@ -84,7 +92,10 @@ public class Fasta extends AbstractFormat {
 			int ch;
 			
 			while( (ch=reader.read()) != -1) {
-				if( ch != LINE_FEED && ch != CARRIAGE_RETURN ) {
+				if( ch == ' ' && validChars != null ) {
+					// just skip 
+				} 
+				else if( ch != LINE_FEED && ch != CARRIAGE_RETURN ) {
 					/* check if the read character is valid */
 					if( validChars != null && !Utils.contains(validChars, (char)ch)) {
 						throw new QuickException("Invalid character '%c' parsing line", ch); 
@@ -106,8 +117,33 @@ public class Fasta extends AbstractFormat {
 			return result.toString();
 		}
 		
+		/**
+		 * Reformat the sequence in fasta format
+		 */
 		public String toString() { 
-			return ">" + this.header + "\n" + this.value;
+			/* 
+			 * 1. the header 
+			 */
+			StringBuilder result = new StringBuilder()
+				.append(">") .append(this.header).append("\n");
+
+			
+			/*
+			 * 2. format the sequence using has max block width the value defined in #length attribute
+			 */
+			char[] buffer = new char[ length != null ? length : 70 ]; // <-- default 70  
+			StringReader reader = new StringReader(this.value);
+			int len;
+			try { 
+				while( (len=reader.read(buffer)) != -1 ) { 
+					result.append(buffer,0,len) .append("\n");
+				}
+			} catch( IOException e ) { 
+				throw new RuntimeException(e);
+			}
+			
+			/* 3. return the result */
+			return result.toString();
  		}
 	}
 	
@@ -156,6 +192,17 @@ public class Fasta extends AbstractFormat {
 		}
 		
 		sequences = result;
+	}
+	
+	public String toString() { 
+		if( sequences == null ) return null;
+		
+		StringBuilder result = new StringBuilder();
+		for( Sequence seq : sequences ) { 
+			result.append( seq.toString() );
+		}
+		
+		return result.toString();
 	}
 
 

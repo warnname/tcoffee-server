@@ -201,6 +201,11 @@ public class Field implements Serializable {
 		}
 		
 		validation.apply( name, value );
+		
+		/* replace the current value with the normalized one if any */
+		if( validation.isValid() && validation.getNormalizedValue() != null ) { 
+			value = validation.getNormalizedValue();
+		}
 	}
 
 
