@@ -113,7 +113,7 @@ public interface Alphabet {
 			't', 'T',	// thymidine
 			'c', 'C',	// cytosine
 			'g', 'G',	// guanine
-			'x', 'X',	// any   
+			'n', 'N',	// any   
 			'-'		// gap of indeterminate length
 		};
 		
@@ -146,7 +146,7 @@ public interface Alphabet {
 			'u', 'U',	// uracil
 			'c', 'C',	// cytosine
 			'g', 'G',	// guanine
-			'x', 'X',	// any   
+			'n', 'N',	// any   
 			'-'		// gap of indeterminate length
 		};
 		

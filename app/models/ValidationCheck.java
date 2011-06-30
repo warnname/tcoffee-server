@@ -126,8 +126,10 @@ public class ValidationCheck implements Serializable {
 	@XStreamOmitField 
 	String fErrorMessage;
 	
+	@XStreamOmitField 
 	Object fNormalizedValue;
 	
+	@XStreamOmitField 
 	Boolean fIsValid;
 	
 	/** 
