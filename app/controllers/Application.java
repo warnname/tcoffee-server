@@ -315,4 +315,10 @@ public class Application extends CommonController {
 		renderText( IO.readContentAsString(file) );
 	}
 	
+	/**
+	 * T-Coffee advanced mode
+	 */
+	public static void guru() { 
+		render();
+	}
 }
