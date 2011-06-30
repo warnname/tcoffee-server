@@ -1,0 +1,101 @@
+
+body  {
+	background: white url(public/images/bg.gif) repeat-x 0% 0%;
+	font-family: 'Helvetica Neue', Arial, Helvetica, Geneva, sans-serif;
+	text-align: center;
+}
+
+#logo {
+	position: relative;
+	top: 12px;
+	left:-5px;
+
+	background: url(public/images/logo.gif) no-repeat 0% 0%;
+	float: left;
+	font-size: 1px;
+	text-indent: -9999px;
+	width: 300px;
+	height: 70px;
+	
+}
+
+#content h2 
+{
+	background: transparent url(public/images/bl.gif) repeat-x 0% bottom;
+}
+
+/* highlight color */
+#content em,
+#content h1 small 
+{
+	color: #B91611;
+}
+
+#content a,
+#footer a
+{
+	color: #B91611;
+	border-color: #B91611; 
+}
+
+
+/* menu */
+
+#navigation li a {
+	color: #3f3f3f;
+}
+
+ 
+#navigation.play .play a,
+#navigation.history .history a,
+#navigation.help .help a
+
+{
+	color: #B91611;
+}
+
+
+/* table colors */
+
+/* 
+ * Tables 
+ */
+
+table#box-table-a {
+  border-bottom: 2px solid #B91611;
+}
+
+table#box-table-a td, table#box-table-a th{
+
+}
+
+table#box-table-a th {
+  background: #ccc;
+  color: black;
+  font-weight: normal;
+  border-bottom: 2px solid #B91611;
+}
+
+table#box-table-a td{
+  background: transparent;
+}
+
+table#box-table-a tr.even td{
+  background: #EAF2F5;
+}
+
+table#box-table-a tr:hover td{
+  background: #eee;
+}
+
+/* one column table */
+
+
+table.one-col td.oce-first {
+	background: #EAF2F5;	
+	border-right: 1px solid #72BBD2;
+}
+
+table.one-col tr:hover td{
+  background: #BEDCE7;
+}

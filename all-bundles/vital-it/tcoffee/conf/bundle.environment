@@ -1,0 +1,26 @@
+#
+# Bundle environment template file. The following entries will be included 
+# in the host environment for each executed service.
+#  
+# Available variables:
+# - bundle.name:
+# - bundle.version:
+# - bundle.title:
+# - bundle.email:
+# - bundle.author: 
+# - bundle.path: bundle root dir 
+# - bundle.bin.path: bundle binaries path
+# - application.path: 
+# - workspace.path: server root data path shared between all services
+# - data.path: service working directory 
+# - all other properties defined in bundle.properties 
+#
+# Relatives paths are located starting from 'bundle.path' 
+# 
+TMP_4_TCOFFEE=${data.path}/_tmp/
+LOCKDIR_4_TCOFFEE=${data.path}/_lck/
+CACHE_4_TCOFFEE=${data.path}/_cache/
+NCBI_BLAST_4_TCOFFEE=OLD
+PATH=/mnt/common/share/T-COFFEE-8.99/bin.x86_64/:${env.PATH}
+BLASTMAT=/mnt/local/ncbi/data/
+MAFFT_BINARIES=/mnt/common/share/mafft-6.832-with-extensions/lib/mafft/

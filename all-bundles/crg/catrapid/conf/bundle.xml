@@ -1,0 +1,124 @@
+<bundle name="catrapid" version="1.0.7" >
+  <title>catRAPID</title>
+  <description>Fast predictions of RNA-protein interactions and domains</description>
+  <author>Gian Gaetano Tartaglia</author>
+  <email>gian.tartaglia@crg.es</email>
+
+  <service name="catrapid">
+    <title>catRAPID</title>
+    <description>Fast predictions of RNA-protein interactions and domains</description>
+ 	<input>
+      <fieldset >
+      
+        <field type='text' name='lbl_a' label='Protein name' >
+          <hint>Enter just one single word as reference (no blank spaces)</hint>
+          <validation format="TEXT" required='true' pattern="[a-zA-Z0-9-_]*">
+            <required-error>Protein name field is required</required-error>
+            <pattern-error>Use only alphanumeric characters as protein name</pattern-error>
+          </validation>
+        </field>
+
+        <field type='textarea' name='seq_a' label='Protein sequence' >
+          <hint>Protein length has to be in the range 50 - 750 aminoacids (use only upper-case characters)</hint>
+          <validation format="TEXT" required='true' min="50" max="750" pattern="[A-Z]+" >
+            <required-error>Protein sequence field is required</required-error>
+            <min-error>Protein should be at lest 50 residues length</min-error>
+            <max-error>Protein should be at most 750 residues length</max-error>
+            <pattern-error>Make sure the sequence does not contain any blank or other invalid character</pattern-error>
+          </validation>
+          <sample>public/sp.txt</sample>
+        </field>
+
+        <field type='text' name='lbl_b' label='RNA name' >
+          <hint>Enter just one single word as reference (no blank spaces)</hint>
+          <validation format="TEXT" required='true' pattern="[a-zA-Z0-9-_]*" >
+            <required-error>RNA name field is required</required-error>
+            <pattern-error>Use only alphanumeric characters as RNA name</pattern-error>
+          </validation>
+        </field>
+
+        <field type='textarea' name='seq_b' label='RNA sequence' >
+         <hint>RNA length has to be in the range 50 - 3000 nucleotides (use only upper-case characters)</hint>
+           <validation format="TEXT" required='true' min="50" max="3000" pattern="[AUCG]+" >
+            <required-error>RNA sequence name is required</required-error>
+            <min-error>RNA should be at lest 50 residues length</min-error>
+            <max-error>RNA should be at most 3000 residues length</max-error>
+           <pattern-error>Make sure the sequence does not contain any blank or other invalid character</pattern-error>
+           </validation>
+        <sample>public/sr.txt</sample>
+        </field>
+      </fieldset>	
+
+     <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>Optional to notify the results of this calculation</hint>
+          <validation format="EMAIL" />
+        </field>
+     </fieldset>
+	</input>
+  
+  <process>
+    <qsub>
+    <exec program="start.modified.sh ${lbl_a} ${seq_a} ${lbl_b} ${seq_b}" >
+	    <logfile>stdout.txt</logfile>
+	    <errfile>stderr.txt</errfile>
+	    <env CATR_HOME="${bundle.path}" />
+    </exec>
+    </qsub>
+  </process>
+  
+  <output>
+    <!--  definition for valid result  -->
+    <valid>
+        <result>
+        <item><name>eps/matrix.jpg</name></item>
+        <item><name>eps/dp.jpg</name></item>
+        </result>
+        
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>catRapid result</subject>
+          <body>
+          Your catRapid process been completed. 
+          
+          Click here to view --> ${_result_url} 
+          
+          
+          Cheers, 
+          catRapid team
+          </body>
+          </mail>
+        </events>    
+      
+    </valid>
+    
+    <!--  definition for failed result -->
+    <fail>
+        <result> 
+        <title>catRapid has failed</title>
+        </result>
+  
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>catRapid process result</subject>
+          <body>
+          Unfortunately your catRapid process terminated with errors. 
+          
+          Click here to check --> ${_result_url} 
+          
+          
+          Cheers, 
+          catRapid team
+          </body>
+          </mail>
+        </events>
+    
+    </fail>
+  </output>
+  
+</service>
+
+
+</bundle>

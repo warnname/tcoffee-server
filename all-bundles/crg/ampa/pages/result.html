@@ -1,0 +1,240 @@
+#{set title:'Your result' /}
+
+#{set 'moreScripts' }
+ <!--[if IE]>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/excanvas.min.js'}"></script>
+ <![endif]-->
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}"></script>
+#{/set}
+
+<style type="text/css">
+span.box-color { 
+	border-bottom-style: solid; 
+	border-bottom-width: 5px; 
+	margin-right: 1.5em;
+	margin-bottom: .6em; 
+	padding: 2px;
+	float: left;
+	white-space:nowrap;
+}   
+div.box-chart { margin-bottom: 2em } 
+#chart { }  
+#choices { margin-left: 2em } 
+#choices input[type='checkbox'] { margin: 0px; margin-right: 4px  }
+#tooltip {
+     position: absolute;
+     display: none;
+     border: 1px solid #666;
+     padding: 2px;
+     background-color: #f3f3f3;
+     opacity: 0.80;
+     text-align: left;
+	 -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	 -webkit-border-radius: 6px; 
+	 -moz-border-radius: 6px; 
+	 border-radius: 6px;
+     padding: .7em;
+} 
+</style>
+
+#{cache-warning /}
+
+<h1>AMPA result</h1> 
+
+*{ Chart }*
+#{if result?.getItem('graph.json')?.file?.length()>0 }
+<div class="box-chart">
+<div id="chart" style="width:900px; height:400px;"></div>
+<div>
+</div>
+
+<div id="choices">
+<h3>Legend 
+</h3>
+</div>
+<div style="padding-right: 2em; padding-left: 2em; padding-top: 1.2em">
+<div style="clear: both"></div>
+<small >The above chart shows the antimicrobial profile for the entered sequence(s). 
+On X-axis is reported the aminoacid position in the protein and 
+on the Y-axis the anticrobial score at that position.  
+Click the checkbox in the Legend to hide/show specific sequences. 
+Note: colors are generated automatically and are provided only to help to distinguish sequences between them.
+</small>
+</div>
+
+
+</div>
+
+<script type="text/javascript">
+/* 
+ * Extend the string class adding the 'cut' method. 
+ * Return a string up to 'maxlength' characters length
+ */
+String.prototype.cut=function(maxlen) {
+	return this.length<=maxlen ? this : this.substr(0,maxlen)+"..";
+}
+
+/* 
+ * some global variables
+ */
+var chart = $("#chart");
+var choiceContainer = $("#choices");
+var datasets = {}
+
+var chartOptions = {
+		legend: { show: false },
+		grid: { hoverable: true, backgroundColor: { colors: ["#fff", "#f9f9f9"] } },
+        xaxis: { min: 1 },
+        yaxis: {}
+    }
+
+$(document).ready(function() {
+
+	/* 
+	 * plot only the data series currently selected 
+	 */
+    var plotAccordingToChoices = function() {
+        var data = [];
+        choiceContainer.find("input:checked").each(function () {
+            var key = $(this).attr("name");
+            if (key && datasets[key]) { 
+                data.push(datasets[key]);
+            }
+                
+        });
+ 
+        if (data.length > 0) {
+            // plot the chart  
+            var plot = $.plot(chart, data, chartOptions);
+			// this is required only the really first time to get the automatically generated colors 
+            var series = plot.getData();
+            for (var i = 0; i < series.length; ++i) { 
+            	datasets[series[i].key].color = series[i].color;
+            }
+			// save the options 
+			chartOptions.xaxis.min = plot.getAxes().xaxis.min;
+			chartOptions.xaxis.max = plot.getAxes().xaxis.max;
+			chartOptions.yaxis.min = plot.getAxes().yaxis.min;
+			chartOptions.yaxis.max = plot.getAxes().yaxis.max;
+			
+        } 
+    }
+
+	/*
+	 * plot the chart 
+	 */ 
+	var plotTheChart = function(data) {
+
+		/* render the checkboxes */
+		$.each(data.series, function(key, val) {
+			val.key = key;  // <-- store this 'key' on the series item itself 
+			// 'dataset' is an associative array containing all series with the 'key' used by the checkbox 
+			datasets[key] = val;
+			// render the checkbox for this series
+			choiceContainer.append('<span class="box-color box-' + key + '"><input type="checkbox" name="' + key + '" checked="checked" id="id' + key + '">' +
+	                               '<span for="id' + key + '">' + val.label.cut(15) + '</span></span>');
+	    });
+	    choiceContainer.find("input").click(plotAccordingToChoices);
+
+	    /* the main chart plotting function */
+	    plotAccordingToChoices();
+
+	    /* second iteration to draw checkboxes color */
+		$.each(datasets, function(key, val) {
+			choiceContainer.find("span.box-" + val.key).css({"border-bottom-color": val.color})
+	    });	    		
+
+		/* 
+		 * display a popup when the mouse is over a point 
+		 */ 
+		var previousPoint=null;
+ 		chart.bind("plothover", function (event, pos, item) {
+
+		     if(!item) {
+		         $("#tooltip").remove();
+		         previousPoint = null;
+		         return;            
+		     }
+
+			if (previousPoint != item.dataIndex) {
+	             previousPoint = item.dataIndex;
+
+	             $("#tooltip").remove();
+	             var pos = item.datapoint[0];
+	             var score = item.datapoint[1];
+
+	             var content  = "<p style='margin-bottom: 6px; border-bottom: 3px solid "+item.series.color+"' >";
+	             content += "Seq: <b>"+item.series.label.cut(15)+"</b></p>";
+	             content += "Score: <b>" + score + "</b><br/>";
+	             content += "Position: <b>" + pos	+ "</b>"; 
+
+	             $('<div id="tooltip">' + content + '</div>').css( {
+	                 'top': item.pageY + 5,
+	                 'left': item.pageX + 5
+	             }).appendTo("body").fadeIn(200);
+			}
+		     
+		 });
+	    
+	} 
+
+	/* 
+	 * load the chart data and render it on load success
+	 */
+	$.ajax({
+	    url: "${result?.getItem('graph.json')?.webpath}",
+	    cache: true,
+	    method: 'GET',
+	    dataType: 'json',
+	    success: plotTheChart
+	});    
+	
+});
+</script>
+#{/if}
+
+*{ Result file list }*
+
+#{if result?.items?.size > 0 }
+<div class="box">
+
+<h2><span>Result files</span> 
+<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
+</h2>
+
+#{result-items result /}
+</div>
+#{/if}
+
+*{ Job info box }*
+<div class="box">
+<h2><span>Info</span>
+<small><span>Some information on this alignment job</span></small>
+</h2>
+<ul>
+<li>Request ID: <b>${rid}</b></li>
+<li>Created at: <b>${ctx?.creationTimeFmt}</b></li>
+<li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
+<li>Expiration at: <b>${ctx?.expirationTimeFmt}</b></li>
+</ul>
+</div>
+
+*{ cite link }*
+#{if result?.cite }
+<div class="box">
+<h2><span>Citation</span></h2>
+Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+</div>
+#{/if}
+
+
+*{ replay box }*
+<div class="box">
+<h2><span>Replay</span></h2>
+
+Change some input parameters and resubmit this request <a href="@{Application.replay(rid)}" >clicking here</a>.
+</div>
+
+

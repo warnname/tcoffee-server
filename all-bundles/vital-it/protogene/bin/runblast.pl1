@@ -1,0 +1,171 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use diagnostics;
+
+#use HTTP::GHTTP qw/:methods/;
+use CGI;
+use URI::Escape;
+use LWP::UserAgent;
+my $ua = LWP::UserAgent->new;
+use HTTP::Request::Common qw(POST);
+
+use Getopt::Long ; 
+my ($program,$evalue,$vvalue,$dbname,$inputfile,$outputmethod,$filter,$html)=('','1.e-10','20','','',0,'on','off'); #Default values
+my $ret = GetOptions( 'p=s' => \$program,
+                      'e=s' => \$evalue,
+                      'v=s' => \$vvalue,
+                      'd=s' => \$dbname,
+                      'i=s' => \$inputfile,
+                      'm=i' => \$outputmethod,
+                      'F=s' => \$filter,
+                      'T=s' , \$html );
+
+if( $program eq ''){
+    &Usage();
+    exit(0);
+}
+
+
+my $dbtype='NucleotideDatabases';
+$dbtype = 'ProteinDatabases' if( $program eq 'blastp' || $program eq 'blastx' );
+
+
+if( $filter eq 'T' or $filter eq 'on'){
+    $filter = 'on';
+}
+else {
+    $filter = 'off'; 
+}
+
+$html = 'on' if( $html eq 'T');
+
+
+
+
+# Build Command script 
+my @command;
+# Add program
+push ( @command , "Program=$program" ) ; 
+# Add database
+push( @command , "$dbtype=$dbname" ) ; 
+push( @command , "evalue=$evalue" ) ; 
+push( @command , "vvalue=$vvalue" ) ; 
+push( @command , "filter=$filter" ) ; 
+push( @command , "outputmethod=$outputmethod" ) ; 
+push( @command , "html=$html" ) ; 
+push( @command , "blastmethod=new" ) ; 
+push( @command , "raw=on" ) ; 
+
+
+# Read sequence 
+my $sequence='';
+if( $inputfile eq ''){
+    while( <STDIN> ){
+	if(/^>/ ){
+	    &RunBlast() if( $sequence ne '' );
+	    $sequence = $_ ;
+	}
+	else {
+	    $sequence .= $_ ;
+	}
+    }
+    &RunBlast();
+}
+elsif ($inputfile ne ''){
+    open(INFILE,"$inputfile") if (-e "$inputfile");
+    while(<INFILE>){
+	if(/^>/){
+	    &RunBlast() if( $sequence ne '' );
+	    $sequence = $_ ;
+	}
+	else {
+#	    chomp();
+	    $sequence .= $_ ;
+	}
+    }
+    close INFILE;
+    &RunBlast();
+}
+else{
+    &Usage();
+    exit(0);
+}
+
+
+
+sub RunBlast{
+    my $mybody=  join("&" , (@command , 'sequence='.uri_escape($sequence) )) ; 
+
+#    print $mybody ; 
+#    my $r = HTTP::GHTTP->new();
+#    $r->set_uri("http://www.igs.cnrs-mrs.fr/adele/~database/blast.cgi");
+#    $r->set_uri("http://www.igs.cnrs-mrs.fr/adele/~database/newblast.cgi");
+#    $r->set_uri("http://www.igs.cnrs-mrs.fr/adele/~database/remoteblast.cgi");
+#    $r->set_type(METHOD_POST);
+#    $r->set_body($mybody);
+#    $r->process_request;
+#    $r =~ s/<[^<>]+>//g;
+#    print $r->get_body();
+#    my $r = HTTP::Request->new($method, $uri, $header,$mybody);# $content);
+
+    my $uri="http://www.igs.cnrs-mrs.fr/adele/~database/remoteblast.cgi";
+    my $method='POST';
+    my $r = HTTP::Request->new($method, $uri);
+    $r -> content_type('application/x-www-form-urlencoded'); # = $header
+    $r -> content($mybody);
+    my $response = $ua->request($r);
+    my $print= $response->content;
+    $print=~s/<[^<>]+>//g;
+    print $print;
+}
+
+
+sub Usage{
+
+    print STDERR "
+
+
+ $0 -d refprot -p blastp -i fasta_file
+
+    Options disponibles:
+      -i input multifasta file
+      -p blast program
+      -F filtre
+      -e evalue max
+      -m ouput format
+      -v,b controlent le nombre de hits
+
+      -d database; une parmi :
+            acinbactdna
+            bactorfs
+            cgvirus
+            cog
+            genpept
+            human
+            humest
+            keggnuc
+            keggpep
+            mimi
+            mimifinal
+            mimiorfs
+            mouse
+            mtimonensis
+            nr
+            pdbaa
+            refprot
+            sprot
+            sptr
+            sptr_nr_ncbi_v => swissprot + trembl avec entete taxonomique
+            targetdb
+            uniprot_sprot
+            uniprot_sptr
+            virus
+            eto
+
+";
+    exit;
+}
+
+

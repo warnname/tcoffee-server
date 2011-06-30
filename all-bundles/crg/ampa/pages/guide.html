@@ -1,0 +1,145 @@
+#{set title:'User Guide' /}
+
+<style type="text/css">
+#table1 { width: 70%; }
+#table1 caption { }
+#table1 tbody { 
+	border: 2px solid #666;
+} 
+
+#table1 tbody td { 
+	border-collapse: collapse;
+	border: 1px solid #666;
+	padding: .4em;
+}
+</style>
+
+<h1><span>User guide</span>
+<small>A tutorial for the antimicrobial sequence scanning system</small>
+</h1>
+
+<h2>
+<span>Introduction</span>
+</h2>
+
+<p>
+The AMPA algorithm uses an antimicrobial propensity scale to generate an antimicrobial profile 
+by means of a sliding window system. </p>
+
+<p>The propensity scale has been derived using high-throughput screening results from the AMP bactenecin 2A, 
+a 12-residue peptide for which antimicrobial IC50  values for all amino acid replacements at each position 
+have been determined. </p>
+<p>From the IC50 for each substitution, an antimicrobial index for individual residues can be calculated 
+(Table 1) that provides a fair assessment of the tendency of such amino acid to be found within an AMP sequence. 
+</p>
+<p>
+As low IC50 values correspond to high activity, amino acids with a low antimicrobial index are the 
+most favored to be part of an AMP.
+</p>
+
+<table id="table1">
+<caption>Table 1. Antimicrobial index of amino acid residues</caption>
+<tbody>
+
+<tr>
+<td>Residue</td><td>Arg</td><td>Lys</td><td>Cys</td><td>Trp</td><td>Tyr</td><td>Ile</td><td>Val</td>
+</tr>
+
+<tr>
+<td>PV</td><td>0.106</td><td>0.111</td><td>0.165</td><td>0.172</td><td>0.185</td><td>0.198</td><td>0.200</td>
+</tr>
+
+<tr>
+<td>Residue</td><td>His</td><td>Asn</td><td>Thr</td><td>Phe</td><td>Leu</td><td>Gln</td><td>Gly</td>
+</tr>
+
+<tr>
+<td>PV</td><td>0.202</td><td>0.240</td><td>0.242</td><td>0.246</td><td>0.246</td><td>0.248</td><td>0.265</td>
+</tr>
+
+<tr>
+<td>Residue</td><td>Met</td><td>Ser</td><td>Ala</td><td>Pro</td><td>Glu</td><td>Asp</td><td>&nbsp;</td>	
+</tr>
+
+<tr><td>PV</td><td>0.265</td><td>0.281</td><td>0.307</td><td>0.327</td><td>0.449</td><td>0.479</td>	<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+ 
+<p>&nbsp;</p>
+ 
+
+<h2><span>Analyzing your sequence</span></h2>
+
+<h3>Step 1. Entering your sequence</h3>
+<p>
+Enter your sequence in the protein box in the FASTA format. An example is provided in the web 
+only by clicking in the sample link. Alternatively, you can upload the sequence as a text file 
+using the uploading tool provided in the webpage
+</p>
+
+<h3>Step 2. Selecting the scanning parameters</h3>
+<p>
+The AMPA screening system has been optimized to work with the default window size and threshold value provided. 
+However, experienced users may want to adjust these parameters for specific purposes such as analyzing very 
+large or short proteins or analyze sequences using very stringent criteria. 
+If this is the case you can vary the window size or the threshold value only by modifying the default values in 
+the window or threshold boxes respectively.
+</p>
+<p>
+If you want to detect a large domain in a huge protein (>500-1000 amino acid residues) you can use a window size 
+from 9 to 19 residues. We do not recommend larger window sizes, as the profile can be difficult to analyze.
+</p>
+<p>
+If your sequence is very short (&lt; 25 amino acid residues) you can adjust the window size to 5 only if the 
+predicted results obtained with the default parameters are not satisfactory.
+</p>
+<p>
+Threshold values are only used to determine the length of antimicrobial stretches and do not influence the 
+antimicrobial profile. If your sequence has more than one antimicrobial region and you want to find the 
+most prone antimicrobial stretch you can raise the threshold over the default value. 
+We do not recommend adjusting this parameter and definitely not lowering the threshold value. 
+</p>
+
+<h3>Step 3. Providing your email address</h3>
+
+<p>
+You may want to provide the server with your email address. If you fill this box your results will be notified you by email.
+</p>
+
+
+<h3>The output</h3>
+ 
+<p>
+After submitting your job the sequence will be processed and the output webpage will be displayed. 
+</p>
+<p>
+On the top of the webpage you will find the information on the antimicrobial stretches of your protein: 
+the number and location of the antimicrobial regions and the mean antimicrobial index of your protein. 
+</p>
+<p>Below these results you will find the antimicrobial profile of your sequence together with a table for 
+the average antimicrobial index for each amino acid.
+</p>
+
+<h2><span>Cite</span></h2>
+<p>
+If you found this server useful, please cite our work: <br/>
+<a href="http://www.ncbi.nlm.nih.gov/pubmed/19906288" target="_blank">
+A theoretical approach to spot active regions in antimicrobial proteins <br/>
+Torrent M, Nogu&eacute;s VM, Boix E. BMC Bioinformatics. 2009 Nov 11;10:373 
+</a>
+</p>
+
+
+<h2><span>Contacts</span></h2>
+<p>
+For any question or suggestion on the AMPA server, please contact us at:
+</p>
+
+<pre>
+marc (dot) torrent (at) upf (dot) edu
+</pre>
+
+<pre>
+paolo (dot) ditommaso (at) crg (dot) es
+</pre>

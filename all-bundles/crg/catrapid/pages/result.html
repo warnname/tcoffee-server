@@ -1,0 +1,31 @@
+#{set title:'Your result' /}
+
+#{cache-warning /}
+
+<h1>catRapid result</h1> 
+
+<!--
+#{if result?.getItem('eps/dp.jpg')?.file?.exists() }
+<div class="box">
+<h2><span>Interaction Score</span></h2>
+
+<img src="${result?.getItem('eps/dp.jpg')?.webpath}" />
+</div>
+#{/if}
+-->
+
+#{if result?.getItem('eps/matrix.jpg')?.file?.exists() }
+<div class="box">
+<h2><span>Relative Interaction Propensities</span></h2>
+
+<img src="${result?.getItem('eps/matrix.jpg')?.webpath}" />
+</div>
+#{/if}
+
+<div class="box">
+<h2><span>Replay</span></h2>
+
+Change some input parameters and resubmit this request <a href="@{Application.replay(rid)}" >clicking here</a>.
+</div>
+
+
