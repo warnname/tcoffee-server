@@ -22,6 +22,7 @@ GET 	/@sandbox 				Main.sandbox
 # Downloadable data
 GET		/data/zip				Data.zip
 *		/data/upload			Data.upload
+*		/data/xupload			Data.ajaxupload
 GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource
 
@@ -41,12 +42,17 @@ GET     /public/            	staticDir:public
 
 GET		/apps/{bundle}						Application.index
 GET		/apps/{bundle}/						Application.index
-*		/apps/{bundle}/play					Application.main
+GET		/apps/{bundle}/play					Application.main
+POST	/apps/{bundle}/play					Application.main
+GET		/apps/{bundle}/cgi					Application.gateway
+POST 	/apps/{bundle}/cgi					Application.gateway
 GET		/apps/{bundle}/result				Application.result
 GET		/apps/{bundle}/replay				Application.replay	
 GET		/apps/{bundle}/submit				Application.submit
 GET		/apps/{bundle}/status				Application.status
 GET		/apps/{bundle}/history				Application.historyTable
+GET		/apps/{bundle}/advanced				Application.advanced
+POST	/apps/{bundle}/advanced				Application.advanced
 GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
 GET		/apps/{bundle}/{<.+\.html>page}		Application.html
 GET		/apps/{bundle}/bundle.css		    Application.css

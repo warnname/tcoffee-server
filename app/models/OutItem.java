@@ -3,6 +3,7 @@ package models;
 import java.io.File;
 import java.io.Serializable;
 
+import play.libs.IO;
 import plugins.AutoBean;
 import util.Check;
 import util.Utils;
@@ -169,4 +170,8 @@ public class OutItem implements Serializable {
 		this.format = format;
 		return this;
 	}
+	
+	public String content() {
+		return file != null ? IO.readContentAsString(file) : null;
+	} 
 }

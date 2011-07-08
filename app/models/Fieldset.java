@@ -35,6 +35,14 @@ public class Fieldset implements Serializable {
 		this.fields = Utils.copy(that.fields);
 	}
 	
+	public Fieldset( Field ... fields ) { 
+		if( fields == null ) return;
+		
+		for( Field ff : fields ) { 
+			fields().add(ff);
+		}
+	}
+	
 	/** safe accessor method to {@link #fields} attribute */
 	synchronized List<Field> fields() {
 		if( fields == null ) {

@@ -8,20 +8,16 @@ import java.util.List;
 
 import models.Bundle;
 import models.CmdArgs;
-import models.Input;
+import models.Field;
 import models.OutItem;
 import models.OutResult;
-import models.ProcessCommand;
-import models.QsubCommand;
 import models.Repo;
 import models.Service;
 import models.Status;
-import models.TCoffeeCommand;
 
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
-import play.Play;
 import play.data.validation.Error;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -186,31 +182,31 @@ public class Remote extends CommonController {
 		 * 1. create the tcoffee command 
 		 */
 		
-		TCoffeeCommand tcoffee = new TCoffeeCommand();
-		tcoffee.args = new CmdArgs(args);
+		CmdArgs cmdline = new CmdArgs(args);
 		
 		/* 
 		 * constraint on other_pg argument 
 		 */
 		List<String> valid = Arrays.asList(new String[] { "aln_compare", "seq_reformat", "trmsd", "extract_from_pdb" }); 
-		String other_pg = tcoffee.args.get("other_pg");
+		String other_pg = cmdline.get("other_pg");
 		if( Utils.isNotEmpty(other_pg) && !valid.contains(other_pg)) { 
 			badreq("Argument '-other_pg=%s' is not supported by the server", other_pg);
 		}
 
-		/* 
-		 * the qsub wrapper 
+		/*
+		 * Look we assume that the bundle must define a service named 'advanced'
+		 * having at least one field named 'cmdline'
 		 */
-		QsubCommand qsub = new QsubCommand(tcoffee);
-		qsub.disabled = Play.mode.isDev();
-		
-		
-		Service service = new Service();
-		service.bundle  = bundle.get();
-		service.input = new Input();
-		service.process = new ProcessCommand();
-		service.process.add( qsub );
+		Service service = service(bundle.get().name, "adv-cmdline").copy();  
+		// special tag to indentify invocation from the remote client 
 		service.source = "cloud-coffee";
+		// get the 'cmdline' field and pass the value
+		Field field = service.input.getField("cmdline");
+		if( field == null ) { 
+			badreq("Malformed remoting service. It must define a field named 'cmdline'");
+		}
+		
+		field.value = args; 
 		Service.current(service);
 		
 		
@@ -227,7 +223,7 @@ public class Remote extends CommonController {
 		
 		
 		/*
-		 * 2. check if this request has already been processed in some way 
+		 * 3. check if this request has already been processed in some way 
 		 */
 		Status status = service.repo().getStatus();
 		if( status.isReady() ) {

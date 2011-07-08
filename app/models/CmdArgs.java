@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import plugins.AutoBean;
 import util.Check;
@@ -15,50 +17,125 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("args")
 public class CmdArgs {
 
-	List<Arg> items = new ArrayList<Arg>();
+	/** The string value use to evaluate the command line. In otehr words it can contain unevaluated variables */
+	String rawCmdLine;
 
+	/** The list of arguments */
+	List<Arg> fItems;
+	
+	public List<Arg> getItems() { 
+		if( fItems == null ) { 
+			fItems = new ArrayList<Arg>();
+			if( Utils.isNotEmpty(rawCmdLine) ) { 
+				parse(rawCmdLine);
+			}
+		}
+		return fItems;
+	}
+	
+	/** 
+	 * Initialize the class to an empty list of command line arguments 
+	 */
 	public CmdArgs() {}
 	
-	public CmdArgs( String content ) {
-		parse(content);
+	/**
+	 * Create an instance using the specified string as command line arguments. 
+	 * It can contains variables that will be evaluated by the {@link #get(String)} method
+	 *  
+	 * @param cmdLine an arguments command line like <code>-mode=expresso -out=${variable}
+	 */
+	public CmdArgs( String cmdLine ) {
+		this.rawCmdLine = cmdLine;
 	}
 	
+	/**
+	 * Create an instance coping the attributes from <code>that</code> instance
+	 * 
+	 * @param that
+	 */
 	public CmdArgs(CmdArgs that) {
-		items = Utils.copy(that.items); 
+		rawCmdLine = that.rawCmdLine;
+		fItems = Utils.copy(that.fItems); 
 	}
 
 	
-	public void parse( String content ) {
-		if( content==null || Utils.isEmpty(content=content.trim())) {
+	void parse( String cmdLine ) {
+		if( cmdLine==null || Utils.isEmpty(cmdLine=cmdLine.trim())) {
 			return;
 		}
 		
-		// normalize the command line to be sure that start with only and only one blank
-		content = " " + content.trim();
+		/*
+		 * If the command line is composed only by variables 
+		 * jsut evaluate it and than parse as a command line  
+		 */
+		Pattern VARS = Pattern.compile("\\s*(\\$\\{[^\\}]+\\}\\s*)+"); 
+		if( VARS.matcher(cmdLine).matches() ) { 
+			Eval template = new Eval(cmdLine);
+			cmdLine = template.eval();
+		}
 		
-		String[] allItems = content.split(" -");
+		
+		List<String> allItems = cmdLineTokenizer(cmdLine);
 		for( String item : allItems ) {
 			if( Utils.isEmpty(item)) { 
 				continue;
 			}
 			
-			item = item.trim();
-			if( item.startsWith("-")) { 
-				item = item.substring(1);
-				put(item) .prefix = "--";
-			} 
-			else { 
-				put(item);
-			}
+			put(item.trim());
 		}
 
 	}
+
+
+
+	/**
+	 * Tokenize the command line in its single parts. Command line options have to start with one or more '-' characters 
+	 * and value must be preceed by the '=' or blank character. For example 
+	 * <pre>
+	 * t_coffee input.fa -flag -mode=regular -output ascii html pdf 
+	 * </pre> 
+	 * 
+	 * @param cmdLine
+	 * @return
+	 */
+	static List<String> cmdLineTokenizer( String cmdLine ) { 
+
+		Pattern OPTION_SEPARATOR = Pattern.compile("[ \\t\\n\\x0B\\f\\r]-");
+		Pattern BLANK_SEPARATOR = Pattern.compile("[ \\t\\n\\x0B\\f\\r]");
+		
+		List<String> result = new ArrayList();
+		
+		Pattern separator;
+		while( Utils.isNotEmpty(cmdLine)) { 
+			String item;
+			Matcher matcher;
+			cmdLine = cmdLine.trim();
+			
+			
+			separator = cmdLine.startsWith("-")  ? OPTION_SEPARATOR : BLANK_SEPARATOR;
+
+			/* lookahead for the next option separator */
+			if( (matcher=separator.matcher(cmdLine)).find() ) { 
+				item = cmdLine.substring(0,matcher.start());
+				cmdLine = cmdLine.substring(matcher.start()+1);
+			}
+			else { 
+				item = cmdLine;
+				cmdLine = null;
+			}
+			result.add(item);
+		}
+		
+		return result;
+		
+	}
+	
 	
 	public String toRawString() {
-		if( items==null ) return null;
 		
 		StringBuilder result = new StringBuilder();
 		int i=0;
+		List<Arg> items = getItems();
 		for( Arg arg : items ) {
 			if( i++>0  ) { result.append(" "); } 
 			result.append(arg.toRawString());
@@ -75,37 +152,31 @@ public class CmdArgs {
 	 * @param value
 	 */
 	public void add( String name, String value ) { 
-		if( items == null ) {
-			items = new ArrayList<Arg>();
-		}
 
 		int p = indexOf(name);
 		if( p != -1 ) { 
-			Arg arg = items.get(p);
+			Arg arg = getItems().get(p);
 			if( arg != null && Utils.isNotEmpty(arg.value) ) {
 				value = arg.value + " " + value;
 			}
 			
-			items.remove(p);
-			items.add(p, new Arg(name,value));
+			getItems().remove(p);
+			getItems().add(p, new Arg(name,value));
 		}
 		else { 
-			items.add(new Arg(name,value));
+			getItems().add(new Arg(name,value));
 		}
 
 	}	
 	
 	public Arg put( String name, String value ) {
-		if( items == null ) {
-			items = new ArrayList<Arg>();
-		}
 		
 		Arg result = new Arg(name,value) ;
-		items.add(result);
+		getItems().add(result);
 		return result;
 	}
 	
-	public Arg put( String pair ) {
+	Arg put( String pair ) {
 		if( pair==null || Utils.isEmpty(pair=pair.trim()) ) { return null; }
 		
 		// pair separator is equals char (=)
@@ -129,40 +200,42 @@ public class CmdArgs {
 			value = "";
 		}
 		
-		return put(name,value);
-	}
-	
-	public void putAll( String... pairs ) {
-		if( pairs == null ) return;
-		for( String pair : pairs ) {
-			put(pair);
-		}
-	}
-	
-	
-	public void putAll( CmdArgs args ) {
-		if( args == null || args.items == null ) return;
-		
-		if( items == null ) {
-			items = new ArrayList<Arg>();
+		/* check for param prefix */
+		String prefix="";
+		while( name.startsWith("-") ) { 
+			name = name.substring(1);
+			prefix += "-";
 		}
 		
-		items.addAll(args.items);
-	}	
+		/* create the result object */
+		Arg result = put(name,value);
+		result.prefix = prefix;
 
+		return result;
+	}
+
+	/**
+	 * Remove the 'argument' with the specified name 
+	 * 
+	 * @param name the argument to be removed 
+	 */
 	public void remove( String name ) {
 		int i;
 		while ( (i=indexOf(name)) != -1 ) {
-			items.remove(i);
+			getItems().remove(i);
 		} 
 	}
 	
+	/**
+	 * 
+	 * @param name a command line argument name
+	 * @return 
+	 */
 	public int indexOf( String name ) {
 		Check.notNull(name, "Argument 'name' cannot be null");
-		if( items == null ) return -1;
 		
-		for( int i=0; i<items.size(); i++ ) {
-			if( name.equals(items.get(i).name) ) {
+		for( int i=0; i < getItems().size(); i++ ) {
+			if( name.equals(getItems().get(i).name) ) {
 				return i;
 			}
 		}
@@ -170,14 +243,24 @@ public class CmdArgs {
 		return -1;
 	}
 	
+	/**
+	 * Check if an 'argument' with the given name exists in the command line 
+	 * 
+	 * @param name the 'argument' name
+	 * @return <true>when exists, <code>false</code> otherwise
+	 */
 	public boolean contains( String name ) {
 		return indexOf(name) != -1;
 	}
 	
-	
+	/**
+	 * Retrieve the value for the 'argument' with the specified name
+	 * @param name
+	 * @return the argument value as string of <code>null</code> if not exist 
+	 */
 	public String get( String  name ) {
 		int p = indexOf(name);
-		Arg arg = (p!=-1) ? items.get(p) : null;
+		Arg arg = (p!=-1) ? getItems().get(p) : null;
 		return (arg != null) ? arg.getVal() : null; 
 	}
 	
@@ -195,25 +278,23 @@ public class CmdArgs {
 	}
 
 	public String at( int index ) {
-		if( items == null ) return null;
-	
-		Arg arg = items.get(index);
+		Arg arg = getItems().get(index);
 		return arg != null ? arg.name : null;
 	} 
 
 	
 	public int size() {
-		return (items!=null) ? items.size() : 0;
+		return getItems().size();
 	}	
 	
 	/** 
 	 * @return a command line string following the format -<name>=<value>
 	 */
 	public String toCmdLine() {
-		if( items == null ) return null;
 		
 		StringBuilder result = new StringBuilder();
 		
+		List<Arg> items = getItems();
 		for( Arg arg : items ) {
 			String a = arg.toCmdLine();
 			if( Utils.isNotEmpty(a) ) {

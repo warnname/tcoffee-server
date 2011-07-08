@@ -1,6 +1,9 @@
 package models;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +54,7 @@ public class CmdArgsTest extends UnitTest {
 		args.put("z=");
 		args.put("w");
 		args.put("q 1"); // ALSO SPACE IS SUPPORTED AS SEPARATOR 
+		args.put("--q=1"); // it is possible to specify even the prefix
 		assertEquals("b", args.get("a"));
 		assertEquals("y", args.get("x"));
 		assertEquals(null, args.get("z"));
@@ -83,17 +87,22 @@ public class CmdArgsTest extends UnitTest {
 	@Test 
 	public void testParse() {
 		CmdArgs args = new CmdArgs();
-		args.parse("-a=alfa -c=gamma -z=${field1} -b=beta"); 
+		args.parse("sample.fasta -a=alfa -c=gamma -z=${field1} -b=beta --flag"); 
 		
-		assertEquals("a", args.items.get(0).name);
-		assertEquals("c", args.items.get(1).name);
-		assertEquals("z", args.items.get(2).name);
-		assertEquals("b", args.items.get(3).name);
+		assertEquals("sample.fasta", args.getItems().get(0).name);
+		assertEquals("a", args.getItems().get(1).name);
+		assertEquals("c", args.getItems().get(2).name);
+		assertEquals("z", args.getItems().get(3).name);
+		assertEquals("b", args.getItems().get(4).name);
+		assertEquals("flag", args.getItems().get(5).name);
 
 		assertEquals("alfa", args.get("a"));
 		assertEquals("beta", args.get("b"));
 		assertEquals("gamma", args.get("c"));
 		assertEquals("Value 1", args.get("z"));
+		
+		
+		assertEquals( "sample.fasta -a=alfa -c=gamma -z=Value 1 -b=beta --flag", args.toCmdLine() );
 		
 	}
 	
@@ -101,10 +110,10 @@ public class CmdArgsTest extends UnitTest {
 	public void testConstructorWithArgs() {
 		CmdArgs args = new CmdArgs("-a=alfa -c=gamma -z=${field1} -b=beta");
 		
-		assertEquals("a", args.items.get(0).name);
-		assertEquals("c", args.items.get(1).name);
-		assertEquals("z", args.items.get(2).name);
-		assertEquals("b", args.items.get(3).name);
+		assertEquals("a", args.getItems().get(0).name);
+		assertEquals("c", args.getItems().get(1).name);
+		assertEquals("z", args.getItems().get(2).name);
+		assertEquals("b", args.getItems().get(3).name);
 
 		assertEquals("alfa", args.get("a"));
 		assertEquals("beta", args.get("b"));
@@ -112,15 +121,26 @@ public class CmdArgsTest extends UnitTest {
 		assertEquals("Value 1", args.get("z"));
 		
 	}
+
+	
+	@Test 
+	public void testToCmdLine() {
+		CmdArgs args = new CmdArgs("-a=alfa -c=gamma -z=val");
+		assertEquals( "-a=alfa -c=gamma -z=val", args.toCmdLine() );
+
+		args = new CmdArgs("-a=alfa\n-c=gamma \n-z=val");
+		assertEquals( "-a=alfa -c=gamma -z=val", args.toCmdLine() );
+	
+	}	
 	
 	@Test
 	public void testFromXml() {
 		String xml = "<args >-a=alfa -c=gamma -b=beta</args>";
 		CmdArgs args = XStreamHelper.fromXML(xml);
 		assertNotNull(args);
-		assertEquals("a", args.items.get(0).name);
-		assertEquals("c", args.items.get(1).name);
-		assertEquals("b", args.items.get(2).name);
+		assertEquals("a", args.getItems().get(0).name);
+		assertEquals("c", args.getItems().get(1).name);
+		assertEquals("b", args.getItems().get(2).name);
 		
 		assertEquals("alfa", args.get("a"));
 		assertEquals("beta", args.get("b"));
@@ -179,5 +199,58 @@ public class CmdArgsTest extends UnitTest {
 		
 		assertEquals("-a=Value 1 -b -c -d=value --x=1 --x=2 --x=3 --x-y=99", cmd.toCmdLine()); 
 	}
+	
+	
+	@Test
+	public void testDynamicCommandLine() { 
+		Service.current().getCtx().put("args", "-x=1 -y=2 -w=3 4 5 -z=hola");
+
+		// in this case all the command line is specified by a single variable that
+		// contains all the CL CmdArgs.CMD_OPTIONs
+		CmdArgs cmd = new CmdArgs("${args}");
+		assertEquals( "1", cmd.get("x") ); 
+		assertEquals( "2", cmd.get("y") ); 
+		assertEquals( "3 4 5", cmd.get("w") ); 
+		assertEquals( "hola", cmd.get("z") ); 
+
+	}
+	
+
+	@Test 
+	public void testCmdLineTokenizer() { 
+		List<String> args = CmdArgs.cmdLineTokenizer("t-coffee input.fa\n-mode=something -about -output html score ascii -multi_core=4 -flag");
+		
+		assertEquals( 7, args.size());
+		assertEquals( "t-coffee", args.get(0) );
+		assertEquals( "input.fa", args.get(1) );
+		assertEquals( "-mode=something", args.get(2) );
+		assertEquals( "-about", args.get(3) );
+		assertEquals( "-output html score ascii", args.get(4) );
+		assertEquals( "-multi_core=4", args.get(5) );
+		assertEquals( "-flag", args.get(6) );
+	}
+	
+	@Test
+	public void testTrim()  { 
+		
+		assertEquals( "x", " x \n ".trim() ); 
+	}
+	
+	
+	@Test 
+	public void testPattern() { 
+		Pattern p = Pattern.compile("[ \\t\\n\\x0B\\f\\r]-");
+		
+		Matcher m = p.matcher("hola -prop");
+		assertTrue( m.find() );
+		assertEquals( 4, m.start() );	
+
+		m = p.matcher("hola \n-prop");
+		assertTrue( m.find() );
+		assertEquals( 5, m.start() );	
+
+	
+	}
+	
 	
 }

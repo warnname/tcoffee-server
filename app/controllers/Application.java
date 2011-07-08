@@ -3,22 +3,31 @@ package controllers;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import models.AppProps;
 import models.Bundle;
+import models.CmdArgs;
+import models.Field;
 import models.History;
 import models.OutResult;
 import models.Repo;
 import models.Service;
 import models.Status;
 import play.Logger;
+import play.data.validation.Validation;
 import play.libs.IO;
 import play.mvc.Before;
 import play.mvc.Finally;
+import play.mvc.Util;
+import util.RouterFix;
 import util.Utils;
 import util.XStreamHelper;
 import bundle.BundleRegistry;
+import controllers.Data.AjaxUpload;
 
 /**
  * The main application controller 
@@ -77,7 +86,7 @@ public class Application extends CommonController {
     	final Status status = ctx.getStatus();
 
     	if( status.isDone()) {
-    		// touch it to update the last access time 
+    		// touch it to update the last accessed time 
     		ctx.touch(); 
 		
     		// if the file exists load the result object and show it
@@ -147,17 +156,15 @@ public class Application extends CommonController {
 		/* 
 		 * create the service and bind the stored values 
 		 */
-		String mode = repo.getResult().service;
-		Service service = service(bundle.get().name,mode);
-		service = service.copy();
-		Service.current(service);
-		service.input = XStreamHelper.fromXML(repo.getInputFile());
-		
-		/* 
-		 * 3. show the input form ('main.html')
-		 */
-		renderArgs.put("service", service);
-		render("Application/main.html");		
+		String serviceName = repo.getResult().service;
+		String bundleName = bundle.get().name;
+		Service service = service(bundleName,serviceName);
+
+		Map<String,Object> args = new HashMap<String, Object>(2);
+    	args.put("bundle", bundleName );
+    	args.put("replay", rid);
+    	redirect( RouterFix.reverse(service.action, args).toString() );
+
 	}
 	
 	public static void submit( String rid ) {
@@ -186,14 +193,65 @@ public class Application extends CommonController {
 	}
 	
 	/**
+	 * Gateway is meant to pass parameters to the input forms. All URL paramerts 
+	 * matching a input field in the form will be filled with that value
+	 * 
+	 * @param name the service name for which render the input form 
+	 */
+	public static void gateway( String name ) { 
+		/* 
+		 * if the name is missing use the first as default 
+		 */
+		if( Utils.isEmpty(name) && bundle.get().services!=null && bundle.get().services.size()>0 ) { 
+			name = bundle.get().services.get(0).name;
+		}
+		
+		if( Utils.isEmpty(name) ) { 
+			error("Missing service for name for bundle: " + bundle);
+		}
+		
+		Service service = service(bundle.get().name,name).copy();
+		
+		/* 
+		 * bind any input parameters to make it possible to enters params 
+		 * trought the URL 
+		 */
+		List<Field> fields = service.input.fields();
+		for( Field field : fields ) { 
+			String val;
+			if( Utils.isNotEmpty(val = params.get(field.name))) {
+				field.value = val;
+			} 
+		}
+		
+		/* render the page */
+		render("Application/main.html", service);		
+	}
+	
+	/**
 	 * Renders a generic t-coffee 'service' i.e. a specific configuration defined in the main application file 
 	 * 
-	 * @param name the <i>service</i> name i.e. is unique identifier
+	 * @param name the <i>service</i> name for which render the input form
 	 */
 	public static void main(String name) {
 		
 		if( isGET() ) {
-			/* if the name is missing use the first as default */
+
+			/*
+			 * when the 'replay' params is provided the page is reloaded 
+			 * with the previous run data and options
+			 */
+			if( params._contains("replay") ) { 
+				String rid = params.get("replay");
+				
+				Service service = getServiceByRid(rid);
+				render(service);
+				return;
+			}
+			
+			/* 
+			 * if the name is missing use the first as default 
+			 */
 			if( Utils.isEmpty(name) && bundle.get().services!=null && bundle.get().services.size()>0 ) { 
 				name = bundle.get().services.get(0).name;
 			}
@@ -203,6 +261,8 @@ public class Application extends CommonController {
 			}
 			
 			Service service = service(bundle.get().name,name);
+			
+			/* render the page */
 			render(service);
 			return;
 		}
@@ -318,7 +378,144 @@ public class Application extends CommonController {
 	/**
 	 * T-Coffee advanced mode
 	 */
-	public static void guru() { 
-		render();
+	public static void advanced() { 
+
+		Set<AjaxUpload> uploadFileList = Data.getAjaxUploads();
+		Service service = service(bundle.get().name,"adv-cmdline").copy();
+
+		if( isGET() ) { 
+			
+			/*
+			 * Check if has the replay parameter 
+			 */
+			String rid;
+			Repo repo;
+			if( (rid=params.get("replay")) != null && (repo=new Repo(rid)).hasResult() ) { 
+				
+				/* reuse the previous command line */
+				String cmdLine = IO.readContentAsString( repo.getResult().getCommandLine().file );
+				while( cmdLine.startsWith("t_coffee ") ) { 
+					cmdLine = cmdLine.substring("t_coffee ".length());
+				}
+				service.input.field("cmdline").value = cmdLine;
+				
+				/* load the previously used input file as uploaded files */
+				uploadFileList.clear();
+				for( File file : repo.getResult().getInputFiles() ) { 
+					if( file.exists() ) { 
+						uploadFileList.add( new AjaxUpload(file) ) ;
+					}
+				}
+			}
+			
+			
+			render(service, uploadFileList);
+		}
+
+	
+		/* 
+		 * When is posted process the request
+		 */
+		Service.current(service);
+
+		
+		/* 
+		 * 0. bind and validate
+		 */
+		if( !service.validate(params) ) {
+			/* if the validation FAIL go back to the service page */
+			render(service, uploadFileList);
+		} 
+
+		/* 
+		 * The command line cannot contains some 'special' character 
+		 * to avoid malicious commands entered 
+		 */
+		final String cmdLine = service.input.field("cmdline").value;
+		for( char ch : Data.INVALID_CHARS ) { 
+			if( cmdLine.indexOf(ch) != -1 ) { 
+				String msg =  String.format("Program options cannot contains character '%s'",  ch);
+				Validation.addError("cmdline", msg, (String)null);
+				render(service, uploadFileList);
+			}
+		}
+		
+		/* 
+		 * also avoid the use of some T-coffee options
+		 */
+		CmdArgs args = new CmdArgs(cmdLine);
+		String other_pg = args.get("other_pg");
+		List<String> valid = Arrays.asList(new String[] { "aln_compare", "seq_reformat", "trmsd", "extract_from_pdb" }); 
+		if( Utils.isNotEmpty(other_pg) && !valid.contains(other_pg)) { 
+			String msg = String.format("Option '-other_pg=%s' is not supported by the server", other_pg);
+			Validation.addError("cmdline", msg, (String)null);
+			render(service, uploadFileList);
+		}
+
+		
+		/*
+		 * 1. prepare for the execution
+		 */
+		service.init(false);
+		
+		/* 
+		 * 2. copy the files to the target folder 
+		 */
+		for( AjaxUpload upload: uploadFileList) { 
+			service.repo().store( upload.path, upload.fileName );
+		}
+		
+		
+		/*
+		 * 3. check if this request has already been processed in some way 
+		 */
+		Status status = service.repo().getStatus();
+		if( !status.isReady() ) {
+	    	Logger.debug("Current request status: '%s'. Forward to result page with rid: %s", status, service.rid());
+	    	result(service.rid(), service.repo().cached);
+	    	return;
+		}
+
+		/*
+		 * 4. fire the job 
+		 */
+		if( service.start() ) {
+	    	
+			/*
+	    	 * 5. store the current request-id in a cookie
+	    	 */
+	    	History history = new History(service.rid());
+	    	history.setBundle(bundle.get().name);
+	    	history.setLabel(service.title);
+	    	history.save();		
+		}
+		
+
+    	/*
+    	 * 6. forwards to the result page 
+    	 */
+    	Logger.debug("Forward to result page with rid: %s", service.rid());
+    	result(service.rid());		
+
+	}
+	
+	
+	@Util
+	static Service getServiceByRid( String rid ) { 
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound(String.format("The specified request ID does not exist (%s)", rid));
+		}
+		
+		/* 
+		 * create the service and bind the stored values 
+		 */
+		String serviceName = repo.getResult().service;
+		String bundleName = repo.getResult().bundle;
+		Service service = service(bundleName,serviceName);
+		service = service.copy();
+		service.input = XStreamHelper.fromXML(repo.getInputFile());
+
+		return service;
 	}
 }

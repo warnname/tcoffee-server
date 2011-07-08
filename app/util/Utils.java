@@ -2047,6 +2047,9 @@ public class Utils {
 		if( result == null ) { 
 			result = e.getMessage();
 		}		
+		if( result == null ) { 
+			result = e.toString();
+		}
 		
 		return result;
 	}

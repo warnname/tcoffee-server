@@ -1,12 +1,19 @@
 package controllers;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -18,19 +25,32 @@ import models.Repo;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
+import play.cache.Cache;
+import play.data.Upload;
 import play.libs.IO;
+import play.mvc.Http.Request;
+import play.mvc.Scope.Session;
+import play.mvc.Util;
 import play.templates.JavaExtensions;
+import util.JsonHelper;
+import util.Utils;
 import exception.QuickException;
 
 
 /**
- * Controller that hanles data download and upload 
+ * Controller that handles data download and upload 
  * 
  * @author Paolo Di Tommaso
  *
  */
 public class Data extends CommonController {
 
+	/** 
+	 * characters that have to be used into command line and file names
+	 */
+	public static final char[] INVALID_CHARS = { ';','&','`',':','*','?','$','(',')','{','}','[',']','<','>','|' };
+	
+	
 	/**
 	 * This method let to download any file placed in the application 
 	 * data folder 
@@ -153,7 +173,9 @@ public class Data extends CommonController {
 	} 
 		
 	/**
-	 * Manage upload of the input file
+	 * Manage upload of the input file 
+	 * 
+	 * NOTE: this use the legacy mechanism
 	 * 
 	 * @param name the file name that is being uploaded
 	 */
@@ -175,7 +197,7 @@ public class Data extends CommonController {
 			return;
 		}
 		
-		/* error condition: wtf is that file ? */
+		/* error condition: wtf is the file ? */
 		if( !file.exists() ) {
 			Logger.error("Cannot find file for ajax upload field: '%s'", name);
 			renderText(ERROR);
@@ -207,6 +229,131 @@ public class Data extends CommonController {
 		}
 		
 	}	
+	
+	
+	/* 
+	 * Upload mechanism for the 'advanced' T-coffee mode 
+	 */
+	static class AjaxUpload implements Serializable { 
+		String fileName;
+		File path;
+		
+		public AjaxUpload() { }
+		
+		public AjaxUpload( File file ) { 
+			fileName = file.getName();
+			path = file;
+		}
+		
+		public String getFileName() { return fileName; }
+		public File getPath() { return path; } 
+		
+		public String toString() {
+			return String.format("AjaxUpload[ %s -> %s ]", fileName, path );
+		} 
+		
+		public int hashCode() { 
+			int hash= Utils.hash();
+			hash = Utils.hash(hash, fileName);
+			return hash;
+		}
+		
+		public boolean equals( Object that ) { 
+			return 
+				Utils.isEqualsClass(this, that) && 
+				Utils.isEquals(this.fileName, ((AjaxUpload)that).fileName);
+		}
+	}
+	
+	
+	@Util
+	public static Set<AjaxUpload> getAjaxUploads() { 
+		String key = Session.current().getId() + "-ajaxuploads";
+		Set<AjaxUpload> result = (Set<AjaxUpload>) Cache.get(key);
+		if( result == null ) { 
+			result = new HashSet<AjaxUpload>();
+			Cache.set( key, result );
+		}
+		return result;
+	}
+	
+	@Util
+	public static void addAjaxUpload( String filename, File path ) { 
+		AjaxUpload item = new AjaxUpload();
+		item.fileName = filename;
+		item.path = path;
+		Set<AjaxUpload> set = getAjaxUploads();
+		if( set.contains(item) ) { 
+			set.remove(item);
+		}
+		set.add(item);
+	}
+	
+	public static void ajaxupload(String qqfile) { 
+
+		response.contentType = "text/html";  // <!-- also this reponse header is requried to make it work IE 
+		
+		/* 
+		 * Hack to handle upload from fucking IE7/8
+		 */
+		Upload __fileUpload = null;
+		if( "multipart/form-data".equals(request.contentType)) { 
+			List<Upload> __uploads = (List<Upload>) Request.current().args.get("__UPLOADS");
+			if( __uploads != null && __uploads.size()>0) { 
+				__fileUpload = __uploads.get(0);
+				qqfile = __fileUpload.getFileName();
+			}
+		}
+
+		
+		/* 
+		 * some integrity checks
+		 */
+		if( Utils.isEmpty(qqfile) ) { 
+			renderText(JsonHelper.error("The file name cannot be empty"));
+		}
+		
+		if( qqfile.startsWith("-") ) { 
+			renderText(JsonHelper.error("The file name cannot start with a minus (-) character."));
+		}
+		
+		for( char ch : INVALID_CHARS ) { 
+			if( qqfile.indexOf(ch) != -1 ) { 
+				String msg =  String.format("The file name cannot contain character '%s'",  ch);
+				renderText(JsonHelper.error(msg));
+			}
+		}
+		
+		/* check if already exists */
+		for( AjaxUpload upload : getAjaxUploads() ) { 
+			if( qqfile.equals( upload.fileName ) && upload.path.exists() ) { 
+				String msg =  String.format("A file with the same name '%s' already exist.",  qqfile);
+				renderText(JsonHelper.error(msg));
+			}
+		}
+	
+		
+		File tmpfile = null;
+		try  {
+			tmpfile = File.createTempFile("input_", null, AppProps.TEMP_PATH);
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpfile));
+			InputStream input = __fileUpload == null 
+							  ? request.body
+							  : __fileUpload.asStream();
+
+			IO.write(new BufferedInputStream(input), out);
+			// ^ Stream closed by the write method
+			
+			addAjaxUpload(qqfile, tmpfile);
+
+			renderText("{\"success\":true}");
+		}
+		catch( Exception e ) { 
+			Logger.error(e, "Unable to store ajax file upload to: '%s'; file name: '%s'", tmpfile, qqfile);
+			renderText( JsonHelper.error(e) );
+		}
+
+	}
 	
 
 }

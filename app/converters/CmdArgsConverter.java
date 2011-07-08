@@ -22,8 +22,7 @@ public class CmdArgsConverter implements Converter {
 	}
 
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		CmdArgs args = new CmdArgs();
-		args.parse(reader.getValue());
+		CmdArgs args = new CmdArgs(reader.getValue());
 		return args;
 	}
 
