@@ -141,7 +141,7 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 <div class="box">
 <h2><span>Replay</span></h2>
 Change some input parameters and resubmit this alignment <a href="@{Application.replay(rid)}" >clicking here</a>.
-#{if result.service != 'advanced'}
+#{if result.service != 'adv-cmdline'}
 <div style="padding-top: .7em">
 Are you a T-Coffee guru? You may want to use the full featured T-Coffee <a href="@{Application.advanced().add('replay',rid)}">command line options</a>.
 </div>
