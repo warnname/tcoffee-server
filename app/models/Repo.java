@@ -568,9 +568,37 @@ public class Repo implements Serializable {
 		
 		
 		}
-		
+	}
+
+	/**
+	 * Save the file into the repo with the specified name
+	 * 
+	 * @param source to file to copy 
+	 * @param fileName the target file name 
+	 */
+	public void store( File source, String fileName ) { 
+		File target = new File(fRoot,fileName);
+		try {
+			if( source.equals(target)) { 
+				Logger.warn("Cannot copy file onto itself: '%s'", source);
+				return;
+			}
+
+			FileUtils.copyFile(source,target);
+		} 
+		catch (IOException e) {
+			throw new QuickException(e,"Unable to copy %s --> %s", source, target);
+		}
 	}
 	
+	/**
+	 * Save the file info tthe repo 
+	 * 
+	 * @param file the file to save
+	 */
+	public void store( File file ) { 
+		store(file, file.getName());
+	}
 	
 
 }

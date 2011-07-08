@@ -115,7 +115,7 @@ public class Arg implements Serializable {
 	}
 
 	public String toRawString() {
-		String result = prefix  + name;
+		String result = prefix + name;
 		if( Utils.isNotEmpty(value) ) {
 			result += "=" + value;
 		} 

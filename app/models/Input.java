@@ -60,6 +60,14 @@ public class Input implements Serializable {
 		this.fieldsets = Utils.copy(that.fieldsets);
 	}
 	
+	public Input( Fieldset ... fieldset ) { 
+		if( fieldset == null ) return;
+		
+		for( Fieldset set: fieldset ) { 
+			fieldsets().add(set);
+		}
+	}
+	
 	public synchronized List<Fieldset> fieldsets() {
 		if( fieldsets == null ) {
 			fieldsets = new ArrayList<Fieldset>();
@@ -120,6 +128,11 @@ public class Input implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	public Field field( String fieldName ) { 
+		List<Field> result = fields(fieldName);
+		return result.size()>0 ? result.get(0) : null;
 	}
 	
 	public Field getField( String name ) { 

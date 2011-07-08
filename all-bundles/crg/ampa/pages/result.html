@@ -63,8 +63,6 @@ Click the checkbox in the Legend to hide/show specific sequences.
 Note: colors are generated automatically and are provided only to help to distinguish sequences between them.
 </small>
 </div>
-
-
 </div>
 
 <script type="text/javascript">
@@ -177,7 +175,8 @@ $(document).ready(function() {
 			}
 		     
 		 });
-	    
+
+
 	} 
 
 	/* 
@@ -205,8 +204,27 @@ $(document).ready(function() {
 </h2>
 
 #{result-items result /}
+
+
+<div style="padding-top: 1em">
+<form action="@{Application.gateway('regular').add('bundle','tcoffee')}" id="sendto" name="sendto"  method="POST" >
+<textarea name="seqs" style="display:none">${result.getItems()?.get(0)?.content()}</textarea>
+
+<button id="forward" name="forward" class="button blue"> Send to T-Coffee </button>
+<small style="position: relative; top: 2px ">
+To align the entered sequences using T-Coffee click to button on the left.
+</small>
+</form>
+
+<script type="text/javascript">
+$('#forward').click(function() { $('#sendto').submit(); } );
+</script>
+</div>
+
 </div>
 #{/if}
+
+
 
 *{ Job info box }*
 <div class="box">

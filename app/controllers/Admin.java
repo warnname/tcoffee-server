@@ -59,6 +59,7 @@ import query.GridResult;
 import query.QueryHelper;
 import query.TimeSeries;
 import query.UsageFilter;
+import util.JsonHelper;
 import util.Check;
 import util.CookieHelper;
 import util.FileIterator;
@@ -635,18 +636,14 @@ public class Admin extends CommonController {
 		}
 		catch( BundleException e) { 
 			Logger.error(e.getMessage());
-			renderText(ERROR(e.getMessage()));
+			renderText(JsonHelper.error(e));
 		}
 		catch( Exception e ) {
 			Logger.error(e, "Unable to copy temporary upload file: '%s'", bundleZip);
-			renderText(ERROR(Utils.cause(e)));
+			renderText(JsonHelper.error(e));
 		}
 	
 	}
-	
-	private static String ERROR( String message ) { 
-		return String.format("{error: '%s'}", JavaExtensions.escapeJavaScript(message));
-	}		
 	
 	/**
 	 * Let to upload and install a new bundle in the system 

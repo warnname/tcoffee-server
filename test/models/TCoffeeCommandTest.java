@@ -135,4 +135,25 @@ public class TCoffeeCommandTest extends UnitTest {
         }
 
 
+        @Test 
+        public void testDetectInputFile() { 
+        	CmdArgs args = new CmdArgs("-in input.fa");
+        	assertEquals( "input.fa", TCoffeeCommand.detectedInputFile(args) );
+
+        	args = new CmdArgs("-seq input.fa -more value");
+        	assertEquals( "input.fa", TCoffeeCommand.detectedInputFile(args) );
+
+        	args = new CmdArgs("-infile input.fa -more value");
+        	assertEquals( "input.fa", TCoffeeCommand.detectedInputFile(args) );
+
+        	args = new CmdArgs("-aln input.fa -more value");
+        	assertEquals( "input.fa", TCoffeeCommand.detectedInputFile(args) );
+
+        	args = new CmdArgs("input.fa -more value");
+        	assertEquals( "input.fa", TCoffeeCommand.detectedInputFile(args) );
+        	
+        	args = new CmdArgs("-missing opt -more value");
+        	assertEquals( null, TCoffeeCommand.detectedInputFile(args) );
+  	
+        }
 }

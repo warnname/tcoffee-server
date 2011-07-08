@@ -111,15 +111,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		/* 
 		 * detect input file name 
 		 */
-		String inFile = args.get("infile");
-		// fallback on alternate file input argument 
-		if( Utils.isEmpty(inFile)) {
-			inFile = args.get("in");
-			// fallback on alternate file input argument 
-			if( Utils.isEmpty(inFile)) {
-				inFile = args.get("aln");
-			}
-		}
+		String inFile = detectedInputFile(args);
 		
 		if( Utils.isNotEmpty(inFile)) {
 			int p = inFile.indexOf(' ');
@@ -172,6 +164,38 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		
 		/* return the command line */
 		return result += " " + args.toCmdLine();
+	}
+
+	static String detectedInputFile(CmdArgs args) {
+
+		String result;
+		
+		if( Utils.isNotEmpty(result=args.get("infile")) ) { 
+			return result;
+		}
+
+		if( Utils.isNotEmpty(result=args.get("in")) ) { 
+			return result;
+		}
+	
+		if( Utils.isNotEmpty(result=args.get("seq")) ) { 
+			return result;
+		}
+
+		if( Utils.isNotEmpty(result=args.get("aln")) ) { 
+			return result;
+		}
+	
+		/* fallbakc to the first argument with no value and any prefix, just the name */
+		for( Arg arg : args.getItems() ) { 
+			if( Utils.isEmpty(arg.prefix) && Utils.isEmpty(arg.value) && Utils.isNotEmpty(arg.name) ) { 
+				return arg.name;
+			}
+		}
+		
+		return null;
+		
+
 	}
 
 	/*

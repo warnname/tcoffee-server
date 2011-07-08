@@ -102,6 +102,16 @@ public class Service implements Serializable {
 	 */
 	public Output output;
 	
+	
+	/** 
+	 * The action method that will handle this service
+	 */
+	public String action;
+	
+	public String getAction() { 
+		return Utils.isEmpty(action) ? "Application.main" : action;
+	}
+	
 	/**
 	 * The defualt constructor. Initialize the class to empty 
 	 */
@@ -131,6 +141,7 @@ public class Service implements Serializable {
 		this.input = Utils.copy(that.input);
 		this.process = Utils.copy(that.process);
 		this.output = Utils.copy(that.output);
+		this.action = that.action;
 	}
 	
 	/**
@@ -157,9 +168,8 @@ public class Service implements Serializable {
 	}
 	
 	private String getRid( boolean enableCaching ) {
-		if( input == null ) { return null; };
 		
-		int hash = input.hashFields();
+		int hash = input != null ? input.hashFields() : Utils.hash();
 		hash = Utils.hash(hash, this.name);
 		hash = Utils.hash(hash, this.sessionId);
 		hash = Utils.hash(hash, this.bundle.getLastModified());

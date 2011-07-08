@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,12 +102,33 @@ public class OutResult implements Serializable {
 	}
 	
 	/**
-	 * Filter the list of {@link OutItem}s instances by the {@link OutItem#type} property
+	 * Filter the list of {@link OutItem}s instances by the {@link OutItem#aggregation} property
 	 */
-	public List<OutItem> filter( String type ) {
-		return Utils.getItems(items(), "aggregation", type);
+	public List<OutItem> filter( String value ) {
+		return Utils.getItems(items(), "aggregation", value);
 	} 
+
+	/**
+	 * @return the list of 'input' items in this result, or an empty list if no input is available
+	 */
+	public List<OutItem> getInputItems() { 
+		return Utils.getItems(items(), "type", "input_file");
+	}
 	
+	
+	
+	public List<File> getInputFiles() { 
+		List<OutItem> items= getInputItems();
+		
+		List<File> result = new ArrayList<File>(items.size()); 
+		for( OutItem item : items ) { 
+			result.add(item.file);
+		}
+		
+		return result;
+	}
+	
+
 	public void addAll(OutResult that) {
 		if( that == null ) { return; }
 
