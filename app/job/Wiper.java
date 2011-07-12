@@ -26,10 +26,6 @@ public class Wiper extends Job {
 	public void doJob() { 
 		Logger.debug("Running Wiper job");
 		
-		/* 
-		 * delete expired jobs 
-		 */
-		Repo.deleteExpired();
 		
 		/*
 		 *  delete T-Coffee cache
