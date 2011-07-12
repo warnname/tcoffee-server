@@ -145,21 +145,17 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			args.put("multi_core","no");
 		}
 		
-		/* 
-		 * Always override 'quit' attribute. This is required becase it influence as the stdout stderr are generated 
-		 */
-		String quiet = args.get("quiet");
-		if( quiet != null && !quiet.equals("stdout") ) {
-			Logger.warn("T-Coffee -quiet attribute is not supported. Setting to 'stdout'");
-		}
-		args.put("quiet", "stdout");
 		
-		/*
-		 * garantee always html output
-		 */
-		List<String> output = args.getAsList("output");
-		if( !output.contains("score_html") && !output.contains("html") ) { 
-			args.add( "output", "score_html" );
+		if( args.get("other_pg") == null ) { 
+			/* 
+			 * override 'quit' attribute. This is required becase it influence as the stdout stderr are generated 
+			 * (only for classic i.e. other that 'other_pg' command)
+			 */
+			String quiet;
+			if( (quiet=args.get("quiet")) != null && !quiet.equals("stdout") ) {
+				Logger.warn("T-Coffee -quiet attribute is not supported. Setting to 'stdout'");
+			}
+			args.put("quiet", "stdout");
 		}
 		
 		/* return the command line */
@@ -303,8 +299,16 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			
 		}
 		
-		OutItem html = result.getAlignmentHtml();
-		return success && html != null && html.exists();
+		/*
+		 * check if the html exists if it has been specified on the cmd line
+		 */
+		List<String> output = args.getAsList("output");
+		if( output != null && (output.contains("score_html") || output.contains("html")) ) { 
+			OutItem html = result.getAlignmentHtml();
+			success = success && html != null && html.exists();
+		}
+
+		return success;
 	}
 	
 	

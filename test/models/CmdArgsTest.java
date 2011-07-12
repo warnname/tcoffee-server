@@ -249,8 +249,13 @@ public class CmdArgsTest extends UnitTest {
 		assertTrue( m.find() );
 		assertEquals( 5, m.start() );	
 
-	
 	}
-	
+
+	@Test
+	public void testInvalidDashSeparator() { 
+		// in this test the option 'wrong' uses a bad option separator, it is not a minus character '-' 
+		// but a dash character (usually it came out when using word processor auto replacement) 
+		assertEquals( "-opt 1 -wrong -more", CmdArgs.normalize("-opt 1 –wrong -more") );
+	}
 	
 }

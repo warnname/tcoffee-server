@@ -394,9 +394,7 @@ public class Application extends CommonController {
 				
 				/* reuse the previous command line */
 				String cmdLine = IO.readContentAsString( repo.getResult().getCommandLine().file );
-				while( cmdLine.startsWith("t_coffee ") ) { 
-					cmdLine = cmdLine.substring("t_coffee ".length());
-				}
+				cmdLine = normalizeCmdLine(cmdLine);
 				service.input.field("cmdline").value = cmdLine;
 				
 				/* load the previously used input file as uploaded files */
@@ -419,14 +417,6 @@ public class Application extends CommonController {
 		Service.current(service);
 
 		
-		/* 
-		 * 0. bind and validate
-		 */
-		if( !service.validate(params) ) {
-			/* if the validation FAIL go back to the service page */
-			render(service, uploadFileList);
-		} 
-
 		/* 
 		 * The command line cannot contains some 'special' character 
 		 * to avoid malicious commands entered 
@@ -452,7 +442,14 @@ public class Application extends CommonController {
 			render(service, uploadFileList);
 		}
 
-		
+		/* 
+		 * 0. bind and validate
+		 */
+		if( !service.validate(params) ) {
+			/* if the validation FAIL go back to the service page */
+			render(service, uploadFileList);
+		} 
+
 		/*
 		 * 1. prepare for the execution
 		 */
@@ -500,6 +497,19 @@ public class Application extends CommonController {
 	}
 	
 	
+	@Util
+	static String normalizeCmdLine(String cmdLine) {
+
+		/* remove any 't_coffee' at the beginning og the string */ 
+		while( cmdLine.startsWith("t_coffee ") ) { 
+			cmdLine = cmdLine.substring("t_coffee ".length());
+		}
+
+		cmdLine = CmdArgs.normalize(cmdLine);
+		
+		return cmdLine;
+	}
+
 	@Util
 	static Service getServiceByRid( String rid ) { 
 		Repo repo = new Repo(rid);

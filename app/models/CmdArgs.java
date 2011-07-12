@@ -75,7 +75,7 @@ public class CmdArgs {
 		}
 		
 		
-		List<String> allItems = cmdLineTokenizer(cmdLine);
+		List<String> allItems = cmdLineTokenizer(normalize(cmdLine));
 		for( String item : allItems ) {
 			if( Utils.isEmpty(item)) { 
 				continue;
@@ -304,6 +304,13 @@ public class CmdArgs {
 
 		}
 		return result.toString();
+	}
+	
+	/**
+	 * replace any invalid dash character as separator 
+	 */
+	public static String normalize( String args ) { 
+		return args != null ? args.replaceFirst(" [\\‐\\‒\\—\\―\\–]", " -") : null;		
 	}
 
 }
