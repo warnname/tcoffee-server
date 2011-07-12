@@ -67,7 +67,7 @@
     <title>T-Coffee</title>
    <group>Alignment</group>      
     <description>Aligns DNA, RNA or Proteins using the default T-Coffee</description>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
     
     <input>
       <fieldset >
@@ -180,7 +180,7 @@
     <title>M-Coffee</title>
     <description>Aligns DNA, RNA or Proteins by combining the output of popular aligners</description>
     <group>Alignment</group>
-  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=17526519,16556910,10964570]]></cite>
+  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,17526519,16556910,10964570]]></cite>
     
     <input>
   <fieldset >
@@ -287,7 +287,7 @@
   <title>R-Coffee</title>
   <description>Aligns RNA sequences using predicted secondary structures</description>
   <group>Alignment</group>
-  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=18483080,18420654,10964570]]></cite>
+  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,18483080,18420654,10964570]]></cite>
   
   <input>
     <fieldset >
@@ -397,7 +397,7 @@
    <title >Expresso</title>
    <description>Aligns protein sequences using structural information</description>
    <group>Alignment</group>
-     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=16845081,15201059,15215345,10964570]]></cite>
+     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,16845081,15201059,15215345,10964570]]></cite>
   
      <input>
       <fieldset >
@@ -556,7 +556,7 @@
     <title>PSI-Coffee</title>
     <group>Alignment</group>      
     <description>Aligns distantly related proteins using homology extension (slow and accurate)</description>
-    <cite>http://www.ncbi.nlm.nih.gov/pubmed/19648142</cite>
+    <cite>http://www.ncbi.nlm.nih.gov/pubmed/21558174%2C19648142</cite>
     
     <input>
       <fieldset >
@@ -786,7 +786,7 @@
   <title>Combine</title>
   <description>Combines two (or more) multiple sequence alignments into a single one</description>
   <group>Alignment</group>
-  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
   
   <input>
     <fieldset >
@@ -936,7 +936,7 @@
     <title>Core</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=12824354,10964570]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
     
     <input>
     <fieldset >
@@ -1038,7 +1038,7 @@
     <title>iRMSD-APDB</title>
     <description>Evaluates Multiple Sequence Alignment using structural information with APDB and iRMSD.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=16873492,17032685,12855461]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,16873492,17032685,12855461]]></cite>
     
     <input>
     <fieldset >
@@ -1127,7 +1127,7 @@
   	<title>Advanced</title>
   	<description>Run your alignment using full featured T-Coffee options.</description>
   	<action>Application.advanced</action>
-  	<cite><![CDATA[http://www.nar.oxfordjournals.org/cgi/doi/10.1093/nar/gkr245]]></cite>
+  	<cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/21558174%2C10964570]]></cite>
   	
   
   	<input>
