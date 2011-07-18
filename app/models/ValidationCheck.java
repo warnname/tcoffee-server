@@ -289,7 +289,8 @@ public class ValidationCheck implements Serializable {
 		else if( "CLUSTAL".equalsIgnoreCase(format) && Utils.isNotEmpty(value) ) 
 		{
 			return applyClustalValidation(name, value);
-		} 		
+		} 	
+		
 		else if( Utils.isNotEmpty(value) ) {
 			Logger.warn("Unknown validation format: '%s'", format);
 		}
@@ -313,8 +314,8 @@ public class ValidationCheck implements Serializable {
 		
 		/* check for validity */
         if ( !clustal.isValid() ) { 
-			String message = Utils.isNotEmpty(formatError) ? formatError : "validation.clustal.format";
-        	return error(name, message, new String[0]);
+			String message = Utils.isNotEmpty(formatError) ? concat(formatError,clustal.getError()) : "validation.clustal.format";
+        	return error(name, message, new String[] {clustal.getError()} );
         } 
         else if( minNum != null && clustal.count()<minNum ) { 
 			String message = Utils.isNotEmpty(minNumError) ? minNumError : "validation.clustal.minum";
@@ -367,8 +368,8 @@ public class ValidationCheck implements Serializable {
 		
 		/* check for validity */
         if ( !fasta.isValid() ) { 
-			String message = Utils.isNotEmpty(formatError) ? formatError : "validation.fasta.format";
-        	return error(name, message, new String[0]);
+			String message = Utils.isNotEmpty(formatError) ? concat(formatError,fasta.getError()) : "validation.fasta.format";
+        	return error(name, message, new String[] {fasta.getError()} );
         } 
         else if( minNum != null && fasta.count()<minNum ) { 
 			String message = Utils.isNotEmpty(minNumError) ? minNumError : "validation.fasta.minum";
@@ -608,5 +609,19 @@ public class ValidationCheck implements Serializable {
 
 	public boolean isValid() { 
 		return fIsValid;
+	}
+	
+	
+	static String concat( String... args) { 
+		StringBuilder result = new StringBuilder();
+		if( args != null ) for( String part : args ) { 
+			part = part.trim();
+			if( Utils.isEmpty(part)) continue;
+			if( !part.endsWith(".")) part += ".";
+			if( result.length()>0 ) result.append(" ");
+			result.append(part);
+		}
+		
+		return result.toString();
 	}
 }

@@ -25,7 +25,7 @@ import exception.QuickException;
 public class Fasta extends AbstractFormat {
 	
 	
-	static public class FastaSequence extends Sequence {
+	public class FastaSequence extends Sequence {
 		
 		Integer length;
 		
@@ -65,11 +65,11 @@ public class Fasta extends AbstractFormat {
 				while( !stop );				
 			}
 			catch( IOException e ) {
-				throw new QuickException(e, "Failure reading FASTA stream");
+				throw new QuickException(e, "Failure reading FASTA sequences around line: %s", lineCount);
 			}
 			
 			if( block.length()==0 ) {
-				throw new QuickException("Empty sequence in FASTA block");
+				throw new QuickException("Empty sequence in FASTA block around line: ", lineCount);
 			}
 			
 			value = block.toString();
@@ -88,17 +88,22 @@ public class Fasta extends AbstractFormat {
 		 * @throws IOException 
 	     */
 		String readLine(PushbackReader reader, char[] validChars) throws IOException {
+			lineCount++; 
+			
 			StringBuilder result = new StringBuilder();
 			int ch;
-			
+			int col=0;
+
 			while( (ch=reader.read()) != -1) {
+				col++;
+			
 				if( ch == ' ' && validChars != null ) {
 					// just skip 
 				} 
 				else if( ch != LINE_FEED && ch != CARRIAGE_RETURN ) {
 					/* check if the read character is valid */
 					if( validChars != null && !Utils.contains(validChars, (char)ch)) {
-						throw new QuickException("Invalid character '%c' parsing line", ch); 
+						throw new QuickException("Invalid character '%c' (0x%s) reading FASTA sequences at line: %s, column: %s ", ch, Integer.toHexString(ch), lineCount, col); 
 					}
 					
 					result.append((char)ch); // <-- LOOK at the cast!
@@ -158,6 +163,8 @@ public class Fasta extends AbstractFormat {
 		this.sequences = new ArrayList<FastaSequence>();
 	}
 	
+
+	int lineCount=0;
 	
 	@Override
 	void parse( Reader reader ) {
@@ -166,7 +173,8 @@ public class Fasta extends AbstractFormat {
 		List<FastaSequence> result = new ArrayList<FastaSequence>();
 		PushbackReader input = new PushbackReader(reader); 
 		try {
-			int ch;
+			int ch, prev=0;
+
 			while( (ch=input.read()) != -1 ) {
 				if( ch == '>' ) {
 					FastaSequence seq = new FastaSequence();
@@ -175,16 +183,22 @@ public class Fasta extends AbstractFormat {
 				}
 				else if( ch == '\n' || ch == '\r' ) { 
 					// do nothing just consume the char 
+					if( (ch=='\n' && prev != '\r') || ch=='\r' ) { // <-- count \r\n sequence (windows line termination) only one time
+						lineCount++;
+					}
 				}
 				else if( ch == ';' ) { 
 					// remove all the line 
 					do { ch=input.read(); } 
 					while( ch != '\n' && ch != '\r' );
+					lineCount++;
 				}
 				else { 
-					error = "Invalid FASTA format";
+					error = String.format("Unrecognized character '%c' (0x%s) in FASTA sequences starting line: %s", ch, Integer.toHexString(ch), lineCount+1);
 					break;
 				}
+				
+				prev=ch;
 			}
 		}
 		catch( Exception e ) {

@@ -358,6 +358,8 @@ html, body {
 	font-size:15px;
 	font-weight: 500;
 	margin: .3em auto;
+	text-align: left;
+    width: 700px;
 }
 
 #content .hasError {

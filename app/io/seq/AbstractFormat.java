@@ -94,8 +94,8 @@ public abstract class AbstractFormat {
 			parse( new FileReader(file) );
 		} 
 		catch (IOException e) {
-			error = "File is not Clustal format";
-			Logger.error(e, "The following is not in Clustal format: '%s'", file);
+			error = "Error parsing the provided sequences file";
+			Logger.error(e, "Error parsing sequences file: '%s'", file);
 		}
 	}
 
@@ -104,13 +104,16 @@ public abstract class AbstractFormat {
 			parse( new StringReader(sequences) );
 		} 
 		catch (IOException e) {
-			error = "The sequences provided are not in Clustal format";
-			Logger.error(e, "The sequences are not in Clustal format:\n'%s'", sequences);
+			error = "Error parsing the provided sequences";
+			Logger.error(e, "Error parsing sequences:\n'%s'", sequences);
 		}
 	}
 	
 	
 	abstract void parse( Reader reader ) throws IOException ;
 	
+	public String getError() { 
+		return error;
+	}
 	
 }

@@ -53,6 +53,8 @@ public class Clustal extends AbstractFormat {
 		rowPattern = Pattern.compile(sPattern.toString());
 	}
 
+	int lineCount;
+	
 	@Override
 	void parse(Reader reader) throws IOException {
 		
@@ -69,10 +71,12 @@ public class Clustal extends AbstractFormat {
 			 * the first row have to be the header 
 			 */
 			this.header = parseHeader(input.readLine());
+			lineCount++;
 			
 			Block block;
+			int blockCount=0;
 			while( (block=parseBlock(input)) != null ) { 
-
+				blockCount++;
 				blocks.add(block);
 				
 				/* validate the block and contruct the result sequences */
@@ -87,7 +91,7 @@ public class Clustal extends AbstractFormat {
 					Fragment fragment = block.list.get(i);
 					/* check that the order in all the blocks match */
 					if( !Utils.isEquals(keylist [i], fragment.key) ) { 
-						throw new FormatParseException("Clustal content wrongly formatted");
+						throw new FormatParseException("Clustal content wrongly formatted. The indentifier '%s' for the %s sequence does not match in the %s block", fragment.key, nbr(i+1), nbr(blockCount) );
 					}
 					
 					builder.get(fragment.key).append( fragment.value ); 
@@ -114,6 +118,13 @@ public class Clustal extends AbstractFormat {
 		finally { 
 			if( input != null ) try { input.close(); } catch( Exception e ) { Logger.warn(e,"Error closing reader"); }
 		}
+		
+	}
+
+	private String nbr(int i) {
+		if( i==1 ) { return i + "st"; } 
+		else if( i==2 ) { return i + "nd"; }
+		else { return i + "th"; } 
 		
 	}
 
@@ -151,10 +162,12 @@ public class Clustal extends AbstractFormat {
 		String line;
 		while( (line=input.readLine()) != null && "".equals(line.trim()) ) { 
 			// consume empty lines 
+			lineCount++;
 		}
 		
 		Block result = new Block();
 		while( line != null ) { 
+			lineCount++;
 			Matcher matcher = rowPattern.matcher(line);
 			if(matcher.matches()) { 
 				String key = matcher.group(1);
@@ -165,7 +178,7 @@ public class Clustal extends AbstractFormat {
 				break;
 			}
 			else { 
-				throw new FormatParseException("Invalid Clustal format in line: '%s'", line);
+				throw new FormatParseException("Invalid Clustal format around line: %s", lineCount);
 			}
 			
 			line = input.readLine();

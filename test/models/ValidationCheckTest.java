@@ -369,7 +369,7 @@ public class ValidationCheckTest extends UnitTest {
 
 		check.apply("fieldFasta", "xxx");
 		assertTrue( Validation.hasError("fieldFasta") );		
-		assertEquals( check.formatError, Validation.error("fieldFasta").message() );				
+		assertEquals( "Invalid FASTA format. Unrecognized character 'x' (0x78) in FASTA sequences starting line: 1.", Validation.error("fieldFasta").message() );				
 	}
 
 	@Test 
@@ -546,7 +546,7 @@ public class ValidationCheckTest extends UnitTest {
 
 		check.apply("fieldClustalFail", BAD);
 		assertTrue( Validation.hasError("fieldClustalFail") );		
-		assertEquals( check.formatError, Validation.error("fieldClustalFail").message() );			
+		assertEquals( "Invalid CLUSTAL format. Invalid Clustal format around line: 3.", Validation.error("fieldClustalFail").message() );			
 	}	
 	
 	@Test 
@@ -613,7 +613,7 @@ public class ValidationCheckTest extends UnitTest {
 		check.formatError = "Sequence have to be in FASTA or CLUSTAL format";
 		check.apply("field", "xxx");
 		assertTrue( Validation.hasError("field") );	
-		assertEquals( check.formatError, Validation.error("field").message() );			
+		assertEquals( "Sequence have to be in FASTA or CLUSTAL format. Missing Clustal header declaration.", Validation.error("field").message() );			
 
 		
 	}
