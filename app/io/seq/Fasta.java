@@ -69,7 +69,7 @@ public class Fasta extends AbstractFormat {
 			}
 			
 			if( block.length()==0 ) {
-				throw new QuickException("Empty sequence in FASTA block around line: ", lineCount);
+				throw new QuickException("Empty sequence in FASTA block around line: %s", lineCount);
 			}
 			
 			value = block.toString();
