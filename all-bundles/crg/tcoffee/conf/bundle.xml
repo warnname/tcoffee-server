@@ -1115,6 +1115,7 @@
           -md_threshold=${t1}
           -similarity_threshold=${t2}  
           -run_name=result 
+          -quiet=stdout
         </args> 
       </tcoffee>
       </qsub>
