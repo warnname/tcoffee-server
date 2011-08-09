@@ -418,6 +418,17 @@ public class Application extends CommonController {
 
 		
 		/* 
+		 * 0. bind and validate
+		 */
+		if( !service.validate(params) ) {
+			/* if the validation FAIL go back to the service page */
+			render(service, uploadFileList);
+		} 
+		else {  
+			service.input.field("cmdline").value = normalizeCmdLine(service.input.field("cmdline").value);
+		}
+
+		/* 
 		 * The command line cannot contains some 'special' character 
 		 * to avoid malicious commands entered 
 		 */
@@ -429,6 +440,7 @@ public class Application extends CommonController {
 				render(service, uploadFileList);
 			}
 		}
+		
 		
 		/* 
 		 * also avoid the use of some T-coffee options
@@ -442,14 +454,7 @@ public class Application extends CommonController {
 			render(service, uploadFileList);
 		}
 
-		/* 
-		 * 0. bind and validate
-		 */
-		if( !service.validate(params) ) {
-			/* if the validation FAIL go back to the service page */
-			render(service, uploadFileList);
-		} 
-
+		
 		/*
 		 * 1. prepare for the execution
 		 */
