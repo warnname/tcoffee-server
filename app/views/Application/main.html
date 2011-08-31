@@ -11,7 +11,7 @@
   def advLabel =  request.cookies[cookiename]?.value=='true' ? 'Hide advanced options' : 'Show more options';
   def hideCount = 0;
   
-  def isIE =  request.headers["user-agent"].value().contains("MSIE"); 
+  def isIE =  request.headers["user-agent"]?.value()?.contains("MSIE"); 
 }%
 
 #{set 'moreStyles'} 
