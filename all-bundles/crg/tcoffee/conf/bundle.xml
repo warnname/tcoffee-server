@@ -164,7 +164,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args>
       </tcoffee>
       </qsub>   
@@ -271,7 +271,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder}
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args> 
       </tcoffee>
       </qsub>
@@ -383,7 +383,7 @@
           -tree
           -special_mode=rcoffee
           -method_limits=consan_pair 5 150
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args>
       </tcoffee>
     </qsub>
@@ -542,7 +542,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args> 
       </tcoffee>
       </qsub>
@@ -656,7 +656,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args>
       </tcoffee>
       </qsub>  
@@ -769,7 +769,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args>
       </tcoffee>
       </qsub>   
@@ -922,7 +922,7 @@
         -maxnseq=80 
         -maxlen=2500  
         -run_name=result
-        -multi_core=4
+        -multi_core=${settings.multicore}
         </args>
       </tcoffee>
       </qsub>
@@ -1020,7 +1020,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder} 
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
         </args>
       </tcoffee>
       </qsub>  
@@ -1123,7 +1123,7 @@
           -seqnos=${seqnos} 
           -outorder=${outorder}  
           -run_name=result
-          -multi_core=4
+          -multi_core=${settings.multicore}
           </args> 
         </tcoffee>
         </qsub>
