@@ -279,7 +279,7 @@ function pack_server_local() {
 	# 
 	mkdir -p $SERVER_DIR/tserver/bundles
 	rm -rf $SERVER_DIR/tserver/bundles/tcoffee
-	cp -r $WORKSPACE/tserver/all-bundles/crg/tcoffee $SERVER_DIR/tserver/bundles
+	cp -r $WORKSPACE/tserver/build/bundles/crg/tcoffee $SERVER_DIR/tserver/bundles
 	find $SERVER_DIR/tserver/bundles -name .svn | xargs rm -rf
 	
 	# 
@@ -320,7 +320,7 @@ function pack_server_vital()
 	# copy required bundles
 	# 
 	mkdir -p $SERVER_DIR/bundles
-	cp -r $WORKSPACE/tserver/all-bundles/vital-it/* $SERVER_DIR/bundles
+	cp -r $WORKSPACE/tserver/build/bundles/vital-it/* $SERVER_DIR/bundles
 	find $SERVER_DIR/bundles -name .svn | xargs rm -rf
 
 	#
@@ -364,7 +364,7 @@ function pack_bundles()
 	
 	# Copy required bundles 
 	mkdir -p $SERVER_DIR/bundles
-	cp -r $WORKSPACE/tserver/all-bundles/crg/* $SERVER_DIR/bundles
+	cp -r $WORKSPACE/tserver/build/bundles/crg/* $SERVER_DIR/bundles
 	find $SERVER_DIR/bundles -name .svn | xargs rm -rf
 
 	# Create the zip package
