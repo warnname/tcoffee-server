@@ -774,8 +774,8 @@
       </tcoffee>
       </qsub>   
     </process>
-    
   </service>   
+
 
   
   <!-- ========================================================================
@@ -928,6 +928,105 @@
       </qsub>
   </process>
   </service>  
+  
+  <!-- ========================================================================
+      TM-COFFEE
+      ======================================================================== -->
+  <service name="tmcoffee" >
+    <title>TM-Coffee</title>
+    <group>Alignment</group>      
+    <description>Aligns transmembrane proteins using homology extension (new)</description>
+    
+    <input>
+      <fieldset >
+        <title>Sequences input</title>
+    	<description>Paste or upload your set of sequences in FASTA format</description>
+      
+        <field type='memo' name='seqs' label='Sequences to align' >
+          <hint>Enter the sequences to align</hint>
+          <validation format='FASTA' type="amino-acid" required='true' minnum='2' maxnum='150' maxlen='2500' >
+            <required-error>You have to enter the sequences to align</required-error>
+            <format-error>Sequences have to be in FASTA format</format-error>
+            <minnum-error>You must enter at least 2 sequences</minnum-error>
+            <maxnum-error>You must enter at most 150 sequences</maxnum-error>
+            <maxlen-error>Sequences cannot exceed 2500 char length</maxlen-error>
+          </validation>
+          
+          <sample>public/sample.fasta.txt</sample>
+        </field>
+
+      </fieldset>
+      
+      
+      
+    <fieldset hideable="true">
+     <title>Output options</title>
+     <description>Use this section to control the output format.</description>
+      
+     <field type="checkbox" name='output' label='Alignment format' >
+       <value>score_html fasta_aln clustalw_aln phylip</value>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+     </field>
+
+     <field type='dropdown' name='letter' label='Case' >
+       <hint>Output case selection</hint>
+       <choices>upper, lower, keep</choices>
+     </field>      
+
+     <field type='dropdown' name='seqnos' label='Residue number' >
+      <hint>Print the residue number</hint>
+      <choices>on, off</choices>  
+     </field>
+      
+     <field type='dropdown' name='outorder' >
+       <choices>input, aligned</choices>
+     </field>
+     
+      <field type="text" name="msa_max_len" label="Alignment length" >
+     	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
+     	<value>50</value>
+     	<validation format="integer" min="20">
+     		<format-error>The entered value is not an integer number</format-error>
+     		<min-error>The length value cannot be less than 20</min-error>
+     	</validation>
+     </field> 
+    </fieldset>
+
+    <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas.</hint>
+          <validation format="EMAIL" />
+        </field>
+    </fieldset>
+    </input>
+    
+    <process>
+      <qsub>  
+      <tcoffee >
+      	<env BLASTDB="${settings.UNIREF50TM_DB}"  /> 
+        <args>
+          -in=${seqs} 
+          -mode=psicoffee
+          -blast_server=LOCAL
+          -protein_db=uniref50-TM
+		  -template_file=PSITM  
+		  -prot_min_sim=0 
+		  -prot_max_sim=90 
+		  -prot_min_cov=0
+          -output=${output} 
+          -maxnseq=150 
+          -maxlen=2500 
+          -case=${letter} 
+          -seqnos=${seqnos} 
+          -outorder=${outorder} 
+          -run_name=result
+          -multi_core=4
+        </args>
+      </tcoffee>
+      </qsub>  
+    </process>
+  </service>    
+  
   
   <!-- 
     CORE mode 

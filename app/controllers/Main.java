@@ -83,6 +83,14 @@ public class Main extends CommonController {
 	public static void psicoffee() { 
 		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=psicoffee").toString() );
 	}
+
+	/**
+	 * Quick access link to TM-coffee
+	 */
+	public static void tmcoffee() { 
+		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=tmcoffee").toString() );
+	}
+		
 	
 	/**
 	 * Quick link to R-coffee
