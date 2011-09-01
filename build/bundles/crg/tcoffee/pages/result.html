@@ -9,16 +9,21 @@
 
 *{ MSA Box }*
 
-#{if result?.alignmentHtml?.file }
+%{
+  def resultHtml = result?.first("format", "tm_html");
+  if( resultHtml == null ) { resultHtml = result.getAlignmentHtml(); } 
+}%
+
+#{if resultHtml.file }
 <div class="box">
 
 <h2><span>MSA</span> 
 <small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
 </h2>
 
-#{if result.alignmentHtml.file.length() < 1024*1024 }
+#{if resultHtml.file.length() < 1024*1024 }
 <div id="result">
-#{tcoffeeHtml result.alignmentHtml.file /}
+#{tcoffeeHtml resultHtml.file /}
 </div>
 #{/if}
 
@@ -26,7 +31,7 @@
 <p>
    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"> 
    	<span style="position:relative; left:1em; ">The result alignment is too big to <br> be showed inline, 
-   	<a target="_blank" href="${result.alignmentHtml.webpath}" >click here to open it</a> .
+   	<a target="_blank" href="${resultHtml.webpath}" >click here to open it</a> .
    	</span>  
 
 </p>
