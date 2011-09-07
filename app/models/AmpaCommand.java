@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import play.libs.IO;
 import util.FileIterator;
@@ -53,6 +54,10 @@ public class AmpaCommand extends AbstractShellCommand {
 	private Fasta fasta;
 
 	private File fInput;
+	
+	private int fMin;
+	
+	private int fMax; 
 
 	public AmpaCommand( AmpaCommand that ) { 
 		super(that);
@@ -132,6 +137,9 @@ public class AmpaCommand extends AbstractShellCommand {
 	protected boolean done(boolean success) {
 		if( !success ) return false;
 		
+		fMin = Integer.MAX_VALUE;
+		fMax = 0;
+		
 		File fResult = new File(ctxfolder, "result.txt");
 		PrintWriter wResult;
 		try {
@@ -172,7 +180,18 @@ public class AmpaCommand extends AbstractShellCommand {
 			wResult.append("\n");
 			
 		}
-		chartData.append("]}");
+		chartData.append("], ");
+		
+		/* add other meta data */
+		chartData
+			.append("\"meta\": {") 
+			.append("\"min\": ") .append(fMin) .append(", ")
+			.append("\"max\": ") .append(fMax) .append(", ")
+			.append("\"threshold\": ") .append(threshold) .append(", ")
+			.append("\"window\": ") .append(window) 
+			.append(" }");
+		
+		chartData.append("}");
 		
 		/* 
 		 * close writers
@@ -239,7 +258,20 @@ public class AmpaCommand extends AbstractShellCommand {
 		
 	}
 
-	static String parseLine(String line) {
+	String parseLine(String line) {
+		/* keep track of min / max values */
+		String[] vals = line.split("\t");
+		int x = vals!=null && vals.length>0 ? NumberUtils.toInt(vals[0], -1) : -1;
+		if( x != -1 ) { 
+			if( fMin>x ) { 
+				fMin=x;
+			}
+			if( fMax<x ) { 
+				fMax=x;
+			}
+		}
+		
+		/* return a comma separated pair value */
 		return line.replace('\t', ',');
 	}
  

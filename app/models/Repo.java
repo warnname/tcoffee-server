@@ -275,6 +275,21 @@ public class Repo implements Serializable {
 		return fInput;
 	}
 	
+	
+	/**
+	 * Read the input file, returning the {@link Input} instance
+	 */
+	public Input getInput() {
+		File file = getInputFile();
+		if( file == null ) return null;
+		if( !file.exists() ) { 
+			Logger.warn("Missing input file: '%s'", file);
+			return null;
+		}
+		
+		return Input.read(file);
+	} 
+	
 	/**
 	 * Remove all the content of the current repo path with the exception of the marked file. See {@link #fMarker}.
 	 */

@@ -3,6 +3,7 @@
 #{set 'moreScripts' }
  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="@{'/public/flot/excanvas.min.js'}"></script><![endif]-->
  <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}"></script>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.dashes.js'}"></script>
 #{/set}
 
 <style type="text/css">
@@ -38,6 +39,8 @@ div.box-chart { margin-bottom: 2em }
 </style>
 
 #{cache-warning /}
+
+%{ def service = models.Service.current() }%  
 
 <h1>AMPA result</h1> 
 
@@ -78,6 +81,7 @@ String.prototype.cut=function(maxlen) {
 var chart = $("#chart");
 var choiceContainer = $("#choices");
 var datasets = {}
+var meta = {}
 
 var chartOptions = {
 		legend: { show: false },
@@ -101,12 +105,27 @@ $(document).ready(function() {
                 
         });
  
+        
+ 		/* threshold line */
+		var threshold = {}
+		threshold.metaFlag = true
+		threshold.label = 'Threshold'
+		threshold.data = [];
+		threshold.data.push( [meta.min, meta.threshold] )
+		threshold.data.push( [meta.max, meta.threshold] )
+		threshold.dashes = { show: true /*, lineWidth: 1.5*/ }
+		threshold.color = '#333';
+		threshold.shadowSize = 0;
+ 
+		data.push(threshold)
+ 		console.dir(data)
+		
         if (data.length > 0) {
             // plot the chart  
             var plot = $.plot(chart, data, chartOptions);
 			// this is required only the really first time to get the automatically generated colors 
             var series = plot.getData();
-            for (var i = 0; i < series.length; ++i) { 
+            for (var i = 0; i < series.length; ++i) if( !series[i].metaFlag ) { 
             	datasets[series[i].key].color = series[i].color;
             }
 			// save the options 
@@ -122,7 +141,9 @@ $(document).ready(function() {
 	 * plot the chart 
 	 */ 
 	var plotTheChart = function(data) {
-
+		/* save the meta in a global var */
+		meta = data.meta || {}
+		
 		/* render the checkboxes */
 		$.each(data.series, function(key, val) {
 			val.key = key;  // <-- store this 'key' on the series item itself 
