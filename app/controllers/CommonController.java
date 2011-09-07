@@ -4,8 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import models.Bundle;
@@ -31,6 +33,9 @@ import exception.QuickException;
  */
 public class CommonController extends Controller {
 
+	final static List<String> HTML_EXTENSIONS = Arrays.asList(".html", ".htm", ".score_html", ".tm_html");
+
+	
 	/**
 	 * Inject the following variables in the template: 
 	 * <li><code>_bundle</code>: the current selected {@link Bundle} instance if available</li>
@@ -206,9 +211,10 @@ public class CommonController extends Controller {
 			/*
 			 * use the correct header for html file 
 			 */
-			String name = file.getName();
-			if( name.endsWith(".html") || name.endsWith(".score_html") ) {
+			final String name = file.getName();
+			for( String ext : HTML_EXTENSIONS ) if( name.endsWith(ext) ) {
 				response.contentType = "text/html";
+				break;
 			}
 
 			renderBinary(new BufferedInputStream(new FileInputStream(file)));
