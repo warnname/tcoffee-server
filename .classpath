@@ -4,7 +4,11 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/play-1.2.1.jar" sourcepath="/Users/ptommaso/tools/play-1.2.1/framework/src/"/>
-	<classpathentry kind="lib" path="/Users/ptommaso/workspace/tserver/lib/commons-exec-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/ptommaso/workspace/tserver/lib/commons-exec-1.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/Users/ptommaso/workspace/_docs/commons-exec-1.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.1/framework/lib/asm-all-3.3.1.jar"/>

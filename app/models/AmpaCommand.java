@@ -9,12 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
+import play.Logger;
 import play.libs.IO;
 import util.FileIterator;
+import util.StringIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -159,13 +163,10 @@ public class AmpaCommand extends AbstractShellCommand {
 		/* 
 		 * parse all 'data' file to create flot json file 
 		 */
-		StringBuilder chartData = new StringBuilder();
-		chartData.append("{");
-		chartData.append("\"series\": [");
+		StringBuilder mainPlotData = new StringBuilder();
+		mainPlotData.append("{");
+		mainPlotData.append("\"series\": [");
 		for( int index=0; index<numOfSequences; index++ ) { 
-			if( index>0 ) { chartData.append(","); }
-			appendData(chartData, index);
-			
 			/* 
 			 * merge all 'data'
 			 */
@@ -175,15 +176,31 @@ public class AmpaCommand extends AbstractShellCommand {
 			/* 
 			 * merge all 'result'
 			 */
+			String resultFile = IO.readContentAsString(getResultFileFor(index));
 			wResult.append("# Protein: ") .append( fasta.sequences.get(index).header ) .append("\n");
-			wResult.append( IO.readContentAsString(getResultFileFor(index)) );
+			wResult.append(resultFile);
 			wResult.append("\n");
 			
+			/* 
+			 * parse to find out all stretches found 
+			 */
+			String stretch = parseStretches(resultFile);
+
+			/*
+			 * add the json object for this item 
+			 */
+			if( index>0 ) { mainPlotData.append(","); }
+			appendData(mainPlotData, index, stretch);
+			
+
+			
+			
 		}
-		chartData.append("], ");
+		mainPlotData.append("], ");
+		
 		
 		/* add other meta data */
-		chartData
+		mainPlotData
 			.append("\"meta\": {") 
 			.append("\"min\": ") .append(fMin) .append(", ")
 			.append("\"max\": ") .append(fMax) .append(", ")
@@ -191,7 +208,7 @@ public class AmpaCommand extends AbstractShellCommand {
 			.append("\"window\": ") .append(window) 
 			.append(" }");
 		
-		chartData.append("}");
+		mainPlotData.append("}");
 		
 		/* 
 		 * close writers
@@ -200,7 +217,7 @@ public class AmpaCommand extends AbstractShellCommand {
 		wResult.close();
 		
 		File chartFile = new File(ctxfolder,"graph.json");
-		IO.writeContent(chartData, chartFile);
+		IO.writeContent(mainPlotData, chartFile);
 		
 		/*
 		 * append the user input object
@@ -239,13 +256,44 @@ public class AmpaCommand extends AbstractShellCommand {
 		return true;
 	}
 
-	void appendData(StringBuilder json, int index) {
+	
+	static Pattern STRETCH_PATTERN = Pattern.compile("Antimicrobial stretch found in (\\d+) to (\\d+)");
+
+	/**
+	 * Parse an AMPA result file extracting al stretches position 
+	 * 
+	 */
+	static String parseStretches(String str) {
+		StringBuilder result = new StringBuilder();
+		
+		for( String line : new StringIterator(str)) { 
+			Matcher matcher;
+			if( (matcher=STRETCH_PATTERN.matcher(line)).matches() ) { 
+				int a = NumberUtils.toInt(matcher.group(1), -1);
+				int b = NumberUtils.toInt(matcher.group(2), -1);
+				if( a<0 || b<0 ) { 
+					Logger.warn("Invalid streatch position: %s to %s", a, b);
+				}
+				else { 
+					if( result.length()>0 ) { result.append(","); }
+					result.append("[") .append(a) .append(",") .append(b) .append("]");
+				}
+			}
+		}
+		
+		// wrap in an array 
+		result.insert(0, "[");
+		result.append("]");
+		return result.toString();
+	}
+
+	void appendData(StringBuilder json, int index, String stretch) {
 		
 		String label = fasta.sequences.get(index).header;
 		label = StringEscapeUtils.escapeJavaScript(label);
 		json.append("{")
-			.append("\"label\": ") .append("\"") .append(label) .append("\"")
-			.append(", ")
+			.append("\"label\": ") .append("\"") .append(label) .append("\"") .append(", ")
+			.append("\"stretch\": ") .append(stretch)  .append(",")
 			.append("\"data\": [");
 		int i=0;
 		for( String line : new FileIterator( getDataFileFor(index) )) { 

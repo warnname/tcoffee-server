@@ -82,6 +82,7 @@ var chart = $("#chart");
 var choiceContainer = $("#choices");
 var datasets = {}
 var meta = {}
+var stretches = [];
 
 var chartOptions = {
 		legend: { show: false },
@@ -106,7 +107,9 @@ $(document).ready(function() {
         });
  
         
- 		/* threshold line */
+ 		/* 
+ 		 * threshold line 
+ 		 */
 		var threshold = {}
 		threshold.metaFlag = true
 		threshold.label = 'Threshold'
@@ -118,7 +121,6 @@ $(document).ready(function() {
 		threshold.shadowSize = 0;
  
 		data.push(threshold)
- 		console.dir(data)
 		
         if (data.length > 0) {
             // plot the chart  
@@ -143,9 +145,12 @@ $(document).ready(function() {
 	var plotTheChart = function(data) {
 		/* save the meta in a global var */
 		meta = data.meta || {}
+		stretches = data.stretches || []
 		
 		/* render the checkboxes */
 		$.each(data.series, function(key, val) {
+			console.log("key: " +  key )
+			console.dir( val );
 			val.key = key;  // <-- store this 'key' on the series item itself 
 			// 'dataset' is an associative array containing all series with the 'key' used by the checkbox 
 			datasets[key] = val;
