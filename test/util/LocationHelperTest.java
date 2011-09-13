@@ -20,12 +20,12 @@ public class LocationHelperTest extends UnitTest {
 		assertEquals( "Barcelona", loc.city );
 	}
 	
-	@Test
+	@Test()
 	public void testFindByIp() { 
 		Location loc = LocationHelper.findByIp("12.215.42.19");
 		
 		assertEquals("UNITED STATES (US)", loc.country);
-		assertEquals("Sugar Grove, IL", loc.city);
+		assertEquals("Aurora, TX", loc.city);
 		
 	}
 }
