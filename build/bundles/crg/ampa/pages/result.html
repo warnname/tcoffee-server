@@ -2,9 +2,9 @@
 
 #{set 'moreScripts' }
  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="@{'/public/flot/excanvas.min.js'}"></script><![endif]-->
- <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}"></script>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}?v=0.7"></script>
  <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.dashes.js'}"></script>
- <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.selection.js'}"></script>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.selection.min.js'}?v=0.7"></script>
 #{/set}
 
 <style type="text/css">
@@ -19,7 +19,7 @@ span.box-color {
 }   
 div.box-chart { margin-bottom: 2em } 
 #chart { }  
-#choices { margin-left: 2em } 
+#choices { margin-left: .2em;  } 
 #choices input[type='checkbox'] { margin: 0px; margin-right: 4px  }
 #tooltip {
      position: absolute;
@@ -48,16 +48,20 @@ div.box-chart { margin-bottom: 2em }
 *{ Chart }*
 #{if result?.getItem('graph.json')?.file?.length()>0 }
 <div class="box-chart">
-<div id="chart" style="width:900px; height:400px;"></div>
+	<div id="chart" style="float: left; width:900px; height:400px;"></div>
+	<div style="float: left; position: relative; left: 5px; top: -5px"> <img width="19" height="162" alt="Average antimicrobial index" src="public/images/ylabel.png" /> </div>
+	<div style="text-align: right; padding-right: 68px; float: right; font-size: 12px">Sequence position</div>
 <div>
 </div>
+<div style="clear: both"></div>
 
-<div id="choices">
+<div id="choices" >
 <h3>Legend</h3>
 </div>
 
-<div style="padding-right: 2em; padding-left: 2em; padding-top: 1.2em">
+<div style="padding-left: .5em; padding-right: 2em;  ">
 <div style="clear: both"></div>
+
 <small >The above chart shows the antimicrobial profile for the entered sequence(s). 
 On X-axis is reported the aminoacid position in the protein and 
 on the Y-axis the anticrobial score at that position.  
@@ -67,7 +71,7 @@ Note: colors are generated automatically and are provided only to help to distin
 <small style="display: block; margin-top: 1em; font-weight: bold">TIP: Magnify the area you are interested left-clicking and dragging on the chart.</small>
 </div>
 
-<div style="margin-left: 1.5em; margin-top: 1em">
+<div style="margin-top: .8em">
 <button id="invertChoices" class="button">Invert selection</button> <button id="resetZoom"  style="display: none" class="button">Reset zoom</button> 
 </div>
 
@@ -95,8 +99,8 @@ var plot;
 var chartOptions = {
 		legend: { show: false },
 		grid: { hoverable: true, backgroundColor: { colors: ["#fff", "#f9f9f9"] } },
-        xaxis: { min: 1 },
-        yaxis: {},
+        xaxis: { min: 1, tickDecimals: 0 },
+        yaxis: { position: "right" },
         selection: { mode: "x" }
     }
 
@@ -136,7 +140,8 @@ $(document).ready(function() {
         if (data.length > 0) {
             // plot the chart  
             if( xmin && xmax ) { 
-				chartOptions.xaxis = {min: xmin, max: xmax }
+				chartOptions.xaxis.min = xmin;
+				chartOptions.xaxis.max = xmax;
 				$('#resetZoom').show()
             }
             plot = $.plot(chart, data, chartOptions);
