@@ -177,7 +177,7 @@ public class AmpaCommand extends AbstractShellCommand {
 			 * merge all 'result'
 			 */
 			String resultFile = IO.readContentAsString(getResultFileFor(index));
-			wResult.append("# Protein: ") .append( fasta.sequences.get(index).header ) .append("\n");
+			wResult.append(">") .append( fasta.sequences.get(index).header ) .append("\n");
 			wResult.append(resultFile);
 			wResult.append("\n");
 			
@@ -192,12 +192,20 @@ public class AmpaCommand extends AbstractShellCommand {
 			if( index>0 ) { mainPlotData.append(","); }
 			appendData(mainPlotData, index, stretch);
 			
-
-			
-			
 		}
 		mainPlotData.append("], ");
 		
+
+		/* add the sequences */
+		mainPlotData .append("\"sequences\": [");
+		for( int index=0; index<numOfSequences; index++ ) { 
+			if( index>0 ) { mainPlotData.append(","); }
+			mainPlotData
+				.append("\"")
+				.append( fasta.sequences.get(index).value )
+				.append("\"");
+		}
+		mainPlotData.append("], ");
 		
 		/* add other meta data */
 		mainPlotData

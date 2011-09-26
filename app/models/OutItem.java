@@ -174,4 +174,8 @@ public class OutItem implements Serializable {
 	public String content() {
 		return file != null ? IO.readContentAsString(file) : null;
 	} 
+	
+	public long size() { 
+		return file != null && file.exists() ? file.length() : 0;
+	}
 }

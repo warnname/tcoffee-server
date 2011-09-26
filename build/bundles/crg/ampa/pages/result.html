@@ -4,6 +4,7 @@
  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="@{'/public/flot/excanvas.min.js'}"></script><![endif]-->
  <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.min.js'}"></script>
  <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.dashes.js'}"></script>
+ <script language="javascript" type="text/javascript" src="@{'/public/flot/jquery.flot.selection.js'}"></script>
 #{/set}
 
 <style type="text/css">
@@ -52,9 +53,9 @@ div.box-chart { margin-bottom: 2em }
 </div>
 
 <div id="choices">
-<h3>Legend 
-</h3>
+<h3>Legend</h3>
 </div>
+
 <div style="padding-right: 2em; padding-left: 2em; padding-top: 1.2em">
 <div style="clear: both"></div>
 <small >The above chart shows the antimicrobial profile for the entered sequence(s). 
@@ -63,7 +64,13 @@ on the Y-axis the anticrobial score at that position.
 Click the checkbox in the Legend to hide/show specific sequences. 
 Note: colors are generated automatically and are provided only to help to distinguish sequences between them.
 </small>
+<small style="display: block; margin-top: 1em; font-weight: bold">TIP: Magnify the area you are interested left-clicking and dragging on the chart.</small>
 </div>
+
+<div style="margin-left: 1.5em; margin-top: 1em">
+<button id="invertChoices" class="button">Invert selection</button> <button id="resetZoom"  style="display: none" class="button">Reset zoom</button> 
+</div>
+
 </div>
 
 <script type="text/javascript">
@@ -83,20 +90,24 @@ var choiceContainer = $("#choices");
 var datasets = {}
 var meta = {}
 var stretches = [];
+var plot;
 
 var chartOptions = {
 		legend: { show: false },
 		grid: { hoverable: true, backgroundColor: { colors: ["#fff", "#f9f9f9"] } },
         xaxis: { min: 1 },
-        yaxis: {}
+        yaxis: {},
+        selection: { mode: "x" }
     }
 
 $(document).ready(function() {
 
 	/* 
 	 * plot only the data series currently selected 
+	 * - xmin: minimum value for x-axis (optional)
+	 * - xmax: maximum value for x-axis (optional)
 	 */
-    var plotAccordingToChoices = function() {
+    var plotAccordingToChoices = function(xmin, xmax) {
         var data = [];
         choiceContainer.find("input:checked").each(function () {
             var key = $(this).attr("name");
@@ -124,7 +135,13 @@ $(document).ready(function() {
 		
         if (data.length > 0) {
             // plot the chart  
-            var plot = $.plot(chart, data, chartOptions);
+            if( xmin && xmax ) { 
+				chartOptions.xaxis = {min: xmin, max: xmax }
+				$('#resetZoom').show()
+            }
+            plot = $.plot(chart, data, chartOptions);
+            
+            
 			// this is required only the really first time to get the automatically generated colors 
             var series = plot.getData();
             for (var i = 0; i < series.length; ++i) if( !series[i].metaFlag ) { 
@@ -149,14 +166,12 @@ $(document).ready(function() {
 		
 		/* render the checkboxes */
 		$.each(data.series, function(key, val) {
-			console.log("key: " +  key )
-			console.dir( val );
 			val.key = key;  // <-- store this 'key' on the series item itself 
 			// 'dataset' is an associative array containing all series with the 'key' used by the checkbox 
 			datasets[key] = val;
 			// render the checkbox for this series
 			choiceContainer.append('<span class="box-color box-' + key + '"><input type="checkbox" name="' + key + '" checked="checked" id="id' + key + '">' +
-	                               '<span for="id' + key + '">' + val.label.cut(15) + '</span></span>');
+	                               '<span for="id' + key + '" title="'+val.label+'" >' + val.label.cut(15) + '</span></span>');
 	    });
 	    choiceContainer.find("input").click(plotAccordingToChoices);
 
@@ -173,7 +188,7 @@ $(document).ready(function() {
 		 */ 
 		var previousPoint=null;
  		chart.bind("plothover", function (event, pos, item) {
-
+			
 		     if(!item) {
 		         $("#tooltip").remove();
 		         previousPoint = null;
@@ -190,7 +205,8 @@ $(document).ready(function() {
 	             var content  = "<p style='margin-bottom: 6px; border-bottom: 3px solid "+item.series.color+"' >";
 	             content += "Seq: <b>"+item.series.label.cut(15)+"</b></p>";
 	             content += "Score: <b>" + score + "</b><br/>";
-	             content += "Position: <b>" + pos	+ "</b>"; 
+	             content += "Position: <b>" + pos	+ "</b><br/>"; 
+	             content += "Residue: <b>" + data.sequences[item.seriesIndex].charAt(item.dataIndex) + "</b>"; 
 
 	             $('<div id="tooltip">' + content + '</div>').css( {
 	                 'top': item.pageY + 5,
@@ -199,9 +215,34 @@ $(document).ready(function() {
 			}
 		     
 		 });
+ 		
+ 		
+	};
+	
+	/* 
+	 * Zoom event 
+	 */
+    chart.bind("plotselected", function (event, ranges) {
+    	plotAccordingToChoices(ranges.xaxis.from, ranges.xaxis.to)
+    });
 
 
-	} 
+	/* 
+	 * when clicked reset the zoom selection 
+	 */
+	$("#resetZoom").click(function () {
+		plotAccordingToChoices(meta.min,meta.max);
+		$(this).hide();
+    });
+	
+	$('#invertChoices').click(function(){
+		
+        choiceContainer.find("input").each(function () {
+        	$(this).attr('checked', !$(this).is(':checked') ); 
+        });
+
+        plotAccordingToChoices();
+	})
 
 	/* 
 	 * load the chart data and render it on load success
@@ -218,20 +259,31 @@ $(document).ready(function() {
 </script>
 #{/if}
 
-*{ Result file list }*
 
-#{if result?.items?.size > 0 }
+#{if result?.getItem('result.txt') }
 <div class="box">
-
-<h2><span>Result files</span> 
-<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
+<h2><span>Result</span> 
 </h2>
 
-#{result-items result /}
+#{if result?.getItem('result.txt').size() < 15*1024  }
+<div style="width: 90%; overflow-x: scroll">
+<pre>
+${result?.getItem('result.txt').content()}
+</pre>
+</div>
+#{/if}
 
+#{else}
+<p>
+   	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"> 
+   	<span style="position:relative; left:1em; ">The result alignment is too big to <br> be showed inline, 
+   	<a target="_blank" href="${result?.getItem('result.txt')?.webpath}" >click here to open it</a> .
+   	</span>  
+</p>
+#{/else}
 
 <div style="padding-top: 1em">
-<form action="@{Application.gateway('regular').add('bundle','tcoffee')}" id="sendto" name="sendto"  method="POST" >
+<form action="@{Application.gateway('regular').add('bundle','tcoffee')}" id="sendto" name="sendto"  method="POST" target="_blank">
 <textarea name="seqs" style="display:none">${result.getItems()?.get(0)?.content()}</textarea>
 
 <button id="forward" name="forward" class="button blue"> Send to T-Coffee </button>
@@ -244,6 +296,22 @@ To align the entered sequences using T-Coffee click to button on the left.
 $('#forward').click(function() { $('#sendto').submit(); } );
 </script>
 </div>
+
+
+</div>
+#{/if}
+
+
+*{ Result file list }*
+
+#{if result?.items?.size > 0 }
+<div class="box">
+
+<h2><span>Program I/O</span> 
+<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
+</h2>
+
+#{result-items result /}
 
 </div>
 #{/if}
