@@ -37,9 +37,9 @@ div.box-chart { margin-bottom: 2em }
 	 -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 	 -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 	 box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-	 -webkit-border-radius: 6px; 
-	 -moz-border-radius: 6px; 
-	 border-radius: 6px;
+	 -webkit-border-radius: 4px; 
+	 -moz-border-radius: 4px; 
+	 border-radius: 4px;
      padding: .7em;
 } 
 </style>
@@ -98,8 +98,10 @@ String.prototype.cut=function(maxlen) {
  */
 var chart = $("#chart");
 var datasets = {}
-var plot;
-var json;
+var plot
+var json
+var overviewData
+var colors = []
 
 var chartOptions = {
 		legend: { show: false },
@@ -110,6 +112,47 @@ var chartOptions = {
     }
 
 $(document).ready(function() {
+
+	/*
+	 * plot the chart 
+	 */ 
+	var plotTheChart = function(data) {
+		/* save the meta in a global var */
+		json = data || {}
+		
+		colors = getColors();
+		
+		/* render the checkboxes */
+		$.each(data.series, function(key, val) {
+			val.key = key;  // <-- store this 'key' on the series item itself 
+			val.color = colors[key].toString()
+			// 'dataset' is an associative array containing all series with the 'key' used by the checkbox 
+			datasets[key] = val;
+			// render the checkbox for this series
+			var 
+				item = '<span class="box-color box-' + key + '" style="border-bottom-color:'+colors[key].toString()+'">'
+				item += '<input type="checkbox" name="' + key + '" checked="checked" id="id' + key + '">'
+				item += '<span for="id' + key + '" title="'+val.label+'" >' + val.label.cut(15) + '</span>'
+				item += '</span>'
+			$("#choices").append(item);
+	    });
+
+		
+		/* 
+		 * Action 1 - The click action on the checkboxes 
+		 */
+		 $("#choices").find("input").click(function()
+	     {
+			 plotAccordingToChoices();
+			 history.pushState(state(), window.title)
+	     });
+		
+		
+		/* the main chart plotting function */
+	    plotAccordingToChoices();
+
+	};
+
 
 	/* 
 	 * plot only the data series currently selected 
@@ -149,12 +192,6 @@ $(document).ready(function() {
             }
             plot = $.plot(chart, data, chartOptions);
             
-            
-			// this is required only the really first time to get the automatically generated colors 
-            var series = plot.getData();
-            for (var i = 0; i < series.length; ++i) if( !series[i].metaFlag ) { 
-            	datasets[series[i].key].color = series[i].color;
-            }
 			// save the options 
 			chartOptions.xaxis.min = plot.getAxes().xaxis.min;
 			chartOptions.xaxis.max = plot.getAxes().xaxis.max;
@@ -164,59 +201,24 @@ $(document).ready(function() {
         } 
     }
 
-	/*
-	 * plot the chart 
-	 */ 
-	var plotTheChart = function(data) {
-		/* save the meta in a global var */
-		json = data || {}
-		
-		/* render the checkboxes */
-		$.each(data.series, function(key, val) {
-			val.key = key;  // <-- store this 'key' on the series item itself 
-			// 'dataset' is an associative array containing all series with the 'key' used by the checkbox 
-			datasets[key] = val;
-			// render the checkbox for this series
-			$("#choices").append('<span class="box-color box-' + key + '"><input type="checkbox" name="' + key + '" checked="checked" id="id' + key + '">' +
-	                               '<span for="id' + key + '" title="'+val.label+'" >' + val.label.cut(15) + '</span></span>');
-	    });
-
-		
-		/* 
-		 * Action 1 - The click action on the checkboxes 
-		 */
-		 $("#choices").find("input").click(function()
-	     {
-			 plotAccordingToChoices();
-			 history.pushState(state(), window.title)
-	     });
-		
-		
-		/* the main chart plotting function */
-	    plotAccordingToChoices();
-
-	    /* second iteration to draw checkboxes color */
-		$.each(datasets, function(key, val) {
-			$("#choices").find("span.box-" + val.key).css({"border-bottom-color": val.color})
-	    });	    		
-
-	};
-
 	
 	/* 
 	 * display a popup when the mouse is over a point 
 	 */ 
-	var previousPoint=null;
-	chart.bind("plothover", function (event, pos, item) 
-	{
+	var prevSeriesIndex=-1;
+	var prevDataIndex=-1;
+	
+	chart.bind("plothover", function (event, pos, item) {
 		
 	     if(!item) {
 	         $("#tooltip").remove();
 	         return;            
 	     }
 
-		if (previousPoint != item.seriesIndex) {
-             previousPoint = item.seriesIndex;
+		if ( prevSeriesIndex != item.seriesIndex || prevDataIndex != item.dataIndex) {
+			prevSeriesIndex = item.seriesIndex;
+			prevDataIndex = item.dataIndex;
+			
 
              $("#tooltip").remove();
              var pos = item.datapoint[0];
@@ -335,6 +337,45 @@ $(document).ready(function() {
 		else $('#resetZoom').hide()
 	});
 	
+	
+	/*
+	 * function to generate color variations as much as required
+	 */
+	
+	function getColors() {
+
+		// color theme
+		var theme = ["#edc240", "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed"]
+		
+        // produce colors as needed
+        var colors = [], variation = 0, neededColors = json.series.length;
+        i = 0;
+        while (colors.length < neededColors) {
+            var c;
+            if (theme.length == i) // check degenerate case
+                c = $.color.make(100, 100, 100);
+            else
+                c = $.color.parse(theme[i]);
+
+            // vary color if needed
+            var sign = variation % 2 == 1 ? -1 : 1;
+            c.scale('rgb', 1 + sign * Math.ceil(variation / 2) * 0.2)
+
+            // FIXME: if we're getting to close to something else,
+            // we should probably skip this one
+            colors.push(c);
+            
+            ++i;
+            if (i >= theme.length) {
+                i = 0;
+                ++variation;
+            }
+        }	
+        
+        return colors;
+	}  
+	
+	 
 	
 	/* 
 	 * load the chart data and render it on load success
