@@ -28,6 +28,7 @@ import play.Logger;
 import play.cache.Cache;
 import play.data.Upload;
 import play.libs.IO;
+import play.libs.MimeTypes;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
@@ -61,6 +62,8 @@ public class Data extends CommonController {
 		assertNotEmpty(path, "Missing 'path' argument on #resource action");
 
 		renderStaticResponse();
+		String content = MimeTypes.getMimeType(path);
+		response.contentType = content;
 		renderFile(AppProps.WORKSPACE_FOLDER, path);
 	}
 	

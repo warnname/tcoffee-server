@@ -9,11 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
+import play.Logger;
 import play.libs.IO;
 import util.FileIterator;
+import util.StringIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -53,6 +58,12 @@ public class AmpaCommand extends AbstractShellCommand {
 	private Fasta fasta;
 
 	private File fInput;
+	
+	private int fMin;
+	
+	private int fMax; 
+	
+	private int fStretchesCount;
 
 	public AmpaCommand( AmpaCommand that ) { 
 		super(that);
@@ -119,9 +130,9 @@ public class AmpaCommand extends AbstractShellCommand {
 			.append(" -in=") .append(input.getName())
 			.append(" -w=") .append(window.eval())
 			.append(" -t=") .append(threshold.eval())
-			.append(" -gf=") .append(getGraphFileFor(index).getName())
 			.append(" -rf=") .append(getResultFileFor(index).getName())
 			.append(" -df=") .append(getDataFileFor(index).getName())
+			.append(" -noplot")
 			;
 		
 		
@@ -131,6 +142,9 @@ public class AmpaCommand extends AbstractShellCommand {
 	@Override
 	protected boolean done(boolean success) {
 		if( !success ) return false;
+		
+		fMin = Integer.MAX_VALUE;
+		fMax = 0;
 		
 		File fResult = new File(ctxfolder, "result.txt");
 		PrintWriter wResult;
@@ -151,13 +165,10 @@ public class AmpaCommand extends AbstractShellCommand {
 		/* 
 		 * parse all 'data' file to create flot json file 
 		 */
-		StringBuilder chartData = new StringBuilder();
-		chartData.append("{");
-		chartData.append("\"series\": [");
+		StringBuilder mainPlotData = new StringBuilder();
+		mainPlotData.append("{");
+		mainPlotData.append("\"series\": [");
 		for( int index=0; index<numOfSequences; index++ ) { 
-			if( index>0 ) { chartData.append(","); }
-			appendData(chartData, index);
-			
 			/* 
 			 * merge all 'data'
 			 */
@@ -167,12 +178,37 @@ public class AmpaCommand extends AbstractShellCommand {
 			/* 
 			 * merge all 'result'
 			 */
-			wResult.append("# Protein: ") .append( fasta.sequences.get(index).header ) .append("\n");
-			wResult.append( IO.readContentAsString(getResultFileFor(index)) );
+			String resultFile = IO.readContentAsString(getResultFileFor(index));
+			wResult.append(">") .append( fasta.sequences.get(index).header ) .append("\n");
+			wResult.append(resultFile);
 			wResult.append("\n");
 			
+			/* 
+			 * parse to find out all stretches found 
+			 */
+			ResultData data = parseResult(resultFile);
+
+			/*
+			 * add the json object for this item 
+			 */
+			if( index>0 ) { mainPlotData.append(","); }
+			appendData(mainPlotData, index, data);
+			
 		}
-		chartData.append("]}");
+		mainPlotData.append("], ");
+		
+		
+		/* add other meta data */
+		mainPlotData 
+			.append("\"meta\": {") 
+						.append("\"min\": ") .append(fMin) .append(", ")
+						.append("\"max\": ") .append(fMax) .append(", ")
+						.append("\"threshold\": ") .append(threshold) .append(", ")
+						.append("\"window\": ") .append(window) .append(", ")
+						.append("\"nStretch\": ") .append(fStretchesCount) 
+						.append(" }");
+		
+		mainPlotData.append("}");
 		
 		/* 
 		 * close writers
@@ -181,7 +217,7 @@ public class AmpaCommand extends AbstractShellCommand {
 		wResult.close();
 		
 		File chartFile = new File(ctxfolder,"graph.json");
-		IO.writeContent(chartData, chartFile);
+		IO.writeContent(mainPlotData, chartFile);
 		
 		/*
 		 * append the user input object
@@ -209,24 +245,70 @@ public class AmpaCommand extends AbstractShellCommand {
 				.label("Chart Data (json format)")
 				.format("json") );		
 
-		/*
-		 * add to the result object all the produced graph file 
-		 */
-		for( int index=0; index<numOfSequences; index++ ) { 
-			result.add(new OutItem(getGraphFileFor(index),"graph_file").label("Graph file ("+ (index+1) + ")"));		
-			
-		}
-		
 		return true;
 	}
 
-	void appendData(StringBuilder json, int index) {
+	
+	static Pattern STRETCH_PATTERN = Pattern.compile("Antimicrobial stretch found in (\\d+) to (\\d+). Propensity value ([0-9\\.]+) \\((\\d+) %\\)");
+	static Pattern MEAN_PATTERN = Pattern.compile("\\# This protein has a mean antimicrobial value of ([0-9\\.]+)");
+	
+	/**
+	 * Parse an AMPA result file extracting al stretches position 
+	 * 
+	 */
+	static class ResultData {
+		String stretches; 
+		String mean;
+	} 
+	
+	static ResultData parseResult(String str) {
+		ResultData result = new ResultData();
+		StringBuilder stretches = new StringBuilder();
+		
+		for( String line : new StringIterator(str)) { 
+			Matcher matcher;
+			/* try to match a streth */
+			if( (matcher=STRETCH_PATTERN.matcher(line)).find() ) { 
+				int a = NumberUtils.toInt(matcher.group(1), -1);
+				int b = NumberUtils.toInt(matcher.group(2), -1);
+				double c = NumberUtils.toDouble(matcher.group(3), -1);
+				int d = NumberUtils.toInt(matcher.group(4), -1);
+				if( a<0 || b<0 || c<0) { 
+					Logger.warn("Invalid streatch value(s): %s to %s; propensity: %s; probability", a, b, c, d);
+				}
+				else { 
+					if( stretches.length()>0 ) { stretches.append(","); }
+					stretches.append("{") 
+						.append("\"from\":") .append(a) .append(",") 
+						.append("\"to\":") .append(b) .append(",")
+						.append("\"propensity\":") .append(c) .append(",")
+						.append("\"probability\":") .append(d) 
+						.append("}");
+				}
+			}
+			/* try to match a 'mean' row */
+			else if( (matcher=MEAN_PATTERN.matcher(line)).find() ) { 
+				result.mean = matcher.group(1);
+			}
+		}
+		
+		// wrap in an array 
+		stretches.insert(0, "[");
+		stretches.append("]");
+		result.stretches = stretches.toString();
+		
+		return result;
+	}
+
+	void appendData(StringBuilder json, int index, ResultData data) {
 		
 		String label = fasta.sequences.get(index).header;
 		label = StringEscapeUtils.escapeJavaScript(label);
 		json.append("{")
-			.append("\"label\": ") .append("\"") .append(label) .append("\"")
-			.append(", ")
+			.append("\"label\": ") .append("\"") .append(label) .append("\"") .append(", ")
+			.append("\"stretch\": ") .append(data.stretches)  .append(",")
+			.append("\"mean\": ") .append(data.mean)  .append(",")
+			.append("\"seq\":") .append("\"").append( fasta.sequences.get(index).value ) .append("\",")
 			.append("\"data\": [");
 		int i=0;
 		for( String line : new FileIterator( getDataFileFor(index) )) { 
@@ -237,9 +319,24 @@ public class AmpaCommand extends AbstractShellCommand {
 		json.append("]");
 		json.append("}");
 		
+		// increment stretches count 
+		fStretchesCount += data.stretches.length();
 	}
 
-	static String parseLine(String line) {
+	String parseLine(String line) {
+		/* keep track of min / max values */
+		String[] vals = line.split("\t");
+		int x = vals!=null && vals.length>0 ? NumberUtils.toInt(vals[0], -1) : -1;
+		if( x != -1 ) { 
+			if( fMin>x ) { 
+				fMin=x;
+			}
+			if( fMax<x ) { 
+				fMax=x;
+			}
+		}
+		
+		/* return a comma separated pair value */
 		return line.replace('\t', ',');
 	}
  

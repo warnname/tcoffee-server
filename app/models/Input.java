@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import play.Logger;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;
 import util.Utils;
@@ -135,9 +136,31 @@ public class Input implements Serializable {
 		return result.size()>0 ? result.get(0) : null;
 	}
 	
-	public Field getField( String name ) { 
-		List<Field> fields = fields(name);
-		return fields!=null && fields.size()>0 ? fields.get(0) : null;
+	/**
+	 * @param fieldName the name that identify the field in this input
+	 * @return the {@link Field} instance for the specified name or <code>null</code> if a field with that name does not exist
+	 */
+	public Field getField( String fieldName ) { 
+		List<Field> fields = fields(fieldName);
+		if( fields == null || fields.size()==0 ) { 
+			Logger.warn("Missing field with name: '%s'", fieldName);
+			return null;
+		}
+		
+		if( fields.size()>1 ) {
+			Logger.warn("Multiple fields with name: '%s'", fieldName);
+		}
+		
+		return fields.get(0);
+	}
+
+	/**
+	 * @param fieldName the name that identify the field in this input
+	 * @return the string value associated with the field, or <code>null</code> if a field with that name does not exist
+	 */
+	public String getValue( String fieldName ) { 
+		Field result = getField(fieldName);
+		return result != null ? result.value : null;
 	}
 	
 	public void validate() {
@@ -169,6 +192,10 @@ public class Input implements Serializable {
 	 */
 	public void save( File file ) {
 		XStreamHelper.toXML(this, file);
+	}
+	
+	public static Input read( File file ) {
+		return (Input) (file.exists() ? XStreamHelper.fromXML(file) : null);
 	}
 	
 }

@@ -25,7 +25,6 @@ import play.mvc.Finally;
 import play.mvc.Util;
 import util.RouterFix;
 import util.Utils;
-import util.XStreamHelper;
 import bundle.BundleRegistry;
 import controllers.Data.AjaxUpload;
 
@@ -184,7 +183,7 @@ public class Application extends CommonController {
 		OutResult result = repo.getResult(); 
 		Service service = service(bundle.get().name,result.service).copy();
 		Service.current(service);
-		service.input = XStreamHelper.fromXML(repo.getInputFile());
+		service.input = repo.getInput();
 		
 		/* 
 		 * 4. re-execute with caching feature disabled
@@ -529,7 +528,7 @@ public class Application extends CommonController {
 		String bundleName = repo.getResult().bundle;
 		Service service = service(bundleName,serviceName);
 		service = service.copy();
-		service.input = XStreamHelper.fromXML(repo.getInputFile());
+		service.input = repo.getInput();
 
 		return service;
 	}

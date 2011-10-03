@@ -7,6 +7,7 @@
 </title>
 #{/if}
 
+<meta http-equiv="X-UA-Compatible" content="IE=8,chrome=IE7" >
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
 <meta http-equiv="Content-Style-Type" content="text/css">
 <meta name="application-name" content="${_main_title}">
@@ -19,21 +20,11 @@
 #{if _bundle && _bundle.cssPath } 
 <link href="@{Application.css}" rel="stylesheet" type="text/css">
 #{/if}
- #{get 'moreStyles' /}
+#{get 'moreStyles' /}
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" ></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
 <script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" ></script>
 #{get 'moreScripts' /}
-
-*{
- Fix IE 6 PNG trasparency bug. See http://jquery.andreaseberhard.de/pngFix/
-}*
-<!--[if lt IE 7]>
-<script type="text/javascript" src="@{'/public/javascripts/jquery.pngfix.js'}"></script>
-<script type="text/javascript" >
-$(document).ready(function(){  $(document).pngFix(); }); 
-</script>
-<![endif]-->
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -43,7 +34,17 @@ $(document).ready(function() {
 </head>
 
 <body class="${_main_class}">
-
+<!--[if lt IE 7]>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+<script type="text/javascript">
+   // You may want to place these lines inside an onload handler
+   CFInstall.check({
+     mode: "overlay",
+     url: "/public/ie6.html"
+   });
+</script>
+<![endif]-->
+  
 <div id="wrapper"> 
 	<div id="header">
 		#{include 'conf/page.header.html' /}
