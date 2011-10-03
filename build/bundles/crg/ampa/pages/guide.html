@@ -73,7 +73,8 @@ most favored to be part of an AMP.
 
 <h3>Step 1. Entering your sequence</h3>
 <p>
-Enter your sequence in the protein box in the FASTA format. An example is provided in the web 
+Enter your sequence in the protein box in the FASTA format. 
+An example (consisting on 3 antimicrobial and 3 non-antimicrobial sequences) is provided in the web 
 only by clicking in the sample link. Alternatively, you can upload the sequence as a text file 
 using the uploading tool provided in the webpage
 </p>
@@ -97,7 +98,7 @@ predicted results obtained with the default parameters are not satisfactory.
 <p>
 Threshold values are only used to determine the length of antimicrobial stretches and do not influence the 
 antimicrobial profile. If your sequence has more than one antimicrobial region and you want to find the 
-most prone antimicrobial stretch you can raise the threshold over the default value. 
+most prone antimicrobial stretch you can lower the threshold below the default value. 
 We do not recommend adjusting this parameter and definitely not lowering the threshold value. 
 </p>
 
@@ -114,10 +115,13 @@ You may want to provide the server with your email address. If you fill this box
 After submitting your job the sequence will be processed and the output webpage will be displayed. 
 </p>
 <p>
-On the top of the webpage you will find the information on the antimicrobial stretches of your protein: 
-the number and location of the antimicrobial regions and the mean antimicrobial index of your protein. 
+In the output page you will find the information on the antimicrobial stretches of your protein: 
+the number and location of the antimicrobial, the mean antimicrobial index of both the protein and 
+the predicted stretches as well as a misclassification probability value, 
+namely the probability that the predicted stretch is found by chance in a non-antimicrobial protein. 
 </p>
-<p>Below these results you will find the antimicrobial profile of your sequence together with a table for 
+
+<p>You will find also an interactive antimicrobial profile of your sequence together with a table for 
 the average antimicrobial index for each amino acid.
 </p>
 

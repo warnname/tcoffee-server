@@ -62,6 +62,8 @@ public class AmpaCommand extends AbstractShellCommand {
 	private int fMin;
 	
 	private int fMax; 
+	
+	private int fStretchesCount;
 
 	public AmpaCommand( AmpaCommand that ) { 
 		super(that);
@@ -128,9 +130,9 @@ public class AmpaCommand extends AbstractShellCommand {
 			.append(" -in=") .append(input.getName())
 			.append(" -w=") .append(window.eval())
 			.append(" -t=") .append(threshold.eval())
-			.append(" -gf=") .append(getGraphFileFor(index).getName())
 			.append(" -rf=") .append(getResultFileFor(index).getName())
 			.append(" -df=") .append(getDataFileFor(index).getName())
+			.append(" -noplot")
 			;
 		
 		
@@ -184,37 +186,27 @@ public class AmpaCommand extends AbstractShellCommand {
 			/* 
 			 * parse to find out all stretches found 
 			 */
-			String stretch = parseStretches(resultFile);
+			ResultData data = parseResult(resultFile);
 
 			/*
 			 * add the json object for this item 
 			 */
 			if( index>0 ) { mainPlotData.append(","); }
-			appendData(mainPlotData, index, stretch);
+			appendData(mainPlotData, index, data);
 			
 		}
 		mainPlotData.append("], ");
 		
-
-		/* add the sequences */
-		mainPlotData .append("\"sequences\": [");
-		for( int index=0; index<numOfSequences; index++ ) { 
-			if( index>0 ) { mainPlotData.append(","); }
-			mainPlotData
-				.append("\"")
-				.append( fasta.sequences.get(index).value )
-				.append("\"");
-		}
-		mainPlotData.append("], ");
 		
 		/* add other meta data */
-		mainPlotData
+		mainPlotData 
 			.append("\"meta\": {") 
-			.append("\"min\": ") .append(fMin) .append(", ")
-			.append("\"max\": ") .append(fMax) .append(", ")
-			.append("\"threshold\": ") .append(threshold) .append(", ")
-			.append("\"window\": ") .append(window) 
-			.append(" }");
+						.append("\"min\": ") .append(fMin) .append(", ")
+						.append("\"max\": ") .append(fMax) .append(", ")
+						.append("\"threshold\": ") .append(threshold) .append(", ")
+						.append("\"window\": ") .append(window) .append(", ")
+						.append("\"nStretch\": ") .append(fStretchesCount) 
+						.append(" }");
 		
 		mainPlotData.append("}");
 		
@@ -253,55 +245,70 @@ public class AmpaCommand extends AbstractShellCommand {
 				.label("Chart Data (json format)")
 				.format("json") );		
 
-		/*
-		 * add to the result object all the produced graph file 
-		 */
-		for( int index=0; index<numOfSequences; index++ ) { 
-			result.add(new OutItem(getGraphFileFor(index),"graph_file").label("Graph file ("+ (index+1) + ")"));		
-			
-		}
-		
 		return true;
 	}
 
 	
-	static Pattern STRETCH_PATTERN = Pattern.compile("Antimicrobial stretch found in (\\d+) to (\\d+)");
-
+	static Pattern STRETCH_PATTERN = Pattern.compile("Antimicrobial stretch found in (\\d+) to (\\d+). Propensity value ([0-9\\.]+) \\((\\d+) %\\)");
+	static Pattern MEAN_PATTERN = Pattern.compile("\\# This protein has a mean antimicrobial value of ([0-9\\.]+)");
+	
 	/**
 	 * Parse an AMPA result file extracting al stretches position 
 	 * 
 	 */
-	static String parseStretches(String str) {
-		StringBuilder result = new StringBuilder();
+	static class ResultData {
+		String stretches; 
+		String mean;
+	} 
+	
+	static ResultData parseResult(String str) {
+		ResultData result = new ResultData();
+		StringBuilder stretches = new StringBuilder();
 		
 		for( String line : new StringIterator(str)) { 
 			Matcher matcher;
-			if( (matcher=STRETCH_PATTERN.matcher(line)).matches() ) { 
+			/* try to match a streth */
+			if( (matcher=STRETCH_PATTERN.matcher(line)).find() ) { 
 				int a = NumberUtils.toInt(matcher.group(1), -1);
 				int b = NumberUtils.toInt(matcher.group(2), -1);
-				if( a<0 || b<0 ) { 
-					Logger.warn("Invalid streatch position: %s to %s", a, b);
+				double c = NumberUtils.toDouble(matcher.group(3), -1);
+				int d = NumberUtils.toInt(matcher.group(4), -1);
+				if( a<0 || b<0 || c<0) { 
+					Logger.warn("Invalid streatch value(s): %s to %s; propensity: %s; probability", a, b, c, d);
 				}
 				else { 
-					if( result.length()>0 ) { result.append(","); }
-					result.append("[") .append(a) .append(",") .append(b) .append("]");
+					if( stretches.length()>0 ) { stretches.append(","); }
+					stretches.append("{") 
+						.append("\"from\":") .append(a) .append(",") 
+						.append("\"to\":") .append(b) .append(",")
+						.append("\"propensity\":") .append(c) .append(",")
+						.append("\"probability\":") .append(d) 
+						.append("}");
 				}
+			}
+			/* try to match a 'mean' row */
+			else if( (matcher=MEAN_PATTERN.matcher(line)).find() ) { 
+				result.mean = matcher.group(1);
 			}
 		}
 		
 		// wrap in an array 
-		result.insert(0, "[");
-		result.append("]");
-		return result.toString();
+		stretches.insert(0, "[");
+		stretches.append("]");
+		result.stretches = stretches.toString();
+		
+		return result;
 	}
 
-	void appendData(StringBuilder json, int index, String stretch) {
+	void appendData(StringBuilder json, int index, ResultData data) {
 		
 		String label = fasta.sequences.get(index).header;
 		label = StringEscapeUtils.escapeJavaScript(label);
 		json.append("{")
 			.append("\"label\": ") .append("\"") .append(label) .append("\"") .append(", ")
-			.append("\"stretch\": ") .append(stretch)  .append(",")
+			.append("\"stretch\": ") .append(data.stretches)  .append(",")
+			.append("\"mean\": ") .append(data.mean)  .append(",")
+			.append("\"seq\":") .append("\"").append( fasta.sequences.get(index).value ) .append("\",")
 			.append("\"data\": [");
 		int i=0;
 		for( String line : new FileIterator( getDataFileFor(index) )) { 
@@ -312,6 +319,8 @@ public class AmpaCommand extends AbstractShellCommand {
 		json.append("]");
 		json.append("}");
 		
+		// increment stretches count 
+		fStretchesCount += data.stretches.length();
 	}
 
 	String parseLine(String line) {

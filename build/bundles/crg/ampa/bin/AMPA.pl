@@ -7,6 +7,7 @@ use Math::Round;
 # The default input parameters 
 # 
 my $debug = 0;
+my $noplot = 0;
 my $gnuplot = "";
 my $input_file = "protein.txt";
 my $window_size = 7;
@@ -40,7 +41,16 @@ my $cl=join( " ", @ARGV);
 
 if (($cl=~/-h/) ||($cl=~/-H/) ) {
         # print usage 
-        print "Usage: \n";
+        print "Usage: AMPA.pl -in=<input fasta file> [other options]\n";
+        print "\n";
+        print "Available options:\n";
+        print "-in      Fasta sequence input file\n";
+        print "-t       Threshold value (default: 7)\n";
+        print "-w       Window size value (default: 0.225)\n";
+        print "-rf      File path for the result file\n";
+        print "-df      File path for the plot data file\n";
+        print "-gf      File path where to save the generated plot \n";
+        print "-noplot  Skip plot creation step\n";
         exit 1;
 }
 
@@ -69,42 +79,45 @@ if ($#ARGV==-1 ) {
 }
 
 
-# option '-in' : input file name
+# option '-in': input file name
 if ( ($cl=~/-in=\s*(\S+)/)) { 
         $input_file = $1;
 }
 
-# option '-w' : window size
+# option '-w': window size
 if ( ($cl =~ /-w=\s*(\S+)/)) { 
         $window_size = $1;
 }
 
-# option '-t' : threshold value
+# option '-t': threshold value
 if ( ($cl =~ /-t=\s*(\S+)/)) { 
         $threshold = $1;
 }
 
-# option '-gf' : output graph file
+# option '-gf': output graph file
 if ( ($cl =~ /-gf=\s*(\S+)/)) { 
         $graph_file = $1;
 }
 
-# option '-rf' : output result file
+# option '-rf': output result file
 if ( ($cl =~ /-rf=\s*(\S+)/)) { 
         $result_file = $1;
 }
 
-# option '-df' : output sliding file
+# option '-df': output sliding file
 if ( ($cl =~ /-df=\s*(\S+)/)) { 
         $data_file = $1;
 }
 
-
-# option '-debug' : threshold value
+# option '-debug': enable debug mode
 if ( ($cl =~ /-debug/)) { 
         $debug = 1;
 }
 
+# option '-noplot': threshold value
+if ( ($cl =~ /-noplot/)) { 
+        $noplot = 1;
+}
 
 if( $debug != 0 ) { 
         print "Window size      : $window_size\n";
@@ -158,14 +171,14 @@ for(my $c=1; $c<(($window_size + 1)/2); $c++) {
 
 my $sequences = join("",@sequences);
 
-print "$sequences";
-
 close(PROTEIN) or die "Cannot close the file: $!\n";
 
 #The program calls the subroutines to analyze the sequence
 
 &sliding($sequences);
-&gnuplot_sld();
+if(!$noplot) {
+	&gnuplot_sld();
+} 
 
 ### Subroutines
 
