@@ -65,6 +65,7 @@ table.summary td.oce-first {
 	min-height: 32px;
 	border-right: 4px solid #72BBD2;
 	font-weight: 400;
+	width: 4px;
 }
 
 table.summary td.oce-snd {
@@ -112,7 +113,10 @@ div.c-seq {
 	font-size: 1em;
 	padding: .6em 1em; 
 } 
-span.c-stretch { font-weight: bold; text-decoration: underline; } 
+span.c-stretch { 
+	text-decoration: underline; 
+	background-color: #FFFF00;
+} 
 
 /** end of SUMMARY table */
 </style>
@@ -246,7 +250,7 @@ $(document).ready(function() {
 	 
 	function renderSummaryTable() {
 		
-		var table =  $("<table>").addClass("summary");
+		var table =  $("<table width='100%'>").addClass("summary");
 		$("#summary").append(table);
 		
 		for( var i=0, c=json.series.length; i<c; i++ ) {
@@ -288,7 +292,7 @@ $(document).ready(function() {
 					seq = seq.substring( serie.stretch[j].from-1, serie.stretch[j].to )
 					
 					nested += 
-							'<tr>' +
+							'<tr id="stretchrow_'+i+'_'+j+'">' +
 							'<td>#'+ (j+1) +'</td>'+
 							'<td>From</td>  <td class="val">'+ serie.stretch[j].from +'</td>'+
 							'<td>To</td>  <td class="val">'+serie.stretch[j].to+'</td>'+ 
@@ -328,7 +332,7 @@ $(document).ready(function() {
 					var y = json.series[i].stretch[j].to;
 					
 					htmlseq += seq.substring(last-1, x-2);
-					htmlseq += '<span class="c-stretch">' 
+					htmlseq += '<span class="c-stretch" data-index="'+i+"_"+j+'">' 
 					htmlseq += seq.substring(x-1,y);
 					htmlseq += "</span>" 
 					last = y;
@@ -373,12 +377,18 @@ $(document).ready(function() {
 			row.toggle( 300 )
 		} )
 		
-
+		$('.c-stretch')
+			.mouseenter( function() { 
+				$("#stretchrow_" + $(this).data('index')) . css("backgroundColor","#DFDFDF")
+			})
+			.mouseleave( function() {
+				$("#stretchrow_" + $(this).data('index')) . css("backgroundColor","transparent")
+			}  )
 		
 		/* 
 		 * create the PsiPred form 
 		 */
-		var form = $('<form><input type="hidden" name="sequence" /> </form>');
+		var form = $('<form><input type="hidden" id="sequence" name="sequence" /> <input type="hidden" id="subject" name="subject" /> </form>');
 		form.attr("action", "http://bioinf.cs.ucl.ac.uk/psipred/" );
 		form.attr("method", "POST" );
 		form.attr("target", "_blank");
@@ -389,7 +399,8 @@ $(document).ready(function() {
 		$('.psipred') .click(function() { 
 			var index = $(this).data('index');
 			var fasta = ">" + json.series[index] .label + "\n" + json.series[index] .seq
-			form.find('input').val(fasta);
+			form.find('input#sequence').val(fasta);
+			form.find('input#subject').val('ampa-${rid}');
 			form.submit()
 		} )
 		
@@ -777,6 +788,9 @@ $(document).ready(function() {
 <h2><span>Summary</span> 
 <small><span >A short review of what have been found</span></small>
 </h2>
+
+<p>Please remind that the probability values displayed correspond to misclassification probability, 
+that is the probability to find the predicted stretch in a non-antimicrobial protein.</p>
 
 <div id="summary" ></div>
 

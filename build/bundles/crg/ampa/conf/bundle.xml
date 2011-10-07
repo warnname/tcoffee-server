@@ -43,7 +43,7 @@
         </field>
 
         <field type='text' name='threshold' label='Threshold value' >
-          <hint>Default value 0.225) Although it is not recommended you can use higher threshold values for high stringency predictions</hint>
+          <hint>Default value 0.225) Although it is not recommended you can use lower threshold values for high stringency predictions</hint>
           <value>0.225</value>
           <validation required='true' format="DECIMAL" min="0.15" max="0.35"  >
           	<min-error>Threshold minimun accepted value is 0.15</min-error>
