@@ -69,7 +69,7 @@ table.summary td.oce-first {
 }
 
 table.summary td.oce-snd {
-	width: 70px
+	width: 70px;
 } 
 
 table.summary td.psipredlink {
@@ -193,12 +193,7 @@ var chartOptions = {
         yaxis: { position: "right" },
         selection: { mode: "x" },
         points: {  radius: 3 }
-        //hooks: { processOptions: [ function(plot, options) { 
-		//	console.dir( plot )
-        //}]}
      }
-
-
 
 
 $(document).ready(function() {
@@ -235,7 +230,7 @@ $(document).ready(function() {
 		 $("#choices").find("input").click(function()
 	     {
 			 plotAccordingToChoices();
-			 history.pushState(state(), window.title)
+			 if(history.pushState) history.pushState(state(), window.title)
 	     });
 	
 	    plotAccordingToChoices();
@@ -570,7 +565,7 @@ $(document).ready(function() {
     	$(this).show()
 
     	// save the current range
-    	history.pushState(state(), window.title)
+    	if(history.pushState) history.pushState(state(), window.title)
     });
 
 	/* 
@@ -580,7 +575,7 @@ $(document).ready(function() {
 	{
     	plotAccordingToChoices(json.meta.min, json.meta.max)
     	// save the current range
-    	history.pushState(state(), window.title)
+    	if(history.pushState) history.pushState(state(), window.title)
     });
 	
 	/* 
@@ -593,7 +588,7 @@ $(document).ready(function() {
         });
         plotAccordingToChoices();
     	// save the current range
-    	history.pushState(state(), window.title)
+    	if(history.pushState) history.pushState(state(), window.title)
 	})
 	
 		
