@@ -11,6 +11,7 @@ GET		/psicoffee				Main.psicoffee
 GET		/expresso				Main.expresso
 GET		/mcoffee				Main.mcoffee
 GET		/rcoffee				Main.rcoffee
+GET		/tmcoffee				Main.tmcoffee
 GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots

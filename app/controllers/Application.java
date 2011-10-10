@@ -20,6 +20,7 @@ import models.Status;
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
+import play.libs.MimeTypes;
 import play.mvc.Before;
 import play.mvc.Finally;
 import play.mvc.Util;
@@ -325,7 +326,7 @@ public class Application extends CommonController {
 
 	public static void servePublic( String path ) { 
 		assertNotEmpty(path, "Missing 'path' argument on #servePublic action");
-
+		response.contentType = MimeTypes.getMimeType(path);
 		renderStaticResponse();
 		renderFile(bundle.get().publicPath, path);
 	}
