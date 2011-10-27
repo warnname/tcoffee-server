@@ -1,9 +1,9 @@
 package LWP;
 
-$VERSION = "5.837";
+$VERSION = "6.02";
 sub Version { $VERSION; }
 
-require 5.005;
+require 5.008;
 require LWP::UserAgent;  # this should load everything you need
 
 1;
@@ -211,7 +211,7 @@ response classification methods are:
 
 =item is_success()
 
-The request was was successfully received, understood or accepted.
+The request was successfully received, understood or accepted.
 
 =item is_error()
 
@@ -556,8 +556,8 @@ The following modules provide various functions and definitions.
 All modules contain detailed information on the interfaces they
 provide.  The L<lwpcook> manpage is the libwww-perl cookbook that contain
 examples of typical usage of the library.  You might want to take a
-look at how the scripts L<lwp-request>, L<lwp-rget> and L<lwp-mirror>
-are implemented.
+look at how the scripts L<lwp-request>, L<lwp-download>, L<lwp-dump>
+and L<lwp-mirror> are implemented.
 
 =head1 ENVIRONMENT
 
@@ -582,12 +582,19 @@ These environment variables can be set to enable communication through
 a proxy server.  See the description of the C<env_proxy> method in
 L<LWP::UserAgent>.
 
-=item PERL_LWP_USE_HTTP_10
+=item PERL_LWP_SSL_VERIFY_HOSTNAME
 
-Enable the old HTTP/1.0 protocol driver instead of the new HTTP/1.1
-driver.  You might want to set this to a TRUE value if you discover
-that your old LWP applications fails after you installed LWP-5.60 or
-better.
+The default C<verify_hostname> setting for C<LWP::UserAgent>.  If
+not set the default will be 1.  Set it as 0 to disable hostname
+verification (the default prior to libwww-perl 5.840.
+
+=item PERL_LWP_SSL_CA_FILE
+
+=item PERL_LWP_SSL_CA_PATH
+
+The file and/or directory
+where the trusted Certificate Authority certificates
+is located.  See L<LWP::UserAgent> for details.
 
 =item PERL_HTTP_URI_CLASS
 

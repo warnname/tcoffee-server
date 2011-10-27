@@ -1,10 +1,10 @@
-=head2 Tue Oct 19 15:57:16 2010: C<Module> L<ExtUtils::Install|ExtUtils::Install>
+=head2 Thu Oct 13 19:20:55 2011: C<Module> L<ExtUtils::Install|ExtUtils::Install>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -20,13 +20,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 15:57:59 2010: C<Module> L<ExtUtils::CBuilder|ExtUtils::CBuilder>
+=head2 Thu Oct 13 19:21:08 2011: C<Module> L<SOAP::Lite|SOAP::Lite>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -34,51 +34,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 0.2703>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Tue Oct 19 15:58:16 2010: C<Module> L<ExtUtils::ParseXS|ExtUtils::ParseXS>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.2206>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Tue Oct 19 15:58:20 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
+C<VERSION: 0.714>
 
 =item *
 
@@ -86,13 +42,13 @@ C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
 
 =back
 
-=head2 Tue Oct 19 15:58:40 2010: C<Module> L<XML::Simple|XML::Simple>
+=head2 Thu Oct 13 19:21:15 2011: C<Module> L<XML::Simple|XML::Simple>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -108,13 +64,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 15:59:00 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:21:25 2011: C<Module> L<LWP::MediaTypes|LWP::MediaTypes>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -122,51 +78,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 16:48:02 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 16:48:05 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.01>
 
 =item *
 
@@ -174,13 +86,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 16:48:10 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:21:31 2011: C<Module> L<Encode::Locale|Encode::Locale>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -188,51 +100,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 17:06:54 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 17:06:57 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 1.02>
 
 =item *
 
@@ -240,13 +108,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 17:07:03 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:21:38 2011: C<Module> L<HTTP::Date|HTTP::Date>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -254,51 +122,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 17:54:04 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 17:54:08 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.00>
 
 =item *
 
@@ -306,13 +130,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 17:54:19 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:22:14 2011: C<Module> L<Compress::Raw::Bzip2|Compress::Raw::Bzip2>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -320,51 +144,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 18:08:11 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 18:08:14 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 2.037>
 
 =item *
 
@@ -372,13 +152,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 18:08:22 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:22:56 2011: C<Module> L<Compress::Raw::Zlib|Compress::Raw::Zlib>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -386,51 +166,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 18:43:42 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 18:43:51 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 2.037>
 
 =item *
 
@@ -438,13 +174,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 18:43:56 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:07 2011: C<Module> L<IO::Compress|IO::Compress>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5/x86_64-linux-thread-multi>
 
 =item *
 
@@ -452,51 +188,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Oct 19 20:01:09 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Oct 19 20:01:12 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 2.037>
 
 =item *
 
@@ -504,13 +196,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Tue Oct 19 20:01:18 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:14 2011: C<Module> L<HTTP::Message|HTTP::Message>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -518,51 +210,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Wed Oct 20 11:27:34 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Wed Oct 20 11:27:37 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.02>
 
 =item *
 
@@ -570,13 +218,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Wed Oct 20 11:27:43 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:19 2011: C<Module> L<File::Listing|File::Listing>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee-ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -584,51 +232,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Wed Oct 20 11:55:17 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Wed Oct 20 11:55:19 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.03>
 
 =item *
 
@@ -636,13 +240,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Wed Oct 20 11:55:24 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:26 2011: C<Module> L<HTTP::Negotiate|HTTP::Negotiate>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -650,51 +254,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Wed Oct 20 13:07:23 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Wed Oct 20 13:07:27 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.00>
 
 =item *
 
@@ -702,13 +262,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Wed Oct 20 13:07:32 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:31 2011: C<Module> L<HTTP::Daemon|HTTP::Daemon>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -716,51 +276,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Oct 21 14:47:46 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Thu Oct 21 14:47:48 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.00>
 
 =item *
 
@@ -768,13 +284,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Oct 21 14:48:09 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:37 2011: C<Module> L<Net::HTTP|Net::HTTP>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -782,51 +298,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Oct 21 18:47:53 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Thu Oct 21 18:47:57 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.01>
 
 =item *
 
@@ -834,13 +306,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Oct 21 18:48:03 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:43 2011: C<Module> L<HTTP::Cookies|HTTP::Cookies>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -848,51 +320,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Oct 21 19:07:43 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Thu Oct 21 19:07:46 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.00>
 
 =item *
 
@@ -900,13 +328,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Oct 21 19:07:52 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:23:49 2011: C<Module> L<WWW::RobotRules|WWW::RobotRules>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -914,51 +342,7 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Oct 21 21:47:38 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Thu Oct 21 21:47:41 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
+C<VERSION: 6.01>
 
 =item *
 
@@ -966,13 +350,13 @@ C<EXE_FILES: >
 
 =back
 
-=head2 Thu Oct 21 21:47:47 2010: C<Module> L<LWP|LWP>
+=head2 Thu Oct 13 19:24:00 2011: C<Module> L<LWP|LWP>
 
 =over 4
 
 =item *
 
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
+C<installed into: /home/admin/tcoffee_st/sandbox/perl/lib/perl5>
 
 =item *
 
@@ -980,473 +364,11 @@ C<LINKTYPE: dynamic>
 
 =item *
 
-C<VERSION: 5.837>
+C<VERSION: 6.02>
 
 =item *
 
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Sun Oct 24 18:27:40 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Sun Oct 24 18:27:43 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Sun Oct 24 18:27:48 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Thu Oct 28 09:08:16 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Thu Oct 28 09:08:19 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Thu Oct 28 09:08:24 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Wed Nov  3 18:07:32 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Wed Nov  3 18:07:35 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Wed Nov  3 18:07:40 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Fri Nov  5 16:28:31 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Fri Nov  5 16:28:34 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Fri Nov  5 16:28:40 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Wed Nov 10 13:28:16 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Wed Nov 10 13:28:19 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Wed Nov 10 13:28:24 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Mon Nov 15 14:30:03 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Mon Nov 15 14:30:06 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Mon Nov 15 14:30:11 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
-
-=back
-
-=head2 Tue Nov 16 10:41:26 2010: C<Module> L<SOAP::Lite|SOAP::Lite>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 0.712>
-
-=item *
-
-C<EXE_FILES: bin/SOAPsh.pl bin/XMLRPCsh.pl bin/stubmaker.pl>
-
-=back
-
-=head2 Tue Nov 16 10:41:29 2010: C<Module> L<XML::Simple|XML::Simple>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 2.18>
-
-=item *
-
-C<EXE_FILES: >
-
-=back
-
-=head2 Tue Nov 16 10:41:34 2010: C<Module> L<LWP|LWP>
-
-=over 4
-
-=item *
-
-C<installed into: /home/admin/tcoffee_ci/perl/lib/perl5>
-
-=item *
-
-C<LINKTYPE: dynamic>
-
-=item *
-
-C<VERSION: 5.837>
-
-=item *
-
-C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-rget bin/lwp-download bin/lwp-dump>
+C<EXE_FILES: bin/lwp-request bin/lwp-mirror bin/lwp-download bin/lwp-dump>
 
 =back
 
