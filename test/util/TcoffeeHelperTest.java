@@ -18,7 +18,7 @@ public class TcoffeeHelperTest extends UnitTest {
 	
 	public static void parseHtmlFile( File file ) {
 		String TEST_STYLE = "SPAN { font-family: courier new, courier-new, courier, monospace; font-weight: bold; font-size: 11pt;}";
-		String TEST_BODY = "<span class=valuedefault>T-COFFEE,&nbsp;Version_8.99(Thu&nbsp;Feb&nbsp;17&nbsp;19:24:49&nbsp;CET&nbsp;2011&nbsp;-&nbsp;Revision&nbsp;594)</span><br><span class=valuedefault>Cedric&nbsp;Notredame&nbsp;</span><br><span class=valuedefault>SCORE=45</span><br>";
+		String TEST_BODY = "<span class=valuedefault>T-COFFEE,&nbsp;Version_9.01&nbsp;(2011-10-13&nbsp;19:18:54&nbsp;-&nbsp;Revision&nbsp;1115&nbsp;-&nbsp;Build&nbsp;6)</span><br><span class=valuedefault>Cedric&nbsp;Notredame&nbsp;</span><br><span class=valuedefault>SCORE=45</span><br>";
 
 		ResultHtml result = TcoffeeHelper.parseHtml(file);
 		assertEquals( TEST_STYLE,  result.style.trim() .substring(0,TEST_STYLE.length()) );

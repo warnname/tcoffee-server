@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<bundle name="tcoffee" version="8.99"> 
+<bundle name="tcoffee" version="9.01"> 
   <title>T-Coffee Server</title> 
   <description>A collection of tools for Computing, Evaluating and
     Manipulating Multiple Alignments of DNA, RNA, Protein Sequences and
