@@ -180,8 +180,11 @@ public class CmdArgs {
 		if( pair==null || Utils.isEmpty(pair=pair.trim()) ) { return null; }
 		
 		// pair separator is equals char (=)
+		String separator = " ";
 		int p = pair.indexOf('=');
-		if( p==-1 ) { 
+		if( p!=-1 ) { 
+			separator = "=";
+		} else {
 			// try to fallback on blank char ' ' 
 			p = pair.indexOf(' ');
 		}
@@ -210,7 +213,7 @@ public class CmdArgs {
 		/* create the result object */
 		Arg result = put(name,value);
 		result.prefix = prefix;
-
+		result.separator = separator;
 		return result;
 	}
 

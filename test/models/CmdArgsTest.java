@@ -195,7 +195,7 @@ public class CmdArgsTest extends UnitTest {
 	
 	@Test 
 	public void testCmdLineMultiple() {
-		CmdArgs cmd = new CmdArgs("-a=${field1} -b -c= -d value --x=${x} --x-y=${xy}");
+		CmdArgs cmd = new CmdArgs("-a=${field1} -b -c= -d=value --x=${x} --x-y=${xy}");
 		
 		assertEquals("-a=Value 1 -b -c -d=value --x=1 --x=2 --x=3 --x-y=99", cmd.toCmdLine()); 
 	}
@@ -258,4 +258,12 @@ public class CmdArgsTest extends UnitTest {
 		assertEquals( "-opt 1 -wrong -more", CmdArgs.normalize("-opt 1 –wrong -more") );
 	}
 	
+	
+	
+	@Test 
+	public void testCmdLineSeparator() {
+		CmdArgs cmd = new CmdArgs("-a=1 -b 2 --c=3 --d 4");
+		
+		assertEquals("-a=1 -b 2 --c=3 --d 4", cmd.toCmdLine()); 
+	}	
 }

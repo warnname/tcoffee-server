@@ -20,7 +20,9 @@ public class Arg implements Serializable {
 	public String value;
 	
 	/* default argument separator */
-	public String prefix = "-"; 
+	public String prefix = "-";
+
+	public String separator = "="; 
 
 	public Arg() {}
 	
@@ -93,7 +95,7 @@ public class Arg implements Serializable {
 			result
 				.append(prefix) 
 				.append(name)
-				.append("=")
+				.append(separator)
 				.append(v);
 		}
 		

@@ -1204,17 +1204,17 @@
       <qsub>
       <tcoffee>
         <args>
-          -other_pg=apdb 
-          -aln=${alignment}  
-          -apdb_outfile=default 
-          -outfile=default 
-          -io_format=hsg3 
-          -output=score_html 
-          -maximum_distance=${srad} 
-          -md_threshold=${t1}
-          -similarity_threshold=${t2}  
-          -run_name=result 
-          -quiet=stdout
+          -other_pg apdb 
+          -aln ${alignment}  
+          -apdb_outfile default 
+          -outfile default 
+          -io_format hsg3 
+          -output score_html 
+          -maximum_distance ${srad} 
+          -md_threshold ${t1}
+          -similarity_threshold ${t2}  
+          -run_name result 
+          -quiet stdout
         </args> 
       </tcoffee>
       </qsub>
