@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import org.apache.log4j.MDC;
 
+import play.Play;
 import play.PlayPlugin;
 import play.mvc.Http;
 import play.mvc.Http.Request;
@@ -56,7 +57,7 @@ public class TracePlugin extends PlayPlugin {
 
     @Override
     public boolean rawInvocation(Request request, Response response) throws Exception {
-        if (request.path.equals("/@db")) {
+        if (request.path.equals("/@db") && "true".equals(Play.configuration.getProperty("settings.db.webconsole"))) {
             response.status = Http.StatusCode.MOVED;
 
             // For H2 embeded database, we'll also start the Web console
@@ -66,7 +67,8 @@ public class TracePlugin extends PlayPlugin {
             h2Server = org.h2.tools.Server.createWebServer();
             h2Server.start();
 
-            response.setHeader("Location", "http://localhost:8082/");
+            String location = Play.configuration.getProperty("settings.db.webconsole.location", "http://localhost:8082/");
+            response.setHeader("Location", location);
             return true;
         }
         return false;
