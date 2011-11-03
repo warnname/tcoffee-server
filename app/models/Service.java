@@ -33,6 +33,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.QuickException;
  
+/** 
+ * Defines an runnable service contained by a {@link Bundle}
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 @XStreamAlias("service")
 public class Service implements Serializable {
 

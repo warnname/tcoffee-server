@@ -1,7 +1,12 @@
+Hello, 
+
 Your alignment has been completed. 
 
 Click here to view the result --> ${url} 
 
+If you have questions, suggestions or to report problems 
+do not reply to this message, write instead to tcoffee@googlegroups.com. 
+  
 
 Cheers, 
 T-Coffee team

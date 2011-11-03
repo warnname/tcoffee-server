@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import play.libs.Crypto;
 import play.mvc.Router;
 import play.test.UnitTest;
 
@@ -53,12 +54,22 @@ public class AppPropsTest extends UnitTest {
 	}
 	
 	@Test
-	public void testGetProperty() {
+	public void testGetString() {
 		assertEquals( "1", props.getString("alpha"));
 		assertEquals( "2", props.getString("beta"));
 		assertEquals( "99", props.getString("xxx", "99"));
 		assertNull( props.getString("xxx"));
 	}	
+	
+	@Test 
+	public void testGetEncruptedString() { 
+		String secret = Crypto.encryptAES("Hola");
+		secret = "{{{" + secret + "}}}";
+		props.put("secret", secret);
+
+		assertEquals( "Hola", props.getString("secret") );
+				
+	}
 
 	@Test 
 	public void testContainsKey() {
@@ -115,4 +126,5 @@ public class AppPropsTest extends UnitTest {
 		assertEquals("localhost:9000", props.getHostName());
 	
 	}
+	
 }

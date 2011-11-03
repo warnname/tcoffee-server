@@ -20,6 +20,7 @@ import org.apache.log4j.RollingFileAppender;
 
 import play.Logger;
 import play.Play;
+import play.libs.Crypto;
 import play.libs.IO;
 import play.libs.Time;
 import play.mvc.Router;
@@ -436,7 +437,15 @@ public class AppProps implements Serializable  {
 		Check.notNull(key, "Argument 'key' cannot be null");
 		if( properties == null ) return defValue;
 		
+		/*
+		 * when a value is wrapped by three brackets it is assumed to be encrypted, 
+		 * so it will be decrypted before to the returned 
+		 */
 		String value = properties.getProperty(key);
+		if( value != null && value.startsWith("{{{") && value.endsWith("}}}") ) { 
+			value = value.substring(3, value.length()-3);
+			value = Crypto.decryptAES(value);
+		}
 		return value != null ? value : defValue;
 	}
 

@@ -33,6 +33,7 @@ import exception.QuickException;
  *   
  * @author Paolo Di Tommaso
  *
+ * @see Service
  */
 @XStreamAlias("bundle")
 public class Bundle implements Serializable {

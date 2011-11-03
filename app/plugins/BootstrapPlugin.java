@@ -4,8 +4,10 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.Properties;
 
 import job.UsageImportJob;
+import models.AppProps;
 import play.Logger;
 import play.Play;
 import play.PlayPlugin;
@@ -33,6 +35,20 @@ public class BootstrapPlugin extends PlayPlugin {
 		 */
 		createDatabaseIfNotExists();
 
+		
+		/* 
+		 * https://play.lighthouseapp.com/projects/57987-play-framework/tickets/585
+		 */
+		if( "aws".equals(Play.configuration.getProperty("mail.transport.protocol")))  { 
+			String userkey = AppProps.instance().getString("mail.aws.user");
+			String secretid = AppProps.instance().getString("mail.aws.password");
+			
+		    Properties props = play.libs.Mail.getSession().getProperties();
+		    props.setProperty("mail.transport.protocol.rfc822","aws");
+		    props.setProperty("mail.aws.user", userkey );
+		    props.setProperty("mail.aws.password", secretid );
+		}
+		
 	}
 	
 	private void createDatabaseIfNotExists() {
