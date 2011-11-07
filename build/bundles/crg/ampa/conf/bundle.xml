@@ -81,10 +81,15 @@
           <to>${email}</to>
           <subject>AMPA result</subject>
           <body>
+          Hello, 
+          
           Your AMPA process been completed. 
           
           Click here to view --> ${_result_url} 
           
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
+
           
           Cheers, 
           AMPA team
@@ -105,9 +110,14 @@
           <to>${email}</to>
           <subject>AMPA process result</subject>
           <body>
+          Hi, 
+          
           Unfortunately your AMPA process terminated with errors. 
           
           Click here to check --> ${_result_url} 
+          
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
           
           
           Cheers, 
