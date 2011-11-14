@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+
+<title> Cols </title>
+
+<style>
+#left {
+    width: 200px;
+    float: left;
+}
+
+#right {
+    margin-left:200px; /* Change this to whatever the width of your left column is*/
+}
+
+.clear {
+    clear: both;
+}
+
+ul.filelist li.folder {
+	cursor: pointer;
+	list-style-image: url(@{'/public/images/ff_folder.png'});
+} 
+
+ul.filelist li.file {
+	cursor: pointer;
+	list-style-image: url(@{'/public/images/ff_page_white.png'})
+} 
+
+ul.filelist li.file:HOVER, ul.filelist li.folder:HOVER {
+	text-decoration: underline;
+}
+</style>
+
+<link href="@{'/public/fileuploader/fileuploader.css'}" rel="stylesheet" type="text/css">	
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
+<script type="text/javascript" src="@{'/public/fileuploader/fileuploader.js'}" ></script> 
+
+</head>
+
+<body>
+<h1>File chooser</h1>
+<div id="container">
+
+
+<div id="left">
+<ul>
+<li><a href="javascript:void(0)" id="a_upload" >Upload</a></li>
+<li><a href="javascript:void(0)" id="a_recent" >Recent data</a></li>
+<li><a href="javascript:void(0)" id="a_public" >Public dataset</a></li>
+<li><a href="javascript:void(0)" id="a_dropbox" >Dropbox</a></li>
+</ul>
+</div>
+
+<div id="right">
+	
+	<!--
+		Basic File Chooser 
+		-->
+	<div id="p_choose" style="display:none">
+		<input type="text" id="queryfield" name="queryfield"/> <button id="searchbtn">Search</button>
+		<div id="result_items">
+		<a href="@{Dropbox.connect()}" target="_blank" >connect</a>
+		</div>
+	</div>
+	
+	
+	
+	<!--
+	  	File upload container 
+		-->
+	<div id="p_upload" style="display:none">
+	<p>To upload a file, click on the button below. Drag-and-drop is supported in FF, Chrome.</p>
+	<p>Progress-bar is supported in FF3.6+, Chrome6+, Safari4+</p>
+	
+	<div id="file-uploader-demo1">		
+		<noscript>			
+			<p>Please enable JavaScript to use file uploader.</p>
+			<!-- or put a simple form for upload here -->
+		</noscript>         
+	</div>
+    
+    <script>        
+        function createUploader(){            
+            var uploader = new qq.FileUploader({
+                element: document.getElementById('file-uploader-demo1'),
+                action: 'do-nothing.htm',
+                debug: true
+            });           
+        }
+        
+        // in your app create uploader as soon as the DOM is ready
+        // don't wait for the window to load  
+        window.onload = createUploader;     
+    </script>    
+	</div>
+	
+</div>
+
+<div class="clear"></div>
+
+
+
+<script>
+
+var urlSearchPublic = "@{FileChooser.searchPublic}";
+var urlSearchDropbox = "@{FileChooser.searchDropbox}";
+var urlSearchRecent = "@{FileChooser.searchRecent}";
+
+var controller = urlSearchDropbox;
+
+function search( q ) { 
+	var url = controller;
+	if( q != null ) { url += "?query="+q  }
+	$('#result_items').load( url );
+
+}
+
+
+$(document).ready(function() { 
+
+	/* search button action */
+	$('#searchbtn').click(function() {
+		var q = $('#queryfield').val();
+		search(q)
+	})
+
+	/* query field action */
+	$('#queryfield').bind('keypress', function(e) {
+		var code = (e.keyCode ? e.keyCode : e.which);
+		if(code == 13) { //Enter keycode
+			$('#searchbtn').click();
+		}
+		 
+	});
+	
+	/* 
+	 * the navigation bar 
+	 */
+	 
+	/* File upload */
+	$('#a_upload').click(function() {
+		$('#p_choose').hide();	
+		$('#p_upload').show()	
+	});
+	
+	/* Recent file chooser */
+	$('#a_recent').click(function() {
+		controller = urlSearchRecent;
+		$('#p_upload').hide()	
+		$('#p_choose').show();	
+		search() 
+	} );
+
+	/* Dropbox file chooser */
+	$('#a_dropbox').click(function() {
+		controller = urlSearchDropbox;
+		$('#p_choose').show();	
+		$('#p_upload').hide()	
+		search() 
+	} );
+
+	/* Public dataset */
+	$('#a_public').click(function() {
+		controller = urlSearchPublic;
+		$('#p_choose').show();	
+		$('#p_upload').hide()	
+		search() 
+	} );
+	
+	
+	$('#a_public').click();
+})
+</script>
+
+</div>
+</body>
+</html>

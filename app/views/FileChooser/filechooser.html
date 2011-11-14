@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+
+<title>File Chooser</title>
+
+<style>
+</style>
+
+<link href="@{'/public/filechooser.css'}" rel="stylesheet" type="text/css">	
+<link href="@{'/public/fileuploader/fileuploader.css'}" rel="stylesheet" type="text/css">	
+<link href="@{'/public/filetree/jqueryFileTree.css'}" rel="stylesheet" type="text/css">	
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
+<script type="text/javascript" src="@{'/public/fileuploader/fileuploader.js'}" ></script> 
+<script type="text/javascript" src="@{'/public/filetree/jqueryFileTree.js'}?v=1.01_1" ></script> 
+
+</head>
+
+<body>
+<div id="container">
+<div id="header">
+<h1>File chooser</h1>
+</div>
+
+
+<div id="left">
+<ul>
+<li><a href="javascript:void(0)" id="a_upload" >Upload</a></li>
+<li class="selected"><a href="javascript:void(0)" id="a_url" >URL</a></li>
+<li><a href="javascript:void(0)" id="a_recent" >Recent data</a></li>
+<li><a href="javascript:void(0)" id="a_public" >Public dataset</a></li>
+<li><a href="javascript:void(0)" id="a_dropbox" >Dropbox</a></li>
+</ul>
+</div>
+
+<div id="right">
+	
+	<!--
+		Basic File Chooser 
+		-->
+	<div id="p_choose" style="display:none">
+		<div id="queryarea">
+		<input type="text" id="queryfield" name="queryfield"/> <button id="searchbtn" class="button">Search</button>
+		</div>
+		<div id="result_items">
+		</div>
+	</div>
+	
+	
+	
+	<!--
+	  	File upload container 
+		-->
+	<div id="p_upload" style="display:none">
+	<p>To upload a file, click on the button below. Drag-and-drop is supported in FF, Chrome.</p>
+	<p>Progress-bar is supported in FF3.6+, Chrome6+, Safari4+</p>
+	
+	<div id="file-uploader-demo1">		
+		<noscript>			
+			<p>Please enable JavaScript to use file uploader.</p>
+			<!-- or put a simple form for upload here -->
+		</noscript>         
+	</div>
+    
+    <script>        
+        function createUploader(){            
+            var uploader = new qq.FileUploader({
+                element: document.getElementById('file-uploader-demo1'),
+                action: 'do-nothing.htm',
+                debug: true
+            });           
+        }
+        
+        // in your app create uploader as soon as the DOM is ready
+        // don't wait for the window to load  
+        window.onload = createUploader;     
+    </script>    
+	</div>
+	
+	
+	<div id="footer" >
+	<button id="btncancel" class="button">Cancel</button>
+	<button id="btnselect" class="button blue">Select</button>
+	</div>
+	
+</div>
+
+<div class="clear"></div>
+</div>
+
+
+<script type="text/javascript">
+
+var isDropboxLinked = ${isDropboxLinked};
+
+var currentEl;
+
+function reloadDropbox(flag) {
+	if( flag === true || flag === false ) { 
+		isDropboxLinked = flag;
+	} 
+	$('#a_dropbox').click();
+}
+
+/*
+ * Add to the specified url the query field value
+ */
+
+function searchurl(url) { 
+	var args={};
+	args['query']  = $('#queryfield').val();
+	var q="";
+	for( var name in args ) if(args[name]!=null) {  
+		q+=(q=="" && url.indexOf('?')==-1) ? "?" : "&"; q+=name+"="+escape(args[name]); 
+	} 
+	return url + q; 
+} 
+
+$(window).resize(function() {
+	var result = $('#result_items');
+	if( result && result.is(':visible') ) { 
+		var t1=$('#result_items').position().top;
+		var t2=$('#footer').position().top;
+		$('#result_items').css('height', t2-t1-10);
+	} 
+});
+
+$(document).ready(function() { 
+	
+	/* search button action */
+	$('#searchbtn').click(function() {
+		$(currentEl).click();
+	})
+
+	/* query field action */
+	$('#queryfield').bind('keypress', function(e) {
+		var code = (e.keyCode ? e.keyCode : e.which);
+		if(code == 13) { //Enter keycode
+			$(currentEl).click();
+		}
+		 
+	});
+	
+	/* 
+	 * the navigation bar 
+	 */
+	 
+	 
+	/* File upload */
+	$('#a_upload').click(function() {
+		$('#p_choose').hide();	
+		$('#p_upload').show()	
+		$('#left li').removeClass('selected');
+		$(this).parent('li').addClass('selected');
+		
+		currentEl=this;
+	});
+	
+	/* 
+	 * Recent file chooser 
+	 */
+	$('#a_recent').click(function() {
+		
+		var opt = { 
+				root: '/', 
+				script: searchurl("@{FileChooser.listRecentData}"), 
+				folderEvent: 'click', 
+				expandSpeed: 750, 
+				collapseSpeed: 750,
+				multiFolder: false
+			}
+		
+		$('#result_items').fileTree( opt, function(file) { alert(file); } );
+		
+		$('#p_upload').hide()	
+		$('#p_choose').show();	
+		$('#left li').removeClass('selected');
+		$(this).parent('li').addClass('selected');
+		currentEl=this;
+	} );
+
+	/* 
+	 * Dropbox file chooser 
+	 */
+	$('#a_dropbox').click(function() {
+		
+		// if dropbox is linked shows the file tree chooser 
+		if(isDropboxLinked) { 
+			var opt = { root: '/', 
+					  script: searchurl("@{FileChooser.listDropboxData}"), 
+					  folderEvent: 'click', 
+					  expandSpeed: 750, 
+					  collapseSpeed: 750, 
+					  multiFolder: false 
+					}; 
+
+			$('#result_items').fileTree(opt,function(file) {  alert(file); } );
+		}
+		// otherwise 
+		else {
+			$('#result_items').load( "@{FileChooser.listDropboxData}" );
+		}
+		
+		$('#p_choose').show();	
+		$('#p_upload').hide()	
+		$('#left li').removeClass('selected');
+		$(this).parent('li').addClass('selected');
+		
+		currentEl=this;
+	
+	} );
+
+	/* 
+	 * Public dataset 
+	 */
+	$('#a_public').click(function() {
+
+		$('#p_choose').show();	
+		$('#p_upload').hide();
+		$('#left li').removeClass('selected');
+		$(this).parent('li').addClass('selected');
+		
+		var t1=$('#result_items').position().top;
+		var t2=$('#footer').position().top;
+		$('#result_items').css('height', t2-t1-10);
+
+		var opt = { 
+				root: '/', 
+				script: searchurl("@{FileChooser.listPublicData}"), 
+				folderEvent: 'click', 
+				expandSpeed: 750, 
+				collapseSpeed: 750,
+				multiFolder: false
+			}
+		
+		$('#result_items').fileTree( opt, function(file) { alert(file); } );
+
+		
+		
+		currentEl=this;
+
+	} );
+	
+	
+	/* force 'public' panel to be showed */
+	$('#a_public').click();
+})
+</script>
+</body>
+</html>
