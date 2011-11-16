@@ -108,7 +108,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -325,7 +325,7 @@
           
         <field type="checkbox" name="method1" label="Multiple Methods">
           <value>mafft_msa muscle_msa probconsRNA_msa</value>
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method2" label="Pairwise Methods">
@@ -453,7 +453,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -597,7 +597,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -711,7 +711,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
