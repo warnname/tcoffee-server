@@ -7,9 +7,9 @@
 <style>
 </style>
 
-<link href="@{'/public/filechooser.css'}" rel="stylesheet" type="text/css">	
 <link href="@{'/public/fileuploader/fileuploader.css'}" rel="stylesheet" type="text/css">	
 <link href="@{'/public/filetree/jqueryFileTree.css'}" rel="stylesheet" type="text/css">	
+<link href="@{'/public/filechooser.css'}" rel="stylesheet" type="text/css">	
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
 <script type="text/javascript" src="@{'/public/fileuploader/fileuploader.js'}" ></script> 
@@ -41,34 +41,104 @@
 		-->
 	<div id="p_choose" style="display:none">
 		<div id="queryarea">
-		<input type="text" id="queryfield" name="queryfield"/> <button id="searchbtn" class="button">Search</button>
+		<input type="text" id="queryfield" name="queryfield"/> <span id="icon_clear" ></span>
+		<button id="btnsearch" class="button">Search</button>
 		</div>
 		<div id="result_items">
 		</div>
 	</div>
 	
 	
-	
 	<!--
 	  	File upload container 
 		-->
-	<div id="p_upload" style="display:none">
+	<div id="p_upload" style="display:none"> 
 	<p>To upload a file, click on the button below. Drag-and-drop is supported in FF, Chrome.</p>
 	<p>Progress-bar is supported in FF3.6+, Chrome6+, Safari4+</p>
 	
-	<div id="file-uploader-demo1">		
-		<noscript>			
-			<p>Please enable JavaScript to use file uploader.</p>
-			<!-- or put a simple form for upload here -->
-		</noscript>         
+	<div id="error-message"  >
+	<span style="display:none"></span>
+	</div>
+	
+	<div id="upload-area">		
 	</div>
     
     <script>        
         function createUploader(){            
             var uploader = new qq.FileUploader({
-                element: document.getElementById('file-uploader-demo1'),
-                action: 'do-nothing.htm',
-                debug: true
+                element: document.getElementById('upload-area'),
+        	    // path to server-side upload script
+        	    action: '@{Data.ajaxupload}',
+        	    sizeLimit: 1024*1024*20, // <-- max 20 MB input files
+        	    multiple: false,
+                debug: true,
+                
+                template: 
+               		'<div class="qq-uploader">' + 
+        		        '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
+        		        '<div class="qq-upload-button"><span>Click here or drag your files in this area</span></div>' +
+        		        '<ul class="qq-upload-list"></ul>' + 
+        	     	'</div>',
+
+                // template for one item in file list
+                fileTemplate: 
+                    '<li>' +
+                        '<span class="qq-upload-file"></span>' +
+                        '<div class="upload-progress"><div class="progress-container" ><div style="width:0%"></div></div> <div style="clear:both"></div> </div> ' +
+                        '<span class="qq-upload-size"></span>' +
+                        '<a class="qq-upload-cancel" href="#">Cancel</a>' +
+                        '<span class="qq-upload-failed-text">Failed</span>' +
+                    '</li>',     
+
+        	   classes: {
+        	       // used to get elements from templates
+        	       button: 'qq-upload-button',
+        	       drop: 'qq-upload-drop-area',
+        	       dropActive: 'qq-upload-drop-area-active',
+        	       list: 'qq-upload-list',
+        	                   
+        	       file: 'qq-upload-file',
+        	       spinner: 'upload-progress',
+        	       size: 'qq-upload-size',
+        	       cancel: 'qq-upload-cancel',
+        	
+        	       // added to list item when upload completes
+        	       // used in css to hide progress spinner
+        	       success: 'qq-upload-success',
+        	       fail: 'qq-upload-fail'
+        	   },
+
+               // return false to cancel submit
+               onSubmit: function(id, fileName) {  
+        			$('#error-message > span').hide()
+        			$('.qq-upload-list').empty()
+        	   },
+
+               onProgress: function(id, fileName, loaded, total){ 
+                   var percent = Math.floor(loaded / total * 100); 
+                   $('div.progress-container > div').css('width', ''+percent+'%')
+               },
+
+               onCancel: function(id, fileName){ },
+        	   
+        	   onComplete: function(id, fileName, response){
+            	   $('#upload-progress').hide();
+            	   
+            	   if( !response.success ) {
+        				return false;
+        		   }
+
+            	   /* !!!
+            	    * !!! ADD HERE THE COMPLETE NOTIFICATION CODE 
+            	    */
+        		},
+        		
+        		// display error message 
+                showMessage: function(message){
+        			$('#error-message > span').show().text(message + " File has not been uploaded.");
+        			setTimeout( function() { $('#error-message > span').fadeOut() }, 5000 );
+                }                               
+                
             });           
         }
         
@@ -80,8 +150,9 @@
 	
 	
 	<div id="footer" >
-	<button id="btncancel" class="button">Cancel</button>
-	<button id="btnselect" class="button blue">Select</button>
+	<span id="selarea">xx</span>
+	<input type="button" id="btncancel" class="button" value="Cancel">
+	<input type="button" id="btnselect" class="button" value="Select" >
 	</div>
 	
 </div>
@@ -94,7 +165,8 @@
 
 var isDropboxLinked = ${isDropboxLinked};
 
-var currentEl;
+var currentElem;
+var currentFile;
 
 function reloadDropbox(flag) {
 	if( flag === true || flag === false ) { 
@@ -126,26 +198,76 @@ $(window).resize(function() {
 	} 
 });
 
+/* show/hide the search field clear icon */
+function iconClear( visible ) {
+	if( visible == null ) { 
+		visible = $('#queryfield').val().length == 0;
+	}
+	
+    if( !visible ) {
+        $('#icon_clear').css('visibility','visible');
+    }
+    else {
+        $('#icon_clear').css('visibility','hidden');
+    }
+
+}  
+
+
+function fileChoose( file ) { 
+	$('#selarea').text(file);
+	currentFile = file;
+}
+
+function fileChoosePublic( file ) {
+	$('#selarea').text(file);
+	currentFile = "file://${publicRoot}" + file; 
+}
+
+/* 
+ * document ready
+ */
 $(document).ready(function() { 
 	
+	$('#btncancel').click(function() {
+		self.parent.tb_remove()
+	})
+	
+	$('#btnselect').click(function() {
+		self.parent.tb_select( '${fieldId}', currentFile )
+		self.parent.tb_remove()
+	})
+	
 	/* search button action */
-	$('#searchbtn').click(function() {
-		$(currentEl).click();
+	$('#btnsearch').click(function() {
+		$(currentElem).click();
 	})
 
 	/* query field action */
 	$('#queryfield').bind('keypress', function(e) {
+		
 		var code = (e.keyCode ? e.keyCode : e.which);
 		if(code == 13) { //Enter keycode
-			$(currentEl).click();
+			$(currentElem).click();
 		}
 		 
-	});
+	})
+	.bind('keyup', function() { iconClear() })
+
+	
+	/* the icon clear action: clean the field, reload the data, hide itself */
+
+	$('#icon_clear').click(function() {
+		$('#queryfield').val('');
+		$(currentElem).click();
+        $(this).css('visibility','hidden');
+	})
+
+	iconClear();
 	
 	/* 
 	 * the navigation bar 
 	 */
-	 
 	 
 	/* File upload */
 	$('#a_upload').click(function() {
@@ -154,7 +276,7 @@ $(document).ready(function() {
 		$('#left li').removeClass('selected');
 		$(this).parent('li').addClass('selected');
 		
-		currentEl=this;
+		currentElem=this;
 	});
 	
 	/* 
@@ -171,13 +293,13 @@ $(document).ready(function() {
 				multiFolder: false
 			}
 		
-		$('#result_items').fileTree( opt, function(file) { alert(file); } );
+		$('#result_items').fileTree( opt, fileChoose );
 		
 		$('#p_upload').hide()	
 		$('#p_choose').show();	
 		$('#left li').removeClass('selected');
 		$(this).parent('li').addClass('selected');
-		currentEl=this;
+		currentElem=this;
 	} );
 
 	/* 
@@ -195,7 +317,7 @@ $(document).ready(function() {
 					  multiFolder: false 
 					}; 
 
-			$('#result_items').fileTree(opt,function(file) {  alert(file); } );
+			$('#result_items').fileTree( opt, fileChoose );
 		}
 		// otherwise 
 		else {
@@ -207,7 +329,7 @@ $(document).ready(function() {
 		$('#left li').removeClass('selected');
 		$(this).parent('li').addClass('selected');
 		
-		currentEl=this;
+		currentElem=this;
 	
 	} );
 
@@ -234,17 +356,17 @@ $(document).ready(function() {
 				multiFolder: false
 			}
 		
-		$('#result_items').fileTree( opt, function(file) { alert(file); } );
-
+		$('#result_items').fileTree( opt, fileChoosePublic );
 		
 		
-		currentEl=this;
+		currentElem=this;
 
 	} );
 	
 	
 	/* force 'public' panel to be showed */
-	$('#a_public').click();
+	$('#a_upload').click();
+	$('#queryfield').focus();
 })
 </script>
 </body>

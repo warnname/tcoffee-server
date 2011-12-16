@@ -61,18 +61,16 @@
         #{if _arg.type=='memo'}
 		<textarea id="${_arg.name}" name="${_arg.name}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} rows="6" >${_arg.value}</textarea>
 	    <div class="link">
-	    - OR - <a id="${_arg.name}_uploader" href="javascript:void(0)" >click here to upload a file</a>
+	    - OR - <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
 	    </div>
 		#{/if}
 		
 		#{else}
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if}  >
-	    <a id="${_arg.name}_uploader" href="javascript:void(0)" class="tiptip">Click here to upload a file</a>
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
 	    </div>
 		#{/else}
 
-	    <div class="wait" style="display:none" > <img src="@{'/public/images/ajax-small.gif'}"  /> Wait while your upload is completed ..</div>
-	    <div class="error" ></div>
 	    <div class="result" #{if !_arg.hasFile() } style="display:none" #{/if} >
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
@@ -80,62 +78,9 @@
 	    	[ <a href="javascript:void(0)" class="cancel">x</a> ]
 	    	</span>  
 	    </div>
+	    
     </div>
-	<script type="text/javascript">
-	$(document).ready(function() { 
-	    var sample=$('#${_arg.name}_sample'); /* as defined in field-sample.html */
-	    var text=$('#${_arg.name}');  
-		var ui=$('#${_arg.name}_wrap');
-		var timeout=null;
-		/* change the UI to reflect the ajax upload */
-		var fSubmit=function(file,ext){ 
-			ui.find('div.link').hide(); 
-			timeout = setTimeout( function() { ui.find('div.wait').show(); timeout=null; }, 500 );
-			if(sample) sample.hide();
-		};
 
-		var fCancel=function() {
-			ui.find('div.link').show();
-			ui.find('div.result').hide(); 
-			if(sample) sample.show();
-
-			/* need to recreate the removed textarea */
-			if(text) { text.attr('name','${_arg.name}'); text.show(); }
-
-			/* remove the hidden field */
-			ui.find('div.result input').remove();
-			
-		}
-		
-		/* notify the ajax upload completion */
-		var fComplete=function(file,response){ 
-			if( timeout ) { clearTimeout(timeout); timeout=null; }
-			ui.find('div.wait').hide();
-			if(response.success===true) { fSuccess(file,response); } 
-			else { fError(response); }
-		};
-
-		var fSuccess=function(file,response) {
-			/* remove the memo field */
-			if(text) { text.hide(); text.removeAttr('name'); text.trigger('clearErrors'); }
-			/* inject an hidden field with the same name containing the uploaded filename */
-			ui.find('div.result').append("<input type='hidden' name='${_arg.name}' value='$ajaxupload:"+response.path+"' />");
-			ui.find('div.result span').prepend( response.name + " (" + response.size + ")" );
-			
-			/* feedback the upload completion */
-			ui.find('div.result').show();
-		}
-
-		var fError=function(response) {
-		}
-
-		ui.find('div.result a.cancel').click(fCancel);
-		
-		var d={name:"${_arg.name}"}; /* request params - basically the field that it is uplaoded */
-		var o={name:"${_arg.name}", action:'@{Data.upload}', responseType:'json', data:d, onSubmit:fSubmit, onComplete:fComplete };
-		new AjaxUpload('${_arg.name}_uploader', o); 
-	});
-	</script>
 	
 #{/elseif}
 

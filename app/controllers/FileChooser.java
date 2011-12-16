@@ -36,13 +36,21 @@ public class FileChooser extends Controller {
 	
 	
 	/**
-	 * The main file chooser page 
+	 * The main file chooser page. 
+	 * 
+	 * Parameters: 
+	 * - fieldId: it defines the input field name to which the filechooser dialog is binded.
+	 *   It will be used by the callback function 'tb_select' defined in the 'main.html' page  
+	 * 
+	 * 
 	 */
 	public static void index() { 
+
+		renderArgs.put("fieldId", params.get("fieldId"));
+		renderArgs.put("isDropboxLinked", Dropbox.isLinked());
+		renderArgs.put("publicRoot", publicRepo );
 		
-		boolean isDropboxLinked = Dropbox.isLinked();
-		
-		render("FileChooser/filechooser.html", isDropboxLinked);
+		render("FileChooser/filechooser.html");
 	}
 	
 	

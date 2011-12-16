@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import play.Play;
 import play.mvc.Http.Request;
@@ -170,24 +171,24 @@ public class Field implements Serializable {
 		else {
 			this.value = params.get(name);
 			
-			/* 
-			 * when uploadeable is true the field content can be uploaded via ajax,
-			 * when this happens this fields contains the reference to the uploaded 
-			 * file. if so the the filename is prefixed with the string '$ajaxupload:'
+			if( StringUtils.isEmpty(this.value) ) { 
+				return;
+			}
+			
+			/*
+			 * If the value starts with the prefix 'file://' it will read he content of the specified file
 			 */
-			if( value!=null && value.startsWith("$ajaxupload:")) {
-				String filename = value.substring("$ajaxupload:".length()).trim();
+			if( value.toLowerCase().startsWith("file://") ) { 
+				String filename = value.substring("file://".length()).trim();
 				try {
 					value = FileUtils.readFileToString(new File(filename));
 				} catch (IOException e) {
 					throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
 				}
 			}
-			else if( value != null ) {
-				// normalize value removing trailing and leading blanks and special chars
-				value = value.trim();
-			}
-		
+			
+			// normalize value removing trailing and leading blanks and special chars
+			value = value.trim();
 
 		}
 	}

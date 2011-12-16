@@ -182,6 +182,7 @@ public class Data extends CommonController {
 	 * 
 	 * @param name the file name that is being uploaded
 	 */
+	@Deprecated
 	public static void upload(String name) {
 		assertNotEmpty(name, "Missing 'name' argument on #upload action");
 		
