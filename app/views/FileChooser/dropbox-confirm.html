@@ -1,10 +1,24 @@
-<h1>Dropbox linked</h1>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Dropbox account linked</title>
+<link href="@{'/public/filechooser.css'}" rel="stylesheet" type="text/css">	
+<style type="text/css">
+body { padding: 1em; } 
+#icon_dropbox { padding-bottom: 1em }
+</style>
+</head>
 
-You can close this window and continue. 
+<body>
+<img id="icon_dropbox" src="@{'/public/images/dropbox-logo-50.png'}"  />	
 
+<p>
+Your account is linked. <a href="javascript:window.close()" >Click here to close this window and continue</a>.
+</p>
 
 <script type="text/javascript">
-window.onunload = function(){
-	window.opener.reloadDropbox(true);
-}
+setTimeout( function() { window.opener.reloadDropbox(true) }, 500 )
 </script>
+
+</body>
+</html>

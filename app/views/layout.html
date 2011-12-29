@@ -16,13 +16,13 @@
 #{get 'meta' /}
 
 <link rel="shortcut icon" type="image/x-icon" href="@{Main.favicon()}"> 
-<link href="@{'/public/layout.css'}" rel="stylesheet" type="text/css">
+<link href="@{'/public/layout.css'}?v=1.01" rel="stylesheet" type="text/css">
 #{if _bundle && _bundle.cssPath } 
 <link href="@{Application.css}" rel="stylesheet" type="text/css">
 #{/if}
 #{get 'moreStyles' /}
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery-1.6.4.min.js'}" ></script>
 <script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" ></script>
 #{get 'moreScripts' /}
 

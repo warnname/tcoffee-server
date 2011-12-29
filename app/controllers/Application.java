@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import models.AppProps;
 import models.Bundle;
@@ -27,7 +26,6 @@ import play.mvc.Util;
 import util.RouterFix;
 import util.Utils;
 import bundle.BundleRegistry;
-import controllers.Data.AjaxUpload;
 
 /**
  * The main application controller 
@@ -380,7 +378,7 @@ public class Application extends CommonController {
 	 */
 	public static void advanced() { 
 
-		Set<AjaxUpload> uploadFileList = Data.getAjaxUploads();
+		List<File> uploadFileList = Data.getUserFiles();
 		Service service = service(bundle.get().name,"adv-cmdline").copy();
 
 		if( isGET() ) { 
@@ -401,11 +399,16 @@ public class Application extends CommonController {
 				uploadFileList.clear();
 				for( File file : repo.getResult().getInputFiles() ) { 
 					if( file.exists() ) { 
-						uploadFileList.add( new AjaxUpload(file) ) ;
+						uploadFileList.add( file ) ;
 					}
 				}
 			}
 			
+			/*
+			 * !!! TODO
+			 * !!! THIS SHOULD BE FIXED
+			 * |!! Look in the 'advanced.html' the 'uploadFileList' data structure is changed from AjaxUpload to File
+			 */
 			
 			render(service, uploadFileList);
 		}
@@ -463,8 +466,8 @@ public class Application extends CommonController {
 		/* 
 		 * 2. copy the files to the target folder 
 		 */
-		for( AjaxUpload upload: uploadFileList) { 
-			service.repo().store( upload.path, upload.fileName );
+		for( File upload: uploadFileList) { 
+			service.repo().store( upload.getAbsoluteFile(), upload.getName() );
 		}
 		
 		

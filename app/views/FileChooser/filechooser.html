@@ -4,14 +4,11 @@
 
 <title>File Chooser</title>
 
-<style>
-</style>
-
-<link href="@{'/public/fileuploader/fileuploader.css'}" rel="stylesheet" type="text/css">	
 <link href="@{'/public/filetree/jqueryFileTree.css'}" rel="stylesheet" type="text/css">	
 <link href="@{'/public/filechooser.css'}" rel="stylesheet" type="text/css">	
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery-1.6.4.min.js'}" ></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}" ></script>
 <script type="text/javascript" src="@{'/public/fileuploader/fileuploader.js'}" ></script> 
 <script type="text/javascript" src="@{'/public/filetree/jqueryFileTree.js'}?v=1.01_1" ></script> 
 
@@ -26,20 +23,29 @@
 
 <div id="left">
 <ul>
-<li><a href="javascript:void(0)" id="a_upload" >Upload</a></li>
-<li class="selected"><a href="javascript:void(0)" id="a_url" >URL</a></li>
-<li><a href="javascript:void(0)" id="a_recent" >Recent data</a></li>
-<li><a href="javascript:void(0)" id="a_public" >Public dataset</a></li>
-<li><a href="javascript:void(0)" id="a_dropbox" >Dropbox</a></li>
+<li><a href="javascript:void(0)" id="a_upload" data-tab="p_upload" >Upload</a></li>
+<li><a href="javascript:void(0)" id="a_url" data-tab="p_url">URL</a></li>
+<li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recent data</a></li>
+<li><a href="javascript:void(0)" id="a_public" data-tab="p_choose" >Public dataset</a></li>
+<li><a href="javascript:void(0)" id="a_dropbox" data-tab="p_dropbox">Dropbox</a></li>
 </ul>
 </div>
 
 <div id="right">
+	<div id="wait_label" style="display: none">
+	Loading. Wait please ...
+	</div>
+	
+	
+	<div id="error-message"  >
+	<span style="display: none"></span>
+	</div>
+	
 	
 	<!--
-		Basic File Chooser 
+		The Tree based component 
 		-->
-	<div id="p_choose" style="display:none">
+	<div id="p_choose" style="display:none" class="tab">
 		<div id="queryarea">
 		<input type="text" id="queryfield" name="queryfield"/> <span id="icon_clear" ></span>
 		<button id="btnsearch" class="button">Search</button>
@@ -48,109 +54,72 @@
 		</div>
 	</div>
 	
+	<!--  
+		URL selection 
+	 -->
+	<div id="p_url" class="tab" style="display:none">
+		<b>Paste a URL here&nbsp;</b> 
+		<input type="text" id="urlfield" >
+		<span id="icon_url" class="wait_spinner" style="display:none"></span>
+		
+		<div id="url_feedback" style="display:none">
+		    <img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+	    	<div style="position:relative; left:1em; top:26px;" >
+				<span id="url_fname">filename.txt</span> <span id="url_fsize">10 K</span>
+				<div id="url_fmessage">
+				Click <i>Select</i> button below to use this file
+				</div>
+			</div>
+			<div style="clear: both"> </div>
+
+		</div>
+	</div>
 	
 	<!--
 	  	File upload container 
 		-->
-	<div id="p_upload" style="display:none"> 
-	<p>To upload a file, click on the button below. Drag-and-drop is supported in FF, Chrome.</p>
-	<p>Progress-bar is supported in FF3.6+, Chrome6+, Safari4+</p>
+	<div id="p_upload" class="tab" style="display:none"> 
+	<div id="qq-upload-elem"> </div>
 	
-	<div id="error-message"  >
-	<span style="display:none"></span>
+	<ul id="qq-upload-list" class="qq-upload-list"> 
+		<!-- 
+         <li>
+             <span class="qq-upload-file">file_download.txt</span>
+             <div class="upload-progress"><div class="progress-container" ><div style="width:50%"></div></div> <div style="clear:both"></div> </div> 
+             <span class="qq-upload-size"></span>
+             <a class="qq-upload-cancel" href="#">Cancel</a>
+             <span class="qq-upload-failed-text">Failed</span>
+         </li>     
+		 -->
+	</ul>
 	</div>
+
+	<!-- 
+		Dropbox connect 
+		-->
+	<div id="p_dropbox" class="tab" style="display:none"  >
+	<img id="icon_dropbox" src="@{'/public/images/dropbox-logo-50.png'}"/>	
+	<p style="margin: 1em auto 1.5em">
+	Do you have a Dropbox account? You can access files stored in your account
+	simply <a href="javascript:void(0)" id="linkbegin" >clicking here</a>.
+	</p>
 	
-	<div id="upload-area">		
-	</div>
-    
-    <script>        
-        function createUploader(){            
-            var uploader = new qq.FileUploader({
-                element: document.getElementById('upload-area'),
-        	    // path to server-side upload script
-        	    action: '@{Data.ajaxupload}',
-        	    sizeLimit: 1024*1024*20, // <-- max 20 MB input files
-        	    multiple: false,
-                debug: true,
-                
-                template: 
-               		'<div class="qq-uploader">' + 
-        		        '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
-        		        '<div class="qq-upload-button"><span>Click here or drag your files in this area</span></div>' +
-        		        '<ul class="qq-upload-list"></ul>' + 
-        	     	'</div>',
+	<hr>
+	<p id="dropbox_message">
+	Dropbox box is a popular synchornization/backup service that let to store your files in the cloud. 
+	To create a free account or to know more about it just visit the <a href="http://www.dropbox.com" target="_blank">Dropbox</a> web page.	
+	</p>	 
+	<script type="text/javascript">
+	$('#linkbegin').click(function() {
+		window.open("@{Dropbox.connect}", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=600, top=10, left=10");
+	} )
+	</script> 
+	</div>	
 
-                // template for one item in file list
-                fileTemplate: 
-                    '<li>' +
-                        '<span class="qq-upload-file"></span>' +
-                        '<div class="upload-progress"><div class="progress-container" ><div style="width:0%"></div></div> <div style="clear:both"></div> </div> ' +
-                        '<span class="qq-upload-size"></span>' +
-                        '<a class="qq-upload-cancel" href="#">Cancel</a>' +
-                        '<span class="qq-upload-failed-text">Failed</span>' +
-                    '</li>',     
-
-        	   classes: {
-        	       // used to get elements from templates
-        	       button: 'qq-upload-button',
-        	       drop: 'qq-upload-drop-area',
-        	       dropActive: 'qq-upload-drop-area-active',
-        	       list: 'qq-upload-list',
-        	                   
-        	       file: 'qq-upload-file',
-        	       spinner: 'upload-progress',
-        	       size: 'qq-upload-size',
-        	       cancel: 'qq-upload-cancel',
-        	
-        	       // added to list item when upload completes
-        	       // used in css to hide progress spinner
-        	       success: 'qq-upload-success',
-        	       fail: 'qq-upload-fail'
-        	   },
-
-               // return false to cancel submit
-               onSubmit: function(id, fileName) {  
-        			$('#error-message > span').hide()
-        			$('.qq-upload-list').empty()
-        	   },
-
-               onProgress: function(id, fileName, loaded, total){ 
-                   var percent = Math.floor(loaded / total * 100); 
-                   $('div.progress-container > div').css('width', ''+percent+'%')
-               },
-
-               onCancel: function(id, fileName){ },
-        	   
-        	   onComplete: function(id, fileName, response){
-            	   $('#upload-progress').hide();
-            	   
-            	   if( !response.success ) {
-        				return false;
-        		   }
-
-            	   /* !!!
-            	    * !!! ADD HERE THE COMPLETE NOTIFICATION CODE 
-            	    */
-        		},
-        		
-        		// display error message 
-                showMessage: function(message){
-        			$('#error-message > span').show().text(message + " File has not been uploaded.");
-        			setTimeout( function() { $('#error-message > span').fadeOut() }, 5000 );
-                }                               
-                
-            });           
-        }
-        
-        // in your app create uploader as soon as the DOM is ready
-        // don't wait for the window to load  
-        window.onload = createUploader;     
-    </script>    
-	</div>
 	
-	
+	<!--  The dialog footer area containing the buttons  -->
 	<div id="footer" >
-	<span id="selarea">xx</span>
+	<span id="selarea"></span>
 	<input type="button" id="btncancel" class="button" value="Cancel">
 	<input type="button" id="btnselect" class="button" value="Select" >
 	</div>
@@ -163,21 +132,80 @@
 
 <script type="text/javascript">
 
-var isDropboxLinked = ${isDropboxLinked};
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Add the methods 'startsWith' and 'endsWith' to 'String' class
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+ 
+String.prototype.startsWith = function(str) {return (this.match("^"+str)==str)}
+String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Shows an 'indicator' on ajax operation. The indicator visualization is 
+ * deferred by 100ms to avoid flickering on fast ajax opeartion
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+var waitLabelTimeout
+$(document)
+	.ajaxStart(function() { waitLabelTimeout=setTimeout(function() {$('#wait_label').show()}, 100) } )
+	.ajaxStop(function() { if(waitLabelTimeout) { clearTimeout(waitLabelTimeout); waitLabelTimeout=null } $('#wait_label').hide() } )
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Reload the Dropbox component to force refresh of the content. 
+ * This method is inoked when the Dropbox user's account is linked by 
+ * the page 'dropbox-confirm.html'
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+function reloadDropbox(flag) {
+	$('#a_dropbox').click();
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Handles singles and double events. 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+ 
+function dblclick( single, dbl, delay ) {
+	var start;
+	var elapsed;
+	if( delay == null ) delay = 250 
+	
+	return function() {
+		if(start==null) {
+			start = new Date().getTime();		
+			return single.apply(this,arguments)
+		}
+
+		elapsed = new Date().getTime() - start
+		if( elapsed < delay ) {
+			start = null;
+			return dbl.apply(this,arguments)	
+		}
+		else {
+			start = new Date().getTime();		
+			return single.apply(this,arguments)
+		} 
+	} 
+} 
 
 var currentElem;
 var currentFile;
 
-function reloadDropbox(flag) {
-	if( flag === true || flag === false ) { 
-		isDropboxLinked = flag;
-	} 
-	$('#a_dropbox').click();
-}
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Pass the selected filename to the parent window and close the dialog box
+ * Note the parent window MUST define the 'tb_select' function as well as 
+ * it have to use the ThickBox js library (http://jquery.com/demo/thickbox/)
+ * See 'main.html'
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-/*
+function closedialog() {
+	// select the file and close the dialog 
+	if( self.parent.tb_select && currentFile ) {
+		self.parent.tb_select( '${fieldId}', currentFile )
+		self.parent.tb_remove()
+	}
+} 
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  * Add to the specified url the query field value
- */
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 function searchurl(url) { 
 	var args={};
@@ -189,6 +217,10 @@ function searchurl(url) {
 	return url + q; 
 } 
 
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Adapts the 'tree' area dimension on window resize. 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
 $(window).resize(function() {
 	var result = $('#result_items');
 	if( result && result.is(':visible') ) { 
@@ -198,7 +230,11 @@ $(window).resize(function() {
 	} 
 });
 
-/* show/hide the search field clear icon */
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Show / hide the search field clear icon 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
 function iconClear( visible ) {
 	if( visible == null ) { 
 		visible = $('#queryfield').val().length == 0;
@@ -214,36 +250,75 @@ function iconClear( visible ) {
 }  
 
 
-function fileChoose( file ) { 
-	$('#selarea').text(file);
-	currentFile = file;
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Show a message in the error area and disapear after 5 seconds  
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+function showErrorMessage(message){
+	$('#error-message > span').show().text(message);
+	setTimeout( function() { $('#error-message > span').fadeOut(100) }, 5000 );
 }
 
-function fileChoosePublic( file ) {
-	$('#selarea').text(file);
-	currentFile = "file://${publicRoot}" + file; 
-}
-
-/* 
- * document ready
- */
-$(document).ready(function() { 
+function showErrorAjax( jqXHR ) { 
+	if( jqXHR == null ) { 
+		showErrorMessage("Unknown error")
+		return
+	}
 	
+	var resp = jqXHR.responseText
+	if( resp == null ) {
+		showErrorMessage( jqXHR.statusText )
+		return
+	}
+	
+	resp = $.trim(resp)
+	// try to parse as JSON object 
+	if( resp.startsWith('{') && resp.endsWith('}')) { 
+		try { 
+			resp = $.parseJSON(resp);
+			resp = resp.message || jqXHR.statusText;
+		}
+		catch(e) { 
+			resp = jqXHR.statusText;
+		}
+	}
+
+	showErrorMessage(resp);
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Here start the DOCUMENT READY function 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+$(document).ready(function() { 
+
+	
+	/* --------------------------------------------------------------------
+	 * Handles the 'Cancel' button action
+	 * -------------------------------------------------------------------- */
 	$('#btncancel').click(function() {
 		self.parent.tb_remove()
 	})
 	
+	/* --------------------------------------------------------------------
+	 * Handles the 'Select' button action
+	 * -------------------------------------------------------------------- */
 	$('#btnselect').click(function() {
 		self.parent.tb_select( '${fieldId}', currentFile )
 		self.parent.tb_remove()
 	})
 	
-	/* search button action */
+	/* --------------------------------------------------------------------
+	 * Handles the 'Search' button action
+	 * -------------------------------------------------------------------- */
 	$('#btnsearch').click(function() {
 		$(currentElem).click();
 	})
 
-	/* query field action */
+
+	/* --------------------------------------------------------------------
+	 * Events for the 'Query' field
+	 * -------------------------------------------------------------------- */
 	$('#queryfield').bind('keypress', function(e) {
 		
 		var code = (e.keyCode ? e.keyCode : e.which);
@@ -255,7 +330,9 @@ $(document).ready(function() {
 	.bind('keyup', function() { iconClear() })
 
 	
-	/* the icon clear action: clean the field, reload the data, hide itself */
+	/* --------------------------------------------------------------------
+	/* Clean the query field, reload the data, hide itself 
+	 * -------------------------------------------------------------------- */
 
 	$('#icon_clear').click(function() {
 		$('#queryfield').val('');
@@ -265,83 +342,251 @@ $(document).ready(function() {
 
 	iconClear();
 	
-	/* 
-	 * the navigation bar 
-	 */
-	 
-	/* File upload */
-	$('#a_upload').click(function() {
-		$('#p_choose').hide();	
-		$('#p_upload').show()	
-		$('#left li').removeClass('selected');
-		$(this).parent('li').addClass('selected');
+
+	/* --------------------------------------------------------------------
+	 * The URL field actions 
+	 * -------------------------------------------------------------------- */
+	var urlKeyupTimeout;
+	var urlLastValue;
+	var urlDone; 
+	
+	// download the file requested 
+	var urlDownload = function() {
+		url = $('#urlfield').val();
+
+		if( url == null || url == "" ) { /* empty */ return }
+		if( url == urlDone ) { /* already downloaded - skip */ return }
 		
-		currentElem=this;
+		// show ajax notification 
+		$('#url_feedback').hide()
+		$('#icon_url').show();
+		
+		// download it 
+		$.ajax('@{FileChooser.copyUrlFile}', {
+			data: { url: url }, 
+			error: function(jqXHR) { showErrorAjax(jqXHR)  },
+			success: function(data) { 
+
+				// show file download icon 
+				$('#url_fname').text( data.name )
+				$('#url_fsize').text( data.size )
+				$('#url_feedback').show()
+				
+				// enable the download button 
+				currentFile = "file://" + data.path;
+				closedialog()
+			
+			},
+			complete: function () { 
+				// hide ajax notification	
+				urlDone=url; 
+				$('#icon_url').hide();
+			} 
+		})
+		
+	}  
+	 
+	$('#urlfield').change(function() {
+		
+		if( urlKeyupTimeout ) clearTimeout(urlKeyupTimeout)
+		urlDownload()
+		
+	} )
+	
+	$('#urlfield').keyup(function() {
+		var urlValue = $(this).val();
+		if( urlLastValue === urlValue ) { return }
+		urlLastValue = urlValue;
+		
+		if( urlKeyupTimeout ) clearTimeout(urlKeyupTimeout)
+		urlKeyupTimeout = setTimeout(urlDownload, 900);
+		
+	} )
+	
+	
+	/* --------------------------------------------------------------------
+	 * Creates the ajax upload component 
+	 * -------------------------------------------------------------------- */
+	 
+	 new qq.AjaxUploader({
+		element: document.getElementById('qq-upload-elem'),
+		listElement: document.getElementById('qq-upload-list'),
+		// path to server-side upload script
+ 	    action: '@{Data.ajaxupload}',
+ 	    sizeLimit: 1024*1024*20, // <-- max 20 MB input files
+ 	    multiple: false,
+		debug: false,
+
+        // return false to cancel submit
+        onSubmit: function(id, fileName) {  
+ 			$('#error-message > span').hide()	// hide error message
+ 			$('.qq-uploader').hide()			// hide the uploader area
+ 			$('.qq-upload-list').empty()		// remove other files in the list
+		},
+	
+		onProgress: function(id, fileName, loaded, total){ 
+			var percent = Math.floor(loaded / total * 100); 
+			$('div.progress-container > div').css('width', ''+percent+'%')
+		},
+	
+		onCancel: function(id, fileName) { 
+			// show back the uploader area
+			$('.qq-uploader').show()
+		},
+	 	   
+		onComplete: function(id, fileName, response){
+			$('#upload-progress').hide();
+     	   
+			if( !response.success ) {
+ 				return false;
+			}
+
+			// !! set the current file and close the dialog by default
+			currentFile = "file://" + response.path;
+			closedialog()			
+	     	   
+		},
+	 		
+	 	// display error message 
+		showMessage: function(message) {
+			$('.qq-uploader').show()
+			showErrorMessage(message)
+		}                                
+         
+     });       	 
+	
+
+	/* --------------------------------------------------------------------
+	 * Navigation link 'Upload' 
+	 * -------------------------------------------------------------------- */
+	$('#a_upload').click(function() {
+		showTab(this);
+		$('#queryfield').focus();
 	});
 	
-	/* 
-	 * Recent file chooser 
-	 */
+	/* --------------------------------------------------------------------
+	 * Navigation link 'Recent Data' 
+	 * -------------------------------------------------------------------- */
 	$('#a_recent').click(function() {
+		
+		showTab(this)
 		
 		var opt = { 
 				root: '/', 
 				script: searchurl("@{FileChooser.listRecentData}"), 
-				folderEvent: 'click', 
 				expandSpeed: 750, 
 				collapseSpeed: 750,
 				multiFolder: false
 			}
 		
-		$('#result_items').fileTree( opt, fileChoose );
+		var choose = function(file) { 
+			currentFile = "file://${recentDataRoot}" + file;
+			btnSelectEnable()
+		}
 		
-		$('#p_upload').hide()	
-		$('#p_choose').show();	
-		$('#left li').removeClass('selected');
-		$(this).parent('li').addClass('selected');
-		currentElem=this;
+		$('#result_items').fileTree( opt, dblclick( choose, function() { closedialog() } )   );
+		$('#queryfield').focus()
+		
 	} );
 
-	/* 
-	 * Dropbox file chooser 
-	 */
+	/* --------------------------------------------------------------------
+	 * Navigation link 'Dropbox' 
+	 * -------------------------------------------------------------------- */
 	$('#a_dropbox').click(function() {
-		
-		// if dropbox is linked shows the file tree chooser 
-		if(isDropboxLinked) { 
-			var opt = { root: '/', 
-					  script: searchurl("@{FileChooser.listDropboxData}"), 
-					  folderEvent: 'click', 
-					  expandSpeed: 750, 
-					  collapseSpeed: 750, 
-					  multiFolder: false 
-					}; 
 
-			$('#result_items').fileTree( opt, fileChoose );
-		}
-		// otherwise 
-		else {
-			$('#result_items').load( "@{FileChooser.listDropboxData}" );
-		}
+		var theLink = this;		
+		$.ajax( '@{FileChooser.isDropboxLinked}', {
+			
+			success: function( response ) {
+				// when Dropbox is linked we show the file tree control 
+				// .. otherwise the Dropbox connection panel is showed
+				if( response.linked == true ) {
+					showtree()
+				} 
+				else {
+					showTab(theLink, 'p_dropbox')
+				} 
+			},
+			
+			error: function(jqXHR) {
+				showTab(theLink, 'p_dropbox')
+				showErrorAjax(jqXHR)				
+			}
+		})	
+
+		var closeOnDone;
+		var downloadComplete;
 		
-		$('#p_choose').show();	
-		$('#p_upload').hide()	
-		$('#left li').removeClass('selected');
-		$(this).parent('li').addClass('selected');
+		var	choose = function( file, item ) { 
+			closeOnDone = false; // do not close by default the dialog
+			
+			// check if the file has alredy been download ()
+			var path = item.data('filepath');
+			if( path ) {
+				currentFile = "file://" + path;
+				btnSelectEnable()
+				return; // stop here
+			}
+			
+			// proceed with download
+			btnSelectEnable(false)
+			var savedAttr = item.attr('class');
+			item.attr('class', 'wait')
+			downloadComplete=false;
+			
+		 	$.ajax({
+				url: "@{FileChooser.copyDropboxFile}",
+				data: { filePath: file }, 	
+				success: function(response){
+					
+					currentFile = "file://" + response.path;
+					item.data('filepath', response.path)
+					downloadComplete=true;
+					if( closeOnDone === true ) {
+						closedialog()
+					}
+					else { 
+						btnSelectEnable(true)
+					}
+					
+				},
+				error: function() {
+					// notify error 
+					showErrorMessage('Error accessing you Dropbox folder')			
+				}, 
+				
+				complete: function() {
+					// restore the previous attribute 
+					item.attr('class', savedAttr)
+				} 
+			});
+		 }	
 		
-		currentElem=this;
+		
+		var showtree = function () {
+			showTab(theLink, 'p_choose')
+			
+			var opt = { root: '/', 
+				  script: searchurl("@{FileChooser.listDropboxData}"), 
+				  expandSpeed: 750, 
+				  collapseSpeed: 750, 
+				  multiFolder: false 
+				}; 
+
+			$('#result_items').fileTree( opt, dblclick( choose, function() { closeOnDone=true; if(downloadComplete===true) closedialog() } ) );
+			$('#queryfield').focus()
+		
+		} 
+	
 	
 	} );
 
-	/* 
-	 * Public dataset 
-	 */
+	/* --------------------------------------------------------------------
+	 * Navigation link 'Public Data' 
+	 * -------------------------------------------------------------------- */
 	$('#a_public').click(function() {
 
-		$('#p_choose').show();	
-		$('#p_upload').hide();
-		$('#left li').removeClass('selected');
-		$(this).parent('li').addClass('selected');
+		showTab(this);
 		
 		var t1=$('#result_items').position().top;
 		var t2=$('#footer').position().top;
@@ -350,24 +595,281 @@ $(document).ready(function() {
 		var opt = { 
 				root: '/', 
 				script: searchurl("@{FileChooser.listPublicData}"), 
-				folderEvent: 'click', 
 				expandSpeed: 750, 
 				collapseSpeed: 750,
 				multiFolder: false
 			}
 		
-		$('#result_items').fileTree( opt, fileChoosePublic );
+		var choose = function(file) {
+			currentFile = "file://${publicDataRoot}" + file; 
+			btnSelectEnable()
+		}
 		
-		
-		currentElem=this;
+		$('#result_items').fileTree( opt, dblclick( choose, function() { closedialog() } ) );
+		$('#queryfield').focus()
 
 	} );
 	
+	/* --------------------------------------------------------------------
+	 * Navigation link 'URL' 
+	 * -------------------------------------------------------------------- */
+	$('#a_url').click(function() {
+		showTab(this);	
+		$('#urlfield').val("").focus();
+		$('#url_feedback').hide()
+	}) 
+		
+
+	/* --------------------------------------------------------------------
+	 * Simulate a click to initialize the first tab to be showed
+	 * -------------------------------------------------------------------- */
+	var tab = $('#' + $.cookie( 'filechooser' ) );
+	if( tab.length == 0 ) {	// when the cookie is not set OR the element is not found fallback on the default elem (Upload tab)
+		tab = $('#a_upload') 
+	}
 	
-	/* force 'public' panel to be showed */
-	$('#a_upload').click();
-	$('#queryfield').focus();
+	tab.click();
 })
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Show the TAB select and hide the others 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+function showTab( thisElem, tab ) {
+	$('#left li').removeClass('selected');
+	$(thisElem).parent('li').addClass('selected');
+
+	$('.tab').hide();		// hides all tabs (so also the current one visible)
+	if( tab == null ) { 
+		tab = $(thisElem).data('tab');
+	}
+	
+	$('#'+tab).show();	// show the 
+	
+	// set a cookie to remember the selection 
+	$.cookie( 'filechooser', $(thisElem).attr('ID') );
+	
+	// set the current selected tab 
+	currentElem = thisElem;
+
+	// disable the select button
+	btnSelectEnable(false)
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Enable/Disable 'Select' button  
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+function btnSelectEnable(status) { 
+
+	if( status == false ) { 
+		// disable btn select 
+		$('#btnselect').attr("disabled", "disabled");
+		$('#btnselect').addClass("disabled");
+	}
+	else { 
+		$('#btnselect').removeAttr("disabled");
+		$('#btnselect').removeClass("disabled");
+	}	
+	
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * AjaxUploader component definition 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+ qq.AjaxUploader = function(o){
+     // call parent constructor
+     qq.FileUploaderBasic.apply(this, arguments);
+     
+     // additional options    
+     qq.extend(this._options, {
+         element: null,
+         // if set, will be used instead of qq-upload-list in template
+         listElement: null,
+                 
+ 		template: 
+    		'<div class="qq-uploader">' + 
+		        '<div class="qq-upload-drop-area">' +
+		        '<span>Drag a file here to upload your data <br> - or - </span> ' +
+		        '<br> <div class="qq-upload-button button">click this button</div>' +
+		        '</div>' + 
+	     	'</div>',  
+
+	     // template for one item in file list
+	     fileTemplate: 
+	         '<li>' +
+	             '<span class="qq-upload-file"></span>' +
+	             '<div class="upload-progress"><div class="progress-container" ><div style="width:0%"></div></div> <div style="clear:both"></div> </div> ' +
+	             '<span class="qq-upload-size"></span>' +
+	             '<a class="qq-upload-cancel" href="#">Cancel</a>' +
+	             '<span class="qq-upload-failed-text">Failed</span>' +
+	         '</li>',     
+	
+		   classes: {
+		       // used to get elements from templates
+		       button: 'qq-upload-button',
+		       drop: 'qq-upload-drop-area',
+		       dropActive: 'qq-upload-drop-area-active',
+		       list: 'qq-upload-list',
+		                   
+		       file: 'qq-upload-file',
+		       spinner: 'upload-progress',
+		       size: 'qq-upload-size',
+		       cancel: 'qq-upload-cancel',
+		
+		       // added to list item when upload completes
+		       // defined in the CSS file to hide progress spinner
+		       success: 'qq-upload-success',
+		       fail: 'qq-upload-fail'
+		   }
+     });
+     // overwrite options with user supplied    
+     qq.extend(this._options, o);       
+
+     this._element = this._options.element;
+     this._element.innerHTML = this._options.template;        
+     this._listElement = this._options.listElement || this._find(this._element, 'list');
+     
+     this._classes = this._options.classes;
+         
+     this._button = this._createUploadButton(this._find(this._element, 'button'));        
+     
+     this._bindCancelEvent();
+     this._setupDragDrop();
+ };
+
+ // inherit from Basic Uploader
+ qq.extend(qq.AjaxUploader.prototype, qq.FileUploaderBasic.prototype);
+
+ qq.extend(qq.AjaxUploader.prototype, {
+     /**
+      * Gets one of the elements listed in this._options.classes
+      **/
+     _find: function(parent, type){                                
+         var element = qq.getByClass(parent, this._options.classes[type])[0];        
+         if (!element){
+             throw new Error('element not found ' + type);
+         }
+         
+         return element;
+     },
+     _setupDragDrop: function(){
+         var self = this,
+             dropArea = this._find(this._element, 'drop');                        
+
+         var dz = new qq.UploadDropZone({
+             element: dropArea,
+             onEnter: function(e){
+                 qq.addClass(dropArea, self._classes.dropActive);
+                 e.stopPropagation();
+             },
+             onLeave: function(e){
+                 e.stopPropagation();
+             },
+             onLeaveNotDescendants: function(e){
+                 qq.removeClass(dropArea, self._classes.dropActive);  
+             },
+             onDrop: function(e){
+                 //dropArea.style.display = 'none';
+                 qq.removeClass(dropArea, self._classes.dropActive);
+                 self._uploadFileList(e.dataTransfer.files);    
+             }
+         });
+                 
+         //dropArea.style.display = 'none';
+
+         qq.attach(document, 'dragenter', function(e){     
+             if (!dz._isValidFileDrag(e)) return; 
+             
+             //dropArea.style.display = 'block';            
+         });                 
+         qq.attach(document, 'dragleave', function(e){
+             if (!dz._isValidFileDrag(e)) return;            
+             
+             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
+             // only fire when leaving document out
+             //if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
+             //    dropArea.style.display = 'none';                                            
+             //}
+         });                
+     },
+     _onSubmit: function(id, fileName){
+         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
+         this._addToList(id, fileName);  
+     },
+     _onProgress: function(id, fileName, loaded, total){
+         qq.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
+
+         var item = this._getItemByFileId(id);
+         var size = this._find(item, 'size');
+         size.style.display = 'inline';
+         
+         var text; 
+         if (loaded != total){
+             text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
+         } else {                                   
+             text = this._formatSize(total);
+         }          
+         
+         qq.setText(size, text);         
+     },
+     _onComplete: function(id, fileName, result){
+         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
+
+         // mark completed
+         var item = this._getItemByFileId(id);                
+         qq.remove(this._find(item, 'cancel'));
+         qq.remove(this._find(item, 'spinner'));
+         
+         if (result.success){
+             qq.addClass(item, this._classes.success);    
+         } else {
+             qq.addClass(item, this._classes.fail);
+         }         
+     },
+     _addToList: function(id, fileName){
+         var item = qq.toElement(this._options.fileTemplate);                
+         item.qqFileId = id;
+
+         var fileElement = this._find(item, 'file');        
+         qq.setText(fileElement, this._formatFileName(fileName));
+         this._find(item, 'size').style.display = 'none';        
+
+         this._listElement.appendChild(item);
+     },
+     _getItemByFileId: function(id){
+         var item = this._listElement.firstChild;        
+         
+         // there can't be txt nodes in dynamically created list
+         // and we can  use nextSibling
+         while (item){            
+             if (item.qqFileId == id) return item;            
+             item = item.nextSibling;
+         }          
+     },
+     /**
+      * delegate click event for cancel link 
+      **/
+     _bindCancelEvent: function(){
+         var self = this,
+             list = this._listElement;            
+         
+         qq.attach(list, 'click', function(e){            
+             e = e || window.event;
+             var target = e.target || e.srcElement;
+             
+             if (qq.hasClass(target, self._classes.cancel)){                
+                 qq.preventDefault(e);
+                
+                 var item = target.parentNode;
+                 self._handler.cancel(item.qqFileId);
+                 qq.remove(item);
+             }
+         });
+     }    
+ }); 
+ 
 </script>
 </body>
 </html>

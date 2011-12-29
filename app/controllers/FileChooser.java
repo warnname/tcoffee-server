@@ -1,23 +1,35 @@
 package controllers;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import models.AppProps;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
+import play.Play;
+import play.libs.IO;
 import play.mvc.Controller;
+import play.mvc.Http.StatusCode;
 import play.mvc.Util;
 import play.templates.JavaExtensions;
 
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.RESTUtility;
 import com.dropbox.client2.exception.DropboxException;
@@ -32,8 +44,21 @@ public class FileChooser extends Controller {
 
 	static final int MAX = 100;
 	
-	static final File publicRepo = new File("/Users/ptommaso/workspace/tserver/public/bb3");
+	static final File publicRepo;
 	
+	static { 
+		
+		/* 
+		 * initialize the 'publicRepo' path
+		 */
+		String path = AppProps.instance().getString("settings.path.public.data", Play.getFile("public/bb3").getAbsolutePath());
+		publicRepo = new File(path);
+		
+		if( !publicRepo.exists() ) { 
+			Logger.warn("The public data root does not exist: '%s'", publicRepo);
+		}
+		
+	}
 	
 	/**
 	 * The main file chooser page. 
@@ -47,8 +72,8 @@ public class FileChooser extends Controller {
 	public static void index() { 
 
 		renderArgs.put("fieldId", params.get("fieldId"));
-		renderArgs.put("isDropboxLinked", Dropbox.isLinked());
-		renderArgs.put("publicRoot", publicRepo );
+		renderArgs.put("publicDataRoot", publicRepo );
+		renderArgs.put("recentDataRoot", Data.getUserTempPath() );
 		
 		render("FileChooser/filechooser.html");
 	}
@@ -84,7 +109,7 @@ public class FileChooser extends Controller {
     		List<FileEntry> result = new ArrayList<FileEntry>();
 	    	if( "/".equals(dir) && !StringUtils.isEmpty(query) && query.length()>=3 )  {
 	    		String sQuery = query.contains("*") ? query : "*" + query + "*";
-	    		searchInto(path, sQuery, result);
+	    		searchIntoPublicRepo(path, sQuery, result);
 	    	}
 	    	else { 
 				FilenameFilter filter = new FilenameFilter() {
@@ -116,14 +141,20 @@ public class FileChooser extends Controller {
 	    render("FileChooser/treeitem.html");
 	}	
 	
+	/**
+	 * Show the list of files available the linked 'Dropbox' account 
+     *
+	 * @param dir the directory to list 
+	 * @param query the to filter query to search into the repo
+	 */
 	public static void listDropboxData( String dir, String query ) { 
-		Logger.debug("listDropboxRepo method.  Dir: '%s' - Query: '%s'", dir, query);
+		Logger.debug("listDropboxData method.  Dir: '%s' - Query: '%s'", dir, query);
 
 		/*
 		 * check if connected otherwise shows Dropbox connection box
 		 */
 		if( !Dropbox.isLinked() ) { 
-			render("FileChooser/dropbox-connect.html");
+			error("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page.");
 		}
 		
 	    if (dir == null) {
@@ -174,21 +205,161 @@ public class FileChooser extends Controller {
 		} 
 		catch (DropboxException e) {
 			Logger.error(e,"Cannot connect Dropbox");
+			Dropbox.unlink();
 			error();
-			return;
 		}
 	
 		
 	}
 	
+	/**
+	 * Copy the a file from the Dropbox account to the user local storage 
+	 * 
+	 * @param filePath the file in the 'Dropbox' storage to be copied locally 
+	 */
+	public static void copyDropboxFile( String filePath ) { 
+		Logger.debug("copyDropboxFile method.  FilePath: '%s'", filePath);
+		
+		if( !Dropbox.isLinked() ) { 
+			// render error 
+			error("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page.");
+		}
+		
+		request.format = "json";
+		try {
+			String fileName = FilenameUtils.getName(filePath);
+			DropboxInputStream in = Dropbox.get().getFileStream(filePath, null);
+			File target = Data.newUserFile(fileName);
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(target, false));
+			IO.write(in, out);
+			// ^ Stream closed by the write method
+
+			String result = String.format("{\"success\":true, \"path\": \"%s\" }", JavaExtensions.escapeJavaScript(target.getAbsolutePath()));
+			renderJSON(result);
+		} 
+		catch( IOException e ) { 
+			Logger.error(e, "Cannot get the following file from dropbox (1): '%s'", filePath);
+			Dropbox.unlink();
+			error("Cannot get the request file from Dropbox (1)");
+		}
+		catch (DropboxException e) {
+			Logger.error(e, "Cannot get the following file from dropbox (2): '%s'", filePath);
+			Dropbox.unlink();
+			error("Cannot get the request file from Dropbox (2)");
+		}
+
+	}
+	
+	/**
+	 * Ajax action to retrieve the Dropbox link status 
+	 */
+	public static void isDropboxLinked() { 
+		request.format = "json";
+		try { 
+			String result = String.format("{\"linked\":%s }", Dropbox.isLinked());
+			renderJSON(result);
+		}
+		catch( Exception e ) { 
+			Logger.error(e,"Error verifying Dropbox link status");
+			Dropbox.unlink();
+			error("Cannot verify link status to your Dropbox account");
+		}
+	}
+	
+	/**
+	 * Download the specified URL document to the user local storage
+	 * 
+	 * @param url
+	 * @throws InterruptedException 
+	 */
+	public static void copyUrlFile( String url ) throws InterruptedException { 
+		Logger.debug("copyUrlFile method.  Url: '%s'", url);
+		request.format = "json";
+		
+		String fileName = FilenameUtils.getName(url);
+		File target = Data.newUserFile(fileName);
+		
+		try {
+			FileUtils.copyURLToFile(new URL(url), target, 15000, 5000);
+			String result = String.format(
+					"{" +
+					"\"success\":true, " +
+					"\"path\": \"%s\", " +
+					"\"size\": \"%s\"," +
+					"\"name\": \"%s\" " +
+					"}", 
+					JavaExtensions.escapeJavaScript(target.getAbsolutePath()),
+					JavaExtensions.formatSize( target.length() ),
+					JavaExtensions.escapeJavaScript(target.getName())
+					);
+			renderJSON(result);
+		} 
+		catch( MalformedURLException e ) { 
+			Logger.warn(e, "Not a valid URL: '%s'", url);
+			error(StatusCode.BAD_REQUEST, "Malformed '\"URL");
+		}
+		catch (IOException e) {
+			Logger.error(e, "Cannot download the specified URL: '%s'", url);
+			error("Cannot download the specified URL");
+		}
+		
+	}
+	
+	/**
+	 * Show in the file chooser dialog the list of rencent used files for the current user 
+	 * 
+	 * @param dir (not used)
+	 * @param query string to filter the result list 
+	 */
 	public static void listRecentData(String dir, String query) { 
+		Logger.debug("listRecentData method.  Query: '%s'", dir, query);
+		
+		final File path = Data.getUserTempPath();
+		final List<FileEntry> result = new ArrayList<FileEntry>();
+		FilenameFilter filter;
+		
+		/*
+		 * define the selection filter 
+		 */
+		if( !StringUtils.isEmpty(query) && query.length()>=3 )  {
+    		final String sQuery = query.contains("*") ? query : "*" + query + "*";
+    		filter = new FilenameFilter() {
+
+				@Override
+				public boolean accept(File dir, String name) {
+					return FilenameUtils.wildcardMatch(name, sQuery, IOCase.INSENSITIVE);
+				}}; 
+    	}
+		/*
+		 * select all except the '.' file
+		 */
+    	else { 
+			filter = new FilenameFilter() {
+			    public boolean accept(File dir, String name) {
+					return name.charAt(0) != '.';
+			    }
+			};
+    	}
+    	
+		File[] files = path.listFiles(filter);
+		for( File ff : files ) { 
+			result.add(wrap(ff,path,false));
+		}
+    	Collections.sort(result);		
+		
+		/* 
+		 * render the result
+		 */
+	    renderArgs.put("files", result);
+	    renderArgs.put("folders", new ArrayList<FileChooser.FileEntry>()); // does not contain folder by definition
+		
 	    render("FileChooser/treeitem.html");	
 	}
 
 	
 	
 	@Util
-	static boolean searchInto( File path, String query, List<FileEntry> result ) { 
+	static boolean searchIntoPublicRepo( File path, String query, List<FileEntry> result ) { 
 
 		if( path == null ) { return true; }
 		
@@ -201,7 +372,7 @@ public class FileChooser extends Controller {
 				}
 
 				if( continueTraverse && file.isDirectory() ) { 
-					continueTraverse = searchInto(file,query,result);
+					continueTraverse = searchIntoPublicRepo(file,query,result);
 				}
 				
 				if( !continueTraverse ) { 
@@ -304,7 +475,5 @@ public class FileChooser extends Controller {
 					+ ext + ", size=" + size + ", length=" + length
 					+ ", isDir=" + isDir + ", modified=" + modified + "]";
 		}
-		
-		
 	}
 }

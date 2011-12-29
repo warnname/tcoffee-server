@@ -2,6 +2,8 @@ package models;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -11,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import play.Logger;
 import play.Play;
 import play.mvc.Http.Request;
 import play.mvc.Router;
@@ -72,8 +76,7 @@ public class Field implements Serializable {
 	
 	private @XStreamOmitField Map fHintsMap;
 	
-	private @XStreamOmitField byte[] fFileContent;
-	private @XStreamOmitField File fFile;
+	private File fFile;
 	
 	
 	/**
@@ -97,6 +100,7 @@ public class Field implements Serializable {
 		this.choices = Utils.copy(that.choices);
 		this.validation = Utils.copy(that.validation);
 		this.sample = that.sample;
+		this.fFile = that.fFile;
 	}
 	
 	public Field(final String type) {
@@ -139,7 +143,6 @@ public class Field implements Serializable {
 	 * @param params the current Play request parameters 
 	 */
 	
-	
 	public void bind(Params params) {
 
 		if( "checkbox".equalsIgnoreCase(type) ) {
@@ -148,26 +151,22 @@ public class Field implements Serializable {
 			 */
 			value = Utils.asString(params.getAll(name), " ", "") ;
 		}
+
 		else if( "file".equals(type) ) {
 			/* 
-			 * manage 'file' type fields
+			 * field of type 'file' contains ALWAYS a reference (name) of a file 
+			 * uploaded to the server using the FileChooser dialog 
 			 */
 			String filename = params.get(name);
-			try {
-				if( filename!=null && filename.startsWith("$ajaxupload:")) {
-					filename = filename.substring("$ajaxupload:".length()).trim();
-				}
-				if( Utils.isNotEmpty(filename)) {
-					this.value = filename;
-					this.fFile = new File(filename);
-					this.fFileContent = FileUtils.readFileToByteArray(fFile);
-				}
-			} catch (IOException e) {
-				throw new QuickException(e, "Unable to read file content for field: '%s' for file: '%s'", name, filename);
+			if( filename!=null && filename.startsWith("file://")) {
+				filename = filename.substring("file://".length()).trim();
 			}
-			
-			
-		}
+			if( Utils.isNotEmpty(filename)) {
+				this.value = filename;
+				this.fFile = new File(filename);
+			}
+		}		
+		
 		else {
 			this.value = params.get(name);
 			
@@ -181,8 +180,10 @@ public class Field implements Serializable {
 			if( value.toLowerCase().startsWith("file://") ) { 
 				String filename = value.substring("file://".length()).trim();
 				try {
-					value = FileUtils.readFileToString(new File(filename));
-				} catch (IOException e) {
+					this.fFile = new File(filename);
+					this.value = FileUtils.readFileToString(fFile);
+				} 
+				catch (IOException e) {
 					throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
 				}
 			}
@@ -275,13 +276,6 @@ public class Field implements Serializable {
 	}
 	
 	/**
-	 * The uploaded file binary content. Only for 'file' field type
-	 */
-	public byte[] getFileContent() {
-		return fFileContent;
-	} 
-
-	/**
 	 * The uploaded file reference. Only for 'file' field type
 	 */
 	public File getFile() {
@@ -303,7 +297,49 @@ public class Field implements Serializable {
 	}
 	
 	public boolean hasFile() {
-		return fFile != null;
+		return fFile != null && fFile.exists();
+	}
+
+	/**
+	 * If the field has an upload file associated, this method will copy that 
+	 * file the specified path, updating the file reference
+	 * 
+	 * @param path
+	 */
+	void consolidate(final File path) {
+		if( !hasFile() ) return;
+
+		File target = new File( path, fFile.getName() );
+
+		if( target .equals( fFile ) ) { 
+			Logger.debug("Source and target paths are the same, nothing to do: '%s'", target);
+			return;
+		}
+		
+		FileInputStream sIn = null;
+		FileOutputStream sOut = null;
+		try { 
+			sIn = new FileInputStream(fFile);
+			sOut = new FileOutputStream(target);
+			IOUtils.copyLarge( sIn, sOut );
+			
+			// update the file attribute to the new location 
+			fFile = target;
+			// !! Important
+			// When field 'type is 'file' the value attribute contains the 
+			// absolute path to that path
+			if( "file".equals(type) ) { 
+				value = fFile.getAbsolutePath();
+			}
+		}
+		catch( IOException e ) { 
+			throw new QuickException(e, "Unable to copy file '%s' to '%s'", fFile, target);
+		}
+		finally { 
+			try { sIn.close(); } catch( IOException e ) {};
+			try { sOut.close(); } catch( IOException e ) {}
+		}
+		
 	} 
 	
 }

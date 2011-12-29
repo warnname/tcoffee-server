@@ -55,34 +55,57 @@
 	<textarea id="${_arg.name}" name="${_arg.name}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} rows="6" >${_arg.value}</textarea>
 #{/elseif}
 
-#{elseif _arg.type == 'memo' || _arg.type == 'file' }
+#{elseif _arg.type == 'memo' }
 
-    <div id="${_arg.name}_wrap" >
-        #{if _arg.type=='memo'}
-		<textarea id="${_arg.name}" name="${_arg.name}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} rows="6" >${_arg.value}</textarea>
-	    <div class="link">
-	    - OR - <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
-	    </div>
-		#{/if}
-		
+    <div id="${_arg.name}_wrap" class="field_wrap">
+        %{ def fclass='field'; if(_arg.useTipTip) { fclass+=' tiptip' }  }%
+        #{if _arg.hasFile() } 
+		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="${fclass}" rows="6" style="display:none" >file://${_arg.getFilePath()}</textarea>
+	    #{/if}
 		#{else}
-	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if}  >
+		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="${fclass}" rows="6" >${_arg.value}</textarea>
+		#{/else}
+			    
+	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} > - OR -
 	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
 	    </div>
-		#{/else}
-
-	    <div class="result" #{if !_arg.hasFile() } style="display:none" #{/if} >
+		
+	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
-	    	#{if _arg.hasFile()} ${_arg.getFileName()} <input type='hidden' name='${_arg.name}' value='$ajaxupload:${_arg.filePath}' />  #{/if} 
-	    	[ <a href="javascript:void(0)" class="cancel">x</a> ]
+	    	<span class="upload_name"> 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFilePath())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	</span> 
+	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
 	    	</span>  
+	    	<div style="clear: both"></div>
 	    </div>
 	    
     </div>
-
-	
 #{/elseif}
+
+#{elseif _arg.type == 'file' }
+    <div id="${_arg.name}_wrap" class="field_wrap">
+		<input id="${_arg.name}" name='${_arg.name}' type='hidden' class="field" value='${_arg.filePath}' />
+
+	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} >
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
+	    </div>
+		
+	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >
+	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+	    	<span style="position:relative; left:1em; top:26px;">
+	    	<span class="upload_name"> 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFilePath())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	</span> 
+	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
+	    	</span>  
+	    	<div style="clear: both"></div>
+	    </div>
+	    
+    </div>
+#{/elseif}
+
 
 #{else}
 	<span>(Error rendering file: ${_arg.name} - Unknown type "${_arg.type}")</span>

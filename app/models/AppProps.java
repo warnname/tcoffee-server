@@ -514,6 +514,10 @@ public class AppProps implements Serializable  {
 	}
 
 
+	/**
+	 * @return the name of the hosting web server e.g. 'tcoffee.crg.cat'. 
+	 * It can be used to specified a non-stardard http port (e.g. localhost:9000)
+	 */
 	public String getHostName() {
 		return getString("settings.hostname");
 	}

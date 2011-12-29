@@ -20,7 +20,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 
 /**
- * Dropbox Connector 
+ * Dropbox connection controller  
  * 
  * @author Paolo Di Tommaso
  *
@@ -32,7 +32,7 @@ public class Dropbox extends Controller {
 	final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 
 	/*
-	 * Dropbox connection factory 
+	 * Creates a Dropbox connection for the current session if does not exist
 	 */
 	final static private CacheLoader factory = new CacheLoader<String, DropboxAPI<WebAuthSession>>() {
         
@@ -44,13 +44,17 @@ public class Dropbox extends Controller {
         };
         
     /*
-     * cache for the dropbox connection
+     * cache for the dropbox connections
      */
 	final static Cache<String, DropboxAPI<WebAuthSession>> cache = CacheBuilder.newBuilder()
 		    .concurrencyLevel(4)
-		    .expireAfterWrite(10, TimeUnit.MINUTES)
+		    .expireAfterWrite(20, TimeUnit.MINUTES)
 		    .build(factory);
 	
+	
+	/** 
+	 * @return A Dropbox connection for the current user
+	 */
 	@Util
 	public static DropboxAPI<WebAuthSession> get() { 
 		try {
@@ -61,14 +65,37 @@ public class Dropbox extends Controller {
 			return null;
 		}
 	}
+
 	
+	/*
+	 * Utility method to check if the current session is linked to Dropbox 
+	 * @return
+	 */
 	@Util
-	public static boolean isLinked() { 
+	static boolean isLinked() { 
 		DropboxAPI<WebAuthSession> dbox = get();
 		return dbox != null ? dbox.getSession().isLinked() : false;
 	}
 	
-	public static void connect() 
+	/*
+	 * Unlink the current Dropbox connection. 
+     * 
+     * It may happen that the current session linki is brokwn but the 'link' status is true. 
+     * Use this method in case of error to reset the current link status
+	 */
+	@Util 
+	static void unlink() { 
+		try { 
+			get().getSession().unlink();
+		} catch( Throwable e ) { 
+			// do not report 
+		}
+	}
+
+	/**
+	 * Manage the Dropbox connection process
+	 */
+	public static void connect() 	
 	{ 
 		String host = AppProps.instance().getHostName();
 		String path = Router.reverse("Dropbox.confirm").toString();
@@ -80,7 +107,8 @@ public class Dropbox extends Controller {
 			Logger.debug("Auth URL  : %s", auth.url);
 			session.put("dropboxTokenKey", auth.requestTokenPair.key);
 			session.put("dropboxTokenSecret", auth.requestTokenPair.secret);
-			redirect(auth.url);
+			session.remove("dropboxConfirmed"); // <-- remove the 'already confirmed' flag if exist
+			redirect(auth.url); 
 		}
 		catch( Exception e ){ 
 			error(e);
@@ -88,19 +116,32 @@ public class Dropbox extends Controller {
 			
 	}
 	    
+	
+	/**
+	 * Display the Dropbox link confirmation page
+	 * 
+	 * This page will be invoked by the Dropbox confirmation process, see the above connect action
+	 */
 	public static void confirm() { 
+
+		boolean notYetConfirmed = session.get("dropboxConfirmed") == null;
+		
+		
+		if( notYetConfirmed ) { 
+	    	String key = session.get("dropboxTokenKey");
+	    	String secret = session.get("dropboxTokenSecret");
+			session.put("dropboxConfirmed","1");
 	    	
-    	String key = session.get("dropboxTokenKey");
-    	String secret = session.get("dropboxTokenSecret");;
-    	
-    	try {
-			String result = get().getSession().retrieveWebAccessToken( new RequestTokenPair(key, secret) );
-			Logger.debug("Dropbox auth result: %s", result);
-		} 
-    	catch (Exception e) {
-    		error(e);
+	    	try {
+				String result = get().getSession().retrieveWebAccessToken( new RequestTokenPair(key, secret) );
+				Logger.debug("Dropbox auth result: %s", result);
+			} 
+	    	catch (Exception e) {
+	    		error(e);
+			}
 		}
-    	render("FileChooser/dropbox-confirm.html");
+
+		render("FileChooser/dropbox-confirm.html");
 	}	
 
 	

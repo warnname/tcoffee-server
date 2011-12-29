@@ -22,7 +22,6 @@
 #{/set} 
 
 #{set 'moreScripts'} 
-<script src="@{'/public/javascripts/autoresize.jquery.min.js'}" type="text/javascript" ></script>
 <script src="@{'/public/thickbox/thickbox.js'}" type="text/javascript"></script> 
 #{if !isIE}
 <script src="@{'/public/javascripts/jquery.tiptip.minified.js'}" type="text/javascript" ></script>
@@ -64,21 +63,86 @@
  * This javascript will disable submit button when first clicked 
 }*
 <script type="text/javascript">
-<!--
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Add the methods 'startsWith' and 'endsWith' to 'String' class
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+String.prototype.startsWith = function(str) {return (this.match("^"+str)==str)}
+String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
 
-function tb_select( fieldId, fileName ) { 
-	console.info("FileSelect: %s - %s", fieldId, fileName);
-	$('#'+fieldId).val(fileName);
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * The below function hides the input field when user upload data 
+ * through the filechooser dialog (see 'filechooseer.html')
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+function tb_select( field, filePath ) { 
+	
+	var name = filePath.split('/')
+	if( $.isArray(name) ) { name = name[name.length-1]} 
+	
+	var href = #{jsAction @Data.view(':path') /}
+	
+	if( typeof(field) == 'string' ) field = $('#'+field)
+	field.hide();
+	field.val(filePath);
+	field.trigger('clearErrors');
+	field.parent().find('.link').hide()
+	field.parent().find('.upload_name').html( '<a target="_blank" href="' + href({path:filePath}) + '">' +name+ '</a>' ) 
+	field.parent().find('.upload_div').show()   
 }
 
+function showTextField( field ) {
+	
+	if( typeof(field) == 'string' ) field = $('#'+field)
+
+	field. val('') .show() .trigger('clearErrors');
+	field.parent().find('.link').show()
+	field.parent().find('.upload_div').hide()   
+} 
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Document initialization 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 $(document).ready(function(){
-	/* init facebox properties for filechooser dialog */
-	
-	/* textarea autoresize effects */
-	$('textarea').autoResize();
 
-	/* toggle advanced options effects */
+	/*
+	 * 'install' the 
+	 */ 
+	$('.upload_cancel').click( function() { 
+		showTextField( $(this).closest('.field_wrap').find('.field') ) 
+	}) 
+	
+	/*
+	 * When using fwd/back buttons, it may happen that textarea is showed open 
+	 * even if it is containing a file reference. This fragment will hide it 
+	 */
+	$('.field').each(function() {
+		if( $(this).val().startsWith('file://') &&  $(this).is(':visible') ) { 
+			tb_select( $(this), $(this).val() )
+		}
+	})
+
+	/* 
+	 * 'sample' link action code 
+	 */
+	 $('.sample').click(function(){ 
+		var url = $(this).data('url');
+		var ref = $(this).data('ref');
+		var field=$('#'+ref); 
+
+		$.get( url, function(data) { 
+			if( !field.is(':visible') ) { showTextField(field) }
+			field.val(data); 
+			field.trigger('clearErrors'); 
+			field.trigger('keydown');  
+		});
+	 });	 
+	
+	
+	/* 
+	 * Toggle advanced options effects 
+	 */
 	$('#toggleOptions').click(function() {
 		$('.c-hideable').toggle( function() {
 			var status = $(this).is(':visible'); 
@@ -89,11 +153,17 @@ $(document).ready(function(){
 	});	   
 
 
+	/* 
+	 * Enable TipTip effects but IE 
+	 */
 	#{if !isIE}
 	$(".tiptip").tipTip();
 	#{/if}	
 
-	/* remove any error message if the input change */
+	
+	/* 
+	 * Remove any error message if the input change
+	 */
 	$('div.c-input input, div.c-input select, div.c-input textarea')
 		.bind('clearErrors', function() { 
 				$(this).parents('div.c-input').removeClass('hasError').find('.c-error').remove(); 
@@ -101,19 +171,33 @@ $(document).ready(function(){
 		.change(function(){ $(this).trigger('clearErrors') });
 });
 
-/* disabling submit button on first click */
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * Disabling submit button on first click 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
 $('#form').submit(function(){
 	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
-
 });
-
-$('#reset').click(function() { $('#form')[0].reset(); $('textarea').each(function(){ $(this).text(''); $(this).trigger('clearErrors'); $(this).trigger('keydown'); } ) } )
 
 $(document).ready(function(){
 	$('#submit').removeAttr('disabled').removeClass('disabled').text('Submit');
 });
 
-$(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
-//-->
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * 'Reset' button action 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+$('#reset').click(function() { 
+	$('#form')[0].reset(); $('textarea').each(function(){ $(this).text(''); $(this).trigger('clearErrors'); $(this).trigger('keydown'); } ) 
+});
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * hack to avoid content cache that will prevent ready execution 
+ * on back-button for firefox 
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+$(window).unload(function(){ /* empty */ });
+
 </script>
