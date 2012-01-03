@@ -17,7 +17,11 @@ Your account is linked. <a href="javascript:window.close()" >Click here to close
 </p>
 
 <script type="text/javascript">
-setTimeout( function() { window.opener.reloadDropbox(true) }, 500 )
+var callback = function() {
+	var closed = window.closed || typeof window.closed=='undefined' || window.innerHeight==0;
+	if( !closed ) window.opener.dropboxLinkCallback() 
+} 
+setTimeout(callback,500 )
 </script>
 
 </body>

@@ -1,0 +1,99 @@
+<style type="text/css">
+#btnCopyToDropbox span {
+	height: 18px; 
+	line-height: 18px; 
+	padding-left: 20px; 
+	background: url("@{'/public/images/dbox-16.png'}") no-repeat;
+} 
+
+#btnCopyToDropbox.disabled span {
+	height: 18px; 
+	line-height: 18px; 
+	padding-left: 20px; 
+	background: url("@{'/public/images/dbox-16-grey.png'}") no-repeat;
+} 
+
+#btnCopyToDropboxSpinner { 
+	height: 18px; 
+	line-height: 18px; 
+	position: relative; top: 5px; left: 2px;
+	display: none;
+ } 
+
+#dropbox_button { position: relative; left: -5px; margin: 1em auto 0; } 
+</style>
+
+<div id="dropbox_button">
+<button id="btnCopyToDropbox" href="javascript:void(0)" class="button " > <span > Copy to your Dropbox </span></button>
+<img id="btnCopyToDropboxSpinner" src="@{'/public/filetree/images/spinner.gif'}" >
+</div>
+
+<script type="text/javascript">
+$('#btnCopyToDropbox').click(function() {
+	var thisButton = $(this); 
+	var label = thisButton.text();
+	var done=false;
+	var message = null;
+	
+	thisButton.empty().append("<span>Copying, wait please .. </span>");
+	thisButton.addClass('disabled');
+	thisButton.attr('disabled','disabled')
+	$('#btnCopyToDropboxSpinner').show();
+	
+	$.ajax( '@{Dropbox.copy(params.rid)}', {
+		
+		success: function( response ) {
+			if( response.success ) { 
+				// !! OK
+				done=true;
+			}
+			else if( response.reason == "unlinked" ) { 
+				// see http://www.davidtong.me/detecting-popup-blocker-pattern/
+				var popup=window.open("@{Dropbox.connect}", "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=600, top=10, left=10");
+			    setTimeout(function() {
+			    	if(!popup || popup.closed || parseInt(popup.innerWidth) == 0)
+			        {
+						message = 'To copy these files you need to sign-in to the Dropbox service, however the browser is blocking the Dropbox login window. Enable the popup window for this site and click again the \'Copy to Dropox\' button.';
+						alert(message)
+			        }
+			    }, 500);
+			    
+			    
+			} 
+			else { 
+				message =  response.message || "Cannot copy to your Dropbox account (unknown error)";
+			}
+			
+		},
+		
+		error: function(jqXHR) {
+			message = 'Cannot verify your Dropbox session status. Verify that your  Try reloading this page and click again the \'Copy to Dropbox\' button.';
+		},
+		
+		complete: function() { 
+			if( done ) {
+				// when complete successfully, change the label 
+				// but keep the control disabled 
+				label = "Files copied to Dropbox successfully"
+			} 
+			else  {
+				// enable to button 
+				thisButton.removeClass('disabled');
+				thisButton.removeAttr('disabled')
+			}
+			
+			thisButton.empty().append("<span>"+label+"</span>");
+			$('#btnCopyToDropboxSpinner').hide();
+			
+			if( message ) alert(message);
+	
+		} 
+	})		 
+		
+}) 
+
+function dropboxLinkCallback() {
+	$('#btnCopyToDropbox').click();
+} 
+
+</script>

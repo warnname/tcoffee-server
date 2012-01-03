@@ -15,7 +15,35 @@
 </head>
 
 <body>
-<div id="container">
+<div id="wait_label" style="display: none">
+Loading. Wait please ...
+</div>
+
+<div id="error_label" style="display: none" >
+<span>Something wrong</span>
+</div>
+	
+
+
+<div id="fchoose" style="display: none">
+    <img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
+   	<div style="position:relative; left:1em; top:26px;" >
+		<span class="fname">filename.txt</span> <span id="fsize">10 K</span>
+		<div class="fmessage">
+		Click <i>Select</i> button below to use this file
+		</div>
+	</div>
+	<div style="clear: both"> </div>
+</div>
+
+<div id="preview" style="display: none; background: #f5f4f4 url('@{'/public/images/bg-stripe.png'}')" >
+<pre>
+
+</pre>
+<div id="teaser" style="display: none">Click somewhere to close this preview</div>
+</div>	
+
+<div id="chooser" >
 <div id="header">
 <h1>File chooser</h1>
 </div>
@@ -32,16 +60,7 @@
 </div>
 
 <div id="right">
-	<div id="wait_label" style="display: none">
-	Loading. Wait please ...
-	</div>
-	
-	
-	<div id="error-message"  >
-	<span style="display: none"></span>
-	</div>
-	
-	
+		
 	<!--
 		The Tree based component 
 		-->
@@ -62,16 +81,7 @@
 		<input type="text" id="urlfield" >
 		<span id="icon_url" class="wait_spinner" style="display:none"></span>
 		
-		<div id="url_feedback" style="display:none">
-		    <img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
-	    	<div style="position:relative; left:1em; top:26px;" >
-				<span id="url_fname">filename.txt</span> <span id="url_fsize">10 K</span>
-				<div id="url_fmessage">
-				Click <i>Select</i> button below to use this file
-				</div>
-			</div>
-			<div style="clear: both"> </div>
-
+		<div id="url_feedback" >
 		</div>
 	</div>
 	
@@ -80,7 +90,6 @@
 		-->
 	<div id="p_upload" class="tab" style="display:none"> 
 	<div id="qq-upload-elem"> </div>
-	
 	<ul id="qq-upload-list" class="qq-upload-list"> 
 		<!-- 
          <li>
@@ -92,6 +101,8 @@
          </li>     
 		 -->
 	</ul>
+
+	<div id="upload_feedback"> </div>
 	</div>
 
 	<!-- 
@@ -121,6 +132,7 @@
 	<div id="footer" >
 	<span id="selarea"></span>
 	<input type="button" id="btncancel" class="button" value="Cancel">
+	<input type="button" id="btnpreview" class="button" value="Preview" >
 	<input type="button" id="btnselect" class="button" value="Select" >
 	</div>
 	
@@ -154,7 +166,7 @@ $(document)
  * This method is inoked when the Dropbox user's account is linked by 
  * the page 'dropbox-confirm.html'
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-function reloadDropbox(flag) {
+function dropboxLinkCallback(flag) {
 	$('#a_dropbox').click();
 }
 
@@ -226,8 +238,12 @@ $(window).resize(function() {
 	if( result && result.is(':visible') ) { 
 		var t1=$('#result_items').position().top;
 		var t2=$('#footer').position().top;
-		$('#result_items').css('height', t2-t1-10);
+		$('#result_items').css('height', t2-t1-25);
 	} 
+	
+	//resize 'preview'
+	$('#preview').css('height', $(window).height()-20 )
+	
 });
 
 
@@ -255,13 +271,14 @@ function iconClear( visible ) {
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 function showErrorMessage(message){
-	$('#error-message > span').show().text(message);
-	setTimeout( function() { $('#error-message > span').fadeOut(100) }, 5000 );
+	if( message == null || message === "" ) message = "(unknown error)"
+	$('#error_label > span').show().text(message);
+	setTimeout( function() { $('#error_label').fadeOut(100) }, 5000 );
 }
 
 function showErrorAjax( jqXHR ) { 
 	if( jqXHR == null ) { 
-		showErrorMessage("Unknown error")
+		showErrorMessage()
 		return
 	}
 	
@@ -292,6 +309,14 @@ function showErrorAjax( jqXHR ) {
 
 $(document).ready(function() { 
 
+	//resize 'preview'
+	$('#preview')
+		.css('height', $(window).height()-20 )
+		.click( function() { 
+			$('#teaser').hide();
+			$(this).slideUp(); 
+			$('#chooser').show() 
+		}) 
 	
 	/* --------------------------------------------------------------------
 	 * Handles the 'Cancel' button action
@@ -307,6 +332,19 @@ $(document).ready(function() {
 		self.parent.tb_select( '${fieldId}', currentFile )
 		self.parent.tb_remove()
 	})
+	
+	$('#btnpreview').click(function() {
+		var url = #{jsAction @Data.preview(':path') /}
+			
+		$.get( url({path: currentFile}), function(data) { 
+			$('#preview pre').text(data);
+			$('#preview').slideDown()
+			$('#chooser').hide();
+			$('#teaser').fadeIn() 
+			
+			setTimeout( function() { $('#teaser').fadeOut() }, 2500  )
+		});
+	}) 
 	
 	/* --------------------------------------------------------------------
 	 * Handles the 'Search' button action
@@ -358,7 +396,7 @@ $(document).ready(function() {
 		if( url == urlDone ) { /* already downloaded - skip */ return }
 		
 		// show ajax notification 
-		$('#url_feedback').hide()
+		$('#url_feedback').empty()
 		$('#icon_url').show();
 		
 		// download it 
@@ -368,13 +406,15 @@ $(document).ready(function() {
 			success: function(data) { 
 
 				// show file download icon 
-				$('#url_fname').text( data.name )
-				$('#url_fsize').text( data.size )
-				$('#url_feedback').show()
+				var elem = $('#fchoose').clone()
+				elem.appendTo("#url_feedback")
+				elem.find('.fname').text( data.name )
+				elem.find('.fsize').text( data.size )
+				elem.show()
 				
 				// enable the download button 
 				currentFile = "file://" + data.path;
-				closedialog()
+				btnSelectEnable(true)
 			
 			},
 			complete: function () { 
@@ -419,9 +459,9 @@ $(document).ready(function() {
 
         // return false to cancel submit
         onSubmit: function(id, fileName) {  
- 			$('#error-message > span').hide()	// hide error message
- 			$('.qq-uploader').hide()			// hide the uploader area
+ 			$('#error_label').hide()	// hide error message
  			$('.qq-upload-list').empty()		// remove other files in the list
+ 			$('#upload_feedback').empty()
 		},
 	
 		onProgress: function(id, fileName, loaded, total){ 
@@ -431,20 +471,26 @@ $(document).ready(function() {
 	
 		onCancel: function(id, fileName) { 
 			// show back the uploader area
-			$('.qq-uploader').show()
+			//$('.qq-uploader').show()
 		},
 	 	   
 		onComplete: function(id, fileName, response){
 			$('#upload-progress').hide();
+ 			$('.qq-upload-list').empty()		// remove other files in the list
      	   
 			if( !response.success ) {
  				return false;
 			}
+			
+			var elem = $('#fchoose').clone()
+			elem.appendTo("#upload_feedback")
+			elem.find('.fname').text( response.name )
+			elem.find('.fsize').text( response.size )
+			elem.show()
 
 			// !! set the current file and close the dialog by default
 			currentFile = "file://" + response.path;
-			closedialog()			
-	     	   
+			btnSelectEnable()
 		},
 	 		
 	 	// display error message 
@@ -462,6 +508,7 @@ $(document).ready(function() {
 	$('#a_upload').click(function() {
 		showTab(this);
 		$('#queryfield').focus();
+		$('#upload_feedback').empty()
 	});
 	
 	/* --------------------------------------------------------------------
@@ -479,7 +526,9 @@ $(document).ready(function() {
 				multiFolder: false
 			}
 		
-		var choose = function(file) { 
+		var choose = function(file,item) {
+			// highlight the selected item 
+			$('.jqueryFileTree li.selected').removeClass('selected'); item.addClass('selected');
 			currentFile = "file://${recentDataRoot}" + file;
 			btnSelectEnable()
 		}
@@ -519,6 +568,10 @@ $(document).ready(function() {
 		
 		var	choose = function( file, item ) { 
 			closeOnDone = false; // do not close by default the dialog
+
+			// highlight the selected item 
+			$('.jqueryFileTree li.selected').removeClass('selected'); 
+			item.addClass('selected');
 			
 			// check if the file has alredy been download ()
 			var path = item.data('filepath');
@@ -590,7 +643,7 @@ $(document).ready(function() {
 		
 		var t1=$('#result_items').position().top;
 		var t2=$('#footer').position().top;
-		$('#result_items').css('height', t2-t1-10);
+		$('#result_items').css('height', t2-t1-25);
 
 		var opt = { 
 				root: '/', 
@@ -600,7 +653,9 @@ $(document).ready(function() {
 				multiFolder: false
 			}
 		
-		var choose = function(file) {
+		var choose = function(file,item) {
+			// highlight the selected item 
+			$('.jqueryFileTree li.selected').removeClass('selected'); item.addClass('selected');
 			currentFile = "file://${publicDataRoot}" + file; 
 			btnSelectEnable()
 		}
@@ -616,7 +671,7 @@ $(document).ready(function() {
 	$('#a_url').click(function() {
 		showTab(this);	
 		$('#urlfield').val("").focus();
-		$('#url_feedback').hide()
+		$('#url_feedback').empty()
 	}) 
 		
 
@@ -663,13 +718,25 @@ function showTab( thisElem, tab ) {
 function btnSelectEnable(status) { 
 
 	if( status == false ) { 
-		// disable btn select 
-		$('#btnselect').attr("disabled", "disabled");
-		$('#btnselect').addClass("disabled");
+		$('#btnselect')
+			.attr("disabled", "disabled")
+			.addClass("disabled")
+			.removeClass("pulse");
+
+		$('#btnpreview')
+			.attr("disabled", "disabled")
+			.addClass("disabled");
 	}
 	else { 
-		$('#btnselect').removeAttr("disabled");
-		$('#btnselect').removeClass("disabled");
+		$('#btnpreview') 
+			.removeAttr("disabled") 
+			.removeClass("disabled")
+		
+		$('#btnselect')
+			.removeAttr("disabled")
+			.removeClass("disabled")
+			.addClass("pulse")
+		
 	}	
 	
 }

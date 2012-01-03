@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,6 +32,7 @@ import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
 import play.templates.JavaExtensions;
+import util.GuessContentType;
 import util.JsonHelper;
 import util.Utils;
 import exception.QuickException;
@@ -83,6 +85,36 @@ public class Data extends CommonController {
 		String content = MimeTypes.getMimeType(path);
 		response.contentType = content;
 		renderBinary(file);
+	}
+	
+	public static void preview( String path ) throws IOException { 
+
+		if( path.startsWith("file://") ) { 
+			path = path.substring(7);
+		}
+
+		File file = new File(path);
+		if( !file.exists() ) { 
+			Logger.error("Error opening '%s'. File does not exist", path);
+			notFound("File not found: %s", file.getName());
+		}
+
+		GuessContentType ctype = new GuessContentType(file);
+
+		if( ctype.isBinary() ) { 
+			renderText("(this file cannot be previewed)");
+		}
+		
+	
+		/*
+		 * render only the first 10K of text
+		 */
+		response.contentType = ctype.getMimeType();
+		byte[] buffer = new byte[10 * 1024];
+		FileInputStream in = new FileInputStream(file);
+		in.read(buffer);
+		
+		renderBinary(new ByteArrayInputStream(buffer));
 	}
 	
 	/**
@@ -352,7 +384,14 @@ public class Data extends CommonController {
 			IO.write(new BufferedInputStream(input), out);
 			// ^ Stream closed by the write method
 			
-			String result = String.format("{\"success\":true, \"path\": \"%s\" }", JavaExtensions.escapeJavaScript(newFile.getAbsolutePath()));
+			String result = String.format(
+					"{\"success\":true, " +
+					"\"path\": \"%s\"," +
+					"\"name\": \"%s\"," +
+					"\"size\": \"%s\" }", 
+					JavaExtensions.escapeJavaScript(newFile.getAbsolutePath()),
+					newFile.getName(),
+					JavaExtensions.formatSize(newFile.length()));
 			renderText(result);
 		}
 		catch( Exception e ) { 

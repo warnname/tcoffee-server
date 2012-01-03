@@ -45,7 +45,7 @@ if(jQuery) (function($){
 			if( o.collapseEasing == undefined ) o.collapseEasing = null;
 			if( o.multiFolder == undefined ) o.multiFolder = true;
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
-			if( o.loadCallback == undefined ) o.loadCallback = null;
+			if( o.loadCallback == undefined ) o.loadCallback = null; /* def function(dir, data) {}; */
 			
 			$(this).each( function() {
 				
@@ -58,7 +58,7 @@ if(jQuery) (function($){
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						bindTree(c);
 						
-						if( o.loadCallback ) { o.loadCallback(t) }
+						if( o.loadCallback ) { o.loadCallback(t,data) }
 					});
 				}
 				

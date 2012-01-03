@@ -1,15 +1,22 @@
 package controllers;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import models.AppProps;
+import models.OutItem;
+import models.OutResult;
+import models.Repo;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.Util;
 
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.RequestTokenPair;
 import com.dropbox.client2.session.Session.AccessType;
@@ -144,5 +151,96 @@ public class Dropbox extends Controller {
 		render("FileChooser/dropbox-confirm.html");
 	}	
 
+	/**
+	 * Copy the specified result dataset to the user Dropbox account
+	 * 
+	 * @param rid the request identifier of the result data to copy
+	 */
+	public static void copy( String rid ) { 
+		Logger.debug("Invoking #copyToDropbox(rid:%s) ", rid);
+		
+		request.format = "json";
+		
+		DropboxAPI<WebAuthSession> dbox = get();
+	
+		if( !dbox.getSession().isLinked() ) { 
+			String result = "{\"success\":false, \"reason\": \"unlinked\" }";
+			renderJSON(result);
+		}
+		
+		
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound(String.format("The requested result is not available (%s) ", rid));
+			return;
+		}
+
+		
+		String sPath=null;
+		int tries = 0;
+		boolean exists=false;
+		do { 
+			sPath = tries == 0 ? "/results/" + rid : String.format("/results/%s (%s)", rid, tries);
+			try { 
+				exists = checkPathExist(sPath);
+				tries++;
+			} 
+			catch( DropboxException e ) { 
+				Logger.error(e,"Error accessing Dropbx folder '%s'", sPath);
+				unlink();
+				error("Error accessing your Dropbox account");
+			}
+
+		} 
+		while(exists);
+		
+ 		
+		OutResult result = repo.getResult();
+		for( OutItem item : result.getItems() ) { 
+			FileInputStream buffer=null;
+			if( item.exists() ) try { 
+				buffer = new FileInputStream(item.file);
+				String sFilePath = sPath + "/" + item.name;
+				dbox.putFileOverwrite(sFilePath, buffer, item.file.length(), null);
+			}
+			catch( Exception e ) { 
+				unlink();
+				
+				Logger.error(e, "Error copying the following file to Dropbox: '%s'", item.file);
+				String json = "{ \"success\":false, " +
+								"\"reason\": \"error\"," +
+								"\"message\": \"Error copying the request result to your Dropbox account\" }";
+				renderJSON(json);
+			}
+			finally {
+				if(buffer!=null) try { buffer.close(); } catch(IOException e) {} 
+			}
+
+		}
+	
+
+		renderJSON("{\"success\":true }");
+	
+	}
+	
+	
+	@Util
+	static boolean checkPathExist(final String path) throws DropboxException { 
+
+		try { 
+			DropboxAPI.Entry entry = get().metadata(path, 1, null, false, null);
+			// if the file has been deleted --> does NOT exists 
+			return !entry.isDeleted;
+		} 
+		catch( DropboxServerException e ) { 
+			// trying to access to a path that does not exists 
+			// will raise a 404 error, in this case return false
+			if( e.error != 404 ) { 
+				throw e;
+			}
+			return false;
+		}
+
+	}
 	
 }
