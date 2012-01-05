@@ -356,7 +356,26 @@ public class FileChooser extends Controller {
 	    render("FileChooser/treeitem.html");	
 	}
 
-	
+	/**
+	 * Copy the specified file in the user local storage 
+	 * 
+	 * @param filePath the path on the local file system to copy 
+	 */
+	public static void copyPublicDataFile( String filePath ) { 
+		Logger.debug("Method #copyPublicDataFile(filePath: '%s')", filePath);
+		
+		File targetPath = Data.getUserTempPath();
+		File item = new File(publicRepo, filePath);
+		String cmd = String.format("ln -s %s %s", item.getAbsolutePath(), item.getName());
+		try {
+			Runtime.getRuntime().exec(cmd, null, targetPath).waitFor();
+			renderJSON("{\"success\":true }");
+		} 
+		catch( Exception e ) {
+			Logger.error("Error creating symlink: '%s'", cmd);
+			renderJSON("{\"success\":false }");
+		} 
+	} 
 	
 	@Util
 	static boolean searchIntoPublicRepo( File path, String query, List<FileEntry> result ) { 
@@ -476,4 +495,7 @@ public class FileChooser extends Controller {
 					+ ", isDir=" + isDir + ", modified=" + modified + "]";
 		}
 	}
+	
+	
+
 }

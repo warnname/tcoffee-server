@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,9 @@ import models.OutResult;
 import models.Repo;
 import models.Service;
 import models.Status;
+
+import org.apache.commons.lang.StringUtils;
+
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -378,7 +382,6 @@ public class Application extends CommonController {
 	 */
 	public static void advanced() { 
 
-		List<File> uploadFileList = Data.getUserFiles();
 		Service service = service(bundle.get().name,"adv-cmdline").copy();
 
 		if( isGET() ) { 
@@ -388,6 +391,8 @@ public class Application extends CommonController {
 			 */
 			String rid;
 			Repo repo;
+			String uploadedFiles = null;
+			
 			if( (rid=params.get("replay")) != null && (repo=new Repo(rid)).hasResult() ) { 
 				
 				/* reuse the previous command line */
@@ -396,21 +401,14 @@ public class Application extends CommonController {
 				service.input.field("cmdline").value = cmdLine;
 				
 				/* load the previously used input file as uploaded files */
-				uploadFileList.clear();
-				for( File file : repo.getResult().getInputFiles() ) { 
-					if( file.exists() ) { 
-						uploadFileList.add( file ) ;
-					}
+				uploadedFiles = repo.getInput().getValue("uploadedFiles");
+				List<File> files;
+				if( StringUtils.isEmpty(uploadedFiles) && (files=repo.getResult().getInputFiles()) != null && files.size()>0 ) { 
+					uploadedFiles = Utils.asString(files, ",", null);
 				}
 			}
 			
-			/*
-			 * !!! TODO
-			 * !!! THIS SHOULD BE FIXED
-			 * |!! Look in the 'advanced.html' the 'uploadFileList' data structure is changed from AjaxUpload to File
-			 */
-			
-			render(service, uploadFileList);
+			render(service, uploadedFiles);
 		}
 
 	
@@ -420,27 +418,67 @@ public class Application extends CommonController {
 		Service.current(service);
 
 		
+		String uploadedFiles = params.get("uploadedFiles");
+		Logger.debug("Advanced - uploadedFiles: '%s'", uploadedFiles);
+		renderArgs.put("uploadedFiles", uploadedFiles);
+		
 		/* 
 		 * 0. bind and validate
 		 */
 		if( !service.validate(params) ) {
 			/* if the validation FAIL go back to the service page */
-			render(service, uploadFileList);
+			render(service);
 		} 
-		else {  
-			service.input.field("cmdline").value = normalizeCmdLine(service.input.field("cmdline").value);
-		}
 
+		/* 
+		 * handle the uploaded files 
+		 */
+		
+		List<File> uploadedFilesList = new ArrayList<File>();
+		service.input.field("uploadedFiles").value = uploadedFiles; 
+		
+		if( StringUtils.isNotEmpty(uploadedFiles) ) {
+			String[] all = uploadedFiles.split(",");
+			for( String item : all ) {
+				if( StringUtils.isBlank(item) ) continue;
+				if( item.startsWith("file://") ) { item = item.substring(7); }
+				File file = new File(item);
+
+				// check if the file is valid otherwise return an error message
+				if( !file.exists() ) { 
+					String err = String.format("The file '%s' is not more available. Please upload it again or choose another file", file.getName());
+					Validation.addError("uploadedFiles", err, (String)null);
+					render(service);
+				} 
+				uploadedFilesList.add(file);
+			}
+
+		}   
+		// check if at least one file has been uploaded 
+		if( uploadedFiles.length() == 0 ) {
+			Validation.addError("uploadedFiles", "You should provided at lease one input file", (String)null);
+			render(service);
+		} 
+		
+
+		/* 
+		 * steup the command line 
+		 */
+		final String cmdline = normalizeCmdLine(service.input.field("cmdline").value);
+		service.input.field("cmdline").value = cmdline;
+		Logger.debug("Advanced - cmdline: '%s'", cmdline);
+
+		
 		/* 
 		 * The command line cannot contains some 'special' character 
 		 * to avoid malicious commands entered 
 		 */
 		final String cmdLine = service.input.field("cmdline").value;
-		for( char ch : Data.INVALID_CHARS ) { 
+		for( char ch : Data.COMMANDLINE_INVALID_CHARS ) { 
 			if( cmdLine.indexOf(ch) != -1 ) { 
 				String msg =  String.format("Program options cannot contains character '%s'",  ch);
 				Validation.addError("cmdline", msg, (String)null);
-				render(service, uploadFileList);
+				render(service, uploadedFilesList);
 			}
 		}
 		
@@ -454,8 +492,9 @@ public class Application extends CommonController {
 		if( Utils.isNotEmpty(other_pg) && !valid.contains(other_pg)) { 
 			String msg = String.format("Option '-other_pg=%s' is not supported by the server", other_pg);
 			Validation.addError("cmdline", msg, (String)null);
-			render(service, uploadFileList);
+			render(service, uploadedFilesList);
 		}
+
 
 		
 		/*
@@ -466,10 +505,9 @@ public class Application extends CommonController {
 		/* 
 		 * 2. copy the files to the target folder 
 		 */
-		for( File upload: uploadFileList) { 
-			service.repo().store( upload.getAbsoluteFile(), upload.getName() );
+		for( File upload: uploadedFilesList) { 
+			service.repo().store( upload.getAbsoluteFile() );
 		}
-		
 		
 		/*
 		 * 3. check if this request has already been processed in some way 

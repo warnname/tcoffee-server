@@ -174,19 +174,22 @@ public class Field implements Serializable {
 				return;
 			}
 			
-			/*
-			 * If the value starts with the prefix 'file://' it will read he content of the specified file
-			 */
-			if( value.toLowerCase().startsWith("file://") ) { 
-				String filename = value.substring("file://".length()).trim();
-				try {
-					this.fFile = new File(filename);
-					this.value = FileUtils.readFileToString(fFile);
-				} 
-				catch (IOException e) {
-					throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
+			if( "memo".equals(type) ) {
+				/*
+				 * If the value starts with the prefix 'file://' it will read he content of the specified file
+				 */
+				if( value.toLowerCase().startsWith("file://") ) { 
+					String filename = value.substring("file://".length()).trim();
+					try {
+						this.fFile = new File(filename);
+						this.value = FileUtils.readFileToString(fFile);
+					} 
+					catch (IOException e) {
+						throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
+					}
 				}
-			}
+			}  
+
 			
 			// normalize value removing trailing and leading blanks and special chars
 			value = value.trim();

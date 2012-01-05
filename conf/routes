@@ -27,7 +27,6 @@ GET 	/@sandbox 				Main.sandbox
 GET		/data/zip				Data.zip
 GET		/data/view				Data.view
 GET		/data/preview			Data.preview
-*		/data/upload			Data.upload
 *		/data/xupload			Data.ajaxupload
 GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource

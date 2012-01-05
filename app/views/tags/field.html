@@ -67,7 +67,7 @@
 		#{/else}
 			    
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} > - OR -
-	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox">Click here to upload a file</a>
 	    </div>
 		
 	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >
@@ -89,7 +89,7 @@
 		<input id="${_arg.name}" name='${_arg.name}' type='hidden' class="field" value='${_arg.filePath}' />
 
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} >
-	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700" class="thickbox">Click here to upload a file</a>
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox">Click here to upload a file</a>
 	    </div>
 		
 	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >

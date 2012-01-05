@@ -27,6 +27,12 @@ h4 { font-size: 14px; line-height: 20px; }
 h5 { font-size: 14px; line-height: 20px; }
 h6 { font-size: 14px; line-height: 20px; }
 
+@font-face {
+  font-family: "Vera Mono";
+  src: url("fonts/VeraMono.ttf#") format("truetype");
+}
+
+
 /* 
  * http://css-tricks.com/examples/hrs/ 
  */
@@ -238,17 +244,20 @@ html, body {
     padding-right: 26px;
 } 
 
-#icon_clear {   
+.icon_clear {   
 	height:18px;
     width: 18px;
 	cursor:pointer;
-    position:relative;
-	left:-26px;
-    top: 6px;
     background-image: url("data:image/gif;base64,R0lGODlhEQARANUAAFtbXEJCQ1paW1ZWV9HR0VFRUlxcXZ6en52dnlJSU0hISV9fYLW1tefn57y8vbq6uk9PUO3t7WhoaLu7u0tLTMLCw2pqa1BQUfPz89nZ2fLy8tra2r6+vk1NTtLS0vX19UxMTVhYWWdnaGRkZbOztO/v72BgYcXFxcnJyWRkZObm5sjIyaqqqnt7fLGxsuHh4VdXWP///0BAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAARABEAAAaPwJgw9mK1YAFYi/UaOl0CmXQqA7icMQR1Kz0MXdzw9RWVGkDTQmgKKE5FkYdCViC8YFPj1LSJkRYoMScJU0dUMB4xJTEcHYcBWxIfMSoDW0lUCSsxGjEMc1NKUwYEMRMjpQ4QhSxTFhgVFDIDGQ14UkxlMikXUwMLbE1gYVtXQlrEXVhQYVZYQkVHSUtNQ0EAOw==");
     background-repeat: no-repeat;
     display: inline-block;
 }
+
+#icon_clear {
+    position:relative;
+	left:-26px;
+    top: 6px;	
+}  
 
 #btnsearch {
 	position: relative;
@@ -336,22 +345,42 @@ html, body {
  */
 
 #preview {
-	padding: 10px;
-	overflow: auto;
-    -webkit-box-shadow: inset 0 0 1px #ccc;
-	-moz-box-shadow:    inset 0 0 1px #ccc;
-    box-shadow:         inset 0 0 1px #ccc;
+	background-color: #f8f8f8;
+	color: #282828;
+	padding: 6px;
+	margin: 9px;
+	border: 1px solid #DDD;
+	-webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 	overflow: auto;
 }
 
-#preview  pre {  } 
+#preview  pre { 
+	font-family: "Vera Mono", courier new, courier-new, courier, monospace; 
+	font-size: 14px;
+} 
+
+#previewClose {
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	top: 1px;
+	right: 1px;
+	height:30px;
+    width: 30px;
+	cursor:pointer;
+    background-image: url("images/close-icon.png");
+    background-repeat: no-repeat;
+    display: inline-block;	
+} 
 
 #teaser { 
 	text-align: center;
 	border-radius: 20px;
 	border: 1px solid #ccc;
 	padding: 2em;
-	font-size: 1.4em;
+	font-size: 1.5em;
 	font-weight: 500;
 	background: rgba(0,0,0,0.5);
 	color: white;

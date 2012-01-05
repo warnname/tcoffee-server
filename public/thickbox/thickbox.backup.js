@@ -5,7 +5,7 @@
  * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
 */
 		  
-var tb_pathToImage = "/public/thickbox/loadingAnimation.gif";
+var tb_pathToImage = "images/loadingAnimation.gif";
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 
@@ -195,6 +195,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 					if(params['modal'] != "true"){//iframe no modal
 						$("#TB_window").append("<div id='TB_title'><div id='TB_ajaxWindowTitle'>"+caption+"</div><div id='TB_closeAjaxWindow'><a href='#' id='TB_closeWindowButton' title='Close'>close</a> or Esc Key</div></div><iframe frameborder='0' hspace='0' src='"+urlNoQuery[0]+"' id='TB_iframeContent' name='TB_iframeContent"+Math.round(Math.random()*1000)+"' onload='tb_showIframe()' style='width:"+(ajaxContentW + 29)+"px;height:"+(ajaxContentH + 17)+"px;' > </iframe>");
 					}else{//iframe modal
+					$("#TB_overlay").unbind();
 						$("#TB_window").append("<iframe frameborder='0' hspace='0' src='"+urlNoQuery[0]+"' id='TB_iframeContent' name='TB_iframeContent"+Math.round(Math.random()*1000)+"' onload='tb_showIframe()' style='width:"+(ajaxContentW + 29)+"px;height:"+(ajaxContentH + 17)+"px;'> </iframe>");
 					}
 			}else{// not an iframe, ajax
@@ -267,8 +268,7 @@ function tb_showIframe(){
 function tb_remove() {
  	$("#TB_imageOff").unbind("click");
 	$("#TB_closeWindowButton").unbind("click");
-	$("#TB_window").hide();
-	$('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();
+	$("#TB_window").fadeOut("fast",function(){$('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();});
 	$("#TB_load").remove();
 	if (typeof document.body.style.maxHeight == "undefined") {//if IE 6
 		$("body","html").css({height: "auto", width: "auto"});

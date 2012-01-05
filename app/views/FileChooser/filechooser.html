@@ -24,7 +24,6 @@ Loading. Wait please ...
 </div>
 	
 
-
 <div id="fchoose" style="display: none">
     <img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
    	<div style="position:relative; left:1em; top:26px;" >
@@ -36,11 +35,12 @@ Loading. Wait please ...
 	<div style="clear: both"> </div>
 </div>
 
-<div id="preview" style="display: none; background: #f5f4f4 url('@{'/public/images/bg-stripe.png'}')" >
+<div id="preview" style="display: none" >
+<div id="previewClose" class="icon_clear">&nbsp;</div>
 <pre>
-
 </pre>
-<div id="teaser" style="display: none">Click somewhere to close this preview</div>
+
+<div id="teaser" style="display: none">Click the X icon at the top right corner to close this preview</div>
 </div>	
 
 <div id="chooser" >
@@ -66,7 +66,7 @@ Loading. Wait please ...
 		-->
 	<div id="p_choose" style="display:none" class="tab">
 		<div id="queryarea">
-		<input type="text" id="queryfield" name="queryfield"/> <span id="icon_clear" ></span>
+		<input type="text" id="queryfield" name="queryfield"/> <span id="icon_clear" class="icon_clear"></span>
 		<button id="btnsearch" class="button">Search</button>
 		</div>
 		<div id="result_items">
@@ -202,15 +202,15 @@ var currentFile;
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  * Pass the selected filename to the parent window and close the dialog box
- * Note the parent window MUST define the 'tb_select' function as well as 
+ * Note the parent window MUST define the 'fileChooseCallback' function as well as 
  * it have to use the ThickBox js library (http://jquery.com/demo/thickbox/)
  * See 'main.html'
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 function closedialog() {
 	// select the file and close the dialog 
-	if( self.parent.tb_select && currentFile ) {
-		self.parent.tb_select( '${fieldId}', currentFile )
+	if( self.parent.fileChooseCallback && currentFile ) {
+		self.parent.fileChooseCallback( '${fieldId}', currentFile )
 		self.parent.tb_remove()
 	}
 } 
@@ -242,7 +242,7 @@ $(window).resize(function() {
 	} 
 	
 	//resize 'preview'
-	$('#preview').css('height', $(window).height()-20 )
+	$('#preview').css('height', $(window).height()-32 )
 	
 });
 
@@ -272,8 +272,9 @@ function iconClear( visible ) {
 
 function showErrorMessage(message){
 	if( message == null || message === "" ) message = "(unknown error)"
-	$('#error_label > span').show().text(message);
-	setTimeout( function() { $('#error_label').fadeOut(100) }, 5000 );
+	$('#error_label').find('span').text(message);
+	$('#error_label').fadeIn('fast')
+	setTimeout( function() { $('#error_label').fadeOut() }, 5000 );
 }
 
 function showErrorAjax( jqXHR ) { 
@@ -310,14 +311,13 @@ function showErrorAjax( jqXHR ) {
 $(document).ready(function() { 
 
 	//resize 'preview'
-	$('#preview')
-		.css('height', $(window).height()-20 )
-		.click( function() { 
-			$('#teaser').hide();
-			$(this).slideUp(); 
-			$('#chooser').show() 
-		}) 
-	
+	$('#preview').css('height', $(window).height()-32 )
+	$('#previewClose') .click( function() { 
+		$('#teaser').hide();
+		$('#preview').slideUp(); 
+		$('#chooser').show() 
+	}) 
+
 	/* --------------------------------------------------------------------
 	 * Handles the 'Cancel' button action
 	 * -------------------------------------------------------------------- */
@@ -329,21 +329,24 @@ $(document).ready(function() {
 	 * Handles the 'Select' button action
 	 * -------------------------------------------------------------------- */
 	$('#btnselect').click(function() {
-		self.parent.tb_select( '${fieldId}', currentFile )
+		self.parent.fileChooseCallback( '${fieldId}', currentFile )
 		self.parent.tb_remove()
 	})
 	
 	$('#btnpreview').click(function() {
-		var url = #{jsAction @Data.preview(':path') /}
+		var url = #{jsAction @Data.preview(':path') /}({path: currentFile})
 			
-		$.get( url({path: currentFile}), function(data) { 
+		$.get(url) .success(function(data) { 
 			$('#preview pre').text(data);
 			$('#preview').slideDown()
 			$('#chooser').hide();
 			$('#teaser').fadeIn() 
 			
 			setTimeout( function() { $('#teaser').fadeOut() }, 2500  )
-		});
+		}) 
+		.error(function() {
+			showErrorMessage("Cannot open the request file")	
+		})
 	}) 
 	
 	/* --------------------------------------------------------------------
@@ -521,8 +524,8 @@ $(document).ready(function() {
 		var opt = { 
 				root: '/', 
 				script: searchurl("@{FileChooser.listRecentData}"), 
-				expandSpeed: 750, 
-				collapseSpeed: 750,
+				expandSpeed: 500, 
+				collapseSpeed: 500,
 				multiFolder: false
 			}
 		
@@ -621,8 +624,8 @@ $(document).ready(function() {
 			
 			var opt = { root: '/', 
 				  script: searchurl("@{FileChooser.listDropboxData}"), 
-				  expandSpeed: 750, 
-				  collapseSpeed: 750, 
+				  expandSpeed: 500, 
+				  collapseSpeed: 500, 
 				  multiFolder: false 
 				}; 
 
@@ -648,13 +651,17 @@ $(document).ready(function() {
 		var opt = { 
 				root: '/', 
 				script: searchurl("@{FileChooser.listPublicData}"), 
-				expandSpeed: 750, 
-				collapseSpeed: 750,
+				expandSpeed: 500, 
+				collapseSpeed: 500,
 				multiFolder: false
 			}
 		
 		var choose = function(file,item) {
-			// highlight the selected item 
+			// 
+			var url = #{jsAction @FileChooser.copyPublicDataFile(':filePath') /}({filePath: file})
+			$.ajax(url)
+
+			// highlight the selected item
 			$('.jqueryFileTree li.selected').removeClass('selected'); item.addClass('selected');
 			currentFile = "file://${publicDataRoot}" + file; 
 			btnSelectEnable()

@@ -75,7 +75,7 @@ String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
  * through the filechooser dialog (see 'filechooseer.html')
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-function tb_select( field, filePath ) { 
+function fileChooseCallback( field, filePath ) { 
 	
 	var name = filePath.split('/')
 	if( $.isArray(name) ) { name = name[name.length-1]} 
@@ -119,7 +119,7 @@ $(document).ready(function(){
 	 */
 	$('.field').each(function() {
 		if( $(this).val().startsWith('file://') &&  $(this).is(':visible') ) { 
-			tb_select( $(this), $(this).val() )
+			fileChooseCallback( $(this), $(this).val() )
 		}
 	})
 
