@@ -165,7 +165,7 @@ html, body {
 
 #btnselect {
 	position: fixed;
-	right: 2em;
+	right: 15em;
 }
 
 #btnpreview {
@@ -175,7 +175,7 @@ html, body {
 
 #btncancel {
 	position: fixed;
-	right: 15em;
+	right: 1.6em;
 }
 
 
@@ -224,7 +224,12 @@ html, body {
     clear: both;
 }
 
-
+input[type=text] {
+	border: none;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 8%, from(#999), to(#fff)); 
+	background-image: -moz-linear-gradient(0% 8% 90deg, #fff, #999);
+	-webkit-border-radius: 3px; -moz-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px;
+}
 
 #queryfield, #urlfield {
 	width: 300px;
@@ -309,6 +314,11 @@ html, body {
 	margin-top: 2em;	
 }
 
+#url_sample {
+	margin-top: 1em;
+	color: #666; font-size: .8em;
+} 
+
 #upload_feedback {
 	margin-top: 2em;	
 }
@@ -359,7 +369,8 @@ html, body {
 
 #preview  pre { 
 	font-family: "Vera Mono", courier new, courier-new, courier, monospace; 
-	font-size: 14px;
+	font-size: 13px;
+	line-height: 18px;
 } 
 
 #previewClose {

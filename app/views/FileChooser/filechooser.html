@@ -27,7 +27,7 @@ Loading. Wait please ...
 <div id="fchoose" style="display: none">
     <img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
    	<div style="position:relative; left:1em; top:26px;" >
-		<span class="fname">filename.txt</span> <span id="fsize">10 K</span>
+		<span class="fname">filename.txt</span> <span class="fsize">10 K</span>
 		<div class="fmessage">
 		Click <i>Select</i> button below to use this file
 		</div>
@@ -53,9 +53,9 @@ Loading. Wait please ...
 <ul>
 <li><a href="javascript:void(0)" id="a_upload" data-tab="p_upload" >Upload</a></li>
 <li><a href="javascript:void(0)" id="a_url" data-tab="p_url">URL</a></li>
-<li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recent data</a></li>
 <li><a href="javascript:void(0)" id="a_public" data-tab="p_choose" >Public dataset</a></li>
 <li><a href="javascript:void(0)" id="a_dropbox" data-tab="p_dropbox">Dropbox</a></li>
+<li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recentely used</a></li>
 </ul>
 </div>
 
@@ -80,6 +80,16 @@ Loading. Wait please ...
 		<b>Paste a URL here&nbsp;</b> 
 		<input type="text" id="urlfield" >
 		<span id="icon_url" class="wait_spinner" style="display:none"></span>
+		
+		<div id="url_sample">
+		Enter a web URL in the above field including the protocol prefix. <br>
+		Accepted protocols are <code>http://</code>, <code>https://</code> and <code>ftp://</code>
+		</div>
+		<script type="text/javascript">
+		$('#url_sample_link').click(function(){
+			$('#urlfield').val($(this).text()) .change();
+		})
+		</script>
 		
 		<div id="url_feedback" >
 		</div>
@@ -131,9 +141,9 @@ Loading. Wait please ...
 	<!--  The dialog footer area containing the buttons  -->
 	<div id="footer" >
 	<span id="selarea"></span>
-	<input type="button" id="btncancel" class="button" value="Cancel">
-	<input type="button" id="btnpreview" class="button" value="Preview" >
 	<input type="button" id="btnselect" class="button" value="Select" >
+	<input type="button" id="btnpreview" class="button" value="Preview" >
+	<input type="button" id="btncancel" class="button" value="Cancel">
 	</div>
 	
 </div>
@@ -408,12 +418,13 @@ $(document).ready(function() {
 			error: function(jqXHR) { showErrorAjax(jqXHR)  },
 			success: function(data) { 
 
-				// show file download icon 
+				// show file download icon
+				$('#url_sample').hide()
 				var elem = $('#fchoose').clone()
 				elem.appendTo("#url_feedback")
 				elem.find('.fname').text( data.name )
 				elem.find('.fsize').text( data.size )
-				elem.show()
+				elem.fadeIn('fast')
 				
 				// enable the download button 
 				currentFile = "file://" + data.path;

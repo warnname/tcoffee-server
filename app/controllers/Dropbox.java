@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -10,6 +11,7 @@ import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import play.Logger;
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.Util;
@@ -34,18 +36,17 @@ import com.google.common.cache.CacheLoader;
  */
 public class Dropbox extends Controller {
 
-	final static private String APP_KEY = "ojeqo0r2aq4tyrn";
-	final static private String APP_SECRET = "rj2m7rdt6wkal6f";
-	final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
-
 	/*
 	 * Creates a Dropbox connection for the current session if does not exist
 	 */
 	final static private CacheLoader factory = new CacheLoader<String, DropboxAPI<WebAuthSession>>() {
         
 		public DropboxAPI<WebAuthSession> load(String key) {
+			String APP_KEY = Play.configuration.getProperty("settings.dropbox.appkey");
+			String APP_SECRET = Play.configuration.getProperty("settings.dropbox.appsecret");
+			
 			AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-			WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
+			WebAuthSession session = new WebAuthSession(appKeys, AccessType.APP_FOLDER);
 			return new DropboxAPI<WebAuthSession>(session);		
           }
         };
@@ -218,9 +219,7 @@ public class Dropbox extends Controller {
 
 		}
 	
-
 		renderJSON("{\"success\":true }");
-	
 	}
 	
 	
@@ -241,6 +240,23 @@ public class Dropbox extends Controller {
 			return false;
 		}
 
+	}
+	
+	/**
+	 * Unlink and invalidate all Dropbox sessions
+	 */
+	public static void invalidateAll() { 
+		Iterator<DropboxAPI<WebAuthSession>> it = cache.asMap().values().iterator();
+		while( it.hasNext() ) {
+			try  { 
+				it.next().getSession().unlink();
+			}
+			catch( Exception e ) {
+				Logger.warn("Error on unlinking Dropbox session");
+			} 
+		}
+		cache.invalidateAll();
+		renderText("OK");
 	}
 	
 }
