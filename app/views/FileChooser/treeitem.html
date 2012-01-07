@@ -1,4 +1,3 @@
-#{if folders || files }
 <ul class="jqueryFileTree" style="display: none;">
 #{list folders }
 <li class="directory collapsed"><a href="#" rel="${_.path}">${_.name}</a></li>
@@ -8,8 +7,3 @@
 <li class="file ext_${_.ext}"><a href="#" rel="${_.path}">${_.name}</a></li>
 #{/list}
 </ul>
-#{/if}
-
-#{else}
-(nothing found)
-#{/else}

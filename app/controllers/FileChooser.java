@@ -33,6 +33,7 @@ import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.RESTUtility;
 import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.exception.DropboxServerException;
 
 /**
  * Controller to handle the action for the advanced file choose 
@@ -78,7 +79,18 @@ public class FileChooser extends Controller {
 		render("FileChooser/filechooser.html");
 	}
 	
-	
+
+	@Util
+	static void renderTreeItems( List<FileEntry> folders , List<FileEntry> files, boolean isRoot ) { 
+		
+		if( isRoot && ( folders==null || folders.size()==0 ) && (files==null || files.size()==0 )) {
+			renderText("(nothing found)");
+		} 
+		
+		renderArgs.put("folders", folders);
+	    renderArgs.put("files", files);
+	    render("FileChooser/treeitem.html");
+	} 
 
 	/**
 	 * List files in the 'Public' file repository 
@@ -135,10 +147,8 @@ public class FileChooser extends Controller {
 				}
 			}
 	    }		
-	    
-	    renderArgs.put("files", _files);
-	    renderArgs.put("folders", _folders);
-	    render("FileChooser/treeitem.html");
+
+	    renderTreeItems(_folders, _files, "/".equals(dir));
 	}	
 	
 	/**
@@ -154,7 +164,7 @@ public class FileChooser extends Controller {
 		 * check if connected otherwise shows Dropbox connection box
 		 */
 		if( !Dropbox.isLinked() ) { 
-			error("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page.");
+			errorJson("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page.");
 		}
 		
 	    if (dir == null) {
@@ -162,7 +172,6 @@ public class FileChooser extends Controller {
 	    }
 	
 		try {
-			
 			boolean usePathForName;
 			List<Entry> result; 
 			/* 
@@ -199,14 +208,17 @@ public class FileChooser extends Controller {
 			Collections.sort(_files);
 			Collections.sort(_folders);
 		    
-		    renderArgs.put("files", _files);
-		    renderArgs.put("folders", _folders);
-		    render("FileChooser/treeitem.html");	
+			renderTreeItems(_folders, _files, "/".equals(dir));
+		} 
+		catch( DropboxServerException e ) {
+			Logger.error(e, "Error accessing Dropbox server for dir: '%s' - query: '%s' ", dir, query);
+			errorJson("Cannot access the requested path: '%s'", dir);
+
 		} 
 		catch (DropboxException e) {
 			Logger.error(e,"Cannot connect Dropbox");
 			Dropbox.unlink();
-			error();
+			errorJson("Error accessing your Dropbox account");
 		}
 	
 		
@@ -221,8 +233,7 @@ public class FileChooser extends Controller {
 		Logger.debug("copyDropboxFile method.  FilePath: '%s'", filePath);
 		
 		if( !Dropbox.isLinked() ) { 
-			// render error 
-			error("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page.");
+			errorJson("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page");
 		}
 		
 		request.format = "json";
@@ -237,15 +248,10 @@ public class FileChooser extends Controller {
 			String result = String.format("{\"success\":true, \"path\": \"%s\" }", JavaExtensions.escapeJavaScript(target.getAbsolutePath()));
 			renderJSON(result);
 		} 
-		catch( IOException e ) { 
-			Logger.error(e, "Cannot get the following file from dropbox (1): '%s'", filePath);
+		catch( Exception e ) { 
+			Logger.error(e, "Cannot get the following file from dropbox: '%s'", filePath);
 			Dropbox.unlink();
-			error("Cannot get the request file from Dropbox (1)");
-		}
-		catch (DropboxException e) {
-			Logger.error(e, "Cannot get the following file from dropbox (2): '%s'", filePath);
-			Dropbox.unlink();
-			error("Cannot get the request file from Dropbox (2)");
+			errorJson("Cannot access the request file from Dropbox");
 		}
 
 	}
@@ -262,7 +268,7 @@ public class FileChooser extends Controller {
 		catch( Exception e ) { 
 			Logger.error(e,"Error verifying Dropbox link status");
 			Dropbox.unlink();
-			error("Cannot verify link status to your Dropbox account");
+			errorJson("Cannot verify link status to your Dropbox account");
 		}
 	}
 	
@@ -296,11 +302,11 @@ public class FileChooser extends Controller {
 		} 
 		catch( MalformedURLException e ) { 
 			Logger.warn(e, "Not a valid URL: '%s'", url);
-			error(StatusCode.BAD_REQUEST, "Malformed '\"URL");
+			errorJson(StatusCode.BAD_REQUEST, "Malformed '\"URL");
 		}
 		catch (IOException e) {
 			Logger.error(e, "Cannot download the specified URL: '%s'", url);
-			error("Cannot download the specified URL");
+			errorJson("Cannot download the specified URL");
 		}
 		
 	}
@@ -350,10 +356,7 @@ public class FileChooser extends Controller {
 		/* 
 		 * render the result
 		 */
-	    renderArgs.put("files", result);
-	    renderArgs.put("folders", new ArrayList<FileChooser.FileEntry>()); // does not contain folder by definition
-		
-	    render("FileChooser/treeitem.html");	
+	    renderTreeItems(null, result, "/".equals(dir));
 	}
 
 	/**
@@ -496,6 +499,19 @@ public class FileChooser extends Controller {
 		}
 	}
 	
+	
+	@Util 
+	static void errorJson( int errcode, String message, Object... args ) {
+		request.format = "json";
+		error(errcode, String.format(message, args));
+	} 
+	
+	
+	@Util
+	static void errorJson( String message, Object ... args ) {
+		request.format = "json";
+		error(String.format(message, args));
+	} 
 	
 
 }

@@ -55,7 +55,7 @@ Loading. Wait please ...
 <li><a href="javascript:void(0)" id="a_url" data-tab="p_url">URL</a></li>
 <li><a href="javascript:void(0)" id="a_public" data-tab="p_choose" >Public dataset</a></li>
 <li><a href="javascript:void(0)" id="a_dropbox" data-tab="p_dropbox">Dropbox</a></li>
-<li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recentely used</a></li>
+<li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recently used</a></li>
 </ul>
 </div>
 
@@ -170,6 +170,7 @@ var waitLabelTimeout
 $(document)
 	.ajaxStart(function() { waitLabelTimeout=setTimeout(function() {$('#wait_label').show()}, 100) } )
 	.ajaxStop(function() { if(waitLabelTimeout) { clearTimeout(waitLabelTimeout); waitLabelTimeout=null } $('#wait_label').hide() } )
+	.ajaxError(function(event, jqXHR, ajaxSettings, thrownError) { showErrorAjax(jqXHR) })
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  * Reload the Dropbox component to force refresh of the content. 
@@ -637,7 +638,7 @@ $(document).ready(function() {
 				  script: searchurl("@{FileChooser.listDropboxData}"), 
 				  expandSpeed: 500, 
 				  collapseSpeed: 500, 
-				  multiFolder: false 
+				  multiFolder: false
 				}; 
 
 			$('#result_items').fileTree( opt, dblclick( choose, function() { closeOnDone=true; if(downloadComplete===true) closedialog() } ) );

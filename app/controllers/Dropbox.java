@@ -2,7 +2,10 @@ package controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -35,26 +38,70 @@ import com.google.common.cache.CacheLoader;
  *
  */
 public class Dropbox extends Controller {
+	
+	static final Map<String,AccessType> ACCESS_MAP = new HashMap<String,AccessType>(2);
+	
+	static { 
+		ACCESS_MAP.put("folder", AccessType.APP_FOLDER );
+		ACCESS_MAP.put("full", AccessType.DROPBOX ); 
+		ACCESS_MAP.put("dropbox", AccessType.DROPBOX ); // just a synonym of the above
+	}
 
+		
+	static class DropboxHandle implements Serializable {
+		AccessType accessType; 
+		DropboxAPI<WebAuthSession> instance; 
+		
+		void unlink() {  
+			if( instance == null ) return;
+			instance.getSession().unlink();
+		} 
+		
+		boolean isLinked() {
+			if( instance==null ) return false;
+			return instance.getSession().isLinked();
+		} 
+	} 
+	
 	/*
 	 * Creates a Dropbox connection for the current session if does not exist
 	 */
-	final static private CacheLoader factory = new CacheLoader<String, DropboxAPI<WebAuthSession>>() {
+	final static private CacheLoader factory = new CacheLoader<String, DropboxHandle>() {
         
-		public DropboxAPI<WebAuthSession> load(String key) {
-			String APP_KEY = Play.configuration.getProperty("settings.dropbox.appkey");
-			String APP_SECRET = Play.configuration.getProperty("settings.dropbox.appsecret");
+		public DropboxHandle load(String key) {
+			DropboxHandle result = new DropboxHandle();
+
+			/*
+			 * configure using configuration properties 
+			 * - settings.dropbox.key
+			 * - settings.dropbox.secret
+			 * - settings.dropbox.accesstype
+			 */
+			String appKey = Play.configuration.getProperty("settings.dropbox.key");
+			String appSecret = Play.configuration.getProperty("settings.dropbox.secret");
+			String sAccessType = Play.configuration.getProperty("settings.dropbox.accesstype");
+			result.accessType = ACCESS_MAP.get(sAccessType);
+			if( result.accessType == null ) {
+				Logger.warn("Missing or unknown Dropbox access type: '%s'. Valid values are: %s. Fallback to default ('%s')", 
+						sAccessType, 
+						ACCESS_MAP.keySet().toString(),
+						"folder");
+				result.accessType = AccessType.APP_FOLDER;
+			}
+
 			
-			AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-			WebAuthSession session = new WebAuthSession(appKeys, AccessType.APP_FOLDER);
-			return new DropboxAPI<WebAuthSession>(session);		
+			// create the dropbox connector instance 
+			WebAuthSession session = new WebAuthSession(new AppKeyPair(appKey, appSecret), result.accessType);
+			result.instance = new DropboxAPI<WebAuthSession>(session);		
+			
+			return result;
           }
         };
         
     /*
      * cache for the dropbox connections
      */
-	final static Cache<String, DropboxAPI<WebAuthSession>> cache = CacheBuilder.newBuilder()
+	final static Cache<String, DropboxHandle> cache = CacheBuilder.newBuilder()
 		    .concurrencyLevel(4)
 		    .expireAfterWrite(20, TimeUnit.MINUTES)
 		    .build(factory);
@@ -66,7 +113,17 @@ public class Dropbox extends Controller {
 	@Util
 	public static DropboxAPI<WebAuthSession> get() { 
 		try {
-			return cache.get( session.getId() );
+			return cache.get(session.getId()).instance;
+		} 
+		catch (ExecutionException e) {
+			Logger.error(e, "Cannot establish Droxbox session");
+			return null;
+		}
+	}
+	
+	@Util static DropboxHandle handle() {
+		try {
+			return cache.get(session.getId());
 		} 
 		catch (ExecutionException e) {
 			Logger.error(e, "Cannot establish Droxbox session");
@@ -162,9 +219,9 @@ public class Dropbox extends Controller {
 		
 		request.format = "json";
 		
-		DropboxAPI<WebAuthSession> dbox = get();
+		DropboxHandle handler = handle();
 	
-		if( !dbox.getSession().isLinked() ) { 
+		if( !handler.isLinked() ) { 
 			String result = "{\"success\":false, \"reason\": \"unlinked\" }";
 			renderJSON(result);
 		}
@@ -177,17 +234,20 @@ public class Dropbox extends Controller {
 		}
 
 		
-		String sPath=null;
+		String path;
+		String base = AccessType.APP_FOLDER.equals(handler.accessType) 
+					 ? "/results/"				// when accessing to teh T-Coffee app folder, put under 'result'
+					 : "/T-Coffee/results/"; 	// otherwise use a global '/T-Coffee' as root
 		int tries = 0;
 		boolean exists=false;
 		do { 
-			sPath = tries == 0 ? "/results/" + rid : String.format("/results/%s (%s)", rid, tries);
+			path = tries == 0 ? base + rid : String.format("%s%s (%s)", base, rid, tries);
 			try { 
-				exists = checkPathExist(sPath);
+				exists = checkPathExist(path);
 				tries++;
 			} 
 			catch( DropboxException e ) { 
-				Logger.error(e,"Error accessing Dropbx folder '%s'", sPath);
+				Logger.error(e,"Error accessing Dropbx folder '%s'", path);
 				unlink();
 				error("Error accessing your Dropbox account");
 			}
@@ -201,8 +261,8 @@ public class Dropbox extends Controller {
 			FileInputStream buffer=null;
 			if( item.exists() ) try { 
 				buffer = new FileInputStream(item.file);
-				String sFilePath = sPath + "/" + item.name;
-				dbox.putFileOverwrite(sFilePath, buffer, item.file.length(), null);
+				String sFilePath = path + "/" + item.name;
+				handler.instance.putFileOverwrite(sFilePath, buffer, item.file.length(), null);
 			}
 			catch( Exception e ) { 
 				unlink();
@@ -246,10 +306,10 @@ public class Dropbox extends Controller {
 	 * Unlink and invalidate all Dropbox sessions
 	 */
 	public static void invalidateAll() { 
-		Iterator<DropboxAPI<WebAuthSession>> it = cache.asMap().values().iterator();
+		Iterator<DropboxHandle> it = cache.asMap().values().iterator();
 		while( it.hasNext() ) {
 			try  { 
-				it.next().getSession().unlink();
+				it.next().unlink();
 			}
 			catch( Exception e ) {
 				Logger.warn("Error on unlinking Dropbox session");
