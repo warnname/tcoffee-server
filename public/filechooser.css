@@ -159,7 +159,8 @@ html, body {
 #footer {
 	min-width: 650px;
 	height: 60px;
-	position: fixed;
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
 	bottom: 0;	
 }
 
@@ -355,8 +356,10 @@ input[type=text] {
  */
 
 #preview {
-	background-color: #f8f8f8;
+	width: 100%;
+	height: 100%;
 	color: #282828;
+	background-color: #f8f8f8;
 	padding: 6px;
 	margin: 9px;
 	border: 1px solid #DDD;
@@ -364,13 +367,17 @@ input[type=text] {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	overflow: auto;
 }
 
-#preview  pre { 
+#preview textarea { 
+	background-color: #f8f8f8;
+	padding: 0;
+	margin: 0;	
+	border: 0;
 	font-family: "Vera Mono", courier new, courier-new, courier, monospace; 
 	font-size: 13px;
 	line-height: 18px;
+	resize: none;
 } 
 
 #previewClose {
@@ -431,7 +438,7 @@ input[type=text] {
     border-radius: 12px;
 }
 
-.qq-upload-drop-area span {
+.qq-upload-drop-area > span {
 	font-weight: bold;
 	font-size: 1.3em;
 	color: #ccc;

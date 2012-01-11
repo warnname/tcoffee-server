@@ -99,9 +99,15 @@ public class Data extends CommonController {
 			notFound("File not found: %s", file.getName());
 		}
 
-		GuessContentType ctype = new GuessContentType(file);
+		GuessContentType ctype = null;
+		try { 
+			ctype = new GuessContentType(file);
+		}
+		catch( Exception e ) {
+			Logger.error(e, "Cannot guess file type for: '%s'", file);
+		}
 
-		if( ctype.isBinary() ) { 
+		if( ctype == null || ctype.isBinary() ) { 
 			renderText("(this file cannot be previewed)");
 		}
 		

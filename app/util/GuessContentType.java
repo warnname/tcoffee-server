@@ -31,8 +31,9 @@ public class GuessContentType {
 		this.fFile = file;
 		
 		
-		String cmd = String.format("file -bIdk %s", file.getAbsolutePath()); 
+		String[] cmd = {};
 		try {
+			cmd = new String[] { "file", "-bIdk", file.getAbsolutePath() }; 
 			Process p = Runtime.getRuntime().exec(cmd);
 			fResult = p.waitFor();
 			
@@ -41,7 +42,7 @@ public class GuessContentType {
 			
 		} 
 		catch (Exception e) {
-			throw new QuickException(e, "The following command failed: '%s'", cmd);
+			throw new QuickException(e, "Cannot execute command: ", Utils.asString(cmd) );
 		}
 
 		if( fResult != 0 ) { 

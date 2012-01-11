@@ -35,10 +35,13 @@ Loading. Wait please ...
 	<div style="clear: both"> </div>
 </div>
 
+
 <div id="preview" style="display: none" >
 <div id="previewClose" class="icon_clear">&nbsp;</div>
-<pre>
-</pre>
+*{ why this nasty fieldset+div here? to fix an IE6 textarea height bug. http://www.phoboslab.org/log/2007/10/ie-textarea-100-width-bug }*
+<fieldset><div>
+<textarea readonly="readonly"></textarea>
+</div></fieldset>
 
 <div id="teaser" style="display: none">Click the X icon at the top right corner to close this preview</div>
 </div>	
@@ -53,8 +56,8 @@ Loading. Wait please ...
 <ul>
 <li><a href="javascript:void(0)" id="a_upload" data-tab="p_upload" >Upload</a></li>
 <li><a href="javascript:void(0)" id="a_url" data-tab="p_url">URL</a></li>
-<li><a href="javascript:void(0)" id="a_public" data-tab="p_choose" >Public dataset</a></li>
 <li><a href="javascript:void(0)" id="a_dropbox" data-tab="p_dropbox">Dropbox</a></li>
+<li><a href="javascript:void(0)" id="a_public" data-tab="p_choose" >Public dataset</a></li>
 <li><a href="javascript:void(0)" id="a_recent" data-tab="p_choose" >Recently used</a></li>
 </ul>
 </div>
@@ -252,9 +255,6 @@ $(window).resize(function() {
 		$('#result_items').css('height', t2-t1-25);
 	} 
 	
-	//resize 'preview'
-	$('#preview').css('height', $(window).height()-32 )
-	
 });
 
 
@@ -319,10 +319,11 @@ function showErrorAjax( jqXHR ) {
  * Here start the DOCUMENT READY function 
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
+var showPreviewTeaserCount=0;
+
 $(document).ready(function() { 
 
 	//resize 'preview'
-	$('#preview').css('height', $(window).height()-32 )
 	$('#previewClose') .click( function() { 
 		$('#teaser').hide();
 		$('#preview').slideUp(); 
@@ -348,12 +349,20 @@ $(document).ready(function() {
 		var url = #{jsAction @Data.preview(':path') /}({path: currentFile})
 			
 		$.get(url) .success(function(data) { 
-			$('#preview pre').text(data);
+
+			var h = $(window).height();
+			var w = $(window).width();
+
+			$('#preview') .height(h-34) .width(w-32)
+			$('#preview textarea') .height(h-38) .width(w-34) .val(data);
 			$('#preview').slideDown()
 			$('#chooser').hide();
-			$('#teaser').fadeIn() 
 			
-			setTimeout( function() { $('#teaser').fadeOut() }, 2500  )
+			// show this element only the very forst time
+			if(showPreviewTeaserCount++ == 0 ) {
+				$('#teaser').fadeIn() 
+				setTimeout( function() { $('#teaser').fadeOut() }, 2500  )
+			}
 		}) 
 		.error(function() {
 			showErrorMessage("Cannot open the request file")	
@@ -777,8 +786,8 @@ function btnSelectEnable(status) {
  		template: 
     		'<div class="qq-uploader">' + 
 		        '<div class="qq-upload-drop-area">' +
-		        '<span>Drag a file here to upload your data <br> - or - </span> ' +
-		        '<br> <div class="qq-upload-button button">click this button</div>' +
+		        '<span id="qq-drag-message"">Drag a file here to upload your data <br> - or - </span> ' +
+		        '<br> <div class="qq-upload-button button"> <span>click this button</span> </div>' +
 		        '</div>' + 
 	     	'</div>',  
 
@@ -957,5 +966,29 @@ function btnSelectEnable(status) {
  }); 
  
 </script>
+
+
+<!--[if lte IE 8]>
+<style type="text/css">
+.jqueryFileTree LI a { border: 1px solid white; } 
+#qq-drag-message { display: none } 
+#btncancel { width: 6em }
+#btnpreview { width: 6em }
+#btnselect { width: 6.5em }  
+#teaser { background-color: #595959 }
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.qq-uploader').css('width','98%')
+	$('.qq-upload-button').css('width','12em') .find("span").text('Click here to upload a file')
+	$('.qq-upload-drop-area').css('height','4em').css('display','block')
+	
+})
+</script>
+<![endif]-->
+
+
+
 </body>
 </html>
