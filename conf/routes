@@ -43,8 +43,8 @@ GET     /public/            	staticDir:public
 
 GET		/apps/{bundle}						Application.index
 GET		/apps/{bundle}/						Application.index
+*		/apps/{bundle}/do:{name}			Application.main
 GET		/apps/{bundle}/play					Application.main
-POST	/apps/{bundle}/play					Application.main
 GET		/apps/{bundle}/cgi					Application.gateway
 POST 	/apps/{bundle}/cgi					Application.gateway
 GET		/apps/{bundle}/result				Application.result

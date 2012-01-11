@@ -27,7 +27,7 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 #{list _bundle.getServicesByGroup(group) } 
 <tr>
 	<td class="c-lbl" >
-		<a href="${util.RouterFix.reverse(_.action,['name':_.name])}">${_.title ?: '(unknown)'}</a>
+		<a href="${play.mvc.Router.reverse(_.action,['name':_.name])}">${_.title ?: '(unknown)'}</a>
 	</td>
 	
 	<td class="c-val">${_.description} 

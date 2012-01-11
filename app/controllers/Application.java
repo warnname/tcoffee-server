@@ -23,8 +23,8 @@ import play.libs.IO;
 import play.libs.MimeTypes;
 import play.mvc.Before;
 import play.mvc.Finally;
+import play.mvc.Router;
 import play.mvc.Util;
-import util.RouterFix;
 import util.Utils;
 import bundle.BundleRegistry;
 import controllers.Data.AjaxUpload;
@@ -162,8 +162,9 @@ public class Application extends CommonController {
 
 		Map<String,Object> args = new HashMap<String, Object>(2);
     	args.put("bundle", bundleName );
+    	args.put("name", service.name);
     	args.put("replay", rid);
-    	redirect( RouterFix.reverse(service.action, args).toString() );
+    	redirect( Router.reverse(service.action, args).url );
 
 	}
 	

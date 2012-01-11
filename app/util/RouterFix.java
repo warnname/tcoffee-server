@@ -24,6 +24,7 @@ import play.utils.Default;
  * @author Paolo Di Tommaso
  *
  */
+@Deprecated
 public class RouterFix extends Router {
 
 

@@ -1,5 +1,7 @@
 package controllers;
 
+import static util.Dsl.*;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +16,7 @@ import play.cache.Cache;
 import play.cache.CacheFor;
 import play.libs.IO;
 import play.mvc.Before;
-import util.RouterFix;
+import play.mvc.Router;
 import bundle.BundleRegistry;
 
 /**
@@ -57,7 +59,7 @@ public class Main extends CommonController {
 		}
 
 		/* fallback on the dynamic index page */
-		redirect( RouterFix.reverse("Application.index", "bundle=tcoffee").toString()  );
+		redirect( Router.reverse("Application.index", params("bundle=tcoffee")).toString()  );
 	}
 	
 	public static void list() { 
@@ -72,7 +74,7 @@ public class Main extends CommonController {
     	Map<String,Object> args = new HashMap<String, Object>(2);
     	args.put("bundle", result != null ? result.bundle : "tcoffee" );
     	args.put("rid", rid);
-    	redirect( RouterFix.reverse("Application.result", args).toString() );
+    	redirect( Router.reverse("Application.result", args).toString() );
     	
 	}
 	
@@ -81,14 +83,14 @@ public class Main extends CommonController {
 	 * Quick access link to PSI-coffee
 	 */
 	public static void psicoffee() { 
-		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=psicoffee").toString() );
+		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=psicoffee")).toString() );
 	}
 
 	/**
 	 * Quick access link to TM-coffee
 	 */
 	public static void tmcoffee() { 
-		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=tmcoffee").toString() );
+		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=tmcoffee")).toString() );
 	}
 		
 	
@@ -96,21 +98,21 @@ public class Main extends CommonController {
 	 * Quick link to R-coffee
 	 */
 	public static void rcoffee() { 
-		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=rcoffee").toString() );
+		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=rcoffee")).toString() );
 	}
 	
 	/**
 	 * Quick link to M-coffee
 	 */
 	public static void mcoffee() { 
-		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=mcoffee").toString() );
+		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=mcoffee")).toString() );
 	}
 	
 	/**
 	 * Quick link Expresso
 	 */
 	public static void expresso() { 
-		redirect( RouterFix.reverse("Application.main", "bundle=tcoffee", "name=expresso").toString() );
+		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=expresso")).toString() );
 	}
 	
 	/**

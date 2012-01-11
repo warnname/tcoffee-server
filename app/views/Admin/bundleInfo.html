@@ -51,7 +51,7 @@ table#box-table-a { margin-bottom: 3em; }
 
 <tr>
 <td>Public link</td>
-<td><a href="http://${request.host}${util.RouterFix.reverse('Application.index',['bundle':bundle.name])}" target="_blank" >http://${request.host}${util.RouterFix.reverse('Application.index',['bundle':bundle.name])}</a></td>
+<td><a href="http://${request.host}${play.mvc.Router.reverse('Application.index',['bundle':bundle.name])}" target="_blank" >http://${request.host}${play.mvc.Router.reverse('Application.index',['bundle':bundle.name])}</a></td>
 </tr>
  
 </tbody>
@@ -129,7 +129,10 @@ table#box-table-a { margin-bottom: 3em; }
 <td nowrap="nowrap">${_.group}</td>
 <td>
 ${_.description} <br/>
-<a target="_blank" href="http://${request.host}${util.RouterFix.reverse('Application.main',['bundle':bundle.name,'name':_.name])}" >http://${request.host}${util.RouterFix.reverse('Application.main',['bundle':bundle.name,'name':_.name])}</a></td>
+
+%{ def path = "http://" + request.host + play.mvc.Router.reverse('Application.main',['bundle':bundle.name,'name':_.name]); }%
+
+<a target="_blank" href="${path}" >${path}</a></td>
 <td nowrap="nowrap" >
 	[ <a href="@{Admin.bundleServiceEdit(bundle.name,_.name)}" title="Modify service configuration"  >edit</a> ]
 	[ <a href="@{Admin.bundleServiceDelete(bundle.name,_.name)}" title="Delete service from bundle" >delete</a> ]
