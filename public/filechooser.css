@@ -1,0 +1,497 @@
+/* -------------------------------------------------------------- 
+   RESET (via Eric Meyer)
+-------------------------------------------------------------- */
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+:focus { outline: 0; }
+ins { text-decoration: none; }
+del { text-decoration: line-through; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+
+/* -------------------------------------------------------------- 
+   TYPOGRAPHY
+-------------------------------------------------------------- */
+
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea { font-family: Helvetica, Arial, FreeSans, sans-serif; }
+
+/* HEADINGS */
+h1 { font-size: 40px; line-height: 50px; margin-bottom: 10px; }
+h2 { font-size: 30px; line-height: 40px; margin-bottom: 10px; }
+h3 { font-size: 20px; line-height: 30px; }
+h4 { font-size: 14px; line-height: 20px; }
+h5 { font-size: 14px; line-height: 20px; }
+h6 { font-size: 14px; line-height: 20px; }
+
+@font-face {
+  font-family: "Vera Mono";
+  src: url("fonts/VeraMono.ttf#") format("truetype");
+}
+
+
+/* 
+ * http://css-tricks.com/examples/hrs/ 
+ */
+hr {  
+ 	border: 0;
+    height: 1px;
+    background: #333;
+    background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc); 
+    background-image:    -moz-linear-gradient(left, #ccc, #333, #ccc); 
+    background-image:     -ms-linear-gradient(left, #ccc, #333, #ccc); 
+    background-image:      -o-linear-gradient(left, #ccc, #333, #ccc); 
+    width: 90%;
+}
+
+
+/*
+ * CSS button
+ * see http://yayinternets.com/articles/emulating-google-style-buttons/
+ */
+
+@-webkit-keyframes pulse { 
+	0% { -webkit-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } 
+	50% { -webkit-box-shadow: 0 0 12px rgba(51, 204, 255, 0.9); } 
+	100% { -webkit-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } }
+
+@-moz-keyframes pulse { 
+	0% { -moz-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } 
+	50% { -moz-box-shadow: 0 0 12px rgba(51, 204, 255, 0.9); } 
+	100% { -moz-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } }
+
+@-ms-keyframes pulse { 
+	0% { -ms-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } 
+	50% { -ms-box-shadow: 0 0 12px rgba(51, 204, 255, 0.9); } 
+	100% { -ms-box-shadow: 0 0 12px rgba(51, 204, 255, 0.2); } }
+
+
+.button {
+  -moz-border-radius:      3px;
+  -webkit-border-radius:   3px;
+  background:              white url('images/button.png') 0 0 repeat-x; /* Image fallback */
+  background:             -moz-linear-gradient(0% 170% 90deg, #c4c4c4, white);
+  background:             -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#c4c4c4));
+  border:                  1px solid;
+  border-color:            #e6e6e6 #cccccc #cccccc #e6e6e6;
+  border-radius:           3px;
+  color:                   #404040;
+  display:                 inline-block;
+  font-family:            "helvetica neue", helvetica, arial, freesans, "liberation sans", "numbus sans l", sans-serif;
+  font-size:               15px;
+  outline:                 0;
+  padding:                 6px 16px 6px;
+  text-align:              center;
+  text-decoration:         none;
+  text-shadow:             1px 1px 0 white; 
+  white-space:             nowrap; 
+}
+
+.button:hover {
+    background:           -moz-linear-gradient(0% 170% 90deg, #b8b8b8, white);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(white), to(#b8b8b8));
+    border-color:          #99ccff;
+    color:                 #333333; 
+}
+
+
+.button:active {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    color:                 #1a1a1a;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); 
+}
+
+.button:focus {
+    border-color:          #8fc7ff #94c9ff #94c9ff #8fc7ff;
+}
+    
+.button.disabled {
+    background-position:   0 -25px;
+    background:           -moz-linear-gradient(0% 170% 90deg, white, #dedede);
+    background:           -webkit-gradient(linear, 0% 0%, 0% 170%, from(#dedede), to(white));
+    border-color:          #ccc #ccc #ccc #ccc;
+    color:                 #aaa;
+    text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); 
+} 
+
+.button.pulse {
+	-webkit-animation: 	   pulse 1.5s infinite ease-in-out;
+	-moz-animation: 	   pulse 1.5s infinite ease-in-out;
+	-ms-animation: 	   pulse 1.5s infinite ease-in-out;
+} 
+
+
+
+/*	=================================== / BUTTONS =============================== */
+
+/*  
+ * File chooser specific style 
+ */
+html, body {
+	height: 100%;
+	color: #333;
+	overflow: hidden;
+} 
+
+
+#chooser {
+	min-width: 650px;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 1em;
+	margin-top: .2em;
+} 
+
+#header {
+    height: 40px;
+}
+
+#header h1 { 
+	font-size: 1.4em;
+} 
+
+#footer {
+	min-width: 650px;
+	height: 60px;
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	bottom: 0;	
+}
+
+#btnselect {
+	position: fixed;
+	right: 15em;
+}
+
+#btnpreview {
+	position: fixed;
+	right: 8em;
+}
+
+#btncancel {
+	position: fixed;
+	right: 1.6em;
+}
+
+
+#result_items {
+	overflow: auto;
+	margin-top: 15px;
+}
+ 
+#left {
+    width: 200px;
+    float: left;
+}
+
+#left ul {
+	margin-top: 8px;
+	padding-right: 1em;
+}
+
+#left ul li {  
+	padding: .5em;
+} 
+
+#left ul li a,
+#left ul li a:visited
+ {  
+	text-decoration: none;
+	color: #333;
+} 
+
+#left ul li.selected a
+ {  
+	text-decoration: none;
+	color: #D84A38; 
+	font-weight: 600;
+} 
+
+#left ul li:hover {
+	background-color: #dedede;	
+}
+
+#right {
+    margin-left:200px; /* Change this to whatever the width of your left column is*/
+}
+
+.clear {
+    clear: both;
+}
+
+input[type=text] {
+	border: none;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 8%, from(#999), to(#fff)); 
+	background-image: -moz-linear-gradient(0% 8% 90deg, #fff, #999);
+	-webkit-border-radius: 3px; -moz-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px;
+}
+
+#queryfield, #urlfield {
+	width: 300px;
+	font-size:	16px;
+	font-weight: 400;
+    border: 1px solid #CFCFCF;
+    padding: 8px;
+	position: relative;
+	top: 2px;
+    box-sizing:content-box;
+    -webkit-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    -ms-box-sizing:content-box;
+}
+
+#queryfield {
+    padding-right: 26px;
+} 
+
+.icon_clear {   
+	height:18px;
+    width: 18px;
+	cursor:pointer;
+    background-image: url("data:image/gif;base64,R0lGODlhEQARANUAAFtbXEJCQ1paW1ZWV9HR0VFRUlxcXZ6en52dnlJSU0hISV9fYLW1tefn57y8vbq6uk9PUO3t7WhoaLu7u0tLTMLCw2pqa1BQUfPz89nZ2fLy8tra2r6+vk1NTtLS0vX19UxMTVhYWWdnaGRkZbOztO/v72BgYcXFxcnJyWRkZObm5sjIyaqqqnt7fLGxsuHh4VdXWP///0BAQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAARABEAAAaPwJgw9mK1YAFYi/UaOl0CmXQqA7icMQR1Kz0MXdzw9RWVGkDTQmgKKE5FkYdCViC8YFPj1LSJkRYoMScJU0dUMB4xJTEcHYcBWxIfMSoDW0lUCSsxGjEMc1NKUwYEMRMjpQ4QhSxTFhgVFDIDGQ14UkxlMikXUwMLbE1gYVtXQlrEXVhQYVZYQkVHSUtNQ0EAOw==");
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+#icon_clear {
+    position:relative;
+	left:-26px;
+    top: 6px;	
+}  
+
+#btnsearch {
+	position: relative;
+	left: -18px;
+	top: 2px;
+} 
+
+
+#wait_label {
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	top: 0;
+	right: 0;
+	color: white;
+	font-weight: 500;
+	background-color:  #940612;
+	padding: .4em;
+}
+
+
+#error_label {
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	top: 0;
+	right: 0;
+	width: 100%;
+	color: white;
+	font-weight: 500;
+	background-color:  #940612;
+	text-align: center;
+	min-height: 40px;
+	line-height: 40px;
+	z-index: 99;
+}
+
+.wait_spinner {
+	height:16px;
+    width: 16px;
+	display: inline-block;
+	position: relative;
+	top: 6px;
+	left: 6px;
+	background-repeat: no-repeat;
+	background-image: url("data:image/gif;base64,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")
+}
+
+
+#url_feedback {
+	margin-top: 2em;	
+}
+
+#url_sample {
+	margin-top: 1em;
+	color: #666; font-size: .8em;
+} 
+
+#upload_feedback {
+	margin-top: 2em;	
+}
+
+
+.fname {}
+.fsize { color: #666; font-size: .9em; padding-left: 1em; } 
+.fmessage { color: #666; font-size: .8em; position: relative; top: 16px; left: -50px; }
+
+#p_dropbox {
+	line-height: 1.4em
+} 
+
+#icon_dropbox {
+	position: relative; 
+	top: -5px
+}
+
+#dropbox_message { font-size: .8em; color: #666 }
+
+/* jFileTree */
+
+.jqueryFileTree LI a {
+	border: 1px solid transparent;
+} 
+
+.jqueryFileTree LI.selected a {
+	border: 1px solid #66F;
+	background-color: #BDF;
+} 
+
+/* 
+ * Preview component 
+ */
+
+#preview {
+	width: 100%;
+	height: 100%;
+	color: #282828;
+	background-color: #f8f8f8;
+	padding: 6px;
+	margin: 9px;
+	border: 1px solid #DDD;
+	-webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#preview textarea { 
+	background-color: #f8f8f8;
+	padding: 0;
+	margin: 0;	
+	border: 0;
+	font-family: "Vera Mono", courier new, courier-new, courier, monospace; 
+	font-size: 13px;
+	line-height: 18px;
+	resize: none;
+} 
+
+#previewClose {
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	top: 1px;
+	right: 1px;
+	height:30px;
+    width: 30px;
+	cursor:pointer;
+    background-image: url("images/close-icon.png");
+    background-repeat: no-repeat;
+    display: inline-block;	
+} 
+
+#teaser { 
+	text-align: center;
+	border-radius: 20px;
+	border: 1px solid #ccc;
+	padding: 2em;
+	font-size: 1.5em;
+	font-weight: 500;
+	background: rgba(0,0,0,0.5);
+	color: white;
+	position: fixed !important;
+	position: absolute; /*ie6 and above*/
+	width: 50%;
+	top: 0;
+	left: 20%;
+	margin: 2em 0 0 0;
+}  
+
+/* 
+ * Ajax Upload style
+ * See http://valums.com/ajax-upload/
+ * Vertical align based on http://css-tricks.com/vertically-center-multi-lined-text/ */ 
+ */
+
+.qq-upload-button { }
+.qq-upload-button-hover { }
+.qq-upload-button-focus { }
+
+
+.qq-uploader {
+	width: 100%;
+	height: 150px;
+    display: table;
+} 
+
+.qq-upload-drop-area {
+	display: table-cell;
+  	vertical-align: middle;
+  	text-align: center;
+ 	border: 5px dashed #ccc ; 
+	-moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -khtml-border-radius: 12px;
+    border-radius: 12px;
+}
+
+.qq-upload-drop-area > span {
+	font-weight: bold;
+	font-size: 1.3em;
+	color: #ccc;
+}
+
+.qq-upload-drop-area-active { background: #cacaca; border-color: #4A8BF5 }
+.qq-upload-drop-area-active span {  color: #4A8BF5; }
+
+.qq-upload-list { margin:15px 35px; padding:0; list-style: none;}
+.qq-upload-list li { margin:0; padding:0; }
+.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-failed-text {
+    margin-right: 7px;
+}
+
+.qq-upload-file {}
+.qq-upload-spinner {display:inline-block; background: url("loading.gif"); width:15px; height:15px; vertical-align:text-bottom;}
+.qq-upload-size, .qq-upload-cancel { display: none }
+
+.qq-upload-failed-text {display:none;}
+.qq-upload-fail .qq-upload-failed-text {display:inline;}
+
+.upload-progress {
+	display:inline-block;
+}
+
+div.progress-container {
+  border: 1px solid #ccc; 
+  width: 200px; 
+  margin: 2px 5px 2px 0; 
+  padding: 1px; 
+  float: left; 
+  background: white;
+  float: left;
+  position: relative;
+  top: 8px;
+}
+
+div.progress-container > div {
+  background-color: #0084EF; 
+  height: 18px;
+}
+
+
+.qq-upload-fail {
+	display: none;
+} 
+
+.qq-upload-size {
+	color: #999;
+} 
+
+.qq-upload-file, 
+.qq-upload-size { 
+	margin-right: .8em;
+}
+

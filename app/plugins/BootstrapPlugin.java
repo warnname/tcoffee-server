@@ -13,9 +13,6 @@ import play.Play;
 import play.PlayPlugin;
 import play.cache.Cache;
 import play.jobs.Job;
-import play.templates.Template;
-import play.templates.TemplateLoader;
-import play.vfs.VirtualFile;
 import util.Utils;
 import bot.BotListener;
 import bot.BotListener.Config;
@@ -209,26 +206,6 @@ public class BootstrapPlugin extends PlayPlugin {
 			Logger.warn(e, "Error shutting down H2 database");
 		}
 	}
-
-	
-	/**
-	 * Load "/conf" provided templates
-	 */
-	@Override
-    public Template loadTemplate(VirtualFile file) {
-
-		/* 
-		 * interpect templates in the /conf path 
-		 */
-		if( !file.relativePath().startsWith("/conf/") ) { 
-			return null;
-		}
-
-		Logger.debug("Loading template: '%s'",  file.relativePath() );
-        String key = (file.relativePath().hashCode() + "").replace("-", "M");
-        return TemplateLoader.load( key, file.contentAsString() );
-    }
-
 	
 	
 }

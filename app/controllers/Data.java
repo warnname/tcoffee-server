@@ -2,18 +2,18 @@ package controllers;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,7 +25,6 @@ import models.Repo;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
-import play.cache.Cache;
 import play.data.Upload;
 import play.libs.IO;
 import play.libs.MimeTypes;
@@ -33,6 +32,7 @@ import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
 import play.templates.JavaExtensions;
+import util.GuessContentType;
 import util.JsonHelper;
 import util.Utils;
 import exception.QuickException;
@@ -49,7 +49,7 @@ public class Data extends CommonController {
 	/** 
 	 * characters that have to be used into command line and file names
 	 */
-	public static final char[] INVALID_CHARS = { ';','&','`',':','*','?','$','(',')','{','}','[',']','<','>','|' };
+	public static final char[] COMMANDLINE_INVALID_CHARS = { ';','&','`',':','*','?','$','<','>','|' };
 	
 	
 	/**
@@ -58,6 +58,7 @@ public class Data extends CommonController {
 	 * 
 	 * @param path
 	 */
+	@Deprecated
 	public static void resource(String path) {
 		assertNotEmpty(path, "Missing 'path' argument on #resource action");
 
@@ -65,6 +66,61 @@ public class Data extends CommonController {
 		String content = MimeTypes.getMimeType(path);
 		response.contentType = content;
 		renderFile(AppProps.WORKSPACE_FOLDER, path);
+	}
+	
+	public static void view( String path ) { 
+		assertNotEmpty(path, "Missing 'path' argument on #view action");
+
+		if( path.startsWith("file://") ) { 
+			path = path.substring(7);
+		}
+		
+		File file = new File(path);
+		if( !file.exists() ) { 
+			Logger.error("Error opening '%s'. File does not exist", path);
+			notFound("File not found: %s", file.getName());
+		}
+
+		renderStaticResponse();
+		String content = MimeTypes.getMimeType(path);
+		response.contentType = content;
+		renderBinary(file);
+	}
+	
+	public static void preview( String path ) throws IOException { 
+
+		if( path.startsWith("file://") ) { 
+			path = path.substring(7);
+		}
+
+		File file = new File(path);
+		if( !file.exists() ) { 
+			Logger.error("Error opening '%s'. File does not exist", path);
+			notFound("File not found: %s", file.getName());
+		}
+
+		GuessContentType ctype = null;
+		try { 
+			ctype = new GuessContentType(file);
+		}
+		catch( Exception e ) {
+			Logger.error(e, "Cannot guess file type for: '%s'", file);
+		}
+
+		if( ctype == null || ctype.isBinary() ) { 
+			renderText("(preview not available)");
+		}
+		
+	
+		/*
+		 * render only the first 10K of text
+		 */
+		response.contentType = ctype.getMimeType();
+		byte[] buffer = new byte[10 * 1024];
+		FileInputStream in = new FileInputStream(file);
+		in.read(buffer);
+		
+		renderBinary(new ByteArrayInputStream(buffer));
 	}
 	
 	/**
@@ -174,124 +230,60 @@ public class Data extends CommonController {
 			throw new QuickException(e, "Unable to zip content to file: '%s'", targetZip);
 		}
 	} 
-		
-	/**
-	 * Manage upload of the input file 
-	 * 
-	 * NOTE: this use the legacy mechanism
-	 * 
-	 * @param name the file name that is being uploaded
-	 */
-	public static void upload(String name) {
-		assertNotEmpty(name, "Missing 'name' argument on #upload action");
-		
-		/* default error result */
-		String ERROR = "{success:false}";
-		
-		/* 
-		 * here it is the uploaded file 
-		 */
-		File file = params.get(name, File.class);
-		
-		/* uh oh something goes wrong .. */
-		if( file==null ) {
-			Logger.error("Ajax upload is null for field: '%s'", name);
-			renderText(ERROR);
-			return;
-		}
-		
-		/* error condition: wtf is the file ? */
-		if( !file.exists() ) {
-			Logger.error("Cannot find file for ajax upload field: '%s'", name);
-			renderText(ERROR);
-			return;
-		}
-
-		/* 
-		 * copy the uploaded content to a temporary file 
-		 * and return that name in the result to be stored in a hidden field
-		 */
-		try {
-			File temp = File.createTempFile("upload-", null);
-			// to create a temporary folder instead of a file delete and recreate it 
-			temp.delete();
-			temp.mkdir();
-			temp = new File(temp, file.getName());
-			
-			FileUtils.copyFile(file, temp);
-			String filename = temp.getAbsolutePath();
-			renderText(String.format("{success:true, name:'%s', path:'%s', size:'%s'}", 
-						file.getName(),
-						JavaExtensions.escapeJavaScript(filename),
-						FileUtils.byteCountToDisplaySize(temp.length())
-						));
-		}
-		catch( IOException e ) {
-			Logger.error(e, "Unable to copy temporary upload file: '%s'", file);
-			renderText(ERROR);
-		}
-		
-	}	
 	
 	
 	/* 
-	 * Upload mechanism for the 'advanced' T-coffee mode 
+	 * User data (for example uploads) is store under the main TEMPORARY folder 
+	 * and organized in subfolder using the session ID
 	 */
-	static class AjaxUpload implements Serializable { 
-		String fileName;
-		File path;
-		
-		public AjaxUpload() { }
-		
-		public AjaxUpload( File file ) { 
-			fileName = file.getName();
-			path = file;
-		}
-		
-		public String getFileName() { return fileName; }
-		public File getPath() { return path; } 
-		
-		public String toString() {
-			return String.format("AjaxUpload[ %s -> %s ]", fileName, path );
-		} 
-		
-		public int hashCode() { 
-			int hash= Utils.hash();
-			hash = Utils.hash(hash, fileName);
-			return hash;
-		}
-		
-		public boolean equals( Object that ) { 
-			return 
-				Utils.isEqualsClass(this, that) && 
-				Utils.isEquals(this.fileName, ((AjaxUpload)that).fileName);
-		}
-	}
-	
+	static File USERDATA = new File( AppProps.TEMP_PATH, "userdata");
+
 	
 	@Util
-	public static Set<AjaxUpload> getAjaxUploads() { 
-		String key = Session.current().getId() + "-ajaxuploads";
-		Set<AjaxUpload> result = (Set<AjaxUpload>) Cache.get(key);
-		if( result == null ) { 
-			result = new HashSet<AjaxUpload>();
-			Cache.set( key, result );
+	public static File getUserTempPath() { 
+		File file = new File(USERDATA, Session.current().getId());
+		if( !file.exists() && !file.mkdirs()) { 
+			throw new QuickException("Cannot create User temporary path: '%s'", file);
 		}
+		return file;
+	}
+	
+	/*
+	 * Create a new 'File' under the user temporay folder 
+	 */
+	@Util
+	public static File newUserFile( String fileName ) { 
+		File result = new File( getUserTempPath(), fileName);
 		return result;
 	}
-	
+
+	/*
+	 * Retuns the list of 'temporary' files for the current user 
+	 */
 	@Util
-	public static void addAjaxUpload( String filename, File path ) { 
-		AjaxUpload item = new AjaxUpload();
-		item.fileName = filename;
-		item.path = path;
-		Set<AjaxUpload> set = getAjaxUploads();
-		if( set.contains(item) ) { 
-			set.remove(item);
-		}
-		set.add(item);
+	public static List<File> getUserFiles() { 
+		File[] files = getUserTempPath().listFiles();
+		return (List<File>) (files != null ? Arrays.asList(files) : Collections.emptyList());
 	}
 	
+	/*
+	 * Retrieve a File for the specified file name . 
+	 * 
+	 * Path are always relative to the current user path 
+	 */
+	@Util 
+	public static File getUserFile( String name ) {
+		return new File( getUserTempPath(), name );
+	} 
+	
+	/**
+	 * Handle ajax upload 
+	 * 
+	 * This method is design to work with the ajax upload component provided by 'fileuploader.js'
+	 * See https://github.com/valums/file-uploader
+	 * 
+	 * @param qqfile
+	 */
 	public static void ajaxupload(String qqfile) { 
 
 		response.contentType = "text/html";  // <!-- also this reponse header is requried to make it work IE 
@@ -320,26 +312,10 @@ public class Data extends CommonController {
 			renderText(JsonHelper.error("The file name cannot start with a minus (-) character."));
 		}
 		
-		for( char ch : INVALID_CHARS ) { 
-			if( qqfile.indexOf(ch) != -1 ) { 
-				String msg =  String.format("The file name cannot contain character '%s'",  ch);
-				renderText(JsonHelper.error(msg));
-			}
-		}
-		
-		/* check if already exists */
-		for( AjaxUpload upload : getAjaxUploads() ) { 
-			if( qqfile.equals( upload.fileName ) && upload.path.exists() ) { 
-				String msg =  String.format("A file with the same name '%s' already exist.",  qqfile);
-				renderText(JsonHelper.error(msg));
-			}
-		}
-	
-		
-		File tmpfile = null;
+		File newFile = null;
 		try  {
-			tmpfile = File.createTempFile("input_", null, AppProps.TEMP_PATH);
-			OutputStream out = new BufferedOutputStream(new FileOutputStream(tmpfile));
+			newFile = newUserFile(qqfile);
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(newFile));
 			InputStream input = __fileUpload == null 
 							  ? request.body
 							  : __fileUpload.asStream();
@@ -347,12 +323,18 @@ public class Data extends CommonController {
 			IO.write(new BufferedInputStream(input), out);
 			// ^ Stream closed by the write method
 			
-			addAjaxUpload(qqfile, tmpfile);
-
-			renderText("{\"success\":true}");
+			String result = String.format(
+					"{\"success\":true, " +
+					"\"path\": \"%s\"," +
+					"\"name\": \"%s\"," +
+					"\"size\": \"%s\" }", 
+					JavaExtensions.escapeJavaScript(newFile.getAbsolutePath()),
+					newFile.getName(),
+					JavaExtensions.formatSize(newFile.length()));
+			renderText(result);
 		}
 		catch( Exception e ) { 
-			Logger.error(e, "Unable to store ajax file upload to: '%s'; file name: '%s'", tmpfile, qqfile);
+			Logger.error(e, "Unable to store ajax file upload to: '%s'; file name: '%s'", newFile, qqfile);
 			renderText( JsonHelper.error(e) );
 		}
 

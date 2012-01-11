@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import play.Logger;
+import play.libs.IO;
 import util.Check;
 import util.Utils;
 import util.XStreamHelper;
@@ -591,15 +592,16 @@ public class Repo implements Serializable {
 	 * @param source to file to copy 
 	 * @param fileName the target file name 
 	 */
-	public void store( File source, String fileName ) { 
+	public File store( File source, String fileName ) { 
 		File target = new File(fRoot,fileName);
 		try {
 			if( source.equals(target)) { 
 				Logger.warn("Cannot copy file onto itself: '%s'", source);
-				return;
+				return source;
 			}
 
 			FileUtils.copyFile(source,target);
+			return target;
 		} 
 		catch (IOException e) {
 			throw new QuickException(e,"Unable to copy %s --> %s", source, target);
@@ -607,13 +609,24 @@ public class Repo implements Serializable {
 	}
 	
 	/**
-	 * Save the file info tthe repo 
+	 * Save the file info the repo 
 	 * 
 	 * @param file the file to save
 	 */
-	public void store( File file ) { 
-		store(file, file.getName());
+	public File store( File file ) { 
+		return store(file, file.getName());
 	}
 	
+	public File store( String content ) { 
+		File target = null;
+		try { 
+			target = File.createTempFile( "input-", ".txt", fRoot);
+			IO.writeContent(content, target);
+			return target;
+		}
+		catch( IOException e ) { 
+			throw new QuickException(e,"Unable to create temporary file: '%s'", target);
+		}
+	}
 
 }

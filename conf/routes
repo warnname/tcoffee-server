@@ -20,9 +20,13 @@ GET		/google{siteId}.html	Main.googleSiteVerification
 GET 	/@list 					Main.list
 GET 	/@sandbox 				Main.sandbox
 
+* 		/fchooser/{action}		FileChooser.{action}
+*		/dbox/{action}			Dropbox.{action}
+
 # Downloadable data
 GET		/data/zip				Data.zip
-*		/data/upload			Data.upload
+GET		/data/view				Data.view
+GET		/data/preview			Data.preview
 *		/data/xupload			Data.ajaxupload
 GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource

@@ -108,7 +108,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -325,7 +325,7 @@
           
         <field type="checkbox" name="method1" label="Multiple Methods">
           <value>mafft_msa muscle_msa probconsRNA_msa</value>
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method2" label="Pairwise Methods">
@@ -453,7 +453,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -597,7 +597,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -711,7 +711,7 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, prank_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa, mus4_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
@@ -1244,7 +1244,7 @@
 	  	<fieldset>
 	  	<field type="textarea" name="cmdline" label="Program options">
 	        <validation required="true" >
-	        <required-error>The options connot be empty. You have to enter at least one input file name.</required-error>
+	        <required-error>The options cannot be empty. You have to enter at least one input file name.</required-error>
 	        </validation>
 	  	</field>
 	  	
@@ -1253,6 +1253,10 @@
 	        <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas.</hint>
 	        <validation format="EMAIL" />
 	    </field>
+	    
+	    <!-- this field is used to store the list of uplaoded files  -->
+	    <field type="hidden" name="uploadedFiles" />
+	    
 	  	</fieldset>
   	</input>
   

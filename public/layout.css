@@ -332,6 +332,10 @@ html, body {
 	font-family: monospace;
 }
 
+#content textarea.field {
+	resize: vertical;
+}
+
 
 #content .c-input { 
 	font-size: 1em;
@@ -596,6 +600,41 @@ ul.button-bar li a { /* Same as .button! */}
 .round2:after,  x:-moz-any-link { margin-left:  -.35em; }
 
 /*	=================================== / BUTTONS =============================== */
+
+.button.disabled {
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	text-shadow: 0;
+	color: #aaa;
+	
+	border: solid 1px #aaa;
+	background: #EEE; 
+
+}
+
+
+button.disabled:hover,
+button.disabled:active,
+.button.disabled:hover,
+.button.disabled:active,
+.button.disabled.active 
+{
+	color: #aaa;
+	border: solid 1px #aaa;
+	background: #EEE; 
+	text-shadow: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;	
+	top: inherit;
+}
+
+button.disabled:active, .button.disabled:active {  }
+
+/*	=================================== / BUTTONS - disabled =============================== */
+
+
 
 /*
  * Message boxs 

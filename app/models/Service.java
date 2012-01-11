@@ -1,7 +1,6 @@
 package models;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,8 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
-
-import org.apache.commons.io.FileUtils;
 
 import play.Logger;
 import play.data.validation.Validation;
@@ -30,8 +27,6 @@ import util.Utils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
-import exception.QuickException;
  
 /** 
  * Defines an runnable service contained by a {@link Bundle}
@@ -241,7 +236,7 @@ public class Service implements Serializable {
 	} 
 	
 	/*
-	 * set a variable onto the binding context
+	 * set a variable into the binding context
 	 */
 	void setVariable( Field field ) {
 		Object value = null;
@@ -255,34 +250,22 @@ public class Service implements Serializable {
 		 * memo fields are store as temporary files and in the context is passed that file 
 		 */
 		if( "memo".equals(field.type) ) {
-			File file=null;
-			try {
-				file = File.createTempFile("input-", ".txt", folder());
-				FileUtils.writeStringToFile(file, field.value, "utf-8");
-				value = file;
-			} catch (IOException e) {
-				throw new QuickException(e, "Unable to save memo field: '%s' to temp file: '%s'", field.name, file);
-			}
+			value = field.hasFile() 
+				  ? field.getFile()
+				  : repo().store( field.value ); // <-- create a temorary file 
+
 		}
+
 		/* 
 		 * file are are managed in a similar way that 'memo' field
 		 */
 		else if( "file".equals(field.type) ) {
-			byte[] data = field.getFileContent();
-			if( data == null || data.length == 0 ) {
+			if( !field.hasFile() || field.getFile().length() == 0 ) {
 				/* empty file - do not put this variable on the context */
 				return;
 			}
 			
-			File file=null;
-			try {
-				file = File.createTempFile("input-",null, folder());
-				FileUtils.writeByteArrayToFile(file, data);
-				value = file;
-			} catch (IOException e) {
-				throw new QuickException(e, "Unable to save memo field: '%s' to temp file: '%s'", field.name, file);
-			}
-			
+			value = field.getFile();
 			
 		}
 		else {
@@ -407,12 +390,12 @@ public class Service implements Serializable {
 		
 		
 		/* 
-		 * 3. add all fields value as context variables 
+		 * 3. put all fields value as context variables 
 		 */
 		for( Field field : input.fields() ) {
+			field.consolidate( fRepo.getFile() );
 			setVariable(field);
 		}
-		
 		
 		/*
 		 * 4. store the input so that can be used to re-submit job execution

@@ -238,10 +238,17 @@ public class Utils {
 		return result.toString();
 	}
 	
+
 	public static <T> String asString( Collection<T> vals ) {
-		T[] array = (T[]) vals.toArray();
-		return asString(array);
-		
+		return vals != null ? asString(vals.toArray()) : "";
+	}
+	
+	public static <T> String asString( Collection<T> vals, String separator ) {
+		return vals != null ? asString( vals.toArray(), separator, null ) : "";
+	} 
+	
+	public static <T> String asString( Collection<T> vals, String separator, String delimiter ) { 
+		return vals != null ? asString( vals.toArray(), separator, delimiter ) : "";
 	}
 	
 	
