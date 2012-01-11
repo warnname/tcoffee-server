@@ -33,7 +33,7 @@ public class GuessContentType {
 		
 		String[] cmd = {};
 		try {
-			cmd = new String[] { "file", "-bIdk", file.getAbsolutePath() }; 
+			cmd = new String[] { "file", "--brief", "--mime", file.getAbsolutePath() }; 
 			Process p = Runtime.getRuntime().exec(cmd);
 			fResult = p.waitFor();
 			
@@ -92,7 +92,12 @@ public class GuessContentType {
 	}
 	
 	public boolean isText() { 
-		return fMimeType != null && fMimeType.startsWith("text/");
+		return fMimeType != null && (
+				fMimeType.startsWith("text/") || 
+				fMimeType.equals("application/xml") || 
+				fMimeType.equals("application/x-javascript")
+			)	
+			;
 	}
 	
 	public boolean isBinary () { 
