@@ -24,10 +24,11 @@
       
         <field type='memo' name='protein' label='Protein' >
           <sample>public/sample.fasta.txt</sample>
-          <validation format="FASTA" type="amino-acid" required="true" minnum="1" >
+          <validation format="FASTA" type="amino-acid" required="true" minnum="1" maxnum="50" >
             <required-error>You have to enter the sequences to align</required-error>
             <format-error>Sequences have to be in multi-FASTA format</format-error>
             <minnum-error>You must enter at least 1 sequence</minnum-error>
+            <maxnum-error>You can enter at most 50 sequences</maxnum-error>
           </validation>
         </field>
 
