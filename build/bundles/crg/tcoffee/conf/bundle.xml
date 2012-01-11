@@ -1020,9 +1020,9 @@
           -blast_server=LOCAL
           -protein_db=uniref50-TM
 		  -template_file=PSITM  
-		  -prot_min_sim=30 
+		  -prot_min_sim=50 
 		  -prot_max_sim=90 
-		  -prot_min_cov=0
+		  -prot_min_cov=70
           -output=tm_html ${output} 
           -maxnseq=150 
           -maxlen=2500 
