@@ -326,14 +326,16 @@ $(document).ready(function() {
 					var x = json.series[i].stretch[j].from;
 					var y = json.series[i].stretch[j].to;
 					
-					htmlseq += seq.substring(last-1, x-2);
+					htmlseq += seq.substring(last-1, x-1);
 					htmlseq += '<span class="c-stretch" data-index="'+i+"_"+j+'">' 
 					htmlseq += seq.substring(x-1,y);
 					htmlseq += "</span>" 
-					last = y;
+					last = y+1;
 				} 
 				
-				htmlseq += seq.substring(last-1, seq.length ); 
+				if( last<=seq.length ) { 
+					htmlseq += seq.substring(last-1, seq.length); 
+				}
 			}	 
 			 
 			table.append(
