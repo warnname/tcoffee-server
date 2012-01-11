@@ -83,6 +83,11 @@ public class Application extends CommonController {
      * @param rid the unique request identifier 
      */
     public static void result(String rid, Boolean ... cached ) {		
+    	showResultFor(rid,"result.html",cached);
+    }
+    
+    @Util
+    static void showResultFor(String rid, String template, Boolean ... cached ) {
 		assertNotEmpty(rid, "Missing 'rid' argument on #result action");
     	
     	final Repo ctx = new Repo(rid,false);
@@ -99,7 +104,7 @@ public class Application extends CommonController {
 			renderArgs.put("result", result);
 			renderArgs.put("cached", cached);
 	
-    		renderBundlePage("result.html");
+    		renderBundlePage(template);
 		}
 		else if( status.isFailed() ) {
 			OutResult result = ctx.getResult();
@@ -113,8 +118,18 @@ public class Application extends CommonController {
 			int maxDays = AppProps.instance().getDataCacheDuration() / 60 / 60 / 24;
 	    	render("Application/oops.html", rid, maxDays);
 		}
- 
-   }
+   	
+    } 
+    
+    /**
+     * Embed the Jalview applet 
+     * 
+     * @param rid the request ID to show
+     */
+    public static void jalview(String rid) {
+    	renderArgs.put("_nowrap", true);
+    	showResultFor(rid, "jalview.html", false);
+    } 
 	
 	/**
 	 * Renders the history html table  

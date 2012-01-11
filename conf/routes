@@ -54,6 +54,7 @@ GET		/apps/{bundle}/status				Application.status
 GET		/apps/{bundle}/history				Application.historyTable
 GET		/apps/{bundle}/advanced				Application.advanced
 POST	/apps/{bundle}/advanced				Application.advanced
+GET		/apps/{bundle}/jalview				Application.jalview
 GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
 GET		/apps/{bundle}/{<.+\.html>page}		Application.html
 GET		/apps/{bundle}/bundle.css		    Application.css

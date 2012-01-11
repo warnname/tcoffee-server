@@ -2,6 +2,17 @@
 
 #{cache-warning /}
 
+
+<style>
+#sendto button {
+	width: 8em;
+	margin-right: 1em;
+	position: relative;
+	top: -1px
+}
+
+</style>
+
 <h1>
 #{if !result?.title || result?.service=='adv-cmdline'}T-Coffee alignment result#{/if}
 #{else}${result?.title} alignment result#{/else}
@@ -41,6 +52,8 @@
 #result { line-height: 1.0  }
 #result SPAN { font-family: "Vera Mono", courier new, courier-new, courier, monospace; font-weight: 100; font-size: 11pt; color: black; }
 </style>
+
+
 </div>
 #{/if}
 
@@ -83,16 +96,28 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 
 <p style="padding-bottom: 1em;" > 
 <button id="to_ProtoGene" name="to_ProtoGene" class="button"> ProtoGene </button>
-Turning amino acid alignments into bona fide CDS nucleotide alignments 
+<span>Turning amino acid alignments into bona fide CDS nucleotide alignments </span>
+
 <br><br>
 <button id="to_MyHits" name="to_MyHits" class="button">  MSA hub </button>
-MyHits: a new interactive resource for protein annotation and domain identification
+<span>MyHits: a new interactive resource for protein annotation and domain identification</span>
+
+<br><br>
+<button id="to_jalview" name="to_jalview" class="button" title="Click to open the Jalview viewer">  JalView </button>
+<span>Open this alignment in the <a href="http://www.jalview.org/" target="_blank">Jalview</a> viewer </span>
 </p>
+
 </form>
 
 <script type="text/javascript">
 $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
 $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+$('#to_jalview').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .55); 
+	window.open("@{Application.jalview(params.rid)}", "_blank", "width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0");
+	return false;
+} )
 </script>
 </div>
 #{/if}
