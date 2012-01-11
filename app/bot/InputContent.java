@@ -4,7 +4,8 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import util.ReaderIterator;
+import org.blackcoffee.commons.utils.ReaderIterator;
+
 import util.Utils;
 
 public class InputContent { 

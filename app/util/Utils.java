@@ -1814,6 +1814,11 @@ public class Utils {
 		return result.size()>0 ? result.get(0) : null;
 	}
 
+
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static <T> boolean contains(T[] array, T value) {
 		if( array == null ) return false;
 		
@@ -1826,6 +1831,10 @@ public class Utils {
 		return false;
 	}
 	
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static boolean contains(char[] array, char value ) {
 		if( array == null ) return false;
 		
@@ -1836,6 +1845,10 @@ public class Utils {
 		return false;
 	}
 	
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static boolean contains(int[] array, int value ) {
 		if( array == null ) return false;
 		
@@ -1846,6 +1859,10 @@ public class Utils {
 		return false;
 	}
 	
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static boolean contains(long[] array, long value ) {
 		if( array == null ) return false;
 		
@@ -1857,6 +1874,10 @@ public class Utils {
 	}
 	
 	
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static boolean contains(float[] array, float value ) {
 		if( array == null ) return false;
 		
@@ -1867,6 +1888,10 @@ public class Utils {
 		return false;
 	}
 	
+	/** 
+	 * Use ArrayUtils#contains instead 
+	 */
+	@Deprecated 
 	public static boolean contains(double[] array, double value ) {
 		if( array == null ) return false;
 		

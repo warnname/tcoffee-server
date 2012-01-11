@@ -1,18 +1,19 @@
 package models;
 
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.blackcoffee.commons.format.TCoffeeErrorLog;
+import org.blackcoffee.commons.format.TCoffeeResultLog;
+import org.blackcoffee.commons.format.TCoffeeResultLog.FileItem;
+import org.blackcoffee.commons.utils.FileIterator;
 
 import play.Logger;
 import play.Play;
-import util.FileIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -23,10 +24,6 @@ import exception.QuickException;
 @XStreamAlias("tcoffee")
 public class TCoffeeCommand extends AbstractShellCommand {
 
-	static final Pattern RESULT_PATTERN = Pattern .compile("^\\s*\\#{4} File Type=(.+)Format=(.+)Name=(.+)$");
-
-	static final Pattern WARNING_PATTERN = Pattern .compile("^\\d+ -- WARNING: (.*)$");
-	
 	/** The t-coffee arguments */
 	public CmdArgs args;
 
@@ -319,21 +316,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	 */
 	void parseErrorFile( File file ) { 
 		try { 
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-
-			String line;
-			/* parse the output items */
-			while ((line = reader.readLine()) != null) {
-
-				// check for warnings 
-				String warn = parseForWarning(line);
-				if( Utils.isNotEmpty(warn)) { 
-					if( warn.startsWith("WARNING:")) { 
-						warn = warn.substring(8);
-					}
-					_warnings.add(warn.trim());
-				}
-			}
+			TCoffeeErrorLog log = TCoffeeErrorLog.parse(file);
+			_warnings.addAll( log.getWarnings() );
 		}
 		catch( Exception e ) { 
 			Logger.error(e, "Failing parsing T-coffee error file: %s", file);
@@ -341,74 +325,40 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	}
 
 	List<OutItem> parseResultFile(File file) {
+	
 		List<OutItem> result = new ArrayList<OutItem>();
-		_warnings = new ArrayList<String>();
 		
-		try {
-			String line;
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			/* consume until output section is found */
-			while ((line = reader.readLine()) != null && 
-					!"OUTPUT RESULTS".equals(line) && 
-					!"Looking For Sequence Templates:".equals(line)
-			) { /* empty */ }
+		try { 
+			/* 
+			 * Parse the T-Coffee output and append the file references returned,
+			 * each of them have should exist on the file system  
+			 */
+			TCoffeeResultLog log = TCoffeeResultLog.parse(file);
 
-			/* parse the output items */
-			while ((line = reader.readLine()) != null) {
-				OutItem item = parseForResultItem(line);
-				if (item != null) {
-					result.add(item);
-				}
+			/*
+			 * add the warnings 
+			 */
+			_warnings = new ArrayList<String>( log.getWarnings() );
+			
+			/* retrieve the file in the context path */
+			final String root = ctx.get("data.path");
+		
+			for( FileItem fileItem : log.getFileItems() ) { 
 				
-				// check for warnings 
-				String warn = parseForWarning(line);
-				if( Utils.isNotEmpty(warn)) { 
-					if( warn.startsWith("WARNING:")) { 
-						warn = warn.substring(8);
-					}
-					_warnings.add(warn.trim());
-				}
+				
+				OutItem item = new OutItem(new File( root, fileItem.name ), fileItem. type);
+				item. format = fileItem.format;
+				result.add(item);
 			}
-			/* .. and return the list */
+			
 			return result;
-
+			
 		} catch (IOException e) {
 			throw new QuickException(e, "Unable to parse result file: %s", file);
-		}
+		}		
 	}
 
-	OutItem parseForResultItem(String line) {
-		Matcher matcher = RESULT_PATTERN.matcher(line);
-		if (!matcher.matches()) {
-			return null;
-		}
-
-		String name = matcher.group(3).trim();
-		String type = matcher.group(1).trim();
-		
-		/* handle special exception */
-		if( name == null || name.contains("NOT PRODUCED")) {
-			return null;
-		}
-		
-		/* retrieve the file in the context path */
-		String root = ctx.get("data.path");
-		File file = new File( root, name );
-		
-		OutItem item = new OutItem(file,type);
-		item.format = matcher.group(2).trim();
-
-		return item;
-	}
 	
-	String parseForWarning( String line ) { 
-		Matcher matcher = WARNING_PATTERN.matcher(line);
-		if (!matcher.matches()) {
-			return null;
-		}
-		
-		return matcher.group(1).trim();
-	}
 	
 
 	

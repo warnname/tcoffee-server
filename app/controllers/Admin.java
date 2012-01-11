@@ -39,6 +39,7 @@ import models.UsageLog;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
+import org.blackcoffee.commons.utils.FileIterator;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -59,10 +60,9 @@ import query.GridResult;
 import query.QueryHelper;
 import query.TimeSeries;
 import query.UsageFilter;
-import util.JsonHelper;
 import util.Check;
 import util.CookieHelper;
-import util.FileIterator;
+import util.JsonHelper;
 import util.ReloadableSingletonFile;
 import util.Utils;
 import util.XStreamHelper;

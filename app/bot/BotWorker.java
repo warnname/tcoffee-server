@@ -24,6 +24,7 @@ import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
+import org.blackcoffee.commons.utils.ReaderIterator;
 
 import play.Logger;
 import play.data.validation.Validation;
@@ -32,7 +33,6 @@ import play.libs.Crypto;
 import play.libs.IO;
 import play.mvc.Scope;
 import play.templates.Template;
-import util.ReaderIterator;
 import util.Utils;
 import bot.BotListener.ValidationHack;
 import bundle.BundleRegistry;

@@ -9,11 +9,11 @@ import java.text.SimpleDateFormat;
 import models.UsageLog;
 
 import org.apache.commons.io.FileUtils;
+import org.blackcoffee.commons.utils.FileIterator;
 
 import play.Logger;
 import play.Play;
 import play.jobs.Job;
-import util.FileIterator;
 import util.Utils;
 
 public class UsageImportJob extends Job  {

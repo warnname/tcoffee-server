@@ -17,6 +17,9 @@ import models.OutResult;
 import models.Repo;
 import models.Service;
 import models.Status;
+
+import org.blackcoffee.commons.utils.CmdLineUtils;
+
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -511,7 +514,7 @@ public class Application extends CommonController {
 			cmdLine = cmdLine.substring("t_coffee ".length());
 		}
 
-		cmdLine = CmdArgs.normalize(cmdLine);
+		cmdLine = CmdLineUtils.normalize(cmdLine);
 		
 		return cmdLine;
 	}

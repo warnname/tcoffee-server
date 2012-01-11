@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.blackcoffee.commons.utils.CmdLineUtils;
 
 import plugins.AutoBean;
 import util.Check;
@@ -75,7 +76,7 @@ public class CmdArgs {
 		}
 		
 		
-		List<String> allItems = cmdLineTokenizer(normalize(cmdLine));
+		List<String> allItems = CmdLineUtils.cmdLineTokenizer(cmdLine);
 		for( String item : allItems ) {
 			if( Utils.isEmpty(item)) { 
 				continue;
@@ -88,48 +89,6 @@ public class CmdArgs {
 
 
 
-	/**
-	 * Tokenize the command line in its single parts. Command line options have to start with one or more '-' characters 
-	 * and value must be preceed by the '=' or blank character. For example 
-	 * <pre>
-	 * t_coffee input.fa -flag -mode=regular -output ascii html pdf 
-	 * </pre> 
-	 * 
-	 * @param cmdLine
-	 * @return
-	 */
-	static List<String> cmdLineTokenizer( String cmdLine ) { 
-
-		Pattern OPTION_SEPARATOR = Pattern.compile("[ \\t\\n\\x0B\\f\\r]-");
-		Pattern BLANK_SEPARATOR = Pattern.compile("[ \\t\\n\\x0B\\f\\r]");
-		
-		List<String> result = new ArrayList();
-		
-		Pattern separator;
-		while( Utils.isNotEmpty(cmdLine)) { 
-			String item;
-			Matcher matcher;
-			cmdLine = cmdLine.trim();
-			
-			
-			separator = cmdLine.startsWith("-")  ? OPTION_SEPARATOR : BLANK_SEPARATOR;
-
-			/* lookahead for the next option separator */
-			if( (matcher=separator.matcher(cmdLine)).find() ) { 
-				item = cmdLine.substring(0,matcher.start());
-				cmdLine = cmdLine.substring(matcher.start()+1);
-			}
-			else { 
-				item = cmdLine;
-				cmdLine = null;
-			}
-			result.add(item);
-		}
-		
-		return result;
-		
-	}
-	
 	
 	public String toRawString() {
 		
@@ -308,12 +267,6 @@ public class CmdArgs {
 		}
 		return result.toString();
 	}
-	
-	/**
-	 * replace any invalid dash character as separator 
-	 */
-	public static String normalize( String args ) { 
-		return args != null ? args.replaceFirst(" [\\‐\\‒\\—\\―\\–]", " -") : null;		
-	}
+
 
 }

@@ -3,6 +3,8 @@ package util;
 import java.io.Serializable;
 import java.io.StringReader;
 
+import org.blackcoffee.commons.utils.ReaderIterator;
+
 import play.Logger;
 import play.cache.Cache;
 import play.libs.WS;

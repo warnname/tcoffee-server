@@ -86,5 +86,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpclient-4.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/coffee-commons.jar"/>
 	<classpathentry kind="output" path="eclipse/classes"/>
 </classpath>

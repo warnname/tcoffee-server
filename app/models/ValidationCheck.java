@@ -1,13 +1,14 @@
 package models;
 
-import io.seq.Alphabet;
-import io.seq.Clustal;
-import io.seq.Fasta;
 
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.regex.Pattern;
+
+import org.blackcoffee.commons.format.Alphabet;
+import org.blackcoffee.commons.format.Clustal;
+import org.blackcoffee.commons.format.Fasta;
 
 import play.Logger;
 import play.data.validation.EmailCheck;

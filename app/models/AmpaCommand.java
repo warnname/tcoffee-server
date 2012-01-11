@@ -1,8 +1,5 @@
 package models;
 
-import io.seq.Alphabet;
-import io.seq.Fasta;
-import io.seq.Sequence;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,10 +11,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.blackcoffee.commons.format.Alphabet;
+import org.blackcoffee.commons.format.Fasta;
+import org.blackcoffee.commons.format.Sequence;
+import org.blackcoffee.commons.utils.FileIterator;
 
 import play.Logger;
 import play.libs.IO;
-import util.FileIterator;
 import util.StringIterator;
 import util.Utils;
 

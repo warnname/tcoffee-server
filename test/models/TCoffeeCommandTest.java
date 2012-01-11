@@ -38,25 +38,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertEquals( "t_coffee -in=input.txt -mode=regular -output=html pdf clustal -quiet=stdout", cmd );
         }
 
-        @Test
-        public void testParseResultItem() {
-                String TEST = " #### File Type=        MSA Format= clustalw_aln Name= tcoffee.clustalw_aln";
-                TCoffeeCommand tcoffee = new TCoffeeCommand();
-                /* initialize */
-                File path = new File( AppProps.WORKSPACE_FOLDER, "tcoffee" );
-                tcoffee.init( new CommandCtx("data.path=" + path.getAbsolutePath()) );
 
-                /* run parsing method */
-                OutItem item = tcoffee.parseForResultItem(TEST);
-
-                assertNotNull(item);
-                assertEquals( "MSA", item.type );
-                assertEquals( "clustalw_aln", item.format );
-                assertEquals( "tcoffee.clustalw_aln", item.name );
-
-
-                assertNull(tcoffee.parseForResultItem("#### Invalid format"));
-        }
 
 
         @Test

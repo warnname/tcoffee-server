@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.blackcoffee.commons.utils.FileIterator;
+
 import play.Logger;
 import play.Play;
 import util.Check;
-import util.FileIterator;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

@@ -20,6 +20,9 @@ import java.util.Set;
 
 import models.Bundle;
 import models.Field;
+
+import org.blackcoffee.commons.utils.FileIterator;
+
 import play.Logger;
 import play.mvc.Scope;
 import play.templates.FastTags;
