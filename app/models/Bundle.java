@@ -248,14 +248,6 @@ public class Bundle implements Serializable {
 
 		Properties result = new Properties();
 		
-		/* add by default all App properties */
-		AppProps props = AppProps.instance();
-		for( String key : props.getNames() ) { 
-			String val = props.getString(key,null);
-			if( val != null ) { 
-				result.put(key,val);
-			}
-		}
 
 	
 		/* load the properties file if exists */

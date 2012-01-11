@@ -385,6 +385,14 @@ public class Service implements Serializable {
 		 */
 		fCtx = new HashMap<String,Object>();
 		
+		AppProps props = AppProps.instance();
+		for( String key : props.getNames() ) { 
+			String val;
+			if( (val=props.getString(key,null)) != null ) { 
+				fCtx.put(key, val);
+			}
+		}
+		
 		/* add the bundle properties content */
 		for( Object key : bundle.properties.keySet() ) {
 			setVariable( key.toString(), bundle.properties.getProperty(key.toString()));
