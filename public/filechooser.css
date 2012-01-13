@@ -117,6 +117,7 @@ hr {
     border-color:          #ccc #ccc #ccc #ccc;
     color:                 #aaa;
     text-shadow:           1px -1px 0 rgba(255, 255, 255, 0.5); 
+
 } 
 
 .button.pulse {
@@ -124,6 +125,15 @@ hr {
 	-moz-animation: 	   pulse 1.5s infinite ease-in-out;
 	-ms-animation: 	   pulse 1.5s infinite ease-in-out;
 } 
+
+.button.blue {
+  color: #FFF; text-shadow: 0 1px 1px rgba(0,0,0,.4);
+  border-color: #0069BF;
+  background: #0084EF;
+  background: -webkit-gradient(linear, left top, left bottom, from(#0084EF), to(#0072CF));
+  background: -moz-linear-gradient(top,  #0084EF,  #0072CF);
+  font-weight: bold;
+}
 
 
 

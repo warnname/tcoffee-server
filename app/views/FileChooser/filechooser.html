@@ -145,7 +145,6 @@ Loading. Wait please ...
 	
 	<!--  The dialog footer area containing the buttons  -->
 	<div id="footer" >
-	<span id="selarea"></span>
 	<input type="button" id="btnselect" class="button" value="Select" >
 	<input type="button" id="btnpreview" class="button" value="Preview" >
 	<input type="button" id="btncancel" class="button" value="Cancel">
@@ -750,16 +749,20 @@ function showTab( thisElem, tab ) {
 function btnSelectEnable(status) { 
 
 	if( status == false ) { 
+
 		$('#btnselect')
 			.attr("disabled", "disabled")
 			.addClass("disabled")
-			.removeClass("pulse");
+			.removeClass("pulse")
+			.removeClass("blue");
 
 		$('#btnpreview')
 			.attr("disabled", "disabled")
 			.addClass("disabled");
+		
 	}
 	else { 
+
 		$('#btnpreview') 
 			.removeAttr("disabled") 
 			.removeClass("disabled")
@@ -767,6 +770,7 @@ function btnSelectEnable(status) {
 		$('#btnselect')
 			.removeAttr("disabled")
 			.removeClass("disabled")
+			.addClass("blue")
 			.addClass("pulse")
 		
 	}	
