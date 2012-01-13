@@ -249,14 +249,18 @@ function searchurl(url) {
  * Adapts the 'tree' area dimension on window resize. 
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-$(window).resize(function() {
+function resizeTreeArea() { 
 	var result = $('#result_items');
 	if( result && result.is(':visible') ) { 
-		var t1=$('#result_items').position().top;
-		var t2=$('#footer').position().top;
-		$('#result_items').css('height', t2-t1-25);
+		var footer = $('#footer');
+		var t1 = result.position().top;
+		var t2 = footer.position().top;
+		result.height( t2-t1-25 );
 	} 
-	
+} 
+ 
+$(window).resize(function() {
+	resizeTreeArea()	
 });
 
 
@@ -667,10 +671,6 @@ $(document).ready(function() {
 
 		showTab(this);
 		
-		var t1=$('#result_items').position().top;
-		var t2=$('#footer').position().top;
-		$('#result_items').css('height', t2-t1-25);
-
 		var opt = { 
 				root: '/', 
 				script: searchurl("@{FileChooser.listPublicData}"), 
@@ -730,6 +730,8 @@ function showTab( thisElem, tab ) {
 	}
 	
 	$('#'+tab).show();	// show the 
+	
+	resizeTreeArea()
 	
 	// set a cookie to remember the selection 
 	$.cookie( 'filechooser', $(thisElem).attr('ID') );

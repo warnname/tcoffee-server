@@ -519,66 +519,7 @@ public class Utils {
 		}
 		result.append("]");
 		return result.toString();		
-	}
-	
-	/**
-	 * Returns the attribute value of an object using reflection. 
-	 * 
-	 * @param object The object instance on which get the value
-	 * @param fieldName The attribute name. 
-	 * @return
-	 * @throws Exception
-	 */
-	@Deprecated
-	private static Object getFieldValue( final Object object, final String fieldName, final boolean propertyAccess  ) throws Exception { 
-		String attributeName;
-		// look if it is a simple attribute name or a complex one (component.attribute)
-		int i = fieldName.indexOf('.');
-		attributeName = ( i==-1 )
-			 		  ? fieldName
-			 		  : fieldName.substring(0,i);
-		Class<?> clazz = object.getClass();
-		Object value;
-		// get the attribute value
-		try { 
-			value = propertyAccess ? getPropertyValue(clazz, object, attributeName) : getAttributeValue(clazz, object, attributeName);
-		} 
-		catch( Exception e ) { 
-			Logger.warn(e.getMessage());
-			value = null;
-		}
-		if( i != -1 ) { 
-			return getFieldValue( value, fieldName.substring(i+1), propertyAccess );
-		}
-		else { 
-			return value;
-		}
-	}
-	
-	@Deprecated
-	private static Object getAttributeValue( final Class<?> clazz, final Object object, final String attributeName ) { 
-		try { 
-			Field f = clazz.getDeclaredField(attributeName);
-			f.setAccessible(true);
-			return  f.get(object);		
-		} 
-		catch( Exception e ) { 
-			throw new RuntimeException("Unable to access attribute '"+attributeName+"' on class '"+clazz.getSimpleName()+"' ", e);
-		}
-		
-	}
-	
-	@Deprecated
-	private static Object getPropertyValue( final Class<?> clazz, final Object object, final String attributeName )  {
-		try { 
-			String mname = getGetterMethodName(attributeName);
-			Method m = clazz.getDeclaredMethod(mname, new Class[] {} );
-			return m.invoke(object, new Object[] {} );
-		}
-		catch( Exception e ) { 
-			throw new RuntimeException("Unable to access getter 'get"+Utils.firstCharUp(attributeName)+"' on class '"+clazz.getSimpleName()+"' ", e);
-		}
-	}
+	}	
 
 	public static <T>  T getProperty( final Object obj, final String fieldName) {
 		return getProperty(obj,fieldName,(T)null);
