@@ -2,6 +2,7 @@ package models;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -32,6 +33,31 @@ public class UsageLog extends Model {
 	public String source = "web";
 
 	public String email;
+
+	/* 
+	 * Gepo location information 
+	 */
+	
+	/** Location Longitude */
+	public String lng;
+	
+	/** Locaiton latitude */
+	public String lat;
+
+	/** Location country code */
+	@Column(name="COUNTRY_CODE")
+	public String countryCode;
+	
+	/** Location country name */
+	public String country;
+	
+	/** Location city name*/
+	public String city;
+	
+	/** Location data provider */
+	@Column(name="LOC_PROVIDER")
+	public String locationProvider;
+	
 	
 	
 	public String getCreationFmt() { 

@@ -2,6 +2,7 @@ package models;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
+
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import play.Logger;
 import play.data.validation.Validation;
@@ -60,6 +65,7 @@ public class Service implements Serializable {
 	@XStreamOmitField OutResult fOutResult;
 	@XStreamOmitField Date fStartTime;
 	@XStreamOmitField String fRemoteAddress;
+	@XStreamOmitField String fLocation;
 	
 	/**
 	 * The unique service name
@@ -325,19 +331,41 @@ public class Service implements Serializable {
 	 */
 	public void init( boolean enableCaching ) {
 		
-		// TODO the following information coul be injected using a service context provider .. 
-		
 		/*
-		 * 0. generic initialization 
+		 * 0. session ID
 		 */
-		fStartTime = new Date();
-		if( fRemoteAddress == null && Request.current() != null) { 
-			fRemoteAddress = Request.current().remoteAddress;
-		}
-
 		if( sessionId == null && Session.current() != null ) { 
 			sessionId = Session.current().getId();
+		}		
+		
+		/*
+		 * 1. request information
+		 *    - IP 
+		 *    - location info
+		 */
+		Request req = Request.current();
+		fStartTime = new Date();
+		
+		if( req != null ) {
+			// Get the remote IP address
+			if( fRemoteAddress == null ) { 
+				fRemoteAddress = Request.current().remoteAddress;
+			}
+			
+			// Fetch the location information for the cookie 
+			if( req.cookies.get("location") != null && (fLocation=req.cookies.get("location").value) != null ) {
+				try {
+					fLocation = URLDecoder.decode(fLocation, "utf-8");
+				} 
+				catch (Exception e) {
+					Logger.warn(e, "Unable to decode location cookie: %s", fLocation);
+				}
+			}
+			else { 
+				Logger.warn("Missing 'location' cookie for session '%s'", sessionId);
+			}
 		}
+
 		
 		if( userEmail == null && input != null ) { 
 			/* Try to discover the user email looking on the email field, 
@@ -464,7 +492,6 @@ public class Service implements Serializable {
 		}
 	}; 
 	
-
 	/**
 	 * Append a line in the server requests log with the following format 
 	 * 
@@ -483,6 +510,22 @@ public class Service implements Serializable {
 			usage.status = "RUNNING";
 			usage.source = this.source;
 			usage.email = this.userEmail;
+			// add location data
+			if( StringUtils.isNotEmpty(this.fLocation) ) {
+				JSONObject loc = (JSONObject) JSONValue.parse(fLocation);
+				if( loc != null ) {
+					usage.locationProvider = Utils.asString(loc.get("source"));
+					usage.lng = Utils.asString(loc.get("longitude"));
+					usage.lat = Utils.asString(loc.get("latitude"));
+					
+					loc = (JSONObject) loc.get("address");
+					if( loc != null ) {
+						usage.country = (String) loc.get("country");
+						usage.countryCode = (String) loc.get("country_code");
+						usage.city = (String) loc.get("city");
+					}
+				}
+			}  
 			
 			Logger.debug("Creating usage log for request # %s", this.fRid );
 		}

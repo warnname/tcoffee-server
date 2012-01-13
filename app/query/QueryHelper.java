@@ -143,6 +143,15 @@ public class QueryHelper {
 		else if( "status".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			where.and( "status", "=", qvalue );
 		}	
+
+		else if( "country".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "country", "like", qvalue );
+		}
+
+		else if( "city".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "city", "like", qvalue );
+		}
+	
 		
 		/* 
 		 * counting the total result items 

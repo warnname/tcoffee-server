@@ -126,6 +126,7 @@ public class BootstrapPlugin extends PlayPlugin {
 		 */
 		Cache.set("server-start-time", System.currentTimeMillis());
 		
+		
 		/* 
 		 * Import the usage file 
 		 */

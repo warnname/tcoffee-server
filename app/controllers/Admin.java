@@ -1435,7 +1435,9 @@ public class Admin extends CommonController {
 				.append("\"") .append(def(row.getCreationFmt())) .append("\", ")
 				.append("\"") .append(def(row.source)) .append("\", ")
 				.append("\"") .append(def(row.ip)) .append("\", ")
-				.append("\"") .append(def(row.email)) .append("\" ")
+				.append("\"") .append(def(row.email)) .append("\", ")
+				.append("\"") .append(def(row.country)) .append("\", ")
+				.append("\"") .append(def(row.city)) .append("\" ")
 				.append("]");
 			result.append("}");
 		}
@@ -1476,7 +1478,9 @@ public class Admin extends CommonController {
 				.append(def(row.getCreationFmt())) .append(",")
 				.append(def(row.source)) .append(",")
 				.append(def(row.ip)) .append(",")
-				.append(def(row.email));
+				.append(def(row.email)) .append(",")
+				.append(def(row.country)) .append(",")
+				.append(def(row.city));
 			
 			out.println(line);
 		}

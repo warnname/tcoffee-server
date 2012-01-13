@@ -207,15 +207,17 @@ $(document).ready(function () {
 		url: urlGridData(_args()),
 		dataType: 'json',
 		colModel : [
-			{display: 'Request ID', name: 'rid', width: 70, process: onRowSelect },
-			{display: 'Bundle', name: 'bundle', width: 70, sortable: true  },
-			{display: 'Service', name: 'service', width: 70, sortable: true  },
+			{display: 'Request ID', name: 'rid', width: 60, process: onRowSelect },
+			{display: 'Bundle', name: 'bundle', width: 50, sortable: true  },
+			{display: 'Service', name: 'service', width: 50, sortable: true  },
 			{display: 'Status', name: 'status', width: 50, sortable: true  },
-			{display: 'Duration', name: 'duration', width: 60, sortable: true, align: 'right'  },
-			{display: 'Date', name: 'creation', width: 50, sortable: true  },
-			{display: 'Source', name: 'source', width: 70, sortable: true  },
+			{display: 'Duration', name: 'duration', width: 50, sortable: true, align: 'right'  },
+			{display: 'Date', name: 'creation', width: 70, sortable: true  },
+			{display: 'Source', name: 'source', width: 40, sortable: true  },
 			{display: 'Ip Address', name: 'ip', width: 80, sortable: true  },
-			{display: 'Email', name: 'email', width: 150, sortable: true  }
+			{display: 'Email', name: 'email', width: 100, sortable: true  },
+			{display: 'Country', name: 'country', width: 100, sortable: true  },
+			{display: 'City', name: 'city', width: 120, sortable: true  }
 			],
 		searchitems : [
 		   	{display: 'Request ID', name : 'rid'},
@@ -225,7 +227,9 @@ $(document).ready(function () {
 			{display: 'Date', name : 'creation'},
 			{display: 'Source', name : 'source'},
 			{display: 'Ip Address', name : 'ip'},
-			{display: 'Email', name : 'email'}
+			{display: 'Email', name : 'email'},
+			{display: 'Country', name : 'country'},
+			{display: 'City', name : 'city'}
 			],
 		usepager: true,
 		useRp: false,

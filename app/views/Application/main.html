@@ -200,4 +200,12 @@ $('#reset').click(function() {
 
 $(window).unload(function(){ /* empty */ });
 
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ * enable geolocation by session.js
+ * http://github.com/codejoust/session.js
+ * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+window.session = { options: { use_html5_location: false, session_timeout: 5 } };
 </script>
+<script src="@{'/public/javascripts/session-0.4.1.min.js'}" type="text/javascript"></script>
+
