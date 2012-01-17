@@ -40,7 +40,7 @@ public class Eval implements Serializable {
 
 	public String eval() {
 		final Service service = Service.current();
-		return eval(service.getCtx());
+		return eval(service.getContextHolder().map);
 	}
 	
 	public String eval( final Map<String,Object> ctx ) {

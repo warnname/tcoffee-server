@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import exception.CommandException;
 import exception.QuickException;
 
-public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
+public abstract class AbstractShellCommand extends AbstractCommand {
 
 	/** Xml specified environment valiables */
 	public Env env;
@@ -234,7 +234,7 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
 	 * Initialize the job before the command execution
 	 */
 	@Override
-	public void init( CommandCtx ctx ) {
+	public void init( ContextHolder ctx ) {
 		super.init(ctx);
 
 		/*
@@ -284,8 +284,6 @@ public abstract class AbstractShellCommand extends AbstractCommand<OutResult> {
     	/* 2. prepare and save the command line */
 		prepareCommandLine();
 
-		result = new OutResult();
-		
 	}	
 	
 	/** 

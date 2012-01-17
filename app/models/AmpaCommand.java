@@ -222,28 +222,24 @@ public class AmpaCommand extends AbstractShellCommand {
 		/*
 		 * append the user input object
 		 */
-		result.add(
-			new OutItem(fInput,"input_file")
-			.label("Input data file")
-			.format("fasta"));		
+		ctx.result.add( new OutItem(fInput,"input_file") 
+						.label("Input data file") 
+						.format("fasta"));		
 		
 		/*
 		 * append item to return
 		 */
-		result.add(
-				new OutItem(fResult,"result_file")
-				.label("Result file")
-				.format("txt"));		
+		ctx.result.add( new OutItem(fResult,"result_file")
+						.label("Result file")
+						.format("txt"));		
 		
-		result.add(
-				new OutItem(fData,"data_file")
-				.label("Data file (txt format)")
-				.format("txt"));		
+		ctx.result.add( new OutItem(fData,"data_file")
+						.label("Data file (txt format)")
+						.format("txt"));		
 
-		result.add( 
-				new OutItem(chartFile,"data_file")
-				.label("Chart Data (json format)")
-				.format("json") );		
+		ctx.result.add( new OutItem(chartFile,"data_file")
+						.label("Chart Data (json format)")
+						.format("json") );		
 
 		return true;
 	}

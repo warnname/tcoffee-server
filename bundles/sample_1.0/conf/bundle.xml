@@ -21,9 +21,31 @@
     <process>
 		<exec program="ls -la ${path}" />
     </process>
-    
   </service>
   
+ <service name="groovy"  >
+    <title>Groovy Command </title>
+ 	<group>Alignment</group>      
+    <description>A basic server bundle</description>
+    
+    <input>
+      <fieldset >
+        <title>Your command</title>
+    	<description>A basic game example</description>
+      
+        <field type="text" name="path" label="Path to list" /> 
+      </fieldset>
+    </input>
+    
+    <process>
+		<script clazz="MyClass"  >
+		<![CDATA[
+		println ">>> ${context}\n\n"
+		]]>
+		</script>
+    </process>
+    
+  </service>
 
   
 </bundle>

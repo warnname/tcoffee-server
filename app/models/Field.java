@@ -34,7 +34,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import converters.SimpleCollectionConverter;
 import exception.QuickException;
 
-
+/**
+ * Models an application field used to render the web interface 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 @XStreamAlias("field")
 public class Field implements Serializable {
 

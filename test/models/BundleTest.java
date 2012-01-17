@@ -129,6 +129,7 @@ public class BundleTest extends UnitTest {
 		assertTrue(bundle.navigatorPath.exists());
 		assertTrue(bundle.pagesPath.exists());
 		assertTrue(bundle.publicPath.exists());
+		assertTrue(bundle.scriptPath.exists());
 		
 	}
 	

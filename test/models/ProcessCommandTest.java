@@ -18,7 +18,7 @@ public class ProcessCommandTest extends UnitTest {
 		ProcessCommand process = XStreamHelper.fromXML(xml);
 		assertNotNull(process);
 		assertEquals(2, process.commands.size());
-		assertEquals(GenericCommand.class, process.commands.get(0).getClass() );
+		assertEquals(ShellCommand.class, process.commands.get(0).getClass() );
 		assertEquals(TCoffeeCommand.class, process.commands.get(1).getClass() );
 		
 	}  

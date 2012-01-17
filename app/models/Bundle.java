@@ -74,6 +74,10 @@ public class Bundle implements Serializable {
 	/** the bin path to be added to PATH env variables */
 	@XStreamOmitField
 	public File binPath;
+
+	/** The path where bundle scripts are located */
+	@XStreamOmitField
+	public File scriptPath;	
 	
 	/** the 'bundle.xml' file */
 	@XStreamOmitField
@@ -274,6 +278,7 @@ public class Bundle implements Serializable {
 
 		if( root != null ) result.put( "bundle.path", root.getAbsolutePath() );
 		if( binPath != null ) result.put( "bundle.bin.path", binPath.getAbsolutePath() );
+		if( scriptPath != null ) result.put( "bundle.script.path", scriptPath.getAbsolutePath() );
 		if( name != null ) result.put("bundle.name", name);
 		if( version != null ) result.put("bundle.version", version);
 		if( title != null ) result.put("bundle.title", title);
@@ -358,6 +363,11 @@ public class Bundle implements Serializable {
 	        if( root.child("public").exists()) {
 	        	bundle.publicPath = root.child("public").getRealFile();
 	        }
+	        
+	        if (root.child("script").exists()) {
+	            bundle.scriptPath = root.child("script").getRealFile();
+	        }
+	        
 	        
 	        /* 
 	         * load properties 

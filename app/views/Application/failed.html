@@ -7,6 +7,17 @@
 <small>Your request could not complete successfully</small>
 </h1> 
 
+*{ Warnings box }*
+#{if result?.warnings }
+<div class="box-warn" style="margin-bottom: 2em">
+<p>Please note: ${result?.title} returned the following warning(s):</p>
+<ul class="list" >
+#{list result?.warnings }
+<li>${_}</li>
+#{/list}
+</ul>
+</div>
+#{/if}
 
 <div class="box">
 <h2><span>Info</span> 

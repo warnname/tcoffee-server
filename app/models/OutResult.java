@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import plugins.AutoBean;
 import util.Check;
 import util.Utils;
@@ -135,6 +137,10 @@ public class OutResult implements Serializable {
 		if( that.errors != null ) {
 			addErrors( that.errors );
 		}
+
+		if( that.warnings != null ) {
+			addWarnings( that.warnings );
+		}
 		
 		if( that._items != null ) {
 			items().addAll(that._items);
@@ -168,7 +174,7 @@ public class OutResult implements Serializable {
 	/**
 	 * @return the output item containing the program standard output 
 	 * 
-	 * see {@link GenericCommand#done(boolean)}
+	 * see {@link ShellCommand#done(boolean)}
 	 */
 	public OutItem getStdout() {
 		return  Utils.firstItem(items(), "type", "stdout");
@@ -177,14 +183,14 @@ public class OutResult implements Serializable {
 	/**
 	 * @return the output item containing the program standard error
 	 * 
-	 * see {@link GenericCommand#done(boolean)}
+	 * see {@link ShellCommand#done(boolean)}
 	 */
 	public OutItem getStderr() {
 		return  Utils.firstItem(items(), "type", "stderr");
 	} 
 	
 	public void addError( String message ) {
-		if( Utils.isEmpty(message)) return;
+		if( StringUtils.isBlank(message)) return;
 		
 		if( errors == null ) {
 			errors = new ArrayList<String>();
@@ -212,6 +218,17 @@ public class OutResult implements Serializable {
 
 	public String getElapsedTimeFmt() {
 		return Utils.asDuration( elapsedTime );
+	}
+
+	
+	public void addWarning( String warn ) {
+		if( StringUtils.isBlank(warn) ) return;
+		
+		if( this.warnings == null ) {
+			this.warnings = new ArrayList<String>();
+		}
+		
+		this.warnings.add(warn);
 	}
 
 	public void addWarnings( List<String> warns) {

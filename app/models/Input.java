@@ -8,6 +8,7 @@ import java.util.List;
 import play.Logger;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;
+import util.Dsl.Pair;
 import util.Utils;
 import util.XStreamHelper;
 
@@ -50,13 +51,63 @@ public class Input implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Create and initialize an {@link Input} instance with the provided fields 
+	 * 
+	 * @param fields an open array of {@link Field} instances
+	 * @return the {@link Input} instance containing the provided fields 
+	 */
+	public static Input create( Field ... fields ) {
 	
-	/** The default constructor */
+		Input result = new Input();
+		// add the fields to the fieldset
+		Fieldset set = new Fieldset();
+		set.add(fields);
+		// add the fieldset to the input 
+		result.fieldsets().add(set);
+		
+		return result;		
+	}
+
+	/**
+	 * Create and initialize an {@link Input} instance with the provided fields. 
+	 * <p>By default the field type is 'text', to specify a different one 
+	 * use the colon as separator 
+	 * 
+	 * <pre>
+	 * Input in = Input.create("alpha=1", "beta=2", "gamma:memo=some text")
+	 * </pre>
+	 * 
+	 * @param fieldsAndValues
+	 * @return
+	 */
+	public static Input create( String ... fieldsAndValues ) {
+
+		Fieldset set = new Fieldset();
+
+		for( String pair : fieldsAndValues ) {
+			Pair keyvalue = Pair.create(pair,"=","");
+			Pair nametype = Pair.create(keyvalue.first,":","text");
+			
+			set.add(new Field( nametype.second, nametype.first, keyvalue. second ));
+		}
+		
+		Input result = new Input();
+		result.fieldsets().add(set);
+		
+		return result;
+	}
+	
+	/** 
+	 * Default constructor 
+	 */
 	public Input( ) {
 		
 	}
 	
-	/** The copy cosntructor */
+	/** 
+	 * Copy cosntructor 
+	 */
 	public Input( Input that ) {
 		this.fieldsets = Utils.copy(that.fieldsets);
 	}

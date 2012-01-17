@@ -11,11 +11,8 @@ import exception.CommandException;
  * 
  * @author Paolo Di Tommaso
  */
-public abstract class AbstractCommand<T> implements Serializable {
+public abstract class AbstractCommand implements Serializable {
 
-	/** The gereric result available at the end of the execution of this command */
-	protected T result;
-	
 	/** The command execution start time */
 	protected long startTime;
 	
@@ -23,7 +20,7 @@ public abstract class AbstractCommand<T> implements Serializable {
 	protected long elapsedTime;
 
 	/** The command execution context */
-	protected CommandCtx ctx;
+	protected ContextHolder ctx;
 	
 	private boolean fOK;
 	
@@ -31,18 +28,17 @@ public abstract class AbstractCommand<T> implements Serializable {
 	protected AbstractCommand() {}
 	
 	/** The copy constructor */
-	protected AbstractCommand(AbstractCommand<T> that) {
-		this.result = Utils.copy(that.result);
+	protected AbstractCommand(AbstractCommand that) {
 		this.startTime = that.startTime;
 		this.elapsedTime = that.elapsedTime;
 		this.ctx = Utils.copy(that.ctx);
 	}
 
 	/**
-	 * Initialize the command and inject a new {@link CommandCtx} empty instance  
+	 * Initialize the command and inject a new {@link ContextHolder} empty instance  
 	 */
 	final public void init() {
-		CommandCtx ctx = Service.current() != null ? new CommandCtx(Service.current().fCtx) : new CommandCtx();
+		ContextHolder ctx = Service.current() != null ? Service.current().fContextHolder : new ContextHolder();
 		init(ctx);
 	}
 	
@@ -51,7 +47,7 @@ public abstract class AbstractCommand<T> implements Serializable {
 	 * 
 	 * @param ctx 
 	 */
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 		this.ctx = ctx;
 	}
 	
@@ -96,16 +92,6 @@ public abstract class AbstractCommand<T> implements Serializable {
 	 */
 	protected abstract boolean run() throws CommandException;
 
-	/** 
-	 * @return the result object available at the end of the execution of this command 
-	 */
-	public T getResult() { return result; }
-	
-	/** 
-	 * @return <code>true</code> if a result object is available 
-	 */
-	public boolean hasResult() { return result != null; }
-
 	/** the start time getter method */
 	public long getStartTime() {
 		return startTime;
@@ -116,7 +102,7 @@ public abstract class AbstractCommand<T> implements Serializable {
 		return elapsedTime;
 	}
 
-	public CommandCtx getCtx() {
+	public ContextHolder getCtx() {
 		return ctx;
 	} 
 	

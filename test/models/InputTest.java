@@ -86,4 +86,23 @@ public class InputTest extends UnitTest {
 		
 	} 
 	
+	
+	@Test 
+	public void testCreate() {
+		
+		Input in =  Input.create("alpha=1", "beta=2", "gamma:memo=some text");
+		assertEquals( "1", in.field("alpha").value );
+		assertEquals( "text", in.field("alpha").type );
+
+		assertEquals( "2", in.field("beta").value );
+		assertEquals( "text", in.field("beta").type );
+	
+		assertEquals( "some text", in.field("gamma").value );
+		assertEquals( "memo", in.field("gamma").type );
+		
+		assertEquals( 3, in.fields().size() );
+		assertEquals( 1, in.fieldsets.size() );
+	
+	} 
+	
 }
