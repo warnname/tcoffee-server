@@ -75,19 +75,22 @@ String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
  * through the filechooser dialog (see 'filechooseer.html')
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-function fileChooseCallback( field, filePath ) { 
-	
-	var name = filePath.split('/')
-	if( $.isArray(name) ) { name = name[name.length-1]} 
-	
-	var href = #{jsAction @Data.view(':path') /}
+function fileChooseCallback( field, fileName ) { 
 	
 	if( typeof(field) == 'string' ) field = $('#'+field)
-	field.hide();
-	field.val(filePath);
+	field.val('file://'+fileName);
 	field.trigger('clearErrors');
+
+	hideTextField( field, fileName )
+}
+
+function hideTextField( field, fileName ) {
+
+	var viewUrl = #{jsAction @Data.view(':name') /}({name:fileName})
+	
+	field.hide();
 	field.parent().find('.link').hide()
-	field.parent().find('.upload_name').html( '<a target="_blank" href="' + href({path:filePath}) + '">' +name+ '</a>' ) 
+	field.parent().find('.upload_name').html( '<a target="_blank" href="' + viewUrl + '">' +fileName+ '</a>' ) 
 	field.parent().find('.upload_div').show()   
 }
 
@@ -119,7 +122,7 @@ $(document).ready(function(){
 	 */
 	$('.field').each(function() {
 		if( $(this).val().startsWith('file://') &&  $(this).is(':visible') ) { 
-			fileChooseCallback( $(this), $(this).val() )
+			hideTextField( $(this), $(this).val().substring(7) )
 		}
 	})
 

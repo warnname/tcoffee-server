@@ -74,7 +74,7 @@
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
 	    	<span class="upload_name"> 
-	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFilePath())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
 	    	</span> 
 	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
 	    	</span>  
@@ -86,7 +86,7 @@
 
 #{elseif _arg.type == 'file' }
     <div id="${_arg.name}_wrap" class="field_wrap">
-		<input id="${_arg.name}" name='${_arg.name}' type='hidden' class="field" value='${_arg.filePath}' />
+		<input id="${_arg.name}" name='${_arg.name}' type='hidden' class="field" value='${_arg.fileName}' />
 
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} >
 	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox">Click here to upload a file</a>
@@ -96,7 +96,7 @@
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
 	    	<span class="upload_name"> 
-	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFilePath())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
 	    	</span> 
 	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
 	    	</span>  

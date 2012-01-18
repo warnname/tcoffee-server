@@ -418,10 +418,15 @@ public class Application extends CommonController {
 				service.input.field("cmdline").value = cmdLine;
 				
 				/* load the previously used input file as uploaded files */
-				uploadedFiles = repo.getInput().getValue("uploadedFiles");
+				uploadedFiles = repo.getInput().getValue("uploadedFiles", "");  // <-- return empty string by default 
 				List<File> files;
 				if( StringUtils.isEmpty(uploadedFiles) && (files=repo.getResult().getInputFiles()) != null && files.size()>0 ) { 
-					uploadedFiles = Utils.asString(files, ",", null);
+					if( uploadedFiles.length()>0 ) {
+						uploadedFiles += ",";
+					}
+					for( File it : files ) {
+						uploadedFiles += it.getName();
+					}
 				}
 			}
 			
@@ -459,7 +464,7 @@ public class Application extends CommonController {
 			for( String item : all ) {
 				if( StringUtils.isBlank(item) ) continue;
 				if( item.startsWith("file://") ) { item = item.substring(7); }
-				File file = new File(item);
+				File file = Data.getUserFile(item);
 
 				// check if the file is valid otherwise return an error message
 				if( !file.exists() ) { 

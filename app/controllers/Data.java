@@ -68,35 +68,32 @@ public class Data extends CommonController {
 		renderFile(AppProps.WORKSPACE_FOLDER, path);
 	}
 	
-	public static void view( String path ) { 
-		assertNotEmpty(path, "Missing 'path' argument on #view action");
+	/**
+	 * Download a user file available in the current session 
+	 * 
+	 * @param name the request file name (without any path specification, the file must exists in the user area)
+	 */
+	public static void view( String name ) { 
+		assertNotEmpty(name, "Missing 'name' argument on #view action");
 
-		if( path.startsWith("file://") ) { 
-			path = path.substring(7);
-		}
-		
-		File file = new File(path);
+		File file = getUserFile(name);
 		if( !file.exists() ) { 
-			Logger.error("Error opening '%s'. File does not exist", path);
-			notFound("File not found: %s", file.getName());
+			Logger.error("Error opening '%s'. File does not exist", name);
+			notFound("File not found: '%s'", file.getName());
 		}
 
 		renderStaticResponse();
-		String content = MimeTypes.getMimeType(path);
+		String content = MimeTypes.getMimeType(name);
 		response.contentType = content;
 		renderBinary(file);
 	}
 	
-	public static void preview( String path ) throws IOException { 
+	public static void preview( String name ) throws IOException { 
 
-		if( path.startsWith("file://") ) { 
-			path = path.substring(7);
-		}
-
-		File file = new File(path);
+		File file = getUserFile(name);
 		if( !file.exists() ) { 
-			Logger.error("Error opening '%s'. File does not exist", path);
-			notFound("File not found: %s", file.getName());
+			Logger.error("Error opening '%s'. File does not exist", name);
+			notFound("File not found: '%s'", name);
 		}
 
 		GuessContentType ctype = null;
@@ -242,8 +239,11 @@ public class Data extends CommonController {
 	@Util
 	public static File getUserTempPath() { 
 		File file = new File(USERDATA, Session.current().getId());
-		if( !file.exists() && !file.mkdirs()) { 
-			throw new QuickException("Cannot create User temporary path: '%s'", file);
+		if( !file.exists() ) { 
+			if( !file.mkdirs() ) { 
+				throw new QuickException("Cannot create User temporary path: '%s'", file);
+			}
+			Logger.info("Creating user dataspace: '%s'", file);
 		}
 		return file;
 	}
@@ -254,7 +254,7 @@ public class Data extends CommonController {
 	@Util
 	public static File newUserFile( String fileName ) { 
 		File result = new File( getUserTempPath(), fileName);
-		return result;
+		return normalize(result);
 	}
 
 	/*
@@ -308,10 +308,6 @@ public class Data extends CommonController {
 			renderText(JsonHelper.error("The file name cannot be empty"));
 		}
 		
-		if( qqfile.startsWith("-") ) { 
-			renderText(JsonHelper.error("The file name cannot start with a minus (-) character."));
-		}
-		
 		File newFile = null;
 		try  {
 			newFile = newUserFile(qqfile);
@@ -340,5 +336,22 @@ public class Data extends CommonController {
 
 	}
 	
+	/**
+	 * Normalized the file name using the following rules
+	 * - if a name starts with a '-' it is replace by '_'
+	 * - if a name contains blanks, are replaced by '_' 
+	 * 
+	 * @param file the source file location 
+	 * @return the normalized file name 
+	 */
+	@Util
+	public static File normalize(File file) {
+		String name = file.getName();
+		name = name.replaceAll("^-", "_");
+		name = name.replaceAll("[ &?:/]", "_");
+		
+		File parent = file.getParentFile();
+		return parent != null ? new File(parent,name) : new File(name);
+	} 
 
 }

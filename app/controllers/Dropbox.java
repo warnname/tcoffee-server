@@ -51,6 +51,7 @@ public class Dropbox extends Controller {
 	static class DropboxHandle implements Serializable {
 		AccessType accessType; 
 		DropboxAPI<WebAuthSession> instance; 
+		String resultFolder; 
 		
 		void unlink() {  
 			if( instance == null ) return;
@@ -85,14 +86,14 @@ public class Dropbox extends Controller {
 				Logger.warn("Missing or unknown Dropbox access type: '%s'. Valid values are: %s. Fallback to default ('%s')", 
 						sAccessType, 
 						ACCESS_MAP.keySet().toString(),
-						"folder");
+						"full");
 				result.accessType = AccessType.APP_FOLDER;
 			}
-
 			
 			// create the dropbox connector instance 
 			WebAuthSession session = new WebAuthSession(new AppKeyPair(appKey, appSecret), result.accessType);
 			result.instance = new DropboxAPI<WebAuthSession>(session);		
+			result.resultFolder = Play.configuration.getProperty("settings.dropbox.folder", "/results");
 			
 			return result;
           }
@@ -235,9 +236,11 @@ public class Dropbox extends Controller {
 
 		
 		String path;
-		String base = AccessType.APP_FOLDER.equals(handler.accessType) 
-					 ? "/results/"				// when accessing to teh T-Coffee app folder, put under 'result'
-					 : "/T-Coffee/results/"; 	// otherwise use a global '/T-Coffee' as root
+		String base = handler.resultFolder;
+		if( !base.startsWith("/")) base = "/" + base;
+		if( !base.endsWith("/")) base = base + "/";
+		
+
 		int tries = 0;
 		boolean exists=false;
 		do { 

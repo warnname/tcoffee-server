@@ -163,6 +163,11 @@ public class Input implements Serializable {
 		return result != null ? result.value : null;
 	}
 	
+	public String getValue( String field, String defValue ) {
+		String result = getValue(field);
+		return result != null ? result : defValue;
+	}
+	
 	public void validate() {
 		for( Field f : fields() ) {
 			f.validate();

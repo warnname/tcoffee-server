@@ -294,19 +294,26 @@ input[type=text] {
 }
 
 
-#error_label {
+#message_label {
 	position: fixed !important;
 	position: absolute; /*ie6 and above*/
 	top: 0;
 	right: 0;
 	width: 100%;
-	color: white;
-	font-weight: 500;
-	background-color:  #940612;
+	font-weight: 600;
 	text-align: center;
 	min-height: 40px;
 	line-height: 40px;
 	z-index: 99;
+	background-color: #F9EDBE;
+	border: 1px solid #F0C36D;
+	color: #333;
+}
+
+#message_label.error {
+	color: white;
+	background-color:  #940612;
+	border: 1px solid #9f0612
 }
 
 .wait_spinner {

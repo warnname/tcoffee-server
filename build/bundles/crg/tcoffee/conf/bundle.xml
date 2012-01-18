@@ -1356,7 +1356,7 @@
 	  	<fieldset>
 	  	<field type="textarea" name="cmdline" label="Program options">
 	        <validation required="true" >
-	        <required-error>The options cannot be empty. You have to enter at least one input file name.</required-error>
+	        <required-error>The options field cannot be empty. You have to enter at least one input file name.</required-error>
 	        </validation>
 	  	</field>
 	  	

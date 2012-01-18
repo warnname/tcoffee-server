@@ -151,16 +151,13 @@ String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
 String.prototype.contains = function(str) {return (this.indexOf(str)!=-1)}
 
 
-function appendFileToList( filePath ) {
-	// extract the file name 
-	var name = filePath.split('/')
-	if( $.isArray(name) ) { name = name[name.length-1]} 
+function appendFileToList( name ) {
 	
 	// get the 'View data' url 
-	var href = #{jsAction @Data.view(':path') /}
+	var href = #{jsAction @Data.view(':name') /}
 
 	// append an item to the list 
-	var item = '<a target="_blank" href="' + href({path:filePath}) + '">' +name+ '</a>';
+	var item = '<a target="_blank" href="' + href({name:name}) + '">' +name+ '</a>';
 	item = "<li>" + item +  "</li>";
 	$('#uploadedList').show().append( item )	
 }
@@ -170,19 +167,17 @@ function appendFileToList( filePath ) {
  * through the filechooser dialog (see 'filechooseer.html')
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-function fileChooseCallback( field, filePath ) { 
-	console.info("## callback - field: %s; filePath: %s", field, filePath)	
-	
+function fileChooseCallback( field, fileName ) { 
 	
 	// check if has been already uploaded 
 	var files = $('#uploadedFiles').val(); 
-	if( files.contains(filePath) ) { return } 
+	if( files.contains(fileName) ) { return } 
 	
-	appendFileToList(filePath)
+	appendFileToList(fileName)
 		
 	// append the file to the field 
 	if( files != null && files != "" ) files += ",";
-	$('#uploadedFiles').val( files + filePath ); 
+	$('#uploadedFiles').val( files + fileName ); 
 	
 	/*
 	 * Add the new file to the list of the autocomplete component 
@@ -192,9 +187,7 @@ function fileChooseCallback( field, filePath ) {
 	/* Adding the auploaded file in the array are re-populate the autocomplete control */
 
 	// extract the file name 
-	var name = filePath.split('/')
-	if( $.isArray(name) ) { name = name[name.length-1]} 	
-	autocompleteChoices.push(name);
+	autocompleteChoices.push(fileName);
 	var options = {data: autocompleteChoices}
 
 	$('#the-cmd-line').trigger("setOptions", [options]);
@@ -202,7 +195,7 @@ function fileChooseCallback( field, filePath ) {
 	
 	/* if the command line field is empty, add the uploaded file as default input sequence */
 	if( $('#the-cmd-line').val() == '' ) {
-		$('#the-cmd-line').val("-seq " + name)
+		$('#the-cmd-line').val("-seq " + fileName)
 	}	
 	
 }

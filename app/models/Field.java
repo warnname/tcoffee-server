@@ -31,6 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
+import controllers.Data;
 import converters.SimpleCollectionConverter;
 import exception.QuickException;
 
@@ -163,7 +164,7 @@ public class Field implements Serializable {
 			}
 			if( Utils.isNotEmpty(filename)) {
 				this.value = filename;
-				this.fFile = new File(filename);
+				this.fFile = Data.getUserFile(filename);
 			}
 		}		
 		
@@ -181,7 +182,7 @@ public class Field implements Serializable {
 				if( value.toLowerCase().startsWith("file://") ) { 
 					String filename = value.substring("file://".length()).trim();
 					try {
-						this.fFile = new File(filename);
+						this.fFile = Data.getUserFile(filename);
 						this.value = FileUtils.readFileToString(fFile);
 					} 
 					catch (IOException e) {

@@ -43,7 +43,7 @@ import com.dropbox.client2.exception.DropboxServerException;
  */
 public class FileChooser extends Controller {
 
-	static final int MAX = 100;
+	static final int MAX_FOLDER_ITEMS = 500;
 	
 	static final File publicRepo;
 	
@@ -179,14 +179,14 @@ public class FileChooser extends Controller {
 			 * Search into dropbox folder if a query has provided 
 			 * */
 			if( "/".equals(dir) && StringUtils.isNotEmpty(query) && query.length()>= 3 ) { 
-				result = Dropbox.get().search("/", query, MAX, false);
+				result = Dropbox.get().search("/", query, MAX_FOLDER_ITEMS, false);
 				usePathForName = true;
 			}
 			/* 
 			 * .. or navigate into the folder 
 			 */
 			else { 
-				DropboxAPI.Entry entry = Dropbox.get().metadata(dir, MAX, null, true, null);
+				DropboxAPI.Entry entry = Dropbox.get().metadata(dir, MAX_FOLDER_ITEMS, null, true, null);
 				result = entry.contents;
 				usePathForName = false;
 			}
@@ -246,7 +246,12 @@ public class FileChooser extends Controller {
 			IO.write(in, out);
 			// ^ Stream closed by the write method
 
-			String result = String.format("{\"success\":true, \"path\": \"%s\" }", JavaExtensions.escapeJavaScript(target.getAbsolutePath()));
+			String result = String.format( "{" +
+					"\"success\":true, " +
+					"\"name\": \"%s\"," +
+					"\"size\": \"%s\" }", 
+					JavaExtensions.escapeJavaScript(target.getName()),
+					JavaExtensions.formatSize( target.length() ));
 			renderJSON(result);
 		} 
 		catch( Exception e ) { 
@@ -291,13 +296,11 @@ public class FileChooser extends Controller {
 			String result = String.format(
 					"{" +
 					"\"success\":true, " +
-					"\"path\": \"%s\", " +
-					"\"size\": \"%s\"," +
-					"\"name\": \"%s\" " +
+					"\"name\": \"%s\"," +
+					"\"size\": \"%s\" " +
 					"}", 
-					JavaExtensions.escapeJavaScript(target.getAbsolutePath()),
-					JavaExtensions.formatSize( target.length() ),
-					JavaExtensions.escapeJavaScript(target.getName())
+					JavaExtensions.escapeJavaScript(target.getName()),
+					JavaExtensions.formatSize( target.length() )
 					);
 			renderJSON(result);
 		} 
@@ -391,7 +394,7 @@ public class FileChooser extends Controller {
 			for( File file : path.listFiles() ) { 
 				if( FilenameUtils.wildcardMatch(file.getName(), query, IOCase.INSENSITIVE) ) { 
 					result.add( wrap(file,publicRepo,true)  );
-					continueTraverse = (result.size() <= MAX);
+					continueTraverse = (result.size() <= MAX_FOLDER_ITEMS);
 				}
 
 				if( continueTraverse && file.isDirectory() ) { 

@@ -19,7 +19,7 @@
 Loading. Wait please ...
 </div>
 
-<div id="error_label" style="display: none" >
+<div id="message_label" style="display: none" >
 <span>Something wrong</span>
 </div>
 	
@@ -165,6 +165,12 @@ Loading. Wait please ...
 String.prototype.startsWith = function(str) {return (this.match("^"+str)==str)}
 String.prototype.endsWith = function(str) {return (this.match(str+"$")==str)}
 
+function fileName( filePath ) {
+	var name = filePath.split('/')
+	if( $.isArray(name) ) { name = name[name.length-1]} 	
+	return name
+}
+
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  * Shows an 'indicator' on ajax operation. The indicator visualization is 
  * deferred by 100ms to avoid flickering on fast ajax opeartion
@@ -286,11 +292,23 @@ function iconClear( visible ) {
  * Show a message in the error area and disapear after 5 seconds  
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-function showErrorMessage(message){
+function hideMessage() {
+	$('#message_label').hide()	// hide error message
+}
+
+function showMessage(message, type) {
 	if( message == null || message === "" ) message = "(unknown error)"
-	$('#error_label').find('span').text(message);
-	$('#error_label').fadeIn('fast')
-	setTimeout( function() { $('#error_label').fadeOut() }, 5000 );
+	var elem = $('#message_label');
+	elem.removeClass();
+	if( type != null ) elem.addClass(type);
+	elem.find('span').text(message);
+	elem.fadeIn('fast')
+	setTimeout( function() { elem.fadeOut() }, 5000 );
+} 
+ 
+
+function showErrorMessage(message){
+	showMessage(message,'error')
 }
 
 function showErrorAjax( jqXHR ) { 
@@ -351,7 +369,7 @@ $(document).ready(function() {
 	})
 	
 	$('#btnpreview').click(function() {
-		var url = #{jsAction @Data.preview(':path') /}({path: currentFile})
+		var url = #{jsAction @Data.preview(':name') /}({name: currentFile})
 			
 		$.get(url) .success(function(data) { 
 
@@ -378,7 +396,16 @@ $(document).ready(function() {
 	 * Handles the 'Search' button action
 	 * -------------------------------------------------------------------- */
 	$('#btnsearch').click(function() {
-		$(currentElem).click();
+
+		var len = $('#queryfield').val().length; 
+		if( len>0 && len<3 ) {
+			showMessage('Please enters at least 3 characters in your search criteria')			
+		}
+		else { 
+			// will refresh the pane displaying using the search criteria
+			$(currentElem).click();
+		}
+
 	})
 
 
@@ -387,9 +414,11 @@ $(document).ready(function() {
 	 * -------------------------------------------------------------------- */
 	$('#queryfield').bind('keypress', function(e) {
 		
+		hideMessage() // hide previous error messages, if any 
+		
 		var code = (e.keyCode ? e.keyCode : e.which);
 		if(code == 13) { //Enter keycode
-			$(currentElem).click();
+			$('#btnsearch').click()
 		}
 		 
 	})
@@ -417,11 +446,24 @@ $(document).ready(function() {
 	var urlDone; 
 	
 	// download the file requested 
-	var urlDownload = function() {
+	var urlDownload = function(pressedEnterKey) {
 		url = $('#urlfield').val();
 
 		if( url == null || url == "" ) { /* empty */ return }
 		if( url == urlDone ) { /* already downloaded - skip */ return }
+		
+		var low=url.toLowerCase() 
+		if( !low.startsWith('http://') && !low.startsWith('https://') && !low.startsWith('ftp://') ) {
+			if( pressedEnterKey ) showMessage('Please makes the URL begin with a valid protol definition e.g. http://')
+			return;
+		} 
+		
+		var p = url.indexOf('://');
+		var host = url.substring(p+3);
+		if(  host == "" || host.indexOf('.') == -1 || host.indexOf('/') == -1 ) {
+			if( pressedEnterKey ) showMessage('Please enter a valid URL specification');
+			return
+		} 
 		
 		// show ajax notification 
 		$('#url_feedback').empty()
@@ -442,7 +484,7 @@ $(document).ready(function() {
 				elem.fadeIn('fast')
 				
 				// enable the download button 
-				currentFile = "file://" + data.path;
+				currentFile = data.name;
 				btnSelectEnable(true)
 			
 			},
@@ -454,15 +496,22 @@ $(document).ready(function() {
 		})
 		
 	}  
-	 
-	$('#urlfield').change(function() {
+	
+	$('#urlfield').keypress( function(e) {
 		
-		if( urlKeyupTimeout ) clearTimeout(urlKeyupTimeout)
-		urlDownload()
+		hideMessage() // hide previous error messages, if any 
 		
-	} )
+		var code = (e.keyCode ? e.keyCode : e.which);
+		if(code == 13) { 
+			if( urlKeyupTimeout ) clearTimeout(urlKeyupTimeout)
+			urlDownload(true)
+			return false
+		}
+		 
+	})
 	
 	$('#urlfield').keyup(function() {
+		
 		var urlValue = $(this).val();
 		if( urlLastValue === urlValue ) { return }
 		urlLastValue = urlValue;
@@ -488,8 +537,8 @@ $(document).ready(function() {
 
         // return false to cancel submit
         onSubmit: function(id, fileName) {  
- 			$('#error_label').hide()	// hide error message
- 			$('.qq-upload-list').empty()		// remove other files in the list
+			hideMessage()
+        	$('.qq-upload-list').empty()		// remove other files in the list
  			$('#upload_feedback').empty()
 		},
 	
@@ -518,7 +567,7 @@ $(document).ready(function() {
 			elem.show()
 
 			// !! set the current file and close the dialog by default
-			currentFile = "file://" + response.path;
+			currentFile = response.name;
 			btnSelectEnable()
 		},
 	 		
@@ -558,7 +607,8 @@ $(document).ready(function() {
 		var choose = function(file,item) {
 			// highlight the selected item 
 			$('.jqueryFileTree li.selected').removeClass('selected'); item.addClass('selected');
-			currentFile = "file://${recentDataRoot}" + file;
+			// the tree component returns a file path, we use a 'plain' structure with only the file 
+			currentFile = fileName(file);
 			btnSelectEnable()
 		}
 		
@@ -605,7 +655,7 @@ $(document).ready(function() {
 			// check if the file has alredy been download ()
 			var path = item.data('filepath');
 			if( path ) {
-				currentFile = "file://" + path;
+				currentFile = fileName(path);
 				btnSelectEnable()
 				return; // stop here
 			}
@@ -621,8 +671,8 @@ $(document).ready(function() {
 				data: { filePath: file }, 	
 				success: function(response){
 					
-					currentFile = "file://" + response.path;
-					item.data('filepath', response.path)
+					currentFile = response.name;
+					item.data('filepath', response.name)
 					downloadComplete=true;
 					if( closeOnDone === true ) {
 						closedialog()
@@ -685,7 +735,7 @@ $(document).ready(function() {
 
 			// highlight the selected item
 			$('.jqueryFileTree li.selected').removeClass('selected'); item.addClass('selected');
-			currentFile = "file://${publicDataRoot}" + file; 
+			currentFile = fileName(file); 
 			btnSelectEnable()
 		}
 		
@@ -720,6 +770,8 @@ $(document).ready(function() {
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 function showTab( thisElem, tab ) {
+	hideMessage()
+
 	$('#left li').removeClass('selected');
 	$(thisElem).parent('li').addClass('selected');
 
@@ -976,7 +1028,7 @@ function btnSelectEnable(status) {
 </script>
 
 
-<!--[if lte IE 8]>
+<!--[if lte IE 9]>
 <style type="text/css">
 .jqueryFileTree LI a { border: 1px solid white; } 
 #qq-drag-message { display: none } 
