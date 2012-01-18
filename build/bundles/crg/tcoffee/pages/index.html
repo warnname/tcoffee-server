@@ -30,7 +30,14 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 		<a href="${play.mvc.Router.reverse(_.action,['name':_.name])}">${_.title ?: '(unknown)'}</a>
 	</td>
 	
-	<td class="c-val">${_.description} 
+	<td class="c-val">
+		#{if ! (_.name in ['tmcoffee','procoffee' ]) }
+		${_.description}  
+		#{/if}
+		#{else}
+		${_?.description?.replace('(new)','')} <img style="padding-left: 6px" src="@{'/public/images/new_icon_1.gif'}" width="28" height="11"/>
+		#{/else}
+
 		#{if _.cite}<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="${_.cite}" title="Cite ${_.title}" target="_blank" >Cite</a> </small> #{/if}	
 	</td>
 	</tr>
