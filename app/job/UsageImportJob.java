@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import models.UsageLog;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.FileIterator;
 
 import play.Logger;
@@ -71,6 +72,12 @@ public class UsageImportJob extends Job  {
 				log.requestId = row.rid;
 				log.service = row.service;
 				log.status = row.status;
+				log.lng = row.lng;
+				log.lat = row.lat;
+				log.countryCode = row.countryCode;
+				log.country = row.country;
+				log.city = row.city;
+				log.locationProvider = row.locationProvider;
 				
 				log.save();
 				Logger.info("Import usage row: %s", ++i);
@@ -94,6 +101,12 @@ public class UsageImportJob extends Job  {
 		String status;
 		long elapsed;
 		long recordTime;
+		String lng;
+		String lat;
+		String countryCode;
+		String country;
+		String city;
+		String locationProvider;
 
 		static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -106,7 +119,7 @@ public class UsageImportJob extends Job  {
 			rid = 		items.length>4 ? items[4] : null ;
 			duration =  items.length>5 ? items[5] : null ;
 			status = 	items.length>6 ? items[6] : null ;
-			elapsed = 	items.length>7 ? Long.parseLong(items[7]) : 0L;
+			elapsed = 	items.length>7 && StringUtils.isNotBlank(items[7]) ? Long.parseLong(items[7]) : 0L;
 
 			/* duration string is in the format '10 sec' */
 			if( Utils.isNotEmpty(duration) && duration.contains(" ") && elapsed==0 ) { 
@@ -129,6 +142,13 @@ public class UsageImportJob extends Job  {
 			
 			recordTime = fmt.parse(date.substring(0,10)).getTime();
 			
+			
+			this.lng = 					items.length>8 ? items[8] : null ;
+			this.lat = 					items.length>9 ? items[9] : null ;
+			this.countryCode = 			items.length>10 ? items[10] : null ;
+			this.country = 				items.length>11 ? items[11] : null ;
+			this.city = 				items.length>12 ? items[12] : null ;
+			this.locationProvider = 	items.length>13 ? items[13] : null ;
 		}
 		
 

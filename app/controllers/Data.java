@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +33,9 @@ import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
 import play.templates.JavaExtensions;
+import query.GlobeResult;
+import query.QueryHelper;
+import query.UsageFilter;
 import util.GuessContentType;
 import util.JsonHelper;
 import util.Utils;
@@ -375,5 +379,49 @@ public class Data extends CommonController {
 		File parent = file.getParentFile();
 		return parent != null ? new File(parent,name) : new File(name);
 	} 
+	
+	/**
+	 * Render the JSON formatted data for the globe stats visualization 
+	 * 
+	 * @param filter
+	 * @param qtype 
+	 * @param query 
+	 */
+	public static void statsGlobe(UsageFilter filter, String qtype, String query ){
+		GlobeResult data = QueryHelper.findGlobeStat(filter, qtype, query);
+		
+		StringBuilder result = new StringBuilder("[");
+		int c=0;
+		for( Object[] fields : data.items ) {
+			
+			/*
+			 * long and lat 
+			 */
+			result .append( fields[0] ) .append(",") .append( fields[1] ) .append(",");
+
+			/*
+			 * magnitude 1-normalized
+			 */
+			double magnitude = (fields[2] instanceof BigInteger) ? ((BigInteger)fields[2]).doubleValue() : 0;
+			if( data.max>0 ) {
+				magnitude = magnitude / data.max; 
+			}
+			result.append( magnitude ).append(",");
+			
+			/*
+			 * color 0..15
+			 */
+			result.append( Math.round(magnitude * 15) );
+			
+			if( ++c != data.items.size()) {
+				result.append(",");
+			}
+			result.append("\n");
+		} 
+		result.append("]");
+		
+
+		renderJSON( result.toString() );
+	} 	
 
 }

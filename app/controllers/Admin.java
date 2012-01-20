@@ -1269,6 +1269,7 @@ public class Admin extends CommonController {
 		renderArgs.put("minDate", Utils.asString(minDate) );
 		renderArgs.put("sinceDate", Utils.asString(sinceDate) );
 		renderArgs.put("untilDate", Utils.asString(untilDate) );
+		renderArgs.put("hostname", AppProps.instance().getHostName());
 		render();
 	}
 	
@@ -1500,5 +1501,7 @@ public class Admin extends CommonController {
 	static String def( Object val ) { 
 		return val != null ? val.toString() : "";
 	}	
+	
+
  }
 

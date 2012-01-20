@@ -1,5 +1,6 @@
 package query;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -10,6 +11,9 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import models.UsageLog;
+
+import org.apache.commons.lang.StringUtils;
+
 import play.Logger;
 import play.db.jpa.JPA;
 import util.Utils;
@@ -80,32 +84,59 @@ public class QueryHelper {
 		 * 1. counting 
 		 */
 
-		/* apply filter restrictions */
-		if( filter!=null && Utils.isNotEmpty(filter.bundle)) { 
-			where.and( "bundle", "like", filter.bundle );
-		}
-
-		if( filter!=null && Utils.isNotEmpty(filter.service)) { 
-			where.and( "service", "like", filter.service );
-		}
-
-		if( filter!=null && Utils.isNotEmpty(filter.status)) { 
-			where.and( "status", "=", filter.status);
-		}
-
-		if( filter!=null && filter.since!=null) { 
-			where.and( "creation", ">=", filter.since);
-		}
-
-		if( filter!=null && filter.until!=null) { 
-			Date end = new Date( filter.until.getTime() + 24L * 3600 * 1000 );
-			where.and( "creation", "<", end);
-		}
+		addFilterCondition(where, filter);
 		
 
 		/* 
 		 * more restrictions specified by the grid control
 		 */
+		addSearchCondition(where, qfield, qvalue);
+	
+		
+		/* 
+		 * counting the total result items 
+		 */
+		GridResult result = new GridResult();
+		Query query = JPA.em().createQuery("select count(*) " + where.toString());
+		// append the params
+		where.setParams(query);
+		
+		// execute the query and get the COUNT
+		result.total = (Long) query.getSingleResult();
+		
+		/* 
+		 * 2. fetch result set 
+		 * define the ordering 
+		 */
+		if( Utils.isNotEmpty(sortfield) && !"undefined".equals(sortfield) && !"null".equals(sortfield) ) { 
+			if( sortfield.equals("duration") ) { // 'duration' is the formatted version of the field 'elapsed'
+				sortfield = "elapsed";
+			}
+			where.order(sortfield, !"desc".equals(sortorder) );
+		}
+		
+
+		/*
+		 * find the rows 
+		 */
+		query = JPA.em().createQuery(where.toString());
+		if( skip > 0 ) { 
+			query.setFirstResult(skip);
+		}
+		if( size > 0 ) { 
+			query.setMaxResults(size);
+		}
+
+		where.setParams(query);
+
+		result.rows = query.getResultList();
+		
+		return result;
+	}
+	
+	
+	static void addSearchCondition(QueryBuilder where, String qfield, String qvalue) {
+
 		if( "bundle".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			where.and( "bundle", "like", qvalue );
 		}
@@ -150,50 +181,41 @@ public class QueryHelper {
 
 		else if( "city".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
 			where.and( "city", "like", qvalue );
+		}			
+
+		else if( "country_code".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+			where.and( "country_code", "like", qvalue );
+		}			
+		else  {
+			Logger.warn("Unknown field in search criteria: '%s'", qfield);
 		}
 	
-		
-		/* 
-		 * counting the total result items 
-		 */
-		GridResult result = new GridResult();
-		Query query = JPA.em().createQuery("select count(*) " + where.toString());
-		// append the params
-		where.setParams(query);
-		
-		// execute the query and get the COUNT
-		result.total = (Long) query.getSingleResult();
-		
-		/* 
-		 * 2. fetch result set 
-		 * define the ordering 
-		 */
-		if( Utils.isNotEmpty(sortfield) && !"undefined".equals(sortfield) && !"null".equals(sortfield) ) { 
-			if( sortfield.equals("duration") ) { // 'duration' is the formatted version of the field 'elapsed'
-				sortfield = "elapsed";
-			}
-			where.order(sortfield, !"desc".equals(sortorder) );
-		}
-		
-
-		/*
-		 * find the rows 
-		 */
-		query = JPA.em().createQuery(where.toString());
-		if( skip > 0 ) { 
-			query.setFirstResult(skip);
-		}
-		if( size > 0 ) { 
-			query.setMaxResults(size);
-		}
-
-		where.setParams(query);
-
-		result.rows = query.getResultList();
-		
-		return result;
 	}
-	
+
+	static void addFilterCondition(QueryBuilder where, UsageFilter filter) {
+
+		/* apply filter restrictions */
+		if( filter!=null && Utils.isNotEmpty(filter.bundle)) { 
+			where.and( "bundle", "like", filter.bundle );
+		}
+
+		if( filter!=null && Utils.isNotEmpty(filter.service)) { 
+			where.and( "service", "like", filter.service );
+		}
+
+		if( filter!=null && Utils.isNotEmpty(filter.status)) { 
+			where.and( "status", "=", filter.status);
+		}
+
+		if( filter!=null && filter.since!=null) { 
+			where.and( "creation", ">=", filter.since);
+		}
+
+		if( filter!=null && filter.until!=null) { 
+			Date end = new Date( filter.until.getTime() + 24L * 3600 * 1000 );
+			where.and( "creation", "<", end);
+		}
+	}	
 
 	public static List<Object[]> findUsageAggregation(UsageFilter filter) { 
 
@@ -259,6 +281,8 @@ public class QueryHelper {
 			string. append( clazz.getSimpleName() );
 		}
 		
+
+
 		public QueryBuilder( String from ) { 
 			params = new ArrayList<Object>();
 			
@@ -289,6 +313,29 @@ public class QueryHelper {
 			
 			return this;
 		}
+		
+		QueryBuilder and( String restriction ) { 
+			if( Utils.isEmpty(restriction)) { 
+				return this;
+			}
+			
+			/* 
+			 * add the valid query separator 'and' or 'where'
+			 */
+ 			if( first ) { 
+				first = false;
+				string.append( " where ");
+			}
+			else { 
+				string.append( " and " );
+			}
+
+ 			/* appent the restriction */
+			string.append(restriction);
+			
+			return this;
+		}
+				
 		
 		public  QueryBuilder order( String field, boolean asc ) { 
 			if( Utils.isEmpty(field) ) { return this; }
@@ -360,6 +407,46 @@ public class QueryHelper {
 		
 		return aggregate;
 	}
+	
+	/**
+	 * Retriece access data for globe stats 
+	 * 
+	 * @param filter
+	 * @param qtype the search criteria field
+	 * @param qvalue the search criteria value
+	 * @return
+	 */
+	public static GlobeResult findGlobeStat(UsageFilter filter, String qtype, String qvalue ) {
+		String select = "select lat, lng, count(*) as _count ";
+		String groupby = " group by lat, lng";
+
+		
+		QueryBuilder where = new QueryBuilder("from USAGE_LOG");
+		where.and("lng is not null") .and( "lat is not null" );
+		if( filter != null ) {
+			addFilterCondition(where, filter);
+		}
+		
+		if( StringUtils.isNotBlank(qvalue) && StringUtils.isNotBlank(qtype) ) {
+			addSearchCondition(where, qtype, qvalue);
+		}
+		
+		String sql = select + where + groupby; 
+		Query query = JPA.em().createNativeQuery(sql);
+		where.setParams(query);
+		GlobeResult result = new GlobeResult();
+		result.items = query.getResultList();
+
+		sql = "select max(_count) from (" + sql + ")";
+		query = JPA.em().createNativeQuery(sql);
+		where.setParams(query);
+	
+		// may return null if the resultset is empty 
+		BigInteger single = (BigInteger) query.getSingleResult();
+		result.max = (single != null) ? single.longValue() : 0;
+		
+		return result;
+	} 
 }
 
 

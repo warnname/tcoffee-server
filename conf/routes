@@ -29,6 +29,7 @@ GET		/data/view				Data.view
 GET		/data/preview			Data.preview
 *		/data/xupload			Data.ajaxupload
 GET		/data/heartbeat			Data.heartbeat
+GET		/data/globe.json		Data.statsGlobe
 GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource
 
@@ -45,6 +46,7 @@ GET 	/admin/?				Admin.index
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/            	staticDir:public
+GET		/globe/					staticDir:globe
 
 GET		/apps/{bundle}						Application.index
 GET		/apps/{bundle}/						Application.index

@@ -113,34 +113,38 @@ To download the above data in CVS format <a id="export" href="javascript:void(0)
 </div>
 
 
-<script language="javascript" type="text/javascript"><!--
+<div style="padding-top: 1.5em" >
+<h2>
+<span>Globe stats viewer</span>
+</h2>
+
+Show server stats on the <a id="globe" href="javascript:void(0)" >Globe visualizer</a>
+</div>
+
+<script type="text/javascript">
 /* 
  * Declare some urls used to fetch data 
  */
 var urlResultPage = #{jsAction @Main.result(':rid') /}
 
-var urlChartData = function(args) { 
-	var url = "@{Admin.statsChartData()}"; var q="";
+var param = function( args ) {
+	var q="";
 	if( args != null && typeof(args) == "object" ) { 
-		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
+		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+encodeURIComponent(args[name]); } 
 	}  
-	return url + q; 
+	return q;
+}
+
+var urlChartData = function(args) { 
+	return "@{Admin.statsChartData()}" + param(args); 
 } 
 
 var urlGridData = function(args) { 
-	var url = "@{Admin.statsGridData()}"; var q="";
-	if( args != null && typeof(args) == "object" ) { 
-		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
-	}  
-	return url + q; 
+	return "@{Admin.statsGridData()}" + param(args); 
 } 
 
 var urlExportCsv = function(args) { 
-	var url = "@{Admin.statsExportCsv()}"; var q="";
-	if( args != null && typeof(args) == "object" ) { 
-		for( var name in args ) if(args[name]!=null) {  q+=(q=="") ? "?" : "&"; q+=name+"="+escape(args[name]); } 
-	}  
-	return url + q; 
+	return "@{Admin.statsExportCsv()}" + param(args); 
 }
 
 var _choice=null;
@@ -477,6 +481,19 @@ $(document).ready(function () {
 		window.open(urlExportCsv(a),'_blank')	
     })
     
+    /*
+     * 
+     */
+
+    $('#globe').click(function() {
+		
+    	var a = _args();
+		a['query'] = _grid_query;
+		a['qtype'] = _grid_qtype;
+		a['provider'] = 'http://${hostname}@{Data.statsGlobe}'	// <-- sent the url where to fetch the data 	
+		window.open('/globe/index.html' + param(a), '_blank')	
+    })
+
 });
 
 </script>

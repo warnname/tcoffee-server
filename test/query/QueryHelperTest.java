@@ -2,6 +2,7 @@ package query;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -136,4 +137,41 @@ public class QueryHelperTest extends UnitTest {
 		assertEquals( null, result.get("xxx")  );
 		assertTrue( result.get("catrapid").contains("catrapid") );
 	}
+	
+	@Test 
+	public void testGlobleStat() {
+		GlobeResult result = QueryHelper.findGlobeStat(null,null,null);
+		
+		Map<String,Object[]> map = new HashMap<String, Object[]>();
+		assertEquals( 3, result.items.size() );
+		assertEquals( 5, result.max );
+
+		map.put( (String)result.items.get(0)[0] , result.items.get(0));
+		map.put( (String)result.items.get(1)[0] , result.items.get(1));
+		map.put( (String)result.items.get(2)[0] , result.items.get(2));
+		
+		assertEquals( "-76.7566", map.get("38.957596")[1]);
+		assertEquals( new BigInteger("5"), map.get("38.957596")[2]);
+
+		assertEquals( "-1.7832947", map.get("53.649994")[1]);
+		assertEquals( new BigInteger("3"), map.get("53.649994")[2]);
+		
+		assertEquals( "120.8197", map.get("15.096405")[1]);
+		assertEquals( new BigInteger("1"), map.get("15.096405")[2]);
+		
+		/*
+		 * restriction on 'country_code'
+		 */
+		result = QueryHelper.findGlobeStat(null,"country_code","IT");
+		assertEquals( 1, result.items.size() );
+		assertEquals( 3, result.max );
+
+		
+		/*
+		 * empty result 
+		 */
+		result = QueryHelper.findGlobeStat(null,"country_code","XX");
+		assertEquals( 0, result.items.size() );
+		assertEquals( 0, result.max );	
+	} 
 }
