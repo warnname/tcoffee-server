@@ -1480,6 +1480,7 @@ public class Admin extends CommonController {
 				.append(def(row.source)) .append(",")
 				.append(def(row.ip)) .append(",")
 				.append(def(row.email)) .append(",")
+				.append(def(row.countryCode)) .append(",")
 				.append(def(row.country)) .append(",")
 				.append(def(row.city));
 			

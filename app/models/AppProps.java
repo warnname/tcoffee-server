@@ -481,7 +481,11 @@ public class AppProps implements Serializable  {
 		}
 	}
 
-	
+	/*
+	 * TODO 
+	 * Take in consideration the 'http.path' conf param 
+	 * http://www.playframework.org/documentation/1.2.4/configuration#http.path
+	 */
 	public String getContextPath() { 
 		if( contextPath != null ) { 
 			return contextPath;

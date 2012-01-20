@@ -61,7 +61,6 @@ public class Wiper extends Job {
 			 * See http://stackoverflow.com/questions/3620684/directory-last-modified-date
 			 */
 			long delta = System.currentTimeMillis() - it.lastModified();
-			Logger.debug("Max: %s - delta: %s", max, delta);
 			
 			if( delta>max ) { 
 				if( !FileUtils.deleteQuietly(it) ) {

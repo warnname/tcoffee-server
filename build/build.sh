@@ -136,6 +136,7 @@ function make_distribution()
 	cp -R $WORKSPACE/tserver/conf/   $SERVER_DIR/tserver/conf
 	cp -R $WORKSPACE/tserver/lib/    $SERVER_DIR/tserver/lib
 	cp -R $WORKSPACE/tserver/public/ $SERVER_DIR/tserver/public
+	cp -R $WORKSPACE/tserver/globe/  $SERVER_DIR/tserver/globe
 
 	#	
 	# Remove trash items 
