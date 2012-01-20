@@ -73,11 +73,15 @@ $(document).ready(function() {
 	#{include '/conf/page.footer.html' /}
 </div> 
 
-#{if _bundle && _bundle.javascriptPath }
 <script type="text/javascript" charset="utf-8">
+#{if play.Play.mode.isProd()}
+setInterval(function() { $.ajax('@{Data.heartbeat()}?r=' + Math.random()) }, 5 * 60 * 1000 )
+#{/if}
+
+#{if _bundle && _bundle.javascriptPath }
 var Play = { "id": "${play.Play.id}", "isDev": ${play.Play.mode.isDev()}, "isProd": ${play.Play.mode.isProd()} };
 #{includefile _bundle.javascriptPath /}
-</script> 
 #{/if}
+</script> 
 </body>
 </html>

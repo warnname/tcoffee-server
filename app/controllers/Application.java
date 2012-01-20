@@ -281,6 +281,13 @@ public class Application extends CommonController {
 			
 			Service service = service(bundle.get().name,name);
 			
+			/* retrieve the 'email' cookie */
+			String email = request.cookies.get("email") != null ? request.cookies.get("email").value : null;
+			Field field = service.input.field("email");
+			if( field != null && field.value == null && StringUtils.isNotBlank(email) ) {
+				field.value = email;
+			}
+			
 			/* render the page */
 			render(service);
 			return;
@@ -332,6 +339,12 @@ public class Application extends CommonController {
 	    	history.setBundle(bundle);
 	    	history.setLabel(service.title);
 	    	history.save();		
+	    	
+	    	// store an cookie containing the user email 
+	    	String email = params.get("email");
+	    	if( StringUtils.isNotBlank(email) ) {
+	    		response.setCookie("email", email, "30d");
+	    	}
 		}
 		
 
@@ -429,6 +442,13 @@ public class Application extends CommonController {
 					}
 				}
 			}
+			
+			/* retrieve the 'email' cookie */
+			String email = request.cookies.get("email") != null ? request.cookies.get("email").value : null;
+			Field field = service.input.field("email");
+			if( field != null && field.value == null && StringUtils.isNotBlank(email) ) {
+				field.value = email;
+			}		
 			
 			render(service, uploadedFiles);
 		}
@@ -553,6 +573,12 @@ public class Application extends CommonController {
 	    	history.setBundle(bundle.get().name);
 	    	history.setLabel(service.title);
 	    	history.save();		
+	    	
+	    	// store an cookie containing the user email 
+	    	String email = params.get("email");
+	    	if( StringUtils.isNotBlank(email) ) {
+	    		response.setCookie("email", email, "30d");
+	    	} 	
 		}
 		
 

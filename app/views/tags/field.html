@@ -60,7 +60,7 @@
     <div id="${_arg.name}_wrap" class="field_wrap">
         %{ def fclass='field'; if(_arg.useTipTip) { fclass+=' tiptip' }  }%
         #{if _arg.hasFile() } 
-		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="${fclass}" rows="8" style="display:none" >file://${_arg.getFilePath()}</textarea>
+		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="${fclass}" rows="8" style="display:none" >file://${_arg.getFileName()}</textarea>
 	    #{/if}
 		#{else}
 		<textarea id="${_arg.name}" name="${_arg.name}" title="${_arg.hint}" class="${fclass}" rows="8" >${_arg.value}</textarea>

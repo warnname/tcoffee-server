@@ -51,6 +51,23 @@ public class Data extends CommonController {
 	 */
 	public static final char[] COMMANDLINE_INVALID_CHARS = { ';','&','`',':','*','?','$','<','>','|' };
 	
+	/**
+	 * Keep the session up
+	 */
+	public static void heartbeat() {
+		/*
+		 * touch the user data path to prevent to make it evicted 
+		 */
+		File file =getUserTempPath(false);
+		if( file != null && file.exists() ) {
+			long now = System.currentTimeMillis();
+			file.setLastModified(now);
+			file.getParentFile().setLastModified(now); // <-- also the parent folder is update to reflect the change 
+		}
+	
+		// return a confirmation 
+		renderText("OK");
+	} 
 	
 	/**
 	 * This method let to download any file placed in the application 
@@ -237,15 +254,20 @@ public class Data extends CommonController {
 
 	
 	@Util
-	public static File getUserTempPath() { 
+	public static File getUserTempPath(boolean create) { 
 		File file = new File(USERDATA, Session.current().getId());
-		if( !file.exists() ) { 
+		if( !file.exists() && create ) { 
 			if( !file.mkdirs() ) { 
 				throw new QuickException("Cannot create User temporary path: '%s'", file);
 			}
 			Logger.info("Creating user dataspace: '%s'", file);
 		}
 		return file;
+	}
+
+	@Util
+	public static File getUserTempPath() { 
+		return getUserTempPath(true);
 	}
 	
 	/*

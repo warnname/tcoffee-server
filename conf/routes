@@ -28,6 +28,7 @@ GET		/data/zip				Data.zip
 GET		/data/view				Data.view
 GET		/data/preview			Data.preview
 *		/data/xupload			Data.ajaxupload
+GET		/data/heartbeat			Data.heartbeat
 GET		/data/{rid}/@zip		Data.zipDataFolder
 GET		/data/{<.+>path}		Data.resource
 

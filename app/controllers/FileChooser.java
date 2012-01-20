@@ -73,8 +73,6 @@ public class FileChooser extends Controller {
 	public static void index() { 
 
 		renderArgs.put("fieldId", params.get("fieldId"));
-		renderArgs.put("publicDataRoot", publicRepo );
-		renderArgs.put("recentDataRoot", Data.getUserTempPath() );
 		renderArgs.put("dropbox", Play.configuration.getProperty("settings.dropbox.key") != null &&  Play.configuration.getProperty("settings.dropbox.secret") != null);
 		
 		render("FileChooser/filechooser.html");

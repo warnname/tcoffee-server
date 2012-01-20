@@ -14,7 +14,6 @@ import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import play.Logger;
-import play.Play;
 import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.Util;
@@ -78,9 +77,9 @@ public class Dropbox extends Controller {
 			 * - settings.dropbox.secret
 			 * - settings.dropbox.accesstype
 			 */
-			String appKey = Play.configuration.getProperty("settings.dropbox.key");
-			String appSecret = Play.configuration.getProperty("settings.dropbox.secret");
-			String sAccessType = Play.configuration.getProperty("settings.dropbox.accesstype");
+			String appKey = AppProps.instance().getString("settings.dropbox.key");
+			String appSecret = AppProps.instance().getString("settings.dropbox.secret");
+			String sAccessType = AppProps.instance().getString("settings.dropbox.accesstype");
 			result.accessType = ACCESS_MAP.get(sAccessType);
 			if( result.accessType == null ) {
 				Logger.warn("Missing or unknown Dropbox access type: '%s'. Valid values are: %s. Fallback to default ('%s')", 
@@ -93,7 +92,7 @@ public class Dropbox extends Controller {
 			// create the dropbox connector instance 
 			WebAuthSession session = new WebAuthSession(new AppKeyPair(appKey, appSecret), result.accessType);
 			result.instance = new DropboxAPI<WebAuthSession>(session);		
-			result.resultFolder = Play.configuration.getProperty("settings.dropbox.folder", "/results");
+			result.resultFolder = AppProps.instance().getString("settings.dropbox.folder", "/results");
 			
 			return result;
           }

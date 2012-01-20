@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
 import play.Play;
+import play.data.validation.Validation;
 import play.mvc.Http.Request;
 import play.mvc.Router;
 import play.mvc.Scope;
@@ -75,9 +76,12 @@ public class Field implements Serializable {
 	@XStreamConverter( SimpleCollectionConverter.class )
 	public String[] choices;
 	
+	private File fFile;
+	
 	private @XStreamOmitField Map fHintsMap;
 	
-	private File fFile;
+	/** use this field to notify and error during bind phase */
+	private @XStreamOmitField String fBindError;
 	
 	
 	/**
@@ -145,6 +149,7 @@ public class Field implements Serializable {
 	 */
 	
 	public void bind(Params params) {
+		fBindError = null;
 
 		if( "checkbox".equalsIgnoreCase(type) ) {
 			/* 
@@ -186,7 +191,8 @@ public class Field implements Serializable {
 						this.value = FileUtils.readFileToString(fFile);
 					} 
 					catch (IOException e) {
-						throw new QuickException(e, "Unable to read upload content for field: '%s' from file: '%s'", name, filename );
+						Logger.warn("Unable to read upload content for field: '%s' from file: '%s'", name, filename );
+						fBindError = String.format("Unable to access file '%s'. Try upload it again or choose another file.", filename);
 					}
 				}
 			}  
@@ -202,6 +208,18 @@ public class Field implements Serializable {
 	 * Validate current field value against specified validator (if exists)
 	 */
 	public void validate( ) {
+
+		/* verify any entered file exists */
+		if( fFile != null && !fFile.exists() ) {
+			fBindError = String.format("Unable to access file '%s'. Try upload it again or choose another file.", fFile.getName());
+		} 	
+		
+		/* reported errors at bind time */
+		if( StringUtils.isNotBlank(fBindError)) {
+			Validation.addError(name, fBindError, new String[]{});
+			return;
+		}
+		
 		if( validation == null ) { 
 			return;
 		}

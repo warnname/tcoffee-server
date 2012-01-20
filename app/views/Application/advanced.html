@@ -132,7 +132,7 @@ Also it may be useful the following <a href="http://www.tcoffee.org/Documentatio
 <small><span>Specify your email address if your want to be notified on alignment completion (optional)</span></small></h2>
 
 <div class="field-wrap">
-<input type="text" name="email" >
+<input type="text" name="email" value="${service.input?.field('email')?.value}">
 <span class="c-error">#{error 'email' /}</span>
 </div>
 </fieldset>
