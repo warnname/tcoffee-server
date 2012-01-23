@@ -341,10 +341,7 @@ public class Application extends CommonController {
 	    	history.save();		
 	    	
 	    	// store an cookie containing the user email 
-	    	String email = params.get("email");
-	    	if( StringUtils.isNotBlank(email) ) {
-	    		response.setCookie("email", email, "30d");
-	    	}
+	    	storeEmailCookie(params.get("email"));
 		}
 		
 
@@ -575,10 +572,7 @@ public class Application extends CommonController {
 	    	history.save();		
 	    	
 	    	// store an cookie containing the user email 
-	    	String email = params.get("email");
-	    	if( StringUtils.isNotBlank(email) ) {
-	    		response.setCookie("email", email, "30d");
-	    	} 	
+	    	storeEmailCookie(params.get("email"));
 		}
 		
 
@@ -590,7 +584,21 @@ public class Application extends CommonController {
 
 	}
 	
-	
+	/*
+	 * Store the provided email address in a cookie  
+	 * 
+	 * @param email the address to store, if the value is empty 
+	 * will force the cookie to be removed 
+	 */
+	private static void storeEmailCookie(String email) {
+    	if( StringUtils.isNotBlank(email) ) {
+    		response.setCookie("email", email, "30d");
+    	} 	
+    	else { // remove the cookie 
+    		response.removeCookie("email");
+    	}
+	}
+
 	@Util
 	static String normalizeCmdLine(String cmdLine) {
 

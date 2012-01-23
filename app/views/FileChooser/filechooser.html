@@ -763,6 +763,7 @@ $(document).ready(function() {
 	}
 	
 	tab.click();
+	
 })
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1043,6 +1044,8 @@ $(document).ready(function() {
 	$('.qq-uploader').css('width','98%')
 	$('.qq-upload-button').css('width','12em') .find("span").text('Click here to upload a file')
 	$('.qq-upload-drop-area').css('height','4em').css('display','block')
+	// as usual IE requires some strange hack to work properly 
+	setTimeout( resizeTreeArea, 200 )
 	
 })
 </script>
