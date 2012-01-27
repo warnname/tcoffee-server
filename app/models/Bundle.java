@@ -20,6 +20,7 @@ import play.vfs.VirtualFile;
 import util.Check;
 import util.XStreamHelper;
 import bundle.BundleException;
+import bundle.BundleScriptLoader;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -78,6 +79,9 @@ public class Bundle implements Serializable {
 	/** The path where bundle scripts are located */
 	@XStreamOmitField
 	public File scriptPath;	
+	
+	/** The path where bundle libraries '.jar' are located */
+	public File libPath;
 	
 	/** the 'bundle.xml' file */
 	@XStreamOmitField
@@ -174,7 +178,9 @@ public class Bundle implements Serializable {
 	 * the list of services defined in this bundle
 	 */
 	@XStreamImplicit(itemFieldName="service")
-	public List<Service> services = new ArrayList<Service>(); 
+	public List<Service> services = new ArrayList<Service>();
+
+	private volatile BundleScriptLoader fScriptLoader;
 
 
 	public Definition getDef() {
@@ -272,13 +278,14 @@ public class Bundle implements Serializable {
 		/* 
 		 * predefined properties 
 		 */
-		result.put( "application.path", Play.applicationPath);
+		result.put( "application.path", Play.applicationPath.getAbsolutePath());
 		result.put( "application.mode", Play.configuration.getProperty("application.mode"));
 		result.put( "workspace.path", AppProps.WORKSPACE_FOLDER.getAbsolutePath());
 
 		if( root != null ) result.put( "bundle.path", root.getAbsolutePath() );
 		if( binPath != null ) result.put( "bundle.bin.path", binPath.getAbsolutePath() );
 		if( scriptPath != null ) result.put( "bundle.script.path", scriptPath.getAbsolutePath() );
+		if( libPath != null ) result.put("bundle.lib.path", libPath.getAbsolutePath() );
 		if( name != null ) result.put("bundle.name", name);
 		if( version != null ) result.put("bundle.version", version);
 		if( title != null ) result.put("bundle.title", title);
@@ -368,6 +375,9 @@ public class Bundle implements Serializable {
 	            bundle.scriptPath = root.child("script").getRealFile();
 	        }
 	        
+	        if (root.child("lib").exists() ) {
+	        	bundle.libPath = root.child("lib").getRealFile();
+	        }
 	        
 	        /* 
 	         * load properties 
@@ -422,6 +432,23 @@ public class Bundle implements Serializable {
 	public String getServiceXML( String serviceName ) { 
 		return getServiceElement(serviceName).asXML();
 	}
+
+	/**
+	 * @return a 'lazy' instance of {@link BundleScriptLoader} 
+	 */
+	public BundleScriptLoader getScriptLoader() {
+		BundleScriptLoader result = fScriptLoader;
+		
+		if( result==null ) synchronized (this) {
+				result = fScriptLoader;
+				if( result == null ) {
+					fScriptLoader = result = new BundleScriptLoader( scriptPath, libPath );
+				}
+		}
+		
+		return result;
+	}
 	
 
+	
 }

@@ -57,7 +57,7 @@ public class Arg implements Serializable {
 		
 		Service service = Service.current();
 		String firstVarName = eval.vars.get(0);
-		Map<String,Object> ctx = service.getContextHolder().map;
+		Map<String,Object> ctx = service.getContext().map;
 		Object item = ctx.get(firstVarName);
 		if( eval.vars.size() == 1 && item instanceof List ) {
 			

@@ -32,6 +32,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	@XStreamOmitField
 	List<String> _warnings;
 	
+	List<String> warnings() { return _warnings != null ? _warnings : (_warnings = new ArrayList<String>()); } 
+	
 	/** The default constructor */
 	public TCoffeeCommand() {
 	}
@@ -229,7 +231,6 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	 */
 	@Override
 	protected boolean done(boolean success) {
-		_warnings = new ArrayList<String>();
 		
 		OutResult result = ctx.result;
 		boolean hasLogFile = safeLogFileCheck();
@@ -323,7 +324,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	void parseErrorFile( File file ) { 
 		try { 
 			TCoffeeErrorLog log = TCoffeeErrorLog.parse(file);
-			_warnings.addAll( log.getWarnings() );
+			warnings().addAll( log.getWarnings() );
 		}
 		catch( Exception e ) { 
 			Logger.error(e, "Failing parsing T-coffee error file: %s", file);
@@ -344,7 +345,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			/*
 			 * add the warnings 
 			 */
-			_warnings.addAll(log.getWarnings());
+			warnings().addAll(log.getWarnings());
 			
 			/* retrieve the file in the context path */
 			final String root = ctx.get("data.path");

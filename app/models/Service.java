@@ -306,7 +306,7 @@ public class Service implements Serializable {
 	
 
 
-	public ContextHolder getContextHolder() {
+	public ContextHolder getContext() {
 		return fContextHolder;
 	} 
 	

@@ -102,7 +102,7 @@ public abstract class AbstractCommand implements Serializable {
 		return elapsedTime;
 	}
 
-	public ContextHolder getCtx() {
+	public ContextHolder getContext() {
 		return ctx;
 	} 
 	

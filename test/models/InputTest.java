@@ -9,34 +9,15 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import play.data.validation.Validation;
 import play.test.UnitTest;
+import util.Utils;
 import util.XStreamHelper;
+import bundle.BundleScriptLoader;
 
 public class InputTest extends UnitTest {
 
-	
-	@Test 
-	public void testBasicFieldset() {
-		Input input = new Input();
-		input.fieldsets = new ArrayList<Fieldset>();
 		
-		Fieldset f1 = new Fieldset();
-		f1.hideable = false;
-		
-		Fieldset f2 = new Fieldset();
-		f2.hideable = true;
-		
-		input.fieldsets.add(f1);
-		input.fieldsets.add(f2);
-		
-		
-		assertTrue( input.getBasics().contains(f1) );
-		assertFalse( input.getBasics().contains(f2) );
-
-		assertFalse( input.getHideables().contains(f1) );
-		assertTrue( input.getHideables().contains(f2) );
-	}
-	
 	@Test 
 	public void testFieldText() {
 		
@@ -44,6 +25,7 @@ public class InputTest extends UnitTest {
 			"<input >" +
 				"<fieldset><title>title1</title></fieldset>" + 
 				"<fieldset hideable='true' ><title>title2</title></fieldset>" +
+				"<validation-script file='/some/file'> .. validation rule .. </validation-script> " +
 			"</input>";
 		
 		Input input = XStreamHelper.fromXML(xml);
@@ -55,6 +37,8 @@ public class InputTest extends UnitTest {
 		assertEquals("title2", input.fieldsets.get(1).title);
 		assertEquals(true, input.fieldsets.get(1).hideable);
 		
+		assertEquals( "/some/file", input.validation.file );
+		assertEquals( " .. validation rule .. ", input.validation.text );
 	
 	} 	
 	
@@ -103,6 +87,57 @@ public class InputTest extends UnitTest {
 		assertEquals( 3, in.fields().size() );
 		assertEquals( 1, in.fieldsets.size() );
 	
+	}
+	
+	@Test 
+	public void testCopy() {
+		
+		Input in = Input.create("a=uno","b=due", "c:memo=long text");
+		in.validation = new Script().setFile("/some.file").setText("doThat()");
+		
+		Input copy = Utils.copy(in);
+		
+		assertEquals( "uno", copy.field("a").value );
+		assertEquals( "due", copy.field("b").value );
+		assertEquals( "long text", copy.field("c").value );
+		assertEquals( "memo", copy.field("c").type );
+		
+		assertEquals( "/some.file", copy.validation.file );
+		assertEquals( "doThat()", copy.validation.text);
+		
 	} 
 	
+	@Test 
+	public void testValidationFail() {
+		Validation.clear();
+
+		Input in = Input.create("password=uno","pwdcheck=due");
+		in.validation = new Script(new BundleScriptLoader());
+		in.validation.text 
+			= "if( input.field('password').value != input.field('pwdcheck').value ) 'Password check does not match' ";
+		in.validate();
+		
+		assertTrue(Validation.hasError("_input_form"));
+		assertEquals( "Password check does not match", Validation.error("_input_form").message());
+	
+		
+		
+	} 
+	
+
+	@Test 
+	public void testValidationOK() {
+		Validation.clear();
+		Input in = Input.create("password=blah","pwdcheck=blah");
+		in.validation = new Script(new BundleScriptLoader());
+		in.validation.text 
+			= "if( input.field('password').value != input.field('pwdcheck').value ) 'Password check does not match' ";
+		in.validate();
+		
+		assertFalse(Validation.hasError("_input_form"));
+	
+		
+		
+	} 
+
 }

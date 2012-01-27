@@ -112,7 +112,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertNotNull( result.getAlignmentHtml() );
                 assertNotNull( result.getAlignmentFasta() );
 
-                /* assert that the html is the exècted form */
+                /* assert that the html is the expected one */
                 TcoffeeHelperTest.parseHtmlFile(result.getAlignmentHtml().file);
         }
 

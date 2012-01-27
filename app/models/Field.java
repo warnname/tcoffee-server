@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
 import play.Play;
+import play.data.validation.Validation;
 import play.mvc.Http.Request;
 import play.mvc.Router;
 import play.mvc.Scope;
@@ -348,6 +349,15 @@ public class Field implements Serializable {
 			try { sOut.close(); } catch( IOException e ) {}
 		}
 		
+	} 
+	
+	/**
+	 * Add an error the {@link Validation} scope for the current request 
+	 * 
+	 * @param message
+	 */
+	public void error( String message ) {
+		Validation.addError(name, message, new String[]{name});
 	} 
 	
 }

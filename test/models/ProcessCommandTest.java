@@ -28,7 +28,7 @@ public class ProcessCommandTest extends UnitTest {
 		ProcessCommand cmd = new ProcessCommand();
 		cmd.init();
 		
-		assertNotNull( cmd.getCtx() );
+		assertNotNull( cmd.getContext() );
 		
 	}
 	

@@ -1,6 +1,6 @@
 package converters;
 
-import models.ScriptCommand;
+import models.Script;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,45 +11,41 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * Custom converter for {@link ScriptCommand} class
+ * Xml conveter for class {@link Script}
  * 
  * @author Paolo Di Tommaso
  *
  */
-public class ScriptCommandConverter implements Converter {
+public class ScriptConverter implements Converter {
 
 	@Override
 	public boolean canConvert(Class clazz) {
-		return ScriptCommand.class.isAssignableFrom(clazz);
+		return Script.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
-		ScriptCommand cmd = (ScriptCommand) obj;
+		Script script = (Script) obj;
 		
 		// set the attribte 'file' if exists
-		if( cmd.fScriptFile != null ) {
-			writer.addAttribute("file", cmd.fScriptFile);
+		if( script.file != null ) {
+			writer.addAttribute("file", script.file);
 		}
 		
-		// set the attribute 'class' if exists
-		if( cmd.fScriptClass != null ) {
-			writer.addAttribute("clazz", cmd.fScriptClass);
-		}
 
 		// set the 'script test' as the node value
-		if( StringUtils.isNotBlank(cmd.fScriptText)) {
-			writer.setValue(cmd.fScriptText);
+		if( StringUtils.isNotBlank(script.text)) {
+			writer.setValue(script.text);
 		}
 
 	}
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext ctx) {
-		ScriptCommand result = new ScriptCommand();
-		result.fScriptText = reader.getValue();
-		result.fScriptFile = reader.getAttribute("file");
-		result.fScriptClass = reader.getAttribute("clazz");
+		Script result = new Script();
+		result.text = reader.getValue();
+		result.file = reader.getAttribute("file");
+		
 		return result;
 	}
 

@@ -312,7 +312,7 @@ public class BotWorker {
 
 		Repo repo = service != null ? service.repo() : null;
 		OutResult outresult = repo != null ? repo.getResult() : null;
-		Map<String,Object> context = service != null ? service.getContextHolder().getMap() : null;
+		Map<String,Object> context = service != null ? service.getContext().getMap() : null;
 		
 		if( context != null ) { 
 			args.put("rid", context.get("_rid"));

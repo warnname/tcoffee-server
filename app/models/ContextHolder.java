@@ -9,7 +9,11 @@ import java.util.Map;
 import util.Utils;
 
 /**
- * Models the a generic command context 
+ * Models the service execution context. 
+ * <p> 
+ * The context is defined by the service/program {@link Input}, 
+ * plus a map of key-value definition and the {@link OutResult} 
+ * instance  that contains the executed command(s) output
  * 
  * @author Paolo Di Tommaso
  * 

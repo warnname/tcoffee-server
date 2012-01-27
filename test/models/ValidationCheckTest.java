@@ -34,6 +34,7 @@ public class ValidationCheckTest extends UnitTest {
 			"<maxlen-error>MAXLEN value</maxlen-error>" +
 			"<maxnum-error>MAXNUM value</maxnum-error>" +
 			"<pattern-error>PATTERN value</pattern-error>" +
+			"<script file='/some/file' >doThis() doThat()</script>" +
 			"</validation>";
 		
 		ValidationCheck check = XStreamHelper.fromXML(xml);
@@ -55,6 +56,9 @@ public class ValidationCheckTest extends UnitTest {
 		assertEquals( "MAXNUM value", check.maxNumError);			
 		assertEquals( "MAXLEN value", check.maxLengthError);			
 		assertEquals( "PATTERN value", check.patternError);			
+		
+		assertEquals( "/some/file", check.script.file );
+		assertEquals( "doThis() doThat()", check.script.text );
 		
 	} 
 	
@@ -82,6 +86,9 @@ public class ValidationCheckTest extends UnitTest {
 		check.maxNum = 11;
 		check.maxNumError = "Num error message";
 		
+		check.script = new Script();
+		check.script.file = "/script/file";
+		
 		ValidationCheck copy = Utils.copy(check);
 		assertEquals(check, copy);
 		
@@ -100,6 +107,9 @@ public class ValidationCheckTest extends UnitTest {
 		assertEquals(check.patternError, copy.patternError);
 		assertEquals(check.maxLengthError, copy.maxLengthError);
 		assertEquals(check.maxNumError, copy.maxNumError);	
+		
+		assertEquals( check.script.file, copy.script.file );
+		assertEquals( check.script.text, copy.script.text );
 	}
 	
 	@Test 
@@ -638,7 +648,69 @@ public class ValidationCheckTest extends UnitTest {
 		check.apply("fieldAminoAcid1", IO.readContentAsString(TestHelper.file("/sample-proteins.fa")));
 		assertTrue(Validation.hasError("fieldAminoAcid1"));
 
+	}
+	
+	@Test
+	public void testValidationScript() {
+		TestHelper.init("fieldScript1","fieldScript2");
+		
+		String rule 
+			= "assert field.name == 'fieldScript1'; " +
+			  "if( value < 100 ) " +
+			  "  \"Field cannot be less than 100'. You entered $value\""; 
+		
+
+		/* this validation MUST do not pass */
+		Validation.clear();
+		ValidationCheck check = new ValidationCheck();
+		check.format = "integer";
+		check.script = new Script();
+		check.script.text =  rule;
+		check.apply("fieldScript1", "9"); // <-- validate the value '9'
+		assertTrue(Validation.hasError("fieldScript1"));
+		assertEquals("Field cannot be less than 100'. You entered 9", Validation.error("fieldScript1").message());
+
+		/*
+		 * this should pass
+		 */
+		Validation.clear();
+		check = new ValidationCheck();
+		check.format = "integer";
+		check.script = new Script();
+		check.script.text =  rule;
+		check.apply("fieldScript1", "101"); // <-- validate the value '101'
+		assertFalse(Validation.hasError("fieldScript1"));
 	
 	}
+	
+	
+	@Test
+	public void testValidationScript2() {
+		TestHelper.init("fieldScript1","fieldScript2");
+		
+		String rule = "if( value.length() < 3 ) { return 'String too short' }; value = value.reverse(); return"; 
+		
+
+		/* this validation MUST pass */
+		Validation.clear();
+		ValidationCheck check = new ValidationCheck();
+		check.script = new Script();
+		check.script.text =  rule;
+		check.apply("fieldScript1", "Hi there!"); 
+		assertFalse(Validation.hasError("fieldScript1"));
+		assertEquals( check.fNormalizedValue, "!ereht iH" );
+
+		/*
+		 * this should pass
+		 */
+		Validation.clear();
+		check = new ValidationCheck();
+		check.script = new Script();
+		check.script.text =  rule;
+		check.apply("fieldScript2", "AB"); 
+		assertTrue(Validation.hasError("fieldScript2"));
+		assertNull( check.fNormalizedValue);
+		assertEquals( "String too short", Validation.error("fieldScript2").message());
+	} 
 	
 }

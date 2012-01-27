@@ -5,12 +5,10 @@ import exception.QuickException;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 
-import java.io.File;
-
 import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
-import play.Play;
+import bundle.BundleScriptLoader;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -25,22 +23,23 @@ import converters.ScriptCommandConverter;
  *
  */
 
-@XStreamAlias("script")
+@XStreamAlias("script-command")
 @XStreamConverter(ScriptCommandConverter.class)
 public class ScriptCommand extends AbstractCommand {
-
 	
 	public String fScriptText; 
 	
-	public String fClass;
+	public String fScriptClass;
 
-	public String fFile;
+	public String fScriptFile;
 	
 	GroovyClassLoader gcl;
 	
 	AbstractCommand delegate;
 	
 	GroovyObject script;
+
+	BundleScriptLoader loader;
 	
 	/**
 	 * The default constructor
@@ -54,8 +53,8 @@ public class ScriptCommand extends AbstractCommand {
 	 */
 	public ScriptCommand( ScriptCommand that ) {
 		this.fScriptText = that.fScriptText; 
-		this.fClass= that.fClass ;
-		this.fFile = that.fFile;		
+		this.fScriptClass= that.fScriptClass ;
+		this.fScriptFile = that.fScriptFile;		
 	}
 	
 	/**
@@ -65,56 +64,42 @@ public class ScriptCommand extends AbstractCommand {
 	public void init(ContextHolder ctx) {
 		super.init(ctx);
 
-		gcl = new GroovyClassLoader(Play.classloader); 
-		
-		/*
-		 * 	add the bundle script path to the classlaoder 
-		 */
-		String path = ctx.get("bundle.script.path");
-		if( StringUtils.isNotBlank(path) ) {
-			gcl.addClasspath(path);
+		if( loader == null ) {
+			loader = Service.current().bundle.getScriptLoader();
 		}
 		
+
 		/*
 		 * when the element defines a script text, parse it a 
 		 */
 		if( StringUtils.isNotBlank(fScriptText) ) {
-			try {
-				script = (GroovyObject) gcl.parseClass(fScriptText).newInstance();
-			} 
-			catch (Exception e) {
-				throw new QuickException(e, "Cannot parse provided script");
-			}
+			script = (GroovyObject) loader.getExtensionByScript(fScriptText);
 		}
+		
 		/*
 		 * otherwise if the 'file' attribute is provided, it will parsed as a groovy class either:
 		 * - 1) that extends a 'AbstractCommand' class, that will used as a 'delete' for this class
 		 * - 2) or a generic groovy code, that will be parsed as a script 
 		 */
-		else if( StringUtils.isNotBlank(fFile) ) {
-			try {
-				Class clazz = gcl.parseClass(new File(path,fFile));
-				if( AbstractCommand.class.isAssignableFrom(clazz)) {
-					delegate = (AbstractCommand) clazz.newInstance();
-				}
-				else {
-					script = (GroovyObject) clazz.newInstance();
-				}
-			} catch (Exception e) {
-				throw new QuickException(e, "Cannot parse script file '%s'", fFile);
+		else if( StringUtils.isNotBlank(fScriptFile) ) {
+			Object obj = loader.getExtensionByFile(fScriptFile);
+			
+			if( obj instanceof AbstractCommand ) {
+				delegate = (AbstractCommand) obj;
+			}
+			else {
+				script = (GroovyObject) obj;
 			}
 		}
 		/*
 		 * of when the 'clazz' attribute is provided it must extend the 'AbstractCommand' class 
 		 * and a instance is created
 		 */
-		else if( StringUtils.isNotBlank(fClass) ) {
-			try {
-				delegate = (AbstractCommand) gcl.loadClass(fClass).newInstance();
-			} catch (Exception e) {
-				throw new QuickException(e, "Cannot create script class '%s'. Make sure that it extends '%s' class.", fClass, AbstractCommand.class.getSimpleName());
-			}
+		else if( StringUtils.isNotBlank(fScriptClass) ) {
+			delegate = (AbstractCommand) loader.getExtensionByClass(fScriptClass);
 		}
+		
+		/* unknwon error */
 		else {
 			throw new QuickException("Missing definition for <script /> command. Provide the 'file' attribute or the 'clazz' attribute of the script code itself in the element body");
 		} 
@@ -157,4 +142,5 @@ public class ScriptCommand extends AbstractCommand {
 		return delegate != null ? delegate.done(success) : super.done(success);
 	}
 	
+
 }

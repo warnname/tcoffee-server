@@ -32,6 +32,13 @@
 
 <form id="form" action="@{Application.main(service.name)}" method="POST" enctype="multipart/form-data">
 
+*{ Form level validation error  }*
+#{ifError '_input_form'}
+<div class="box-error">
+#{error '_input_form' /}
+</div>
+#{/ifError}
+
 #{list service.input.fieldsets, as:'set'} 
 
 #{if set.hideable && hideCount++==0 } 
@@ -167,8 +174,12 @@ $(document).ready(function(){
 	$('div.c-input input, div.c-input select, div.c-input textarea')
 		.bind('clearErrors', function() { 
 				$(this).parents('div.c-input').removeClass('hasError').find('.c-error').remove(); 
+				$('#form .box-error').hide();
 			})
-		.change(function(){ $(this).trigger('clearErrors') });
+		.change(function(){ 
+				$(this).trigger('clearErrors') 
+			});
+	
 });
 
 
@@ -190,7 +201,9 @@ $(document).ready(function(){
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 $('#reset').click(function() { 
-	$('#form')[0].reset(); $('textarea').each(function(){ $(this).text(''); $(this).trigger('clearErrors'); $(this).trigger('keydown'); } ) 
+	$('#form')[0].reset(); 
+	$('textarea').each(function(){ $(this).text(''); $(this).trigger('clearErrors'); $(this).trigger('keydown'); } ) 
+	$('#form .box-error').hide()
 });
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

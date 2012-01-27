@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Paolo Di Tommaso
  *
  */
-public class Dsl {
+public class DSL {
     
 	public static <T> List<T> list(T... args) {
         return Arrays.asList(args);

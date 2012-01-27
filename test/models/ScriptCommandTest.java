@@ -5,6 +5,7 @@ import org.junit.Test;
 import play.test.UnitTest;
 import util.TestHelper;
 import util.XStreamHelper;
+import bundle.BundleScriptLoader;
 import exception.CommandException;
 
 public class ScriptCommandTest extends UnitTest{
@@ -12,14 +13,14 @@ public class ScriptCommandTest extends UnitTest{
 	@Test
 	public void fromXML () {
 		String xml = 
-			"<script file='Script.groovy' clazz='org.com.Hola'>" +
+			"<script-command file='Script.groovy' clazz='org.com.Hola'>" +
 			"1 + 2" +
-			"</script>"; 
+			"</script-command>"; 
 		
 		ScriptCommand script = XStreamHelper.fromXML(xml);
 		assertEquals("1 + 2", script.fScriptText);
-		assertEquals("Script.groovy", script.fFile);
-		assertEquals("org.com.Hola", script.fClass);
+		assertEquals("Script.groovy", script.fScriptFile);
+		assertEquals("org.com.Hola", script.fScriptClass);
 		
 		
 	}
@@ -28,11 +29,11 @@ public class ScriptCommandTest extends UnitTest{
 	public void toXML () {
 		ScriptCommand cmd = new ScriptCommand();
 		cmd.fScriptText = "print";
-		cmd.fClass = "org.dummy.Class";
-		cmd.fFile = "SomeFile.groovy";
+		cmd.fScriptClass = "org.dummy.Class";
+		cmd.fScriptFile = "SomeFile.groovy";
 
 		String xml = XStreamHelper.toXML(cmd);
-		assertEquals("<script file=\"SomeFile.groovy\" clazz=\"org.dummy.Class\">print</script>", xml);
+		assertEquals("<script-command file=\"SomeFile.groovy\" clazz=\"org.dummy.Class\">print</script-command>", xml);
 		
 	}
 	
@@ -40,11 +41,10 @@ public class ScriptCommandTest extends UnitTest{
 	public void testScriptText() throws CommandException {
 		ContextHolder context = new ContextHolder();
 		context.input = Input.create("alpha=1");
-
 		
 		ScriptCommand cmd = new ScriptCommand();
-		cmd.fScriptText = 
-				"assert input.field('alpha').value == '1'";
+		cmd.loader = new BundleScriptLoader(); 
+		cmd.fScriptText =  "assert input.field('alpha').value == '1'";
 		cmd.init(context);
 		
 		cmd.execute();
@@ -87,7 +87,7 @@ public class ScriptCommandTest extends UnitTest{
 		
 		cmd.execute();
 		
-		OutResult result = service.getContextHolder().result;
+		OutResult result = service.getContext().result;
 		assertEquals( 1, result.getItems().size());
 		assertEquals( "Do not do that", result.warnings.get(0));
 	} 

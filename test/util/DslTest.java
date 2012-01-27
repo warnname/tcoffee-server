@@ -3,7 +3,7 @@ package util;
 import org.junit.Test;
 
 import play.test.UnitTest;
-import util.Dsl.Pair;
+import util.DSL.Pair;
 
 public class DslTest extends UnitTest{
 
