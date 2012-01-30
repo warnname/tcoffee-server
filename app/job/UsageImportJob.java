@@ -78,6 +78,9 @@ public class UsageImportJob extends Job  {
 				log.country = row.country;
 				log.city = row.city;
 				log.locationProvider = row.locationProvider;
+				log.history = "1";
+				log.sessionId = ( i % 2 == 0 ) ? "123" : "321";
+				log.email = i < 5 ? "tcoffee.msa@gmail.com" : null;
 				
 				log.save();
 				Logger.info("Import usage row: %s", ++i);
@@ -149,6 +152,7 @@ public class UsageImportJob extends Job  {
 			this.country = 				items.length>11 ? items[11] : null ;
 			this.city = 				items.length>12 ? items[12] : null ;
 			this.locationProvider = 	items.length>13 ? items[13] : null ;
+			
 		}
 		
 

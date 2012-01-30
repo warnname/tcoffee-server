@@ -18,15 +18,29 @@
 </thead>
 <tbody>
 #{list recent, as:'history'} 
-<tr class="clickable ${history_parity}" cn="RID_${rid=history.rid}" > 
+#{if history.status != 'Running' && history.hasResult }
+<tr class="clickable ${history_parity}" data-rid="${history.rid}" > 
 <td class='clickable'>${history.label}</td>
 <td class='clickable'><a href="@{Application.result(history.rid).add('bundle',history.bundle)}" >${history.rid}</a></td>
 <td class='clickable'>${history.status}</td>
 <td class='clickable'>${history.begin}</td>
 <td class='clickable'>${history.duration}</td>
 <td class='clickable'>${history.expire}</td>
-<td> #{if history.status != 'Running'}[ <a href="#" class="remove" title="Click to remove this item">X</a> ]#{/if} </td>
+<td> [ <a href="#" class="remove" title="Click to remove this item">X</a> ] </td>
 </tr>
+#{/if}
+#{else}
+<tr class="${history_parity}" data-rid="${history.rid}" > 
+<td >${history.label}</td>
+<td >${history.rid}</td>
+<td >${history.status}</td>
+<td >${history.begin}</td>
+<td >${history.duration}</td>
+<td >${history.expire}</td>
+<td> &nbsp; </td>
+</tr>
+#{/else}
+
 #{/list}
 </tbody>
 </table>
@@ -41,9 +55,6 @@
 
  
 <script type="text/javascript">
-function remove(cname) {
-	$.cookie(cname, '--', {expires:-1, path:'${contextPath}'});
-}
 
 $(document).ready(function() {
 	$('td.clickable').css('cursor', 'pointer');
@@ -51,16 +62,23 @@ $(document).ready(function() {
 
 	$('a.remove').click(function(){
 		var row = $(this).closest('tr');
-		remove(row.attr('cn'));
+		var rid = row.data("rid");
 		row.remove();
+		$.ajax({url: "@{Application.historyDel().add('bundle',history.bundle)}?rid="+rid,
+				success: function() { if( $('a.remove').size() == 0 ) { window.location.reload() }
+				} 
+		})
+
 	});
 	
 	$('#deleteAll').click(function() {
-		$('tr.clickable').each(function() {
-			remove($(this).attr('cn'));
-		} );
 
-		window.location.reload();		
+		$.ajax({
+			url: "@{Application.historyDelAll().add('bundle',history.bundle)}", 
+			success: function() {window.location.reload()},
+			error: function() { alert('Oops .. something went wrong.') }
+			})
+
 	} );
 });
 </script>

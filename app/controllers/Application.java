@@ -3,7 +3,7 @@ package controllers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,6 @@ import models.AppProps;
 import models.Bundle;
 import models.CmdArgs;
 import models.Field;
-import models.History;
 import models.OutResult;
 import models.Repo;
 import models.Service;
@@ -27,8 +26,10 @@ import play.libs.IO;
 import play.libs.MimeTypes;
 import play.mvc.Before;
 import play.mvc.Finally;
+import play.mvc.Http.Cookie;
 import play.mvc.Router;
 import play.mvc.Util;
+import query.History;
 import util.Utils;
 import bundle.BundleRegistry;
 
@@ -135,16 +136,34 @@ public class Application extends CommonController {
 	 * Renders the history html table  
 	 */
 	public static void historyTable() {	
-		String contextPath = AppProps.instance().getContextPath();
-		if( contextPath == null ) contextPath = "/";
-		else if( !contextPath.startsWith("/") ) { 
-			contextPath = "/" + contextPath;
-		}
+		String sid = session.getId();
+		Cookie email = request.cookies.get("email");
 		
-		List<History> recent = History.findAll();
-		Collections.sort(recent, History.DescBeginTimeSort.INSTANCE);
+		Date since = new Date( System.currentTimeMillis() - AppProps.instance().getDataCacheDuration() *1000 ); 
+
+		List<History> recent = History.findBySessionAndEmailAndSinceDate(sid, email != null ? email.value : null, since);
 		responseNoCache();
-		render(recent, contextPath);
+		render(recent);
+	}
+	
+	/**
+	 * Delete an entry from the user history log.
+	 * <p>
+	 * This method is meant to be used as a ajax request
+	 * 
+	 * @param rid the unique request identifier 
+	 */
+	public static void historyDel( String rid ) {
+		Boolean result = History.deleteByRequestId(rid);
+		renderText(result);
+	}
+	
+	public static void historyDelAll() {
+		String sid = session.getId();
+		Cookie email = request.cookies.get("email");
+	
+		Boolean result = History.deleteBySessionAndEmail(sid, email != null ? email.value : null );
+		renderText(result);
 	}
 
 
@@ -285,7 +304,10 @@ public class Application extends CommonController {
 			String email = request.cookies.get("email") != null ? request.cookies.get("email").value : null;
 			Field field = service.input.field("email");
 			if( field != null && field.value == null && StringUtils.isNotBlank(email) ) {
-				field.value = email;
+				// create a copy of this service to avoid that the email will be saved 
+				// in the object 'prototype'
+				service = service.copy();
+				service.input.field("email").value = email;
 			}
 			
 			/* render the page */
@@ -331,15 +353,6 @@ public class Application extends CommonController {
 		 * 3. fire the job 
 		 */
 		if( service.start() ) {
-	    	
-			/*
-	    	 * 4. store the current request-id in a cookie
-	    	 */
-	    	History history = new History(service.rid());
-	    	history.setBundle(bundle);
-	    	history.setLabel(service.title);
-	    	history.save();		
-	    	
 	    	// store an cookie containing the user email 
 	    	storeEmailCookie(params.get("email"));
 		}
@@ -571,15 +584,6 @@ public class Application extends CommonController {
 		 * 4. fire the job 
 		 */
 		if( service.start() ) {
-	    	
-			/*
-	    	 * 5. store the current request-id in a cookie
-	    	 */
-	    	History history = new History(service.rid());
-	    	history.setBundle(bundle.get().name);
-	    	history.setLabel(service.title);
-	    	history.save();		
-	    	
 	    	// store an cookie containing the user email 
 	    	storeEmailCookie(params.get("email"));
 		}

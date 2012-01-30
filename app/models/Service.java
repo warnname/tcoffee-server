@@ -507,6 +507,7 @@ public class Service implements Serializable {
 			usage.bundle = this.bundle.name;
 			usage.service = this.name;
 			usage.requestId = this.fRid;
+			usage.sessionId = this.sessionId;
 			usage.status = "RUNNING";
 			usage.source = this.source;
 			usage.email = this.userEmail;
@@ -527,7 +528,7 @@ public class Service implements Serializable {
 				}
 			}  
 			
-			Logger.debug("Creating usage log for request # %s", this.fRid );
+			Logger.debug("Creating usage log for request # %s; sessionid: %s; email: %s", this.fRid, this.sessionId, this.userEmail );
 		}
 		else if( id >=0 ){ 
 			usage = UsageLog.findById( id );
