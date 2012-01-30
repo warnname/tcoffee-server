@@ -17,6 +17,8 @@ GET		/catrapid				Application.index(bundle:'catrapid')
 GET 	/robots.txt				Main.robots
 GET		/favicon.ico			Main.favicon
 GET		/google{siteId}.html	Main.googleSiteVerification
+POST	/browserid/in			Main.browseridSignin
+GET		/browserid/out			Main.browseridSignout
 GET 	/@list 					Main.list
 GET 	/@sandbox 				Main.sandbox
 
@@ -59,7 +61,8 @@ GET		/apps/{bundle}/result				Application.result
 GET		/apps/{bundle}/replay				Application.replay	
 GET		/apps/{bundle}/submit				Application.submit
 GET		/apps/{bundle}/status				Application.status
-GET		/apps/{bundle}/history				Application.historyTable
+GET		/apps/{bundle}/history				Application.history
+GET		/apps/{bundle}/historylist			Application.historyTable
 GET		/apps/{bundle}/historydel			Application.historyDel
 GET		/apps/{bundle}/historydelall		Application.historyDelAll
 GET		/apps/{bundle}/jalview				Application.jalview

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.AppProps;
 import models.Bundle;
 import models.OutResult;
 import models.Repo;
@@ -15,9 +16,14 @@ import play.Play;
 import play.cache.Cache;
 import play.cache.CacheFor;
 import play.libs.IO;
+import play.libs.WS;
+import play.libs.WS.HttpResponse;
+import play.libs.WS.WSRequest;
 import play.mvc.Before;
 import play.mvc.Router;
 import bundle.BundleRegistry;
+
+import com.google.gson.JsonObject;
 
 /**
  * Application controller for generic infrastructure stuff, for 
@@ -168,5 +174,35 @@ public class Main extends CommonController {
 		response.contentType = "text/html";
 		renderText(IO.readContentAsString(file));
 	}
+    
+    /**
+     * Authenticate the specified assertion against the BrowserId server 
+     * <p>
+     * See https://github.com/mozilla/browserid/wiki/How-to-Use-BrowserID-on-Your-Site
+     * 
+     * @param assertion
+     */
+    public static void browseridSignin( String assertion ) {
+    	
+    	WSRequest wsrequest = WS.url("https://browserid.org/verify");
+    	wsrequest.setParameter("assertion", assertion);
+    	wsrequest.setParameter("audience", "http://"+AppProps.instance().getHostName());
+    	HttpResponse wsresponse = wsrequest.post();
+    	JsonObject obj = (JsonObject) wsresponse.getJson();
+    	String trusted = obj.get("email").getAsString();
+
+    	// store this email as in the session 
+    	session.put("trusted_user", trusted);
+    	
+    	renderText("okay");
+    } 
+    
+    /**
+     * Remove the current authenticated user
+     */
+    public static void browseridSignout() {
+    	session.remove("trusted_user");
+    	renderText("okay");
+    } 
 	
 }

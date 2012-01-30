@@ -132,18 +132,27 @@ public class Application extends CommonController {
     	showResultFor(rid, "jalview.html", false);
     } 
 	
+    /**
+     * Renders the user requests 'history' page 
+     */
+    public static void history() {
+    	render();
+    } 
+    
 	/**
 	 * Renders the history html table  
 	 */
 	public static void historyTable() {	
 		String sid = session.getId();
-		Cookie email = request.cookies.get("email");
+    	String userid = session.get("trusted_user");
 		
 		Date since = new Date( System.currentTimeMillis() - AppProps.instance().getDataCacheDuration() *1000 ); 
-
-		List<History> recent = History.findBySessionAndEmailAndSinceDate(sid, email != null ? email.value : null, since);
+		List<History> recent = History.findBySessionAndEmailAndSinceDate(sid, userid, since);
+		
 		responseNoCache();
-		render(recent);
+    	renderArgs.put("trusted_user", userid);
+    	renderArgs.put("recent", recent);
+		render();
 	}
 	
 	/**

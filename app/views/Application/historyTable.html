@@ -1,5 +1,13 @@
 #{ifnot recent }
-<b>no history available</b>
+<div style="margin-top: 1.4em">
+#{if !trusted_user}
+No history is available for the current session. The view your past requests please <a id="browserid" href="javascript:void(0)" >authenticate your email</a>.
+#{/if}
+#{else}
+No history is available for <span style="font-weight: 500">${trusted_user}</span>. If it is not your email <a id="logout" href="javascript:void(0)" >click here</a> to sign-off and switch to another account.
+#{/else}
+</div>
+
 #{/ifnot}
 
 #{else}
@@ -45,15 +53,32 @@
 </tbody>
 </table>
 
-<p>
+<div style="margin-top: .4em">
 <small>History is sorted from the most recent to the most older job request</small>
-</p>
+</div>
 
-<p>
-<button id="deleteAll" class="button blue">Delete history</button>
-</p>
+<div style="margin-top: .4em">
+#{if !trusted_user}
+<small>Above are reported the requests submitted during the current (browser) session. 
+The see your past requests please <a id="browserid" href="javascript:void(0)" >authenticate your email</a>.
+</small>
+#{/if}
+#{else}
+<small>You are viewing the requests submitted using the email address <span style="font-weight: 500">${trusted_user}</span>. 
+Are not you? <a id="logout" href="javascript:void(0)" >Click here to sign-off</a> and switch to another account.
+</small>
+#{/else}
+</div>
 
- 
+<div style="margin-top: 1.2em; ">
+<button id="deleteAll" class="button blue" style="margin-left: 0" >Delete history</button>
+</dvi>
+#{/else}
+
+
+
+
+
 <script type="text/javascript">
 
 $(document).ready(function() {
@@ -64,7 +89,7 @@ $(document).ready(function() {
 		var row = $(this).closest('tr');
 		var rid = row.data("rid");
 		row.remove();
-		$.ajax({url: "@{Application.historyDel().add('bundle',history.bundle)}?rid="+rid,
+		$.ajax({url: "@{Application.historyDel()}?rid="+rid,
 				success: function() { if( $('a.remove').size() == 0 ) { window.location.reload() }
 				} 
 		})
@@ -74,13 +99,32 @@ $(document).ready(function() {
 	$('#deleteAll').click(function() {
 
 		$.ajax({
-			url: "@{Application.historyDelAll().add('bundle',history.bundle)}", 
+			url: "@{Application.historyDelAll()}", 
 			success: function() {window.location.reload()},
 			error: function() { alert('Oops .. something went wrong.') }
 			})
+	});
+	
+	
+    /*
+     * browserid authentication
+     */
+   function signin() {
+		navigator.id.get(function(assertion) {
+		    if (assertion) {
+				$.post("/browserid/in", { assertion:assertion }, function() { window.location.reload()  } )
+		    } 
+		});		
+	} 
+    
+	$('#browserid').click(function(){ signin(); })
+	
+	$('#logout').click(function() {
+		$.get("/browserid/out", function() { window.location.reload() } )
+	})
+	
 
-	} );
 });
 </script>
 
-#{/else}
+

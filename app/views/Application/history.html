@@ -4,6 +4,9 @@
 <meta NAME="robots" CONTENT="NOFOLLOW" >
 #{/set}
 
+#{set 'moreScripts'}
+<script src="https://browserid.org/include.js" type="text/javascript"></script>
+#{/set}
 
 <script type="text/javascript">
 function poll() {
@@ -12,17 +15,21 @@ function poll() {
 
 $(document).ready(function(){
     poll(); 
-    setInterval( poll, 20000 ); // reload history after 20 seconds 
+    setInterval( poll, 40000 ); // reload history after 40 seconds 
 });
 </script>
 
-<h1>Recent jobs history
-
+<h1 style="margin-bottom: .2em" >Recent jobs history
 <small>
 Here the list of your requests
 </small>
 </h1>
 
+
+
 <div id="history" >
 <!--  history table comes here -->
 </div>
+
+
+
