@@ -504,10 +504,19 @@ public class Application extends CommonController {
 		 * steup the command line 
 		 */
 		final String cmdline = normalizeCmdLine(service.input.field("cmdline").value);
-		service.input.field("cmdline").value = cmdline;
-		Logger.debug("Advanced - cmdline: '%s'", cmdline);
-
 		
+		// verify that the entered command line 
+		if( cmdline != null && cmdline.length() > 900 ) {
+			String msg = 
+					"The command line you entered in not valid. " +
+					"Please note: in the above field you can enter only T-Coffee program arguments (not the input sequences). " +
+					"Input data have to be uploaded using the 'Upload' button in the box above this one." ;
+			Validation.addError("cmdline", msg, (String)null);
+			render(service, uploadedFilesList);
+		}
+
+		service.input.field("cmdline").value = cmdline;
+	
 		/* 
 		 * The command line cannot contains some 'special' character 
 		 * to avoid malicious commands entered 
