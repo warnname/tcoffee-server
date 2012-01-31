@@ -193,6 +193,7 @@ public class Main extends CommonController {
 
     	// store this email as in the session 
     	session.put("trusted_user", trusted);
+    	response.setCookie("email", trusted, "30d"); // <-- keep congruent with the form email cookie 
     	
     	renderText("okay");
     } 
@@ -202,6 +203,7 @@ public class Main extends CommonController {
      */
     public static void browseridSignout() {
     	session.remove("trusted_user");
+    	response.removeCookie("email"); 	// <-- keep congruent with the form email cookie 
     	renderText("okay");
     } 
 	

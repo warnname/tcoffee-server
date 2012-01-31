@@ -454,7 +454,7 @@ $(document).ready(function() {
 		
 		var low=url.toLowerCase() 
 		if( !low.startsWith('http://') && !low.startsWith('https://') && !low.startsWith('ftp://') ) {
-			if( pressedEnterKey ) showMessage('Please makes the URL begin with a valid protol definition e.g. http://')
+			showMessage('Please makes the URL begin with a valid protocol declaration e.g. http://')
 			return;
 		} 
 		
@@ -531,7 +531,7 @@ $(document).ready(function() {
 		listElement: document.getElementById('qq-upload-list'),
 		// path to server-side upload script
  	    action: '@{Data.ajaxupload}',
- 	    sizeLimit: 1024*1024*20, // <-- max 20 MB input files
+ 	    sizeLimit: ${file_size_limit}, 
  	    multiple: false,
 		debug: false,
 

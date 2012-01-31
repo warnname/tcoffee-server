@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,14 +17,13 @@ import java.util.List;
 
 import models.AppProps;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
 import play.Play;
-import play.libs.IO;
+import play.exceptions.UnexpectedException;
 import play.mvc.Controller;
 import play.mvc.Http.StatusCode;
 import play.mvc.Util;
@@ -35,6 +36,8 @@ import com.dropbox.client2.RESTUtility;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.exception.DropboxServerException;
 
+import exception.FileSizeLimitException;
+
 /**
  * Controller to handle the action for the advanced file choose 
  * 
@@ -43,7 +46,6 @@ import com.dropbox.client2.exception.DropboxServerException;
  */
 public class FileChooser extends Controller {
 
-	static final int MAX_FOLDER_ITEMS = 500;
 	
 	static final File publicRepo;
 	
@@ -71,13 +73,19 @@ public class FileChooser extends Controller {
 	 * 
 	 */
 	public static void index() { 
-
+		
 		renderArgs.put("fieldId", params.get("fieldId"));
 		renderArgs.put("dropbox", Play.configuration.getProperty("settings.dropbox.key") != null &&  Play.configuration.getProperty("settings.dropbox.secret") != null);
-		
+		renderArgs.put("file_size_limit", getFileSizeLimit() );
 		render("FileChooser/filechooser.html");
 	}
 	
+
+	@Util
+	private static long getFileSizeLimit() {
+		return AppProps.instance().getLong("settings.filechooser.file_size_limit", 20*1024*1024);
+	}
+
 
 	@Util
 	static void renderTreeItems( List<FileEntry> folders , List<FileEntry> files, boolean isRoot ) { 
@@ -99,6 +107,7 @@ public class FileChooser extends Controller {
 	 */
 	public static void listPublicData(String dir, String query) { 
 		Logger.debug("listPublicRepo method. Dir: '%s' - Query: '%s'", dir, query);
+		final int MAX_FOLDER_ITEMS = AppProps.instance().getInteger("settings.filechooser.max_folder_items", 500);
 		
 	    /* 
 	     * normalize the specified dir 
@@ -120,7 +129,7 @@ public class FileChooser extends Controller {
     		List<FileEntry> result = new ArrayList<FileEntry>();
 	    	if( "/".equals(dir) && !StringUtils.isEmpty(query) && query.length()>=3 )  {
 	    		String sQuery = query.contains("*") ? query : "*" + query + "*";
-	    		searchIntoPublicRepo(path, sQuery, result);
+	    		searchIntoPublicRepo(path, sQuery, result, MAX_FOLDER_ITEMS);
 	    	}
 	    	else { 
 				FilenameFilter filter = new FilenameFilter() {
@@ -158,6 +167,7 @@ public class FileChooser extends Controller {
 	 */
 	public static void listDropboxData( String dir, String query ) { 
 		Logger.debug("listDropboxData method.  Dir: '%s' - Query: '%s'", dir, query);
+		final int MAX_FOLDER_ITEMS = AppProps.instance().getInteger("settings.filechooser.max_folder_items", 500);
 
 		/*
 		 * check if connected otherwise shows Dropbox connection box
@@ -230,19 +240,20 @@ public class FileChooser extends Controller {
 	 */
 	public static void copyDropboxFile( String filePath ) { 
 		Logger.debug("copyDropboxFile method.  FilePath: '%s'", filePath);
+		long MAX = getFileSizeLimit();
 		
 		if( !Dropbox.isLinked() ) { 
 			errorJson("Your Dropbox account is unlinked. Re-try reconnecting to Dropbox refreshing this page");
 		}
 		
 		request.format = "json";
+		String fileName = FilenameUtils.getName(filePath);
 		try {
-			String fileName = FilenameUtils.getName(filePath);
 			DropboxInputStream in = Dropbox.get().getFileStream(filePath, null);
 			File target = Data.newUserFile(fileName);
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(target, false));
-			IO.write(in, out);
-			// ^ Stream closed by the write method
+			copy(in, out, MAX);
+			// ^ Stream closed by the method
 
 			String result = String.format( "{" +
 					"\"success\":true, " +
@@ -252,6 +263,10 @@ public class FileChooser extends Controller {
 					JavaExtensions.formatSize( target.length() ));
 			renderJSON(result);
 		} 
+		catch( FileSizeLimitException e ) {
+			Logger.warn("The following dropbox download is too big to be downloaded: '%s'", filePath);
+			errorJson("The file '%s' cannot be downloaded because exceed the allowed size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
+		}
 		catch( Exception e ) { 
 			Logger.error(e, "Cannot get the following file from dropbox: '%s'", filePath);
 			Dropbox.unlink();
@@ -284,13 +299,17 @@ public class FileChooser extends Controller {
 	 */
 	public static void copyUrlFile( String url ) throws InterruptedException { 
 		Logger.debug("copyUrlFile method.  Url: '%s'", url);
-		request.format = "json";
+		final long MAX = getFileSizeLimit();		
 		
+		request.format = "json";
 		String fileName = FilenameUtils.getName(url);
 		File target = Data.newUserFile(fileName);
 		
 		try {
-			FileUtils.copyURLToFile(new URL(url), target, 15000, 5000);
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(target));
+			copy(new URL(url).openStream(), out, MAX);
+
+			
 			String result = String.format(
 					"{" +
 					"\"success\":true, " +
@@ -302,6 +321,10 @@ public class FileChooser extends Controller {
 					);
 			renderJSON(result);
 		} 
+		catch( FileSizeLimitException e ) {
+			Logger.warn("The following dropbox download is too big to be downloaded: '%s'", fileName);
+			errorJson("The file '%s' cannot be downloaded because exceed the allowed size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
+		}
 		catch( MalformedURLException e ) { 
 			Logger.warn(e, "Not a valid URL: '%s'", url);
 			errorJson(StatusCode.BAD_REQUEST, "Malformed '\"URL");
@@ -383,7 +406,7 @@ public class FileChooser extends Controller {
 	} 
 	
 	@Util
-	static boolean searchIntoPublicRepo( File path, String query, List<FileEntry> result ) { 
+	static boolean searchIntoPublicRepo( File path, String query, List<FileEntry> result, long max ) { 
 
 		if( path == null ) { return true; }
 		
@@ -392,11 +415,11 @@ public class FileChooser extends Controller {
 			for( File file : path.listFiles() ) { 
 				if( FilenameUtils.wildcardMatch(file.getName(), query, IOCase.INSENSITIVE) ) { 
 					result.add( wrap(file,publicRepo,true)  );
-					continueTraverse = (result.size() <= MAX_FOLDER_ITEMS);
+					continueTraverse = (result.size() <= max);
 				}
 
 				if( continueTraverse && file.isDirectory() ) { 
-					continueTraverse = searchIntoPublicRepo(file,query,result);
+					continueTraverse = searchIntoPublicRepo(file,query,result,max);
 				}
 				
 				if( !continueTraverse ) { 
@@ -515,5 +538,26 @@ public class FileChooser extends Controller {
 		error(String.format(message, args));
 	} 
 	
+	
+	@Util
+    public static void copy(InputStream is, OutputStream os, long max) throws FileSizeLimitException {
+        try {
+        	long tot=0;
+            int read = 0;
+            byte[] buffer = new byte[50*1024];
+            while ((read = is.read(buffer)) > 0) {
+                os.write(buffer, 0, read);
+                tot+=read;
+                if( tot > max ) {
+                	throw new FileSizeLimitException();
+                }
+            }
+        } catch(IOException e) {
+            throw new UnexpectedException(e);
+        } finally {
+            try { is.close(); } catch(Exception e) {  }
+            try { os.close(); } catch(Exception e) { }
+        }
+    }	
 
 }

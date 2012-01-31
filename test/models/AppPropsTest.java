@@ -19,6 +19,7 @@ public class AppPropsTest extends UnitTest {
 		props = new AppProps();
 		props.put("alpha", "1");
 		props.put("beta", "2");
+		props.put("gamma", "abc");
 		
 	}
 	
@@ -59,6 +60,23 @@ public class AppPropsTest extends UnitTest {
 		assertEquals( "2", props.getString("beta"));
 		assertEquals( "99", props.getString("xxx", "99"));
 		assertNull( props.getString("xxx"));
+	}	
+	
+	@Test
+	public void testGetInteger() {
+		assertEquals( Integer.valueOf(1), props.getInteger("alpha"));
+		assertEquals( Integer.valueOf(2), props.getInteger("beta"));
+		assertEquals( null, props.getInteger("xxx"));
+		assertEquals( Integer.valueOf(99), props.getInteger("xxx",99));
+	}	
+	
+	
+	@Test
+	public void testGetLong() {
+		assertEquals( Long.valueOf(1), props.getLong("alpha"));
+		assertEquals( Long.valueOf(2), props.getLong("beta"));
+		assertEquals( null, props.getLong("xxx"));
+		assertEquals( Long.valueOf(99), props.getLong("xxx",99));
 	}	
 	
 	@Test 

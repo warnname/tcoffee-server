@@ -433,6 +433,33 @@ public class AppProps implements Serializable  {
 		return Integer.parseInt(value);
 	}
 	
+	public Integer getInteger( String key, int defValue ) {
+		String value = getString(key, null);
+		if( Utils.isEmpty(value) ) { 
+			return defValue;
+		}
+		
+		return Utils.parseInteger(value, defValue);
+	}
+
+	public Long getLong( String key, long defValue ) {
+		String value = getString(key, null);
+		if( Utils.isEmpty(value) ) { 
+			return defValue;
+		}
+		
+		return Utils.parseLong(value, defValue);
+	}
+	
+	public Long getLong( String key) {
+		String value = getString(key, null);
+		if( Utils.isEmpty(value) ) { 
+			return null;
+		}
+		
+		return Utils.parseLong(value, null);
+	}	
+	
 	public String getString(String key, final String defValue) {
 		Check.notNull(key, "Argument 'key' cannot be null");
 		if( properties == null ) return defValue;
