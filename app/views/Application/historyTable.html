@@ -112,7 +112,7 @@ $(document).ready(function() {
    function signin() {
 		navigator.id.get(function(assertion) {
 		    if (assertion) {
-				$.post("/browserid/in", { assertion:assertion }, function() { window.location.reload()  } )
+				$.post("@{Main.browseridSignin}", { assertion:assertion }, function() { window.location.reload()  } )
 		    } 
 		});		
 	} 
@@ -120,7 +120,7 @@ $(document).ready(function() {
 	$('#browserid').click(function(){ signin(); })
 	
 	$('#logout').click(function() {
-		$.get("/browserid/out", function() { window.location.reload() } )
+		$.get("@{Main.browseridSignout}", function() { window.location.reload() } )
 	})
 	
 
