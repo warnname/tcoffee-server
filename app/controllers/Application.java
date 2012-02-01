@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -17,6 +18,7 @@ import models.Repo;
 import models.Service;
 import models.Status;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.CmdLineUtils;
 
@@ -198,9 +200,10 @@ public class Application extends CommonController {
 		if( !repo.hasResult() ) {
 			notFound(String.format("The specified request ID does not exist (%s)", rid));
 		}
+
 		
 		/* 
-		 * create the service and bind the stored values 
+		 * 2. create the service and bind the stored values 
 		 */
 		String serviceName = repo.getResult().service;
 		String bundleName = bundle.get().name;
@@ -213,7 +216,7 @@ public class Application extends CommonController {
     	redirect( Router.reverse(service.action, args).url );
 
 	}
-	
+
 	public static void submit( String rid ) {
 		assertNotEmpty(rid, "Missing 'rid' argument on #submit action");
 	
@@ -444,6 +447,7 @@ public class Application extends CommonController {
 			
 			if( (rid=params.get("replay")) != null && (repo=new Repo(rid)).hasResult() ) { 
 				
+				
 				/* reuse the previous command line */
 				String cmdLine = IO.readContentAsString( repo.getResult().getCommandLine().file );
 				cmdLine = normalizeCmdLine(cmdLine);
@@ -458,6 +462,14 @@ public class Application extends CommonController {
 					}
 					for( File it : files ) {
 						uploadedFiles += it.getName();
+						// copy the file to the 
+						File target=null;
+						try {
+							target = Data.getUserFile(it.getName());
+							FileUtils.copyFile(it, target);
+						} catch (IOException e) {
+							Logger.warn("Cannot copy: '%s' to '%s'", it, target);
+						}
 					}
 				}
 			}
@@ -507,7 +519,7 @@ public class Application extends CommonController {
 
 				// check if the file is valid otherwise return an error message
 				if( !file.exists() ) { 
-					String err = String.format("The file '%s' is not more available. Please upload it again or choose another file", file.getName());
+					String err = String.format("The file '%s' is no more available. Please upload it again or choose another file", file.getName());
 					Validation.addError("uploadedFiles", err, (String)null);
 					render(service);
 				} 
@@ -640,6 +652,20 @@ public class Application extends CommonController {
 		if( !repo.hasResult() ) {
 			notFound(String.format("The specified request ID does not exist (%s)", rid));
 		}
+		
+		/*
+		 * copy the input file to the user area 
+		 */
+		for( File it: repo.getResult().getInputFiles()) {
+			File target=null;
+			try {
+				target = Data.getUserFile(it.getName());
+				FileUtils.copyFile(it, target);
+			} catch (IOException e) {
+				Logger.warn("Cannot copy file: '%s' to '%s'", it, target);
+			}
+		}
+		
 		
 		/* 
 		 * create the service and bind the stored values 
