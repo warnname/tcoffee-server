@@ -248,9 +248,9 @@ public class FileChooser extends Controller {
 		
 		request.format = "json";
 		String fileName = FilenameUtils.getName(filePath);
+		File target = Data.newUserFile(fileName);
 		try {
 			DropboxInputStream in = Dropbox.get().getFileStream(filePath, null);
-			File target = Data.newUserFile(fileName);
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(target, false));
 			copy(in, out, MAX);
 			// ^ Stream closed by the method
@@ -264,8 +264,9 @@ public class FileChooser extends Controller {
 			renderJSON(result);
 		} 
 		catch( FileSizeLimitException e ) {
+			target.delete();
 			Logger.warn("The following dropbox download is too big to be downloaded: '%s'", filePath);
-			errorJson("The file '%s' cannot be downloaded because exceed the allowed size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
+			errorJson("The file '%s' cannot be downloaded because exceed the size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
 		}
 		catch( Exception e ) { 
 			Logger.error(e, "Cannot get the following file from dropbox: '%s'", filePath);
@@ -322,8 +323,9 @@ public class FileChooser extends Controller {
 			renderJSON(result);
 		} 
 		catch( FileSizeLimitException e ) {
+			target.delete();
 			Logger.warn("The following dropbox download is too big to be downloaded: '%s'", fileName);
-			errorJson("The file '%s' cannot be downloaded because exceed the allowed size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
+			errorJson("The file '%s' cannot be downloaded because exceed the size limit (%s)", fileName, JavaExtensions.formatSize(MAX));
 		}
 		catch( MalformedURLException e ) { 
 			Logger.warn(e, "Not a valid URL: '%s'", url);

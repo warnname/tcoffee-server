@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import play.db.jpa.JPA;
 import util.Utils;
+import bundle.BundleRegistry;
 
 public class History {
 	
@@ -65,8 +66,13 @@ public class History {
 		
 		long _exp = repo != null ? repo.getExpirationTime() : Long.MAX_VALUE;
 		this.expire = _exp != Long.MAX_VALUE ? new Date(_exp) : null;
-		this.label = out != null ? out.title : log.service;
+		this.label = out != null ? out.title : null;
 		this.fHasResult = out != null;
+		
+		// try to lookup the service label throught the service declaration
+		if( this.label == null ) {
+			this.label = BundleRegistry.instance().getServiceTitle(log.bundle, log.service);
+		}
 		
 	}
 
