@@ -1,0 +1,38 @@
+#{extends 'layout.html' /}
+
+<h1>Authentication required</h1>
+
+#{if flash.error}
+<div class="box-error">
+${flash.error?.raw()}
+</div>
+#{/if}
+ 
+<form id="form" action="@{Auth.validate()}" method="POST">
+    <input id="browserid" class="button" type="button" value="&nbsp;Sign-in using your BrowserID account&nbsp;" />
+</form>
+
+<div style="padding-top: 4em">
+<small>
+If you don't have a BrowserID account you can create one in few seconds. To learn more about BrowserID authentication click here <a href="https://browserid.org" target="_blank">browserid.org</a>
+</small>
+</div>
+
+
+<script type="text/javascript" src="https://browserid.org/include.js" ></script>
+<script type="text/javascript">
+/*
+ * browserid authentication
+ */
+
+$('#browserid').click(function(){ 
+
+	navigator.id.get(function(assertion) {
+	    if (assertion) {
+			$.post("@{Main.browseridSignin}", { assertion:assertion }, function() {  $('form').submit() })
+	    } 
+	});		
+
+})
+
+</script>

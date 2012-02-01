@@ -18,7 +18,7 @@ public class HistoryTest extends UnitTest {
 		assertNotNull(history);
 		assertEquals( "3e3eb15", history.getRid());
 		assertEquals( "tcoffee", history.getBundle() );
-		assertEquals( "regular", history.getLabel() );
+		assertEquals( "T-Coffee", history.getLabel() );
 		assertEquals( "Done", history.getStatus() );
 		assertEquals( "02/02/2011", history.getBegin() );
 		assertEquals( "10 sec", history.getDuration() );

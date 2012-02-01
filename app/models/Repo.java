@@ -216,7 +216,7 @@ public class Repo implements Serializable {
 	
 	File create( File folder ) {
 		if( folder.exists() ) {
-			Logger.warn("Well, cannot create an already existing folder: '%s'", folder.toString());
+			Logger.warn("Cannot create an already existing folder: '%s'", folder.toString());
 			return folder;
 		}
 		

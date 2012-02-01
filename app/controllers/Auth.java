@@ -1,10 +1,13 @@
 package controllers;
 
+import org.apache.commons.lang.StringUtils;
+
 import play.Logger;
 import play.Play;
 import play.libs.OpenID;
 import play.libs.OpenID.UserInfo;
 import play.mvc.Before;
+import play.mvc.Router;
 
 /**
  * Implements Google OpenID authentication. User will be redirctor  
@@ -16,6 +19,7 @@ public class Auth extends CommonController {
 
 
 	private static final boolean IS_AUTH_OPENID;
+	private static final boolean IS_AUTH_BROWSERID;
 	
 	private static class Account {
 		String id;
@@ -30,6 +34,7 @@ public class Auth extends CommonController {
 		 * - openid: uses Google OpenId service
 		 */
 		IS_AUTH_OPENID = "openid".equals( Play.configuration.getProperty("application.auth") ) ;
+		IS_AUTH_BROWSERID = "browserid".equals( Play.configuration.getProperty("application.auth") ) ;
 	}
 	
 	/**
@@ -54,7 +59,16 @@ public class Auth extends CommonController {
         flash.keep("url");
         
         /* render the login page */
-        String page = IS_AUTH_OPENID ? "Auth/login_openid.html" : "Auth/login_basic.html" ;
+        String page;
+        if( IS_AUTH_OPENID ) {
+        	page = "Auth/login_openid.html";
+        }
+        else if( IS_AUTH_BROWSERID ) {
+        	page = "Auth/login_browserid.html";          	
+        }
+        else {
+        	page = "Auth/login_basic.html";          	
+        }
 	    renderTemplate(page);
 	}
 
@@ -145,7 +159,10 @@ public class Auth extends CommonController {
          * apply validation 
          */
         Account account;
-        if( IS_AUTH_OPENID ) { 
+        if( IS_AUTH_BROWSERID ) {
+        	account = validateBrowserID();
+        }
+        else if( IS_AUTH_OPENID ) { 
         	account = validateOpenID(); 
         }
         else { 
@@ -172,13 +189,25 @@ public class Auth extends CommonController {
 
 	}	
 	
-	
-    static void redirectToOriginalURL()  {
+    private static Account validateBrowserID() {
+    	Account result = new Account();
+    	result.id = session.get("trusted_user");
+    	result.email = session.get("trusted_user");
+    	
+    	if( StringUtils.isBlank(result.id) ) {
+	        flash.error("Invalid password");
+			return null;
+    	}
+     	
+		return result;
+	}
+
+	static void redirectToOriginalURL()  {
         String url = flash.get("url");
-        if(url == null) {
-            url = "/";
+        if(StringUtils.isEmpty(url)) {
+            url = Router.reverse("Admin.index").toString();
         }
-        Logger.debug("Auth: redirecting to '%s'", url);
+
         redirect(url);
     }	
 }

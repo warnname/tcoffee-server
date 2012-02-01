@@ -16,7 +16,6 @@ import models.Service;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
-import play.exceptions.NoRouteFoundException;
 import play.mvc.Controller;
 import play.mvc.Http.StatusCode;
 import play.mvc.Router;
@@ -103,13 +102,8 @@ public class CommonController extends Controller {
 		}
 		else { 
 			_main_title = "T-Server";
-			/* try to detect the index page */
-			try { 
-				_main_index = Router.reverse(request.controller+".index").toString();
-			} catch( NoRouteFoundException e ) { 
-				Logger.warn(e.getMessage());
-				_main_index = request.getBase();
-			}
+			_main_index = Router.reverse("Admin.index").toString();
+
 		}
 		
 		/* add these variables on the template render arguments */
