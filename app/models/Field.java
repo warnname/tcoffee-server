@@ -2,7 +2,6 @@ package models;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -338,12 +337,12 @@ public class Field implements Serializable {
 			return;
 		}
 		
-		FileInputStream sIn = null;
 		FileOutputStream sOut = null;
 		try { 
-			sIn = new FileInputStream(fFile);
+			// save the field value (instead of copiying the source 'file') because 
+			// in this way we use the 'normalized' value, not the original version
 			sOut = new FileOutputStream(target);
-			IOUtils.copyLarge( sIn, sOut );
+			IOUtils.write(value, sOut);
 			
 			// update the file attribute to the new location 
 			fFile = target;
@@ -358,8 +357,7 @@ public class Field implements Serializable {
 			throw new QuickException(e, "Unable to copy file '%s' to '%s'", fFile, target);
 		}
 		finally { 
-			try { sIn.close(); } catch( IOException e ) {};
-			try { sOut.close(); } catch( IOException e ) {}
+			try { sOut.close(); } catch( IOException e ) { Logger.warn("Error closing field out stream for file: %s", target);  }
 		}
 		
 	} 

@@ -137,15 +137,20 @@ public class QueryHelper {
 	
 	static void addSearchCondition(QueryBuilder where, String qfield, String qvalue) {
 
-		if( "bundle".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		if( Utils.isEmpty(qvalue) ) {
+			// nothing to do 
+			return;
+		} 
+		
+		if( "bundle".equals(qfield) ) { 
 			where.and( "bundle", "like", qvalue );
 		}
 
-		else if( "service".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "service".equals(qfield) ) { 
 			where.and( "service", "like", qvalue );
 		}
 
-		else if( "creation".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "creation".equals(qfield) ) { 
 			Date date = Utils.parseDate(qvalue, null);
 			if( date != null ) { 
 				where.and( "creation", "=", date );
@@ -155,35 +160,35 @@ public class QueryHelper {
 			}
 		}
 
-		else if( "ip".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "ip".equals(qfield) ) { 
 			where.and( "ip", "like", qvalue );
 		}
 	
-		else if( "rid".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "rid".equals(qfield) ) { 
 			where.and( "requestId", "like", qvalue );
 		}
 
-		else if( "email".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "email".equals(qfield) ) { 
 			where.and( "email", "like", qvalue );
 		}
 
-		else if( "source".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "source".equals(qfield) ) { 
 			where.and( "source", "like", qvalue );
 		}
 
-		else if( "status".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "status".equals(qfield) ) { 
 			where.and( "status", "=", qvalue );
 		}	
 
-		else if( "country".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "country".equals(qfield) ) { 
 			where.and( "country", "like", qvalue );
 		}
 
-		else if( "city".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "city".equals(qfield) ) { 
 			where.and( "city", "like", qvalue );
 		}			
 
-		else if( "country_code".equals(qfield) && Utils.isNotEmpty(qvalue) ) { 
+		else if( "country_code".equals(qfield) ) { 
 			where.and( "country_code", "like", qvalue );
 		}			
 		else  {
