@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -373,8 +374,12 @@ public class Data extends CommonController {
 	@Util
 	public static File normalize(File file) {
 		String name = file.getName();
+		// replace 'hyphen' as first char 
 		name = name.replaceAll("^-", "_");
-		name = name.replaceAll("[ &?:/]", "_");
+		// remove all accented latin chars
+		name = Normalizer.normalize(name, Normalizer.Form.NFD) .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+		// we accept only alphatic chars, digits and few other characters (-=+ 
+		name = name.replaceAll("[^A-Za-z0-9\\.@\\-=+~]", "_");
 		
 		File parent = file.getParentFile();
 		return parent != null ? new File(parent,name) : new File(name);
