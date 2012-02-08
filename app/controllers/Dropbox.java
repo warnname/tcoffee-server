@@ -160,8 +160,9 @@ public class Dropbox extends Controller {
 	/**
 	 * Manage the Dropbox connection process
 	 */
-	public static void connect() 	
-	{ 
+	public static void connect() {
+		Logger.info("Dropbox#connect - session: %s", session.getId());
+		
 		String host = AppProps.instance().getHostName();
 		String path = Router.reverse("Dropbox.confirm").toString();
 		String abspath = "http://" + host + path;
@@ -176,6 +177,7 @@ public class Dropbox extends Controller {
 			redirect(auth.url); 
 		}
 		catch( Exception e ){ 
+			Logger.error(e, "Error on Dropbox connect - ip: %s; session: %s", request.remoteAddress, session.getId());
 			error(e);
 		}
 			
@@ -188,6 +190,7 @@ public class Dropbox extends Controller {
 	 * This page will be invoked by the Dropbox confirmation process, see the above connect action
 	 */
 	public static void confirm() { 
+		Logger.info("Dropbox#confirm - session: %s", session.getId());
 
 		boolean notYetConfirmed = session.get("dropboxConfirmed") == null;
 		
@@ -202,6 +205,7 @@ public class Dropbox extends Controller {
 				Logger.debug("Dropbox auth result: %s", result);
 			} 
 	    	catch (Exception e) {
+				Logger.error(e, "Error on Dropbox confirm - ip: %s; session: %s", request.remoteAddress, session.getId());
 	    		error(e);
 			}
 		}
@@ -214,8 +218,9 @@ public class Dropbox extends Controller {
 	 * 
 	 * @param rid the request identifier of the result data to copy
 	 */
+	@Deprecated
 	public static void copy( String rid ) { 
-		Logger.debug("Invoking #copyToDropbox(rid:%s) ", rid);
+		Logger.info("Dropbox#copy - rid: %s", rid);
 		
 		request.format = "json";
 		
@@ -249,7 +254,7 @@ public class Dropbox extends Controller {
 				tries++;
 			} 
 			catch( DropboxException e ) { 
-				Logger.error(e,"Error accessing Dropbx folder '%s'", path);
+				Logger.error(e,"Error accessing Dropbox folder '%s'", path);
 				unlink();
 				error("Error accessing your Dropbox account");
 			}
@@ -287,7 +292,8 @@ public class Dropbox extends Controller {
 	
 	@Util
 	static boolean checkPathExist(final String path) throws DropboxException { 
-
+		Logger.debug("Dropbox#checkPathExist - '%s'", path);
+		
 		try { 
 			DropboxAPI.Entry entry = get().metadata(path, 1, null, false, null);
 			// if the file has been deleted --> does NOT exists 

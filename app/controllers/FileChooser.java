@@ -106,7 +106,7 @@ public class FileChooser extends Controller {
 	 * @param query the to filter query to search into the repo
 	 */
 	public static void listPublicData(String dir, String query) { 
-		Logger.debug("listPublicRepo method. Dir: '%s' - Query: '%s'", dir, query);
+		Logger.info("FileChooser#listPublicRepo - dir: '%s'; query: '%s'", dir, query);
 		final int MAX_FOLDER_ITEMS = AppProps.instance().getInteger("settings.filechooser.max_folder_items", 500);
 		
 	    /* 
@@ -166,7 +166,7 @@ public class FileChooser extends Controller {
 	 * @param query the to filter query to search into the repo
 	 */
 	public static void listDropboxData( String dir, String query ) { 
-		Logger.debug("listDropboxData method.  Dir: '%s' - Query: '%s'", dir, query);
+		Logger.info("FileChooser#listDropboxData - dir: '%s'; query: '%s'", dir, query);
 		final int MAX_FOLDER_ITEMS = AppProps.instance().getInteger("settings.filechooser.max_folder_items", 500);
 
 		/*
@@ -239,7 +239,7 @@ public class FileChooser extends Controller {
 	 * @param filePath the file in the 'Dropbox' storage to be copied locally 
 	 */
 	public static void copyDropboxFile( String filePath ) { 
-		Logger.debug("copyDropboxFile method.  FilePath: '%s'", filePath);
+		Logger.info("FileChooser#copyDropboxFile - '%s'", filePath);
 		long MAX = getFileSizeLimit();
 		
 		if( !Dropbox.isLinked() ) { 
@@ -299,7 +299,7 @@ public class FileChooser extends Controller {
 	 * @throws InterruptedException 
 	 */
 	public static void copyUrlFile( String url ) throws InterruptedException { 
-		Logger.debug("copyUrlFile method.  Url: '%s'", url);
+		Logger.info("FileChooser#copyUrlFile - '%s'", url);
 		final long MAX = getFileSizeLimit();		
 		
 		request.format = "json";
@@ -345,7 +345,7 @@ public class FileChooser extends Controller {
 	 * @param query string to filter the result list 
 	 */
 	public static void listRecentData(String dir, String query) { 
-		Logger.debug("listRecentData method.  Query: '%s'", dir, query);
+		Logger.info("FileChooser#listRecentData - dir: '%s'; query: '%s'", dir, query);
 		
 		final File path = Data.getUserTempPath();
 		final List<FileEntry> result = new ArrayList<FileEntry>();
@@ -392,8 +392,11 @@ public class FileChooser extends Controller {
 	 * @param filePath the path on the local file system to copy 
 	 */
 	public static void copyPublicDataFile( String filePath ) { 
-		Logger.debug("Method #copyPublicDataFile(filePath: '%s')", filePath);
-		
+		Logger.info("FileChooser#copyPublicDataFile - '%s'", filePath);
+		/*
+		 * filename is not normalized because we assume that 'public' data filenames are well formated 
+		 * (does not contains blanks and special caracters
+		 */
 		File targetPath = Data.getUserTempPath();
 		File item = new File(publicRepo, filePath);
 		String cmd = String.format("ln -s %s %s", item.getAbsolutePath(), item.getName());

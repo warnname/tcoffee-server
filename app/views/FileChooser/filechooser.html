@@ -369,7 +369,7 @@ $(document).ready(function() {
 	})
 	
 	$('#btnpreview').click(function() {
-		var url = #{jsAction @Data.preview(':name') /}({name: currentFile})
+		var url = #{jsAction @Data.preview(':name') /}({name: encodeURIComponent(currentFile)})
 			
 		$.get(url) .success(function(data) { 
 
@@ -730,7 +730,7 @@ $(document).ready(function() {
 		
 		var choose = function(file,item) {
 			// 
-			var url = #{jsAction @FileChooser.copyPublicDataFile(':filePath') /}({filePath: file})
+			var url = #{jsAction @FileChooser.copyPublicDataFile(':filePath') /}({filePath: encodeURIComponent(file)})
 			$.ajax(url)
 
 			// highlight the selected item
