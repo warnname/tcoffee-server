@@ -426,6 +426,7 @@ public class Application extends CommonController {
 		}
 		
 		response.contentType = "text/css";
+		renderStaticResponse();
 		renderText( IO.readContentAsString(file) );
 	}
 	

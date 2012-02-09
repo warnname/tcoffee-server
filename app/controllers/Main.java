@@ -158,6 +158,7 @@ public class Main extends CommonController {
 		}
 		
 		response.contentType = "image/x-icon";
+		renderStaticResponse();
 		renderBinary(icon);
 	}
 
