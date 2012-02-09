@@ -54,7 +54,7 @@ GET		/apps/{bundle}						Application.index
 GET		/apps/{bundle}/						Application.index
 *		/apps/{bundle}/do:advanced			Application.advanced
 *		/apps/{bundle}/do:{name}			Application.main
-GET		/apps/{bundle}/play					Application.main
+GET		/apps/{bundle}/play					Application.legacyFwd
 GET		/apps/{bundle}/cgi					Application.gateway
 POST 	/apps/{bundle}/cgi					Application.gateway
 GET		/apps/{bundle}/result				Application.result

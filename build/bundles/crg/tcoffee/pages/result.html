@@ -47,16 +47,32 @@
 
 </p>
 #{/else}
-
+</div>
 <style type='text/css'> 
 #result { line-height: 1.0  }
 #result SPAN { font-family: "Vera Mono", courier new, courier-new, courier, monospace; font-weight: 100; font-size: 11pt; color: black; }
 </style>
-
-
-</div>
 #{/if}
 
+*{ 
+ * If HTML result is missing try to display the txt based result 
+}*
+#{elseif result?.getAlignmentFasta()?.file }
+<div class="box">
+<h2><span>MSA</span> 
+<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
+</h2>
+
+<pre id="result">
+${result?.getAlignmentFasta()?.content()}
+</pre>
+</div>
+
+<style type='text/css'>
+#result { line-height: 1.0  }
+#result { font-family: "Vera Mono", courier new, courier-new, courier, monospace; font-weight: 100; font-size: 11pt; color: black; }
+</style>
+#{/elseif}
 
 *{ Cite box }*
 

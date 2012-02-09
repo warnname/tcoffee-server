@@ -24,8 +24,9 @@
 </style>
 
 <div id="dropbox_button">
-<button id="btnCopyToDropbox" href="javascript:void(0)" class="button " > <span > Copy to your Dropbox </span></button>
+<button id="btnCopyToDropbox" href="javascript:void(0)" class="button " > <span > Copy to your Dropbox </span></button> 
 <img id="btnCopyToDropboxSpinner" src="@{'/public/filetree/images/spinner.gif'}" >
+<div id="dropbox_folder" style="position: relative; left: 10px; top: 4px">  </div>
 </div>
 
 <script type="text/javascript">
@@ -34,6 +35,7 @@ $('#btnCopyToDropbox').click(function() {
 	var label = thisButton.text();
 	var done=false;
 	var message = null;
+	var targetPath = null;
 	
 	thisButton.empty().append("<span>Copying, wait please .. </span>");
 	thisButton.addClass('disabled');
@@ -46,6 +48,7 @@ $('#btnCopyToDropbox').click(function() {
 			if( response.success ) { 
 				// !! OK
 				done=true;
+				targetPath=response.path;
 			}
 			else if( response.reason == "unlinked" ) { 
 				// see http://www.davidtong.me/detecting-popup-blocker-pattern/
@@ -74,7 +77,10 @@ $('#btnCopyToDropbox').click(function() {
 			if( done ) {
 				// when complete successfully, change the label 
 				// but keep the control disabled 
-				label = "Files copied to Dropbox successfully"
+				label = "Files copied to Dropbox"
+				if( targetPath ) {
+					$('#dropbox_folder').append("<small>Files have been copied in your Dropbox into the folder: <code>\""+targetPath+"\"</code></small>")
+				}
 			} 
 			else  {
 				// enable to button 

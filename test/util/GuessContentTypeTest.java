@@ -32,6 +32,16 @@ public class GuessContentTypeTest extends UnitTest {
 	}
 	
 	@Test 
+	public void testKnown() {
+
+		assertEquals( "text/plain", new GuessContentType("file.fasta").getMimeType() );
+		assertEquals( "text/plain", new GuessContentType("file.tfa").getMimeType() );
+		assertEquals( "text/plain", new GuessContentType("file.fa").getMimeType() );
+		assertEquals( "text/plain", new GuessContentType("file.pdb").getMimeType() );
+
+	} 
+	
+	@Test 
 	public void testGuess() { 
 
 		guess = new GuessContentType( TestHelper.file("/util/GuessContentTypeTest.java") );

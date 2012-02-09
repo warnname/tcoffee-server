@@ -17,6 +17,7 @@ import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.Util;
+import play.templates.JavaExtensions;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
@@ -217,8 +218,9 @@ public class Dropbox extends Controller {
 	 * Copy the specified result dataset to the user Dropbox account
 	 * 
 	 * @param rid the request identifier of the result data to copy
+	 * 
+	 * See 'copy-to-dropbox.html'
 	 */
-	@Deprecated
 	public static void copy( String rid ) { 
 		Logger.info("Dropbox#copy - rid: %s", rid);
 		
@@ -272,8 +274,6 @@ public class Dropbox extends Controller {
 				handler.instance.putFileOverwrite(sFilePath, buffer, item.file.length(), null);
 			}
 			catch( Exception e ) { 
-				unlink();
-				
 				Logger.error(e, "Error copying the following file to Dropbox: '%s'", item.file);
 				String json = "{ \"success\":false, " +
 								"\"reason\": \"error\"," +
@@ -286,7 +286,9 @@ public class Dropbox extends Controller {
 
 		}
 	
-		renderJSON("{\"success\":true }");
+		// return the json result
+		String json = String.format("{\"success\":true, \"path\": \"%s\" }", JavaExtensions.escapeJavaScript(path));
+		renderJSON(json);
 	}
 	
 	

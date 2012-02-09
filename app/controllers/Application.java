@@ -635,12 +635,18 @@ public class Application extends CommonController {
 
 	@Util
 	static String normalizeCmdLine(String cmdLine) {
+		
+		cmdLine = cmdLine.trim();
 
 		/* remove any 't_coffee' at the beginning og the string */ 
 		while( cmdLine.startsWith("t_coffee ") ) { 
 			cmdLine = cmdLine.substring("t_coffee ".length());
 		}
 
+		while( cmdLine.endsWith(" -quiet=stdout") || cmdLine.endsWith(" -quiet stdout")) {
+			cmdLine = cmdLine.substring(0, cmdLine.length()-" -quiet stdout".length());
+		}
+		
 		cmdLine = CmdLineUtils.normalize(cmdLine);
 		
 		return cmdLine;
@@ -678,4 +684,12 @@ public class Application extends CommonController {
 
 		return service;
 	}
+	
+	
+	/**
+	 * Redirect the legacy 'play' action
+	 */
+	public static void legacyFwd() {
+		main( params.get("name") );
+	} 
 }

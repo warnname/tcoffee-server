@@ -1,7 +1,10 @@
 package util;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import play.libs.IO;
@@ -16,6 +19,17 @@ import exception.QuickException;
  */
 public class GuessContentType {
 
+	static final List<String> KNOWN_EXTENSIONS = Arrays.asList(
+			"fa",
+			"aln", 
+			"tfa",
+			"struc",
+			"fasta",
+			"template_file",
+			"pdb",
+			"txt"
+			);
+	
 	File fFile;
 	int fResult;
 	String fStdOut;
@@ -27,10 +41,34 @@ public class GuessContentType {
 	
 	GuessContentType() { } // only for test 
 	
+	public GuessContentType(String path) {
+		this(new File(path));
+	}
+	
 	public GuessContentType( File file ) { 
 		this.fFile = file;
 		
-		
+		// try first the known extensions
+		String ext = FilenameUtils.getExtension(file.getName());
+		if( ext != null && KNOWN_EXTENSIONS.contains(ext.toLowerCase()) ) {
+			fStdOut = "text/plain; charset=us-ascii";
+		}
+		else { 
+			invokecmd(file);
+		}
+
+
+		/*
+		 * parse result
+		 */
+		parse(fStdOut);
+	
+	}
+	
+	
+
+	private void invokecmd(File file) {
+
 		String[] cmd = {};
 		try {
 			cmd = new String[] { "file", "--brief", "--mime", file.getAbsolutePath() }; 
@@ -49,15 +87,8 @@ public class GuessContentType {
 			String err = StringUtils.isNotEmpty(fStdErr) ? fStdErr : fStdOut;
  			throw new QuickException("'file' command terminated with non-zero exit code: %d - %s", fResult, err); 
 		}
-
-		/*
-		 * parse result
-		 */
-		parse(fStdOut);
-	
+		
 	}
-	
-	
 
 	void parse(String value) {
 		if( value == null ) return;
