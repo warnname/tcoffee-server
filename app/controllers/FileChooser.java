@@ -399,7 +399,7 @@ public class FileChooser extends Controller {
 		 */
 		File targetPath = Data.getUserTempPath();
 		File item = new File(publicRepo, filePath);
-		String cmd = String.format("ln -s %s %s", item.getAbsolutePath(), item.getName());
+		String cmd = String.format("ln -f -s %s %s", item.getAbsolutePath(), item.getName());
 		try {
 			Runtime.getRuntime().exec(cmd, null, targetPath).waitFor();
 			renderJSON("{\"success\":true }");
