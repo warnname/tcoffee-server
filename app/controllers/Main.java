@@ -14,7 +14,6 @@ import models.Repo;
 import play.Logger;
 import play.Play;
 import play.cache.Cache;
-import play.cache.CacheFor;
 import play.libs.IO;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
@@ -148,7 +147,6 @@ public class Main extends CommonController {
 	/**
 	 * Returns the bundle favicon 
 	 */
-    @CacheFor("10d")
 	public static void favicon () { 
 		File icon = new File(Play.applicationPath,"conf/favicon.ico");
 		
@@ -162,7 +160,6 @@ public class Main extends CommonController {
 		renderBinary(icon);
 	}
 
-    @CacheFor("10d")
 	public static void googleSiteVerification(String siteId) { 
 		String name = "google" + siteId + ".html";
 		File file = new File(Play.applicationPath,"conf/" + name);
@@ -173,6 +170,7 @@ public class Main extends CommonController {
 		}
 		
 		response.contentType = "text/html";
+		renderStaticResponse();
 		renderText(IO.readContentAsString(file));
 	}
     
