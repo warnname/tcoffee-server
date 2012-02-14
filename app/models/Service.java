@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -512,21 +513,7 @@ public class Service implements Serializable {
 			usage.source = this.source;
 			usage.email = this.userEmail;
 			// add location data
-			if( StringUtils.isNotEmpty(this.fLocation) ) {
-				JSONObject loc = (JSONObject) JSONValue.parse(fLocation);
-				if( loc != null ) {
-					usage.locationProvider = Utils.asString(loc.get("source"));
-					usage.lng = Utils.asString(loc.get("longitude"));
-					usage.lat = Utils.asString(loc.get("latitude"));
-					
-					loc = (JSONObject) loc.get("address");
-					if( loc != null ) {
-						usage.country = (String) loc.get("country");
-						usage.countryCode = (String) loc.get("country_code");
-						usage.city = (String) loc.get("city");
-					}
-				}
-			}  
+			fetchLocationData(usage, fLocation);
 			
 			Logger.debug("Creating usage log for request # %s; sessionid: %s; email: %s", this.fRid, this.sessionId, this.userEmail );
 		}
@@ -545,6 +532,44 @@ public class Service implements Serializable {
 		return usage.save();
 	}
 	
+	private void fetchLocationData(UsageLog usage, String location) {
+
+		if( StringUtils.isBlank(location) ) {  
+			return; 
+		}
+		
+		JSONObject loc = (JSONObject) JSONValue.parse(location);
+		if( loc == null ) {
+			return;
+		}
+		
+		// the source of this info
+		usage.locationProvider = Utils.asString(loc.get("source"));
+
+		// coordinates 
+		usage.lng = Utils.asString(loc.get("longitude"));
+		usage.lat = Utils.asString(loc.get("latitude"));
+		
+		// location specific data
+		if( "ipinfodb".equalsIgnoreCase(usage.locationProvider)) {
+			usage.country = WordUtils.capitalizeFully((String) loc.get("countryName"));
+			usage.countryCode = WordUtils.capitalizeFully((String) loc.get("countryCode"));
+			usage.city = WordUtils.capitalizeFully((String) loc.get("cityName"));
+			usage.ip = (String) loc.get("ipAddress");
+		}
+		
+		// fallback on default (google)
+		else  {
+			loc = (JSONObject) loc.get("address");
+			if( loc != null ) {
+				usage.country = (String) loc.get("country");
+				usage.countryCode = (String) loc.get("country_code");
+				usage.city = (String) loc.get("city");
+			}
+		}
+		
+	}
+
 	UsageLog safeTrace( Long id ) { 
 		UsageLog result=null;
 		JPAPlugin.startTx(false);
@@ -761,4 +786,6 @@ public class Service implements Serializable {
         return result;
 	}		
 
+	
+	
 }
