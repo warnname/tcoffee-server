@@ -3,6 +3,8 @@ package controllers;
 import static util.Dsl.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,18 +148,24 @@ public class Main extends CommonController {
     
 	/**
 	 * Returns the bundle favicon 
+	 * @throws FileNotFoundException 
 	 */
-	public static void favicon () { 
+	public static void favicon () throws FileNotFoundException { 
 		File icon = new File(Play.applicationPath,"conf/favicon.ico");
 		
 		if( !icon.exists() ) { 
 			Logger.warn("Missing favicon.ico file. It should be placed in conf path: '%s'", icon.getParent());
-			notFound("Favicon.ico not available");
+			notFound("Favicon.ico not found");
 		}
 		
+		/*
+		 * Note: there is a bug that make the cache control to be disabled using 
+		 * the method renderBinary(File), so here it is used renderBinary(InputStream) instead 
+		 * See https://play.lighthouseapp.com/projects/57987-play-framework/tickets/772-overwritten-of-cache-control-header-when-apply-renderbinary-to-a-file
+		 */
 		response.contentType = "image/x-icon";
-		renderStaticResponse();
-		renderBinary(icon);
+		response.cacheFor("30d");
+        renderBinary( new FileInputStream(icon) );
 	}
 
 	public static void googleSiteVerification(String siteId) { 

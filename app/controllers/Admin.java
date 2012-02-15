@@ -38,6 +38,7 @@ import models.TCoffeeCommand;
 import models.UsageLog;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.blackcoffee.commons.utils.FileIterator;
 import org.dom4j.Attribute;
@@ -1408,6 +1409,13 @@ public class Admin extends CommonController {
 	 */
 	public static void statsGridData( UsageFilter filter, Integer page, Integer rp, String sortname, String sortorder, String query, String qtype ) throws IOException { 
 
+		// default sorting when nothing is specified 
+		if( StringUtils.isBlank(sortname) || "undefined".equals(sortname) || "null".equals(sortname) ) {
+			sortname = "creation";
+			sortorder = "desc";
+		}
+		
+		// fetch the grid data
 		GridResult data = QueryHelper.findUsageGridData(filter, page, rp, sortname, sortorder, query, qtype);
 
 		/* 
