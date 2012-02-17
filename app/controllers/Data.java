@@ -158,7 +158,7 @@ public class Data extends CommonController {
 		}
 		
 		OutResult result = repo.getResult();
-		File zip = File.createTempFile("download", ".zip", repo.getFile());
+		File zip = File.createTempFile("all-files-", ".zip", getTempZipFolder());
 		// get the list of files to download 
 		List<File> files = new ArrayList<File>( result.getItems().size() );
 		for( OutItem item : result.getItems() ) { 
@@ -172,22 +172,39 @@ public class Data extends CommonController {
 		renderStaticResponse();
 		renderBinary(zip);
 	}
+
+
+	/**
+	 * The folder where store the temporary zip files 
+	 */
+	static File ZIP_FOLDER = new File( AppProps.TEMP_PATH, "zip-results" ); 
+
+	@Util
+	static File getTempZipFolder() {
+		// check if the folder exists 
+		if( !ZIP_FOLDER.exists() && !ZIP_FOLDER.mkdirs() ) {
+			throw new QuickException("Cannot create temporary ZIP foler: '%s'", ZIP_FOLDER);
+		}
+
+		return ZIP_FOLDER;
+	} 
 	
 	/**
 	 * Handy method to zip all datafolder content and download it
 	 * 
 	 * @param rid request identifier
 	 */
+	
 	public static void zipDataFolder( String rid ) throws IOException { 
 		assertNotEmpty(rid, "Missing 'rid' argument on #zipDataFolder action");
-
+		
 		File folder = new File(AppProps.instance().getDataPath(), rid);
 		if( !folder.exists() ) { 
 			notFound("Data path '%s' does not exist on the server", folder);
 		}
 		
 		Collection allFiles = FileUtils.listFiles(folder, null, true);
-		File zip = File.createTempFile("folder", ".zip");
+		File zip = File.createTempFile("result-", ".zip", getTempZipFolder() );
 		
 		String parent = folder.getAbsolutePath();
 		if( !parent.endsWith("/")) { 
