@@ -3,3 +3,4 @@ Allow: /
 Disallow: /apps/*/history.html
 Disallow: /apps/*/result
 Disallow: /data/
+Disallow: /?iframe

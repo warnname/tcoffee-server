@@ -67,16 +67,16 @@
 		#{/else}
 			    
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} > - OR -
-	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox">Click here to upload a file</a>
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox" rel="nofollow">Click here to upload a file</a>
 	    </div>
 		
 	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
 	    	<span class="upload_name"> 
-	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank" rel="nofollow">${_arg.getFileName()}</a> #{/if} 
 	    	</span> 
-	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
+	    	[ <a href="javascript:void(0)" class="upload_cancel" rel="nofollow">x</a> ]
 	    	</span>  
 	    	<div style="clear: both"></div>
 	    </div>
@@ -89,16 +89,16 @@
 		<input id="${_arg.name}" name='${_arg.name}' type='hidden' class="field" value='${_arg.fileName}' />
 
 	    <div class="link" #{if _arg.hasFile() } style="display:none" #{/if} >
-	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox">Click here to upload a file</a>
+	    <a id="${_arg.name}_uploader" href="@{FileChooser.index}?fieldId=${_arg.name}&TB_iframe=true&height=500&width=700&modal=true" class="thickbox" rel="nofollow">Click here to upload a file</a>
 	    </div>
 		
 	    <div class="upload_div" #{if !_arg.hasFile() } style="display:none" #{/if} >
 	    	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"/> 
 	    	<span style="position:relative; left:1em; top:26px;">
 	    	<span class="upload_name"> 
-	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank">${_arg.getFileName()}</a> #{/if} 
+	    	#{if _arg.hasFile()} <a href="@{Data.view(_arg.getFileName())}" target="_blank" rel="nofollow">${_arg.getFileName()}</a> #{/if} 
 	    	</span> 
-	    	[ <a href="javascript:void(0)" class="upload_cancel">x</a> ]
+	    	[ <a href="javascript:void(0)" class="upload_cancel" rel="nofollow">x</a> ]
 	    	</span>  
 	    	<div style="clear: both"></div>
 	    </div>
