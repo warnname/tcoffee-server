@@ -143,7 +143,7 @@
      
      <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -251,7 +251,7 @@
     
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -359,7 +359,7 @@
       
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -511,7 +511,7 @@
  
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -631,7 +631,7 @@
      
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -729,7 +729,7 @@
      
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -845,7 +845,7 @@
      
      <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -956,7 +956,7 @@
      
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -1109,7 +1109,7 @@
       
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -1213,7 +1213,7 @@
       
       <field type="text" name="msa_max_len" label="Alignment length" >
      	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>50</value>
+     	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
      		<min-error>The length value cannot be less than 20</min-error>
@@ -1334,6 +1334,7 @@
           -maximum_distance ${srad} 
           -md_threshold ${t1}
           -similarity_threshold ${t2}  
+          -template_file EXPRESSO
           -run_name result 
           -quiet stdout
         </args> 
