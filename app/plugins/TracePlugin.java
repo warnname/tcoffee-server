@@ -87,8 +87,6 @@ public class TracePlugin extends PlayPlugin {
         			.append("\n\turl: ") .append(req.url)
         			.append("\n\tmethod: ") .append(req.method)
         			.append("\n\taction: ") .append(req.action)
-        			.append("\n\tisNew: ") .append(req.isNew)
-        			.append("\n\tisAjax: ") .append(req.isAjax())
         			.append("\n\tsession: ") .append( Session.current() != null ? Session.current().getId() : '-' );        		
         	}
         	else {
