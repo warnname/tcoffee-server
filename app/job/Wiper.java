@@ -67,7 +67,7 @@ public class Wiper extends Job {
 					Logger.warn("Wiper cannot delete temp file: '%s'", it);
 				}
 				else { 
-					Logger.info("Evicted temporary path: '%s'", it);
+					Logger.debug("Evicted temporary path: '%s'", it);
 				}
 			}
 
