@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import models.AppProps;
+import models.Bundle;
 import models.OutItem;
 import models.OutResult;
 import models.Repo;
@@ -18,6 +19,8 @@ import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.Util;
 import play.templates.JavaExtensions;
+
+import bundle.BundleRegistry;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
@@ -240,9 +243,14 @@ public class Dropbox extends Controller {
 			return;
 		}
 
+		// define the target path 
+		String sBundle = repo.hasResult() ? repo.getResult().bundle : null;
+		Bundle bundle = sBundle != null ? BundleRegistry.instance().get(sBundle) : null;
+		String sTitle = bundle != null ? bundle.getTitle() : "T-Coffee";
+		if( "T-Coffee Server".equals(sTitle) ) sTitle = "T-Coffee";
 		
 		String path;
-		String base = handler.resultFolder;
+		String base = "Apps/" + sTitle + "/results";
 		if( !base.startsWith("/")) base = "/" + base;
 		if( !base.endsWith("/")) base = base + "/";
 		

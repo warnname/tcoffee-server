@@ -2,13 +2,18 @@ package controllers;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigInteger;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -16,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -23,8 +29,12 @@ import models.AppProps;
 import models.OutItem;
 import models.OutResult;
 import models.Repo;
+import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import play.Logger;
 import play.data.Upload;
@@ -445,5 +455,122 @@ public class Data extends CommonController {
 
 		renderJSON( result.toString() );
 	} 	
+	
+	
+	
+	
+	/**
+	 * Transform a tree in Newick format to the equivalent json representation 
+	 * <p>
+	 * See http://en.wikipedia.org/wiki/Newick_format
+	 * <p>
+	 * https://github.com/cjb/libnewicktree
+	 * 
+	 * @param rid The processed request ID 
+	 * @param treeFileName The name of the file produced in the specified request containing the tree to translate
+	 * @throws FileNotFoundException 
+	 */
+	public static void newick2json( String rid, String treeFileName )  {
+		
+		StringBuilder result = new StringBuilder();
+		Repo repo = new Repo(rid,false); 
+		if( !repo.exists() ) {
+			Logger.warn("Cannot get json tree for request: %s; newick file: %s ", rid, treeFileName);
+			notFound();
+		}
+		
+		File file = repo.getFile(treeFileName);
+		if( !file.exists() ) {
+			Logger.warn("Cannot get json tree for request: %s; newick file: %s ", rid, treeFileName);
+			notFound();
+		}
 
+		
+		/*
+		 * transform to json
+		 */
+		try {
+			/* 
+			 * Normalize the tree
+			 */
+			String newick = normalizeNewick(file);
+
+			treeToJson( new StringReader(newick), result );
+			renderJSON( result.toString() );
+		}
+		catch ( Exception e ) {
+
+			Logger.error(e, "Error parsing tree file: '%s'", file);
+			error();
+			
+		}
+	}
+
+	
+	static String normalizeNewick( File file ) throws FileNotFoundException 
+	{
+		StringBuilder result = new StringBuilder();
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line;
+		try {
+			while( (line=reader.readLine())!= null ) {
+				line = line.replaceAll("(\\:([^\\[]*))?\\[([^\\]]*)\\]$?","");
+				result.append(line);
+			}
+		} 
+		catch (IOException e) {
+			throw new RuntimeException(String.format("Cannot normalize newick file: '%s'", file), e);
+		}
+	
+		return result.toString();
+	} 
+	
+	static String treeToJson( String input ) {
+		
+		StringBuilder result = new StringBuilder();
+		treeToJson( new StringReader(input), result );
+		
+		return result.toString();
+	}
+	
+	static void treeToJson( Reader input, StringBuilder json ) {
+		
+		TreeParser parser = new TreeParser( new BufferedReader(input) );
+		Tree tree = parser.tokenize( 1, "tree_of_life", null);
+	
+		treeToJson( tree.getRoot(), json );
+		
+	}
+	
+	/**
+	 * Transform a {@link TreeNode} to the equivalent json representation
+	 * 
+	 * @param node
+	 * @param json
+	 */
+	static  void treeToJson( TreeNode node, StringBuilder json ) {
+	    	
+	    	json.append( "{" ); 
+	    	json.append( "\"name\":\"") .append( node.getName() ) .append("\""); 
+
+	    	// node weiht
+	    	if( node.getWeight() != 0 ) {
+	        	json.append( ", \"size\":") .append( node.getWeight() ) ; 
+	    	}
+	    	
+	    	if( !node.isLeaf() ) {
+	    		json.append(", \"children\":[");
+	    		
+	        	for( int i=0, c=node.numberChildren(); i<c; i++ ) {
+	        		if( i>0 ) json.append(", ");
+	        		treeToJson( node.getChild(i), json );
+	        	}
+	    		
+	    		json.append("]");
+	    	}
+	    	
+	    	json.append( "}" );
+	    }
+
+	
 }

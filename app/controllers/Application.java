@@ -90,7 +90,7 @@ public class Application extends CommonController {
     }
     
     @Util
-    static void showResultFor(String rid, String template, Boolean ... cached ) {
+    static void showResultFor(String rid, String page, Boolean ... cached ) {
 		assertNotEmpty(rid, "Missing 'rid' argument on #result action");
     	
     	final Repo ctx = new Repo(rid,false);
@@ -106,8 +106,16 @@ public class Application extends CommonController {
 			renderArgs.put("ctx", ctx);
 			renderArgs.put("result", result);
 			renderArgs.put("cached", cached);
+			
+			// try to load a result page specific for this service 
+			String altPage = null;
+			if( "result.html".equals(page) && hasBundlePage(altPage = String.format("result_%s.html", result.service)) ) {
+	    		renderBundlePage(altPage);
+			}
+			else { 
+	    		renderBundlePage(page);
+			}
 	
-    		renderBundlePage(template);
 		}
 		else if( status.isFailed() ) {
 			OutResult result = ctx.getResult();
@@ -133,6 +141,18 @@ public class Application extends CommonController {
     	renderArgs.put("_nowrap", true);
     	showResultFor(rid, "jalview.html", false);
     } 
+    
+    /**
+     * Show the Phylowidget applet load the tree specified 
+     * 
+     * @param rid The request identifier that produced the tree to show
+     * @param tfn The file name in the specified request which content represent a tree in Newick format
+     */
+    public static void phylowidget(String rid,String tfn) {
+    	renderArgs.put("_nowrap", true);
+    	renderArgs.put("treeFileName", tfn);
+    	showResultFor(rid, "phylowidget.html", false);
+    }
 	
     /**
      * Renders the user requests 'history' page 
@@ -380,7 +400,7 @@ public class Application extends CommonController {
 
 	public static void servePublic( String path ) { 
 		assertNotEmpty(path, "Missing 'path' argument on #servePublic action");
-		response.contentType = MimeTypes.getMimeType(path);
+		response.contentType = MimeTypes.getMimeType(path, "text/plain");
 		renderStaticResponse();
 		renderFile(bundle.get().publicPath, path);
 	}
@@ -412,7 +432,19 @@ public class Application extends CommonController {
 		else { 
 			render("Application/" + page, args);
 		}
-
+	}
+	
+	/**
+	 * Check a 'page' file is defined at the bundle context level
+	 * 
+	 * @param page The page file name e.g. <code>result_file.html</code>
+	 * @return <code>true</code> if the file exist or <code>false</code> otherwise
+	 */
+	static boolean hasBundlePage( String page ) {
+		
+		Bundle bundle = Application.bundle.get();
+		return ( bundle != null && bundle.pagesPath != null && bundle.pagesPath.child(page) .exists());
+		
 	}
 
 

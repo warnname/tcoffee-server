@@ -174,7 +174,7 @@ public class AppProps implements Serializable  {
 		
 		
 		/*
-		 * 5. create the AppProps singleton
+		 * 6. create the AppProps singleton
 		 */
 		INSTANCE = new ReloadableSingletonFile<AppProps>(SERVER_PROPS_FILE) {
 			

@@ -1,0 +1,2 @@
+#!/bin/bash
+python bigbigtree.py --tree example/speciesTree.ph --pro example/Or_aa.fasta --nn example/Or_nn.fasta -c CRG.config -r res_dic

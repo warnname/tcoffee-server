@@ -259,7 +259,7 @@ public class Service implements Serializable {
 		if( "memo".equals(field.type) ) {
 			value = field.hasFile() 
 				  ? field.getFile()
-				  : repo().store( field.value ); // <-- create a temorary file 
+				  : repo().store( field.value ); // <-- create a temporary file 
 
 		}
 

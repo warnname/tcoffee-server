@@ -1,10 +1,13 @@
 package controllers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 import org.junit.Test;
 
 import play.test.UnitTest;
+import util.TestHelper;
 
 public class DataTest extends UnitTest {
 
@@ -27,5 +30,32 @@ public class DataTest extends UnitTest {
 		
 		assertEquals( new File("/any/path"), Data.normalize(new File("/any/path/")) ); 
 	}  
+	
+	@Test
+	public void testNewick() {
+		
+		String NEWICK = "((TNFSF2:107.00000,TNFSF4:107.00000) 100:107.00000,TNFSF1:107.00000);";
+		String EXPECTED = "{\"name\":\"\", \"children\":[{\"name\":\"\", \"size\":107.0, \"children\":[{\"name\":\"TNFSF2\", \"size\":107.0}, {\"name\":\"TNFSF4\", \"size\":107.0}]}, {\"name\":\"TNFSF1\", \"size\":107.0}]}";
+		String result = Data.treeToJson(NEWICK);
+
+		assertEquals(EXPECTED, result);
+		
+	} 
+	
+	@Test()
+	public void testNewickFile() throws FileNotFoundException {
+		
+		StringBuilder json = new StringBuilder();
+		Data.treeToJson( new FileReader(TestHelper.file("/newick_big_norm.txt")) , json);
+	} 
+
+	@Test
+	public void testNewickNormalization() throws FileNotFoundException {
+		
+		String norm = Data.normalizeNewick(TestHelper.file("/newick_big.txt"));
+		String json = Data.treeToJson( norm );
+		System.out.println(json.toString());
+	} 
+	
 	
 }

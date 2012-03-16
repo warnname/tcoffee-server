@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Phylowidget</title>
+<link rel="shortcut icon" type="image/x-icon" href="@{Main.favicon()}"> 
+<link rel="stylesheet" type="text/css" href="@{'/public/normalize.css'}" >
+
+<style type="text/css">
+html, body { overflow: hidden; }
+body{ padding: 10px }
+</style>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" ></script>
+<script src="http://www.phylowidget.org/scripts/phylowidget.js"></script>
+</head>
+<body>
+
+<div id="tree">
+</div>
+
+
+<script type="text/javascript">
+
+var handler=null;
+
+function rz() {
+	handler=null;
+	
+	$('#pulpcore_object').width ( $(window).width()-20 )
+	$('#pulpcore_object').height ( $(window).height()-20 )
+	
+	console.info( "resize ")
+} 
+
+function postRz() {
+	if( handler != null ) clearTimeout(handler)
+	handler = setTimeout(rz, 150);
+} 
+
+$(document).ready(rz) 	// resize the applet on doc initialization 
+
+$(window).resize(postRz); // resize the applet on window resize
+
+
+$(document).ready(function () {
+	
+	var url = "http://" + location.host + "${result.getItem(treeFileName)?.webpath}"
+	console.info( url )
+	PhyloWidget.useFull()
+	PhyloWidget.loadWidget('tree', {
+		width: $(window).width()-20,
+		height: $(window).height()-20,
+		tree: url
+	});
+})
+</script>
+</body>
+</html>

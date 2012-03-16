@@ -76,7 +76,8 @@ public class GenericCommand extends AbstractShellCommand {
 			
 			/* add at least the tcoffee log file */
 			OutItem out = new OutItem(getLogFile(), "stdout");
-			out.label = "Command stdout";
+			out.label = "Program Output";
+			out.aggregation = "system_file";
 			result.add(out); 
 			
 		}
@@ -87,7 +88,8 @@ public class GenericCommand extends AbstractShellCommand {
 		if( hasErrFile()) { 
 			
 			OutItem out = new OutItem(getErrFile(), "stderr");
-			out.label = "Command stderr";
+			out.label = "Program Error";
+			out.aggregation = "system_file";
 			result.add(out); 
 			
 		}

@@ -111,7 +111,7 @@ public class TracePlugin extends PlayPlugin {
         	if( dumpHeaders && req.headers != null ) {
         		trace.append("\n+ Headers:");
         		for( Map.Entry<String, Header> it : req.headers.entrySet() ) {
-        			if( "cookie".equals(it.getKey()) && dumpCookie ) continue; // no dump here but below
+        			if( "cookie".equals(it.getKey()) ) continue; // no dump here but below
         			
         			trace.append("\n\t") 
     				.append(it.getKey()) 

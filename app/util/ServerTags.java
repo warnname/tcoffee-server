@@ -30,7 +30,7 @@ import play.templates.GroovyTemplate.ExecutableTemplate;
 import play.templates.JavaExtensions;
 import play.templates.Template;
 import play.vfs.VirtualFile;
-import util.TcoffeeHelper.ResultHtml;
+import util.TCoffeeHelper.ResultHtml;
 import bundle.BundleTemplateLoader;
 
 public class ServerTags extends FastTags {
@@ -151,7 +151,7 @@ public class ServerTags extends FastTags {
 					"#{tcoffeeHtml /} requires to specify the html file as argument");
 		}
 
-		ResultHtml result = TcoffeeHelper.parseHtml(file);
+		ResultHtml result = TCoffeeHelper.parseHtml(file);
 		if (result == null) {
 
 			return;

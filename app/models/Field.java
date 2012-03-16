@@ -339,7 +339,7 @@ public class Field implements Serializable {
 		
 		FileOutputStream sOut = null;
 		try { 
-			// save the field value (instead of copiying the source 'file') because 
+			// save the field value (instead of copying the source 'file') because 
 			// in this way we use the 'normalized' value, not the original version
 			sOut = new FileOutputStream(target);
 			IOUtils.write(value, sOut);

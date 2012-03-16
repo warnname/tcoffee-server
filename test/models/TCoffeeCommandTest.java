@@ -10,7 +10,7 @@ import org.junit.Test;
 import play.Play;
 import play.libs.IO;
 import play.test.UnitTest;
-import util.TcoffeeHelperTest;
+import util.TCoffeeHelperTest;
 import util.TestHelper;
 import util.XStreamHelper;
 import exception.CommandException;
@@ -113,7 +113,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertNotNull( result.getAlignmentFasta() );
 
                 /* assert that the html is the exècted form */
-                TcoffeeHelperTest.parseHtmlFile(result.getAlignmentHtml().file);
+                TCoffeeHelperTest.parseHtmlFile(result.getAlignmentHtml().file);
         }
 
 

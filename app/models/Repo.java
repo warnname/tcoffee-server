@@ -129,6 +129,10 @@ public class Repo implements Serializable {
 		}
 	}
 	
+	public boolean exists() {
+		return fRoot != null && fRoot.exists();
+	} 
+	
 	/**
 	 * @return the repository root folder 
 	 */
@@ -618,15 +622,9 @@ public class Repo implements Serializable {
 	}
 	
 	public File store( String content ) { 
-		File target = null;
-		try { 
-			target = File.createTempFile( "input-", ".txt", fRoot);
-			IO.writeContent(content, target);
-			return target;
-		}
-		catch( IOException e ) { 
-			throw new QuickException(e,"Unable to create temporary file: '%s'", target);
-		}
+		File target = new File( fRoot, String.format("data_%s.in", Integer.toHexString(content.hashCode())));
+		IO.writeContent(content, target);
+		return target;
 	}
 
 }
