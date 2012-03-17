@@ -20,9 +20,9 @@ $(document).ready(function(){
 
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
-//$(document).bind('close.facebox', function(){
-//	window.location = "@{Application.index()}";
-//});
+$(document).bind('close.facebox', function(){
+	window.location = "@{Application.index()}";
+});
 </script>
 
 <div id="wait">
