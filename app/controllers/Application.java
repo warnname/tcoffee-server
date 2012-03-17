@@ -138,6 +138,9 @@ public class Application extends CommonController {
      * @param rid the request ID to show
      */
     public static void jalview(String rid) {
+    	String sBundle = bundleForRequest(rid).title;
+    	String title = String.format("%s - JalView", sBundle);
+    	renderArgs.put("title", title);
     	renderArgs.put("_nowrap", true);
     	showResultFor(rid, "jalview.html", false);
     } 
@@ -149,11 +152,26 @@ public class Application extends CommonController {
      * @param tfn The file name in the specified request which content represent a tree in Newick format
      */
     public static void phylowidget(String rid,String tfn) {
+    	String sBundle = bundleForRequest(rid).title;
+    	String title = String.format("%s - PhyloWidget", sBundle);
+    	renderArgs.put("title", title);
     	renderArgs.put("_nowrap", true);
     	renderArgs.put("treeFileName", tfn);
     	showResultFor(rid, "phylowidget.html", false);
     }
-	
+
+    public static void jsphylosvg(String rid, String tfn) {
+    	
+    	String sBundle = bundleForRequest(rid).title;
+    	String title = String.format("%s - JsPhyloSVG", sBundle);
+    	
+    	renderArgs.put("_nowrap", true);
+    	renderArgs.put("treeFileName", tfn);
+    	renderArgs.put("title", title);
+    	showResultFor(rid, "jsphylosvg.html", false);
+    }
+   
+    
     /**
      * Renders the user requests 'history' page 
      */
@@ -725,4 +743,6 @@ public class Application extends CommonController {
 	public static void legacyFwd() {
 		main( params.get("name") );
 	} 
+	
+
 }

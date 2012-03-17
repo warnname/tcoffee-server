@@ -8,6 +8,8 @@
     <dictionary>
       <label key="input_file" value="Input(s)" />
       <label key="system_file" value="System file(s)" />
+      <label key="stdout" value="System file(s)" />
+      <label key="stderr" value="System file(s)" />
       <label key="result_file" value="Result file" />
     </dictionary>
   </def>  
@@ -21,33 +23,50 @@
       
         <field type='memo' name='aa' label='Proteins' >
           <sample>public/small_aa.fasta</sample>
-          <validation format="FASTA" type="amino-acid" required="true" minnum="3" maxnum="3000" >
+          <validation format="FASTA" required="true" minnum="3" maxnum="3000" >
             <required-error>You have to enter the sequences to align</required-error>
             <format-error>Sequences have to be in multi-FASTA format</format-error>
             <minnum-error>You must enter at least 3 sequences</minnum-error>
             <maxnum-error>You can enter at most 3000 sequences</maxnum-error>
           </validation>
+          <hint>
+          <![CDATA[
+The sequences have to be entered using the FASTA format. 
+<br>Note: the each sequence ID must end with a suffix specifying the Species information separated by a underscore char. 
+<br>For Example: >XXX_SPECIES where 'XXX' is the sequence ID and 'SPECIES' is the species code.  
+          ]]>
+          </hint>
         </field>
 
         <field type='memo' name='nn' label='Nucleotides' >
           <sample>public/small_nn.fasta</sample>
-          <validation format="FASTA" type="nucleic-acid" required="true" minnum="3" maxnum="3000" >
+          <validation format="FASTA" required="true" minnum="3" maxnum="3000" >
             <required-error>You have to enter the sequences to align</required-error>
             <format-error>Sequences have to be in multi-FASTA format</format-error>
             <minnum-error>You must enter at least 3 sequences</minnum-error>
             <maxnum-error>You can enter at most 3000 sequences</maxnum-error>
           </validation>
+          <hint>
+          <![CDATA[
+The sequences have to be entered using the FASTA format. 
+<br>Note: the each sequence ID must end with a suffix specifying the Species information separated by a underscore char. 
+<br>For Example: >XXX_SPECIES where 'XXX' is the sequence ID and 'SPECIES' is the species code.  
+          ]]>
+          </hint>
         </field>
  
-        <field type='memo' name='tree' label='Tree' >
+        <field type='memo' name='tree' label='Species Tree' >
           <sample>public/speciesTree.ph</sample>
 		  <!-- newick validator TODO -->
+		  <hint>
+		  <![CDATA[This field is optional. <br>If specified the tree must be formatted using the Newick format.]]>
+		  </hint>
         </field>
 
         <field type="radio" name="msa_method" label="MSA method" >
         <choices>tcoffee,mcoffee,fmcoffee</choices>
         <value>fmcoffee</value>
-        <hint>.. some suggestion for the user .. to choose the best</hint>
+        <hint>fmcoffee:Fast M-Coffee mode include Kalign, MUSCLE and MAFFT</hint>
         </field>  
 
         <field type="radio" name="tree_method" label="Tree method" >
@@ -84,6 +103,7 @@
         	<type>result_file</type> 
         	<label>Phylogenetic tree</label> 
         	<format>NHX</format> 
+        	<aggregation>Result file</aggregation> 
        	</item>
         </result>
 

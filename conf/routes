@@ -70,6 +70,7 @@ GET		/apps/{bundle}/historydelall		Application.historyDelAll
 GET		/apps/{bundle}/zipall				Data.zipDataFolder
 GET		/apps/{bundle}/jalview				Application.jalview
 GET		/apps/{bundle}/phylowidget			Application.phylowidget
+GET		/apps/{bundle}/jsphylosvg			Application.jsphylosvg
 GET		/apps/{bundle}/index.html			Application.html(page:'index.html')
 GET		/apps/{bundle}/{<.+\.html>page}		Application.html
 GET		/apps/{bundle}/bundle.css		    Application.css

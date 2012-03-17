@@ -1,9 +1,15 @@
 package models;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.Serializable;
+import java.util.Iterator;
+
+import org.blackcoffee.commons.utils.ReaderIterator;
 
 import play.libs.IO;
+import play.templates.JavaExtensions;
 import plugins.AutoBean;
 import util.Check;
 import util.Utils;
@@ -173,6 +179,19 @@ public class OutItem implements Serializable {
 	
 	public String content() {
 		return file != null ? IO.readContentAsString(file) : null;
+	} 
+	
+	public String toLine() throws FileNotFoundException {
+
+		if( file == null || !file.exists() || !file.isFile() ) return null;
+		
+		StringBuilder result = new StringBuilder();
+		Iterator<String> it = new ReaderIterator(new FileReader(file)).iterator();
+		while( it.hasNext() ) {
+			result.append(it.next().trim());
+		}
+
+		return result.toString().replaceAll("(\\:([^\\[]*))?\\[([^\\]]*)\\]$?","");
 	} 
 	
 	public long size() { 

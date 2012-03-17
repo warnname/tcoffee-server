@@ -20,9 +20,9 @@ $(document).ready(function(){
 
 $(window).unload(function(){ /* hack to avoid content cache that will prevent ready execution on back-button for firefox */ });
 
-$(document).bind('close.facebox', function(){
-	window.location = "@{Application.index()}";
-} );
+//$(document).bind('close.facebox', function(){
+//	window.location = "@{Application.index()}";
+//});
 </script>
 
 <div id="wait">
@@ -58,6 +58,7 @@ menu to check request status or retrieve a previous results.
 </div> 
 
 <script type="text/javascript">
+var errorCount=0;
 
 function run(){
     /* This requests the url "msgsrv.php" When it complete (or errors)*/
@@ -71,8 +72,8 @@ function run(){
         success: function(data){ /* called when request to barge.php completes */
             var status = data != null ? data.toUpperCase() : 'UNKNWON';
             if( status == 'RUNNING' ) {
-                // if still running recheck the status in the next 5 seconds 
-                setTimeout(run, 5000);  
+                // if still running recheck the status in the next 10 seconds 
+                setTimeout(run, 10000);  
             }
             else if( status=='DONE' || status=='FAILED' ) {
                 // otherwise move to the result page
@@ -86,11 +87,17 @@ function run(){
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown){
-            // TODO improve this, handling retring to poll the status for after a while 
-            // also in case of error 
-            jQuery(document).trigger('close.facebox');
-			$('#wait').hide();
-			$('#failure').show();
+        	errorCount = errorCount+1
+        	if( errorCount <= 3 ) {
+                setTimeout(run, errorCount * 60000);  
+        	}
+        	else {
+                // TODO improve this, handling retring to poll the status for after a while 
+                // also in case of error 
+                jQuery(document).trigger('close.facebox');
+    			$('#wait').hide();
+    			$('#failure').show();
+        	}
         }
     });
 };

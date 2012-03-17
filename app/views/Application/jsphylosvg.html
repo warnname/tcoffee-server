@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>${title}</title>
+<link rel="shortcut icon" type="image/x-icon" href="@{Main.favicon()}"> 
+<link rel="stylesheet" type="text/css" href="@{'/public/normalize.css'}" >
+
+<style type="text/css">
+html, body { overflow: auto; }
+body{ padding: 0 10px }
+#footer {  margin-top: 1em } 
+</style>
+
+</head>
+<body>
+
+<div id="tree">
+</div>
+
+<div id="footer">
+<div  >
+Resize the window to get a bigger chart. <br>
+<small style="font-size: 12px; color: #999" >
+The above tree is rendered using: jsPhyloSVG, A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. 
+<br>PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267 
+</small>
+</div>
+</div>
+
+<script type="text/javascript" src="@{'/public/javascripts/jquery-1.6.4.min.js'}" ></script>
+<script type="text/javascript" src="@{'/public/jsphylosvg-1.55/raphael-min.js'}"></script>
+<script type="text/javascript" src="@{'/public/jsphylosvg-1.55/jsphylosvg-min.js'}"></script>
+
+<script type="text/javascript">
+
+var handler=null;
+var dataObject = { newick: "${controllers.Data.normalizeNewick(result.getItem(treeFileName)?.file)}" };
+Smits.PhyloCanvas.Render.Style.text["font-size"] = 10;			
+
+function rz() {
+	handler=null;
+	$('#tree').empty()
+
+	// render the tree
+	var size = Math.max( $(window).width(), $(window).height() ) -40;
+	new Smits.PhyloCanvas( dataObject, 'tree', size, size, 'circular' );  	
+} 
+
+function postRz() {
+	if( handler != null ) clearTimeout(handler)
+	handler = setTimeout(rz, 500);
+} 
+
+$(document).ready(rz) 	// resize the applet on doc initialization 
+
+$(window).resize(postRz); // resize the applet on window resize
+
+</script>
+</body>
+</html>

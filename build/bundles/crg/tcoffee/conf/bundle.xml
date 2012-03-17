@@ -1349,7 +1349,7 @@
 
   <service name="trmsd">
    <title >T-RMSD</title>
-   <description>Allows fine-grained structural clustering of a given group of related protein domains</description>
+   <description>Allows fine-grained structural clustering of a given group of related protein domains (new)</description>
    <group>Evaluation</group>
      <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/20471393]]></cite>
   

@@ -2,45 +2,6 @@
 
 #{cache-warning /}
 
-<style>
-#sendto button {
-	width: 8em;
-	margin-right: 1em;
-	position: relative;
-	top: -1px
-}
-
-#content .box, #content fieldset, 
-#content .box h2 span, 
-#content fieldset h2 span {
-    background-color: #f9f9f9;
-}
-#content div.box { 
-    background-color: #f9f9f9  
-} 
-
-/* D3.js - Phylogenetic tree style */
-
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node {
-  font: 10px sans-serif;
-}
-
-.link {
-  fill: none;
-  stroke: #888;
-  stroke-width: 1.3px;
-}
-
-#tree_area { padding-bottom: 2em } 
-
-</style>
-
 <h1>${result?.title} alignment result</h1> 
 
 *{ MSA Box }*
@@ -68,7 +29,6 @@
    	<span style="position:relative; left:1em; ">The result alignment is too big to <br> be showed inline, 
    	<a target="_blank" href="${resultHtml.webpath}" >click here to open it</a> .
    	</span>  
-
 </p>
 #{/else}
 </div>
@@ -82,16 +42,29 @@
 *{ Tree Box }*
 
 #{if result.getItem('result.struc_tree.consensus')}
-<div class="box" style="margin-bottom: .2em">
-<h2 style="background: none" ><span>Structural tree</span> 
-<small>Tree produced from the previous MSA using the T-RMSD method</small>
+<h2><span>Structural tree</span> 
+<small><span>Tree produced from the previous MSA using the T-RMSD method</span></small>
 </h2>
 
-<div id="tree_area" ></div>
+<div id="tree_area" style="padding-bottom: 2em"></div>
+
+<div style="margin-bottom: 2em; margin-left: 2em">
+View this chart in a <a href="javascript:void(0)" id="to_jsphylo" >bigger window</a> - or - open this tree with <a href="javascript:void(0)" id="to_phylowidget" >PhyloWidget</a>
+
+<div style="padding-top: .3em">
+<small class="size">The above tree is rendered using: jsPhyloSVG, A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. 
+<br>PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267 
+</small>
 </div>
-<div style="margin-bottom: 2em; margin-left: 2em; margin-top: .5em">
-To open the above tree with <a href="javascript:void(0)" id="to_phylo" >Phylowidget click here</a>
+<!--[if IE]>
+<div style="padding-top: .3em; font-weight: 800;">
+Please Note: Using Internet Explorer the rending of the above tree could take some minutes or more depending how complex it the data you entered. 
+You can avoid this delay using an HTML5 enabled browser like <a href="http://www.mozilla.org/firefox" target="_blank">Mozilla Firefox</a> or <a href="https://www.google.com/chrome" target="_blank">Google Chrome</a>   
 </div>
+<![endif]-->
+</div>
+
+
 #{/if}
 
 
@@ -261,58 +234,41 @@ Are you satisfied with this result? Do you like this alignment server? If so rec
 For suggestions, questions or any problem send an email to <a href="mailto:tcoffee@googlegroups.com">tcoffee@googlegroups.com</a>
 </div>
 
-<script type="text/javascript" src="@{'/public/d3/d3.v2.min.js'}?v=2.8.1"></script>
+<script type="text/javascript" src="@{'/public/jsphylosvg-1.55/raphael-min.js'}"></script>
+<script type="text/javascript" src="@{'/public/jsphylosvg-1.55/jsphylosvg-min.js'}"></script>
+
 <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 <script type="text/javascript">
 
-$('#to_phylo').click(function() {
+$('#to_phylowidget').click(function() {
 	var w = Math.round(window.screen.width * .7); 
-	var h = Math.round(window.screen.height * .55);
+	var h = Math.round(window.screen.height * .85);
 	var url = "@{Application.phylowidget(rid,'result.struc_tree.consensus')}"
 	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0")
 	return false
 } )
 
-$(document).ready(function () {
-	
-	var w = 900, h = 400;
-	var cluster = d3.layout.cluster()
-	    .size([h, w - 160]);
-	
-	var diagonal = d3.svg.diagonal()
-	    .projection(function(d) { return [d.y, d.x]; });
-	
-	var vis = d3.select("#tree_area").append("svg")
-	    .attr("width", w)
-	    .attr("height", h)
-	    .append("g")
-	    .attr("transform", "translate(40, 0)");
-	
-	d3.json("@{Data.newick2json(rid,'result.struc_tree.consensus')}", function(json) {
-		var nodes = cluster.nodes(json);
-		
-		var link = vis.selectAll("path.link")
-		      .data(cluster.links(nodes))
-		      .enter().append("path")
-		      .attr("class", "link")
-		      .attr("d", diagonal);
-		
-		var node = vis.selectAll("g.node")
-		      .data(nodes)
-		      .enter().append("g")
-		      .attr("class", "node")
-		      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-		
-		node.append("circle")
-		      .attr("r", 4.5);
-		
-		node.append("text")
-		      .attr("dx", function(d) { return d.children ? -8 : 8; })
-		      .attr("dy", 3)
-		      .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
-		      .text(function(d) { return d.name; });
-	});
+$('#to_jsphylo').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.jsphylosvg(rid,'result.struc_tree.consensus')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
+	return false
+}) 
 
+
+$(document).ready(function () {
+
+	var dataObject = { newick: "${controllers.Data.normalizeNewick(result.getItem('result.struc_tree.consensus')?.file)}" };
+  	
+	//Smits.PhyloCanvas.Render.Style.text["font-size"] = 14;			// Increase font size to 16pt	
+	//Smits.PhyloCanvas.Render.Parameters.Circular.bufferRadius = .45
+	new Smits.PhyloCanvas(
+			dataObject,           // Newick or XML string
+		    'tree_area',    // Div Id where to render
+		    900, 950,
+		    "circular"
+		);  
 
 	
 } )

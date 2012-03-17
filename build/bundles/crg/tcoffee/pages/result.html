@@ -133,7 +133,7 @@ $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb
 $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
 $('#to_jalview').click(function() {
 	var w = Math.round(window.screen.width * .7); 
-	var h = Math.round(window.screen.height * .55); 
+	var h = Math.round(window.screen.height * .6); 
 	window.open("@{Application.jalview(params.rid)}", "_blank", "width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0");
 	return false;
 } )

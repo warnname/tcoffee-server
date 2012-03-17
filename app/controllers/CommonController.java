@@ -12,6 +12,7 @@ import java.util.Map;
 
 import models.Bundle;
 import models.PageContent;
+import models.Repo;
 import models.Service;
 import play.Logger;
 import play.Play;
@@ -219,6 +220,24 @@ public class CommonController extends Controller {
 		}		
 	}
 	
+	@Util
+	static Bundle bundleForRequest(String rid) { 
+		
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound( "Cannot found result for request ID: '%s'", rid );
+		}
+		
+		String bundle = repo.getResult().bundle;
+		Bundle _bundle = BundleRegistry.instance().get(bundle);
+		if( _bundle == null ) { 
+			notFound( "Unkown bundle: '%s'", bundle );
+		}
+		
+		return _bundle;
+	}
+	
+	@Util
 	static Service service(String bundle, String service) { 
 		
 		Bundle _bundle = BundleRegistry.instance().get(bundle);
@@ -232,7 +251,7 @@ public class CommonController extends Controller {
 		}
 		
 		return result;
-	}
+	}	
 	
 	/**
 	 * Assert that the specified value must be empty e.g. null or empty string
