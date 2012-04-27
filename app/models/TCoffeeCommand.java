@@ -139,10 +139,10 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		if( Utils.isEmpty(method)) {
 			args.remove("method");
 		}
-		else if( method.contains("clustalw")) {
-			Logger.warn("Note: multicore is not supported using 'clustal_xxx' method(s)");
-			args.put("multi_core","no");
-		}
+//		else if( method.contains("clustalw")) {
+//			Logger.warn("Note: multicore is not supported using 'clustal_xxx' method(s)");
+//			args.put("multi_core","no");
+//		}
 		
 		
 		if( args.get("other_pg") == null ) { 
