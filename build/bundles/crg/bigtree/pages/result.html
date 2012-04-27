@@ -136,7 +136,7 @@ $('#to_phylowidget').click(function() {
 $('#to_jsphylo').click(function() {
 	var w = Math.round(window.screen.width * .7); 
 	var h = Math.round(window.screen.height * .85);
-	var url = "@{Application.jsphylosvg(rid,tree?.name)}"
+	var url = "@{Application.jsphylosvg(rid,tree?.name,'circular')}"
 	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
 	return false
 }) 

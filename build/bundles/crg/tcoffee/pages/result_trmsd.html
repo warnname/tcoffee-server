@@ -269,14 +269,12 @@ $(document).ready(function () {
 
 	var dataObject = { newick: "${controllers.Data.normalizeNewick(result.getItem('result.struc_tree.consensus')?.file)}" };
   	
-	//Smits.PhyloCanvas.Render.Style.text["font-size"] = 14;			// Increase font size to 16pt	
-	//Smits.PhyloCanvas.Render.Parameters.Circular.bufferRadius = .45
-	new Smits.PhyloCanvas(
-			dataObject,           // Newick or XML string
-		    'tree_area',    // Div Id where to render
-		    900, 950,
-		    "circular"
-		);  
+    Smits.PhyloCanvas.Render.Parameters.Rectangular.alignRight = true
+    new Smits.PhyloCanvas(
+                dataObject,     // Newick or XML string
+                'tree_area',    // Div Id where to render
+                950,700
+            );
 
 	
 } )

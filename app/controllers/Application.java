@@ -160,7 +160,14 @@ public class Application extends CommonController {
     	showResultFor(rid, "phylowidget.html", false);
     }
 
-    public static void jsphylosvg(String rid, String tfn) {
+    /**
+     * Render a page tree based on http://www.jsphylosvg.com/
+     * 
+     * @param rid The processed request ID
+     * @param tfn The 'tree file name' (relative path the above request) provind a tree in the newick format
+     * @param mode How the tree will rendered. Other than the default, it can be specified 'circular' 
+     */
+    public static void jsphylosvg(String rid, String tfn, String mode) {
     	
     	String sBundle = bundleForRequest(rid).title;
     	String title = String.format("%s - JsPhyloSVG", sBundle);
@@ -168,6 +175,7 @@ public class Application extends CommonController {
     	renderArgs.put("_nowrap", true);
     	renderArgs.put("treeFileName", tfn);
     	renderArgs.put("title", title);
+    	renderArgs.put("mode", mode);
     	showResultFor(rid, "jsphylosvg.html", false);
     }
    

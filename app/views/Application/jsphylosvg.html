@@ -43,7 +43,7 @@ function rz() {
 
 	// render the tree
 	var size = Math.max( $(window).width(), $(window).height() ) -40;
-	new Smits.PhyloCanvas( dataObject, 'tree', size, size, 'circular' );  	
+	new Smits.PhyloCanvas( dataObject, 'tree', size, size, '${mode}' );  	
 } 
 
 function postRz() {
