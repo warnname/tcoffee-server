@@ -107,49 +107,60 @@ You can avoid this delay using an HTML5 enabled browser like <a href="http://www
 <tbody>
 <tr> 
    %{def item=result.getItem('result.struc_tree.consense_output')}%
+   #{if item}
 	<td class="oce-first backimg"> Consensus tree </td>
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
+	#{/if}
 </tr>
 
 <tr>
     %{item=result.getItem('result.struc_tree.consensus')}%
+    #{if item}
 	<td class="oce-first" > Newick tree</td>
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
+	#{/if}
 </tr>
 
 <tr>
     %{item=result.getItem('result.struc_tree.html')}%
+    #{if item}
 	<td class="oce-first" > HTML alignment </td>
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
+	#{/if}
 
     %{item=result.getItem('result.score_html')}%
+    #{if item}
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
-
+	#{/if}
 </tr>
 
 <tr>
 	%{item = result.first('type','Template_List') }%
+	#{if item}
 	<td class="oce-first" >Template List</td>
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
+	#{/if}
 </tr>
 
   
 <tr>
 	%{item = result.getItem('_tcoffee.out.log') }%
+	#{if item}
 	<td class="oce-first" > T-Coffee output </td>
 	<td>
 	<a href="${item.webpath}" target="_blank">${item.name}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
 	</td>
+	#{/if}
 </tr>
 </tbody>
 </table>
