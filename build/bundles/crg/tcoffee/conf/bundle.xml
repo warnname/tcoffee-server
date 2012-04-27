@@ -681,6 +681,7 @@
     <title>TM-Coffee</title>
     <group>Alignment</group>      
     <description>Aligns transmembrane proteins using homology extension (new)</description>
+    <cite><![CDATA[http://www.biomedcentral.com/1471-2105/13/S4/S1]]></cite>
     
     <input>
       <fieldset >
