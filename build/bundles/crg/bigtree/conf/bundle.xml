@@ -64,14 +64,17 @@ The sequences have to be entered using the FASTA format.
         </field>
 
         <field type="radio" name="msa_method" label="MSA method" >
-        <choices>tcoffee,mcoffee,fmcoffee</choices>
+        <choices>fmcoffee,mcoffee,tcoffee</choices>
         <value>fmcoffee</value>
-        <hint>fmcoffee:Fast M-Coffee mode include Kalign, MUSCLE and MAFFT</hint>
+        <hint>fmcoffee: FM-Coffee mode include Kalign, MUSCLE and MAFFT
+        tcoffee: T-Coffee
+        mcoffee: M-Coffee
+        </hint>
         </field>  
 
         <field type="radio" name="tree_method" label="Tree method" >
         <value>treebest</value>
-        <choices>treebest,phyml</choices>
+        <choices>treebest,phyml,nj</choices>
         </field>  
 	</fieldset>
 
