@@ -45,7 +45,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	}
 	
 	@Override
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 
 		/* an outfile is mandatory required */
 		if( Utils.isEmpty(logfile) ) logfile = "_tcoffee.out.log";
@@ -231,7 +231,8 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	 */
 	@Override
 	protected boolean done(boolean success) {
-
+		
+		OutResult result = ctx.result;
 		boolean hasLogFile = safeLogFileCheck();
 		
 		/* the result file MUST exists */
@@ -271,8 +272,6 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			/* add all t-coffee result */
 			result.addAll(parseResultFile(getLogFile()));
 			
-			/* add warnings */
-			result.addWarnings( _warnings );
 		}
 
 		/* check the error output */
@@ -297,6 +296,12 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			result.add(out); 
 			
 		}
+		
+		/* 
+		 * add warnings in the list to the result
+		 */
+		result.addWarnings( _warnings );
+		
 		
 		/*
 		 * check if the html exists if it has been specified on the cmd line
@@ -340,7 +345,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 			/*
 			 * add the warnings 
 			 */
-			warnings().addAll( log.getWarnings() );
+			warnings().addAll(log.getWarnings());
 			
 			/* retrieve the file in the context path */
 			final String root = ctx.get("data.path");

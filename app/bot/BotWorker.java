@@ -182,8 +182,8 @@ public class BotWorker {
 		}
 	}
 	
-	private AbstractCommand<OutResult> getFailMailNotification() {
-		return  new AbstractCommand<OutResult>() {
+	private AbstractCommand getFailMailNotification() {
+		return  new AbstractCommand() {
 			@Override
 			protected boolean run() throws CommandException {
 				play.libs.Mail.send(loadMailTemplate("bot-result-fail.txt"));
@@ -192,9 +192,9 @@ public class BotWorker {
 	}
 
 
-	private AbstractCommand<OutResult> getValidaMailNotification() {
+	private AbstractCommand getValidaMailNotification() {
 
-		return  new AbstractCommand<OutResult>() {
+		return  new AbstractCommand() {
 			@Override
 			protected boolean run() throws CommandException {
 				
@@ -312,7 +312,7 @@ public class BotWorker {
 
 		Repo repo = service != null ? service.repo() : null;
 		OutResult outresult = repo != null ? repo.getResult() : null;
-		Map<String,Object> context = service != null ? service.getCtx() : null;
+		Map<String,Object> context = service != null ? service.getContext().getMap() : null;
 		
 		if( context != null ) { 
 			args.put("rid", context.get("_rid"));

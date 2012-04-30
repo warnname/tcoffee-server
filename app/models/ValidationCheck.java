@@ -22,10 +22,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
+/**
+ * Models a field validation rule. 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 @AutoBean
 @XStreamAlias("validation")
 public class ValidationCheck implements Serializable {
 
+	/** 
+	 * Defines the field as required
+	 */
 	@XStreamAsAttribute
 	public boolean required;
 
@@ -124,6 +133,10 @@ public class ValidationCheck implements Serializable {
 	@XStreamAlias("minlen-error")
 	public String minLengthError;		
 	
+	/** Validation rule expressed by groovy scripting */
+	@XStreamAlias("script")
+	public Script script;
+	
 	@XStreamOmitField 
 	String fErrorMessage;
 	
@@ -180,7 +193,7 @@ public class ValidationCheck implements Serializable {
 		 * if there are not error, check for 'format' constraint
 		 */
 		if( error == null ) { 
-			String[] all = this.format != null ? this.format.split("\\|") : null;
+			String[] all = this.format != null ? this.format.split("\\|") : new String[] {"none"};
 			for( int i=0; all!=null && i<all.length ; i++ )
 			{ 
 				error = applyFormatValidation( all[i].trim(), name, value);
@@ -239,65 +252,146 @@ public class ValidationCheck implements Serializable {
 
 	ErrorWrapper applyFormatValidation(String format, String name, String value) {
 
-		if( "TEXT".equalsIgnoreCase(format) ) 
+		ErrorWrapper error=null;
+		
+		/*
+		 * TEXT format validation
+		 */
+		if( isFormatText(format) ) 
 		{
-			return applyTextValidation(name, value);
+			error = applyTextValidation(name, value);
 		}
-
 		
 		/*
 		 * EMAIL FIELDS 
 		 */
-		else if( "EMAIL".equalsIgnoreCase(format)  ) 
+		else if( isFormatEmail(format)  ) 
 		{ 
-			return applyEmailValidation(name, value);
+			error = applyEmailValidation(name, value);
 		}
 		
 		/*
 		 * DATE  validation
 		 */
-		else if( "DATE".equalsIgnoreCase(format) && Utils.isNotEmpty(value) ) 
+		else if( isFormatDate(format) && Utils.isNotEmpty(value) ) 
 		{
-			return applyDateValidation(name, value);
+			error =  applyDateValidation(name, value);
 		}
 		/* 
 		 * INTEGER number validation
 		 */
-		else if( "INTEGER".equalsIgnoreCase(format) && Utils.isNotEmpty(value)) 
+		else if( isFormatInteger(format) && Utils.isNotEmpty(value)) 
 		{
-			return applyIntegerValidation(name, value);
+			error = applyIntegerValidation(name, value);
 		}
 		/*
 		 * DECIMAL number validation
 		 */
-		else if( "DECIMAL".equalsIgnoreCase(format) && Utils.isNotEmpty(value) ) 
+		else if( isFormatNumber(format) && Utils.isNotEmpty(value) ) 
 		{
-			return applyDecimalValidation(name, value);
+			error = applyDecimalValidation(name, value);
 		}
 		
 		/*
 		 * FASTA format validation
 		 */
-		else if( "FASTA".equalsIgnoreCase(format) && Utils.isNotEmpty(value) ) 
+		else if( isFormatFasta(format) && Utils.isNotEmpty(value) ) 
 		{
-			return applyFastaValidation(name, value);
+			error = applyFastaValidation(name, value);
 		} 
 		
 		
 		/*
 		 * CLUSTAL format validation
 		 */
-		else if( "CLUSTAL".equalsIgnoreCase(format) && Utils.isNotEmpty(value) ) 
+		else if( isFormatClustal(format) && Utils.isNotEmpty(value) ) 
 		{
-			return applyClustalValidation(name, value);
+			error = applyClustalValidation(name, value);
 		} 	
 		
-		else if( Utils.isNotEmpty(value) ) {
-			Logger.warn("Unknown validation format: '%s'", format);
+		
+
+		/*
+		 * Script validation is executed only if no format error has been detected 
+		 */
+		if( script != null && error == null ) {
+			error = applyScriptValidation(name,value);
 		}
 
-		// no error 
-		return null;
+		return error;
+	}
+
+
+
+	private ErrorWrapper applyScriptValidation(String name, String value) {
+
+		Service service = Service.current();
+		if( service == null ) {
+			Logger.warn("Cannot access current service. Skipping script validation");
+			return null;
+		}
+		
+		/*
+		 * pass the field under validation
+		 */
+		script.setProperty("field", service.input.field(name));
+
+		/*
+		 * pass the value to be validated 
+		 */
+		script.setProperty("value", getTypedValue(value));
+		
+		/*
+		 * invoke the script
+		 */
+		Object result = script.run().getResult();
+		
+		/*
+		 * In the value is changed by the script, it is interpreted as a normalization process 
+		 */
+		Object retvalue = script.getProperty("value");
+		if( retvalue != null && retvalue != value ) {
+			fNormalizedValue = getStringValue(retvalue);
+		}
+		
+		/*
+		 * any object returned by the script is interpreted as an error message 
+		 */
+		return 	result != null ? error( name, result.toString(), new String[0]) : null;
+	}
+
+
+	private Object getStringValue(Object value) {
+		if( value instanceof Date ) {
+			return Utils.asString((Date)value);
+		}
+
+		return value.toString();
+	}
+
+
+
+	/**
+	 * Convert a string to a 'primitive' type according to the declared format 
+	 * 
+	 * @param value
+	 * @return
+	 */
+	protected Object getTypedValue(String value) {
+
+		if( isFormatInteger(format) ) {
+			return Utils.parseLong(value);
+		}
+		
+		if( isFormatNumber(format) ) {
+			return Utils.parseDouble(value);
+		}
+		
+		if( isFormatDate(format) ) {
+			return Utils.parseDate(value);
+		}
+
+		return value;
 	}
 
 
@@ -625,4 +719,33 @@ public class ValidationCheck implements Serializable {
 		
 		return result.toString();
 	}
+	
+	public static boolean isFormatEmail(String format) {
+		return "EMAIL".equalsIgnoreCase(format);
+	}
+
+	public static boolean isFormatDate(String format) {
+		return "DATE".equalsIgnoreCase(format);
+	}
+
+	public static boolean isFormatNumber(String format) {
+		return "DECIMAL".equalsIgnoreCase(format) || "NUMBER".equalsIgnoreCase(format);
+	}
+
+	public static boolean isFormatInteger(String format) {
+		return "INTEGER".equalsIgnoreCase(format) || "INT".equalsIgnoreCase(format);
+	}
+
+	public static boolean isFormatText(String format) {
+		return "TEXT".equalsIgnoreCase(format) ;
+	}
+	
+	public static boolean isFormatClustal(String format) {
+		return "CLUSTAL".equalsIgnoreCase(format) || "CLUSTALW".equalsIgnoreCase(format) ;
+	}
+
+	public static boolean isFormatFasta(String format) {
+		return "FASTA".equalsIgnoreCase(format)  ;
+	}
+
 }

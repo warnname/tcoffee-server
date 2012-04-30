@@ -203,7 +203,7 @@ public class CmdArgsTest extends UnitTest {
 	
 	@Test
 	public void testDynamicCommandLine() { 
-		Service.current().getCtx().put("args", "-x=1 -y=2 -w=3 4 5 -z=hola");
+		Service.current().getContext().put("args", "-x=1 -y=2 -w=3 4 5 -z=hola");
 
 		// in this case all the command line is specified by a single variable that
 		// contains all the CL CmdArgs.CMD_OPTIONs

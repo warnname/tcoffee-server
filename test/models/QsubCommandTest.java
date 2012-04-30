@@ -107,7 +107,7 @@ public class QsubCommandTest extends UnitTest {
 		assertTrue(tcoffee.getErrFile().exists());
 		assertTrue(tcoffee.getCmdFile().exists());
 		
-		assertTrue(qsub.getResult().getAlignmentHtml().file.exists());
+		assertTrue(qsub.ctx.result.getAlignmentHtml().file.exists());
 		assertTrue(qsub.getJobId().length()>0);
 		
 	} 	
@@ -155,8 +155,8 @@ public class QsubCommandTest extends UnitTest {
 		qsub.execute();
 
 		assertFalse(qsub.isOK());
-		assertEquals( 1, qsub.result.errors.size() );
-		assertEquals( "Waiting for immediate job to be scheduled.\n\nYour qsub request could not be scheduled, try again later.", qsub.result.errors.get(0) );
+		assertEquals( 1, qsub.ctx.result.errors.size() );
+		assertEquals( "Waiting for immediate job to be scheduled.\n\nYour qsub request could not be scheduled, try again later.", qsub.ctx.result.errors.get(0) );
 		
 	} 
 	

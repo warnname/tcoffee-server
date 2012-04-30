@@ -5,8 +5,15 @@ import util.Utils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
+/**
+ * Execute a generic bash command 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
+
 @XStreamAlias("exec")
-public class GenericCommand extends AbstractShellCommand {
+public class ShellCommand extends AbstractShellCommand {
 
 	/** the application binary to be executed */
 	@XStreamAsAttribute
@@ -16,9 +23,9 @@ public class GenericCommand extends AbstractShellCommand {
 	public CmdArgs args;
 	
 	/** The default constructor */
-	public GenericCommand() {}
+	public ShellCommand() {}
 	
-	public GenericCommand(String programWithArguments ) { 
+	public ShellCommand(String programWithArguments ) { 
 		String val = programWithArguments.trim();
 		int i = val.indexOf(' ');
 		if( i == -1 ) { 
@@ -31,14 +38,14 @@ public class GenericCommand extends AbstractShellCommand {
 	}
 	
 	/** The copy constructor */
-	public GenericCommand( GenericCommand that ) {
+	public ShellCommand( ShellCommand that ) {
 		super(that);
 		this.program = Utils.copy(that.program);
 		this.args = Utils.copy(that.args);
 	}
 	
 	@Override
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 		if( Utils.isEmpty(logfile) ) logfile = "stdout.log";		
 		super.init(ctx);
 	}
@@ -69,6 +76,8 @@ public class GenericCommand extends AbstractShellCommand {
 	@Override
 	protected boolean done(boolean success) {
 
+		OutResult result = ctx.result;
+		
 		/*
 		 * add the stdout file to the result
 		 */

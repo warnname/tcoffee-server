@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import play.Play;
 import play.test.UnitTest;
 import util.TestHelper;
 import util.XStreamHelper;
@@ -129,7 +130,28 @@ public class BundleTest extends UnitTest {
 		assertTrue(bundle.navigatorPath.exists());
 		assertTrue(bundle.pagesPath.exists());
 		assertTrue(bundle.publicPath.exists());
+		assertTrue(bundle.scriptPath.exists());
+		assertTrue(bundle.libPath.exists());
 		
 	}
+	
+	@Test
+	public void testProperties() {
+		Bundle bundle = TestHelper.bundle();
+		assertEquals( Play.applicationPath.getAbsolutePath(), bundle.properties.getProperty("application.path"));
+		assertEquals( Play.mode.name().toLowerCase(), bundle.properties.getProperty("application.mode"));
+		assertEquals( AppProps.WORKSPACE_FOLDER.getAbsolutePath(), bundle.properties.getProperty("workspace.path"));
+	
+		assertEquals( bundle.root.getAbsolutePath(), bundle.properties.getProperty("bundle.path") );
+		assertEquals( bundle.binPath.getAbsolutePath(), bundle.properties.getProperty("bundle.bin.path") );
+		assertEquals( bundle.scriptPath.getAbsolutePath(), bundle.properties.getProperty("bundle.script.path") );
+		assertEquals( bundle.libPath.getAbsolutePath(), bundle.properties.getProperty("bundle.lib.path") );
+		assertEquals( bundle.name, bundle.properties.getProperty("bundle.name") );
+		assertEquals( bundle.version, bundle.properties.getProperty("bundle.version") );
+		assertEquals( bundle.title, bundle.properties.getProperty("bundle.title") );
+		assertEquals( bundle.email, bundle.properties.getProperty("bundle.email") );
+		assertEquals( bundle.author, bundle.properties.getProperty("bundle.author") );
+	}
+	
 	
 }

@@ -60,10 +60,9 @@ public class Service implements Serializable {
 	public String userEmail;
 	
 	
-	@XStreamOmitField Map<String,Object> fCtx;
+	@XStreamOmitField ContextHolder fContextHolder;
 	@XStreamOmitField String fRid;
 	@XStreamOmitField Repo fRepo;
-	@XStreamOmitField OutResult fOutResult;
 	@XStreamOmitField Date fStartTime;
 	@XStreamOmitField String fRemoteAddress;
 	@XStreamOmitField String fLocation;
@@ -284,9 +283,9 @@ public class Service implements Serializable {
 
 	void setVariable( String key, Object value ) {
 		
-		if( fCtx.containsKey(key) ) {
+		if( fContextHolder.map.containsKey(key) ) {
 			/* if an entry already exist with this key, repack it as a list */
-			Object item = fCtx.get(key);
+			Object item = fContextHolder.map.get(key);
 			if( item instanceof List ) {
 				((List)item) .add(value);
 				return;
@@ -302,14 +301,14 @@ public class Service implements Serializable {
 		/* 
 		 * put on the context 
 		 */
-		fCtx.put(key, value);
+		fContextHolder.map.put(key, value);
 		
 	}
 	
 
 
-	public Map<String,Object> getCtx() {
-		return fCtx;
+	public ContextHolder getContext() {
+		return fContextHolder;
 	} 
 	
 	/**
@@ -320,7 +319,7 @@ public class Service implements Serializable {
 	 */
 	public String eval(String raw) { 
 		Eval evaluator = new Eval(raw);
-		return evaluator.eval( fCtx );
+		return evaluator.eval(fContextHolder.map);
 	}
 	
 	public void init() {
@@ -395,13 +394,18 @@ public class Service implements Serializable {
 		/*
 		 * 2. initialize the context for the expression evaluation 
 		 */
-		fCtx = new HashMap<String,Object>();
+		fContextHolder = new ContextHolder();
+		fContextHolder.input = input;
+		fContextHolder.result = new OutResult();;
+		
+		Map<String,Object> params = new HashMap<String,Object>();
+		
 		
 		AppProps props = AppProps.instance();
 		for( String key : props.getNames() ) { 
 			String val;
 			if( (val=props.getString(key,null)) != null ) { 
-				fCtx.put(key, val);
+				params.put(key, val);
 			}
 		}
 		
@@ -519,11 +523,11 @@ public class Service implements Serializable {
 		}
 		else if( id >=0 ){ 
 			usage = UsageLog.findById( id );
-			
-			if( fOutResult != null ) { 
-				usage.duration = Utils.asDuration(fOutResult.elapsedTime);
-				usage.status = fOutResult.status.name() ;
-				usage.elapsed = fOutResult.elapsedTime/1000;
+
+			if( fContextHolder != null && fContextHolder.result != null ) { 
+				usage.duration = Utils.asDuration(fContextHolder.result.elapsedTime);
+				usage.status = fContextHolder.result.status.name() ;
+				usage.elapsed = fContextHolder.result.elapsedTime/1000;
 			}
 
 			Logger.debug("Updating usage log for request # %s", this.fRid );
@@ -587,17 +591,17 @@ public class Service implements Serializable {
 
 	void run() {
 		
-		
+		OutResult fOutResult = fContextHolder.getResult();
 		try {
 			/* 
 			 * initialize the process 
 			 */
-			process.init(new CommandCtx(fCtx)); // <-- pass to the command context the save variables
+
+			process.init(fContextHolder); // <-- pass to the command context the save variables
 			
 			/* 
 			 * the main execution 
 			 */
-			fOutResult = null;
 			boolean success = false; 
 
 			
@@ -611,40 +615,32 @@ public class Service implements Serializable {
 				 * if result is OK handle the commands for valid case  
 				 */
 				OutSection branch = getOutSection(success);
-				fOutResult = branch.result;
+				fOutResult.addAll( branch.result );
 				
-				if( process.hasResult() ) {
-					fOutResult.addAll(process.getResult());
-					fOutResult.elapsedTime = process.elapsedTime;
-					fOutResult.status = success ? Status.DONE : Status.FAILED;
-					fOutResult.bundle = bundle.name;
-					fOutResult.service = this.name;
-					fOutResult.title = this.title;
-					fOutResult.cite = this.cite;
-				}
+				fOutResult.status = success ? Status.DONE : Status.FAILED;
+				fOutResult.bundle = bundle.name;
+				fOutResult.service = this.name;
+				fOutResult.title = this.title;
+				fOutResult.cite = this.cite;
 				
 				/*
 				 * execute the result events 
 				 */
 				if( branch.hasEvents() ) {
-					branch.events.init(new CommandCtx(fCtx));	// init with the current context
+					branch.events.init(fContextHolder);	// init with the current context
 					branch.events.execute();
-					if( branch.events.getResult() != null ) {
-						branch.result.addAll( branch.events.getResult() );
-					}
 				}	
 				
 				/*
 				 * normalize path on result items 
 				 */
-				resolveOutFilesPath();
+				resolveOutFilesPath(fOutResult);
 			}
 
 		}
 		catch( Exception e ) {
 			/* trace the error in the log file */
 			Logger.error(e, "Error processing request # %s", fRid);
-			if( fOutResult == null ) fOutResult = defaultOutSection(false).result;
 			fOutResult.status = Status.FAILED;
 			fOutResult.addError( e.getMessage() );
 			
@@ -660,7 +656,7 @@ public class Service implements Serializable {
 	/**
 	 * Resolve file system and web paths for files in {@link OutItem} instances 
 	 */
-	void resolveOutFilesPath() { 
+	void resolveOutFilesPath( OutResult fOutResult ) { 
 		for( OutItem item : fOutResult.getItems() ) { 
 			if( item.file == null && item.name != null) { 
 				item.file = this.repo().getFile(item.name);
@@ -745,7 +741,6 @@ public class Service implements Serializable {
 	/**
 	 * Replace all variables in the environment with the specified context and return it
 	 * 
-	 * @param fCtx
 	 * @return
 	 */
 	public Map<String,String> defaultEnvironment() {
@@ -769,8 +764,8 @@ public class Service implements Serializable {
                 if( var != null && var.startsWith("env.")) { 
                 	replace = System.getenv(var.substring(4));
                 }
-                else if( fCtx != null ) { 
-                	replace = fCtx.get(var) != null ? fCtx.get(var).toString() : null; 
+                else if( fContextHolder.map != null ) { 
+                	replace = fContextHolder.map.get(var) != null ? fContextHolder.map.get(var).toString() : null; 
                 }
                 
                 if (replace == null) {

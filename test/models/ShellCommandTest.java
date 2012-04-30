@@ -9,7 +9,7 @@ import util.TestHelper;
 import util.XStreamHelper;
 import exception.CommandException;
 
-public class GenericCommandTest extends UnitTest {
+public class ShellCommandTest extends UnitTest {
 	
 	@Before
 	public void init() {
@@ -33,7 +33,7 @@ public class GenericCommandTest extends UnitTest {
 			"</exec>";
 
 		
-		GenericCommand cmd = XStreamHelper.fromXML(xml);
+		ShellCommand cmd = XStreamHelper.fromXML(xml);
 		assertNotNull(cmd);
 		assertEquals("out.txt", cmd.logfile);
 		assertEquals("err.txt", cmd.errfile);
@@ -47,7 +47,7 @@ public class GenericCommandTest extends UnitTest {
 	
 	@Test 
 	public void testExecuteOK() throws Exception {
-		GenericCommand cmd = new GenericCommand();
+		ShellCommand cmd = new ShellCommand();
 		cmd.program = new Eval("ls");
 		cmd.args = new CmdArgs("-la");
 		cmd.logfile = "outfile.txt";
@@ -67,12 +67,12 @@ public class GenericCommandTest extends UnitTest {
 		String cmdline = IO.readContentAsString(cmd.getCmdFile());
 		assertEquals("ls -la", cmdline.trim());
 		
-		assertTrue( cmd.getResult().getStdout().exists() );
+		assertTrue( cmd.ctx.result.getStdout().exists() );
 	} 
 
 	@Test 
 	public void testExecuteFail() {
-		GenericCommand cmd = new GenericCommand();
+		ShellCommand cmd = new ShellCommand();
 		cmd.program = new Eval("xxx");
 		cmd.init();
 		boolean result;
@@ -87,11 +87,11 @@ public class GenericCommandTest extends UnitTest {
 	
 	@Test
 	public void testConstructorWithProgram() { 
-		GenericCommand cmd = new GenericCommand("ls");
+		ShellCommand cmd = new ShellCommand("ls");
 		assertEquals( "ls", cmd.program.eval() );
 		assertEquals( null, cmd.args );
 		
-		cmd = new GenericCommand("ls -la");
+		cmd = new ShellCommand("ls -la");
 		assertEquals( "ls", cmd.program.eval() );
 		assertEquals( "-la", cmd.args.toCmdLine() );
 		
@@ -99,7 +99,7 @@ public class GenericCommandTest extends UnitTest {
 	
 	@Test
 	public void testProgramWithFlagArgument() { 
-		GenericCommand cmd = new GenericCommand("protogene --something=${field1} --flag=${missing}");
+		ShellCommand cmd = new ShellCommand("protogene --something=${field1} --flag=${missing}");
 		cmd.init();
 		
 		assertEquals( "protogene --something=uno", cmd.getCmdLine() );

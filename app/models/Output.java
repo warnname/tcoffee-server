@@ -23,7 +23,7 @@ public class Output implements Serializable {
 		this.fail = Utils.copy(that.fail);
 	}
 	
-	public void addToValid( AbstractCommand<OutResult> cmd ) { 
+	public void addToValid( AbstractCommand cmd ) { 
 		if( cmd == null ) { return; }
 		if( valid == null) { 
 			valid = new OutSection();
@@ -31,7 +31,7 @@ public class Output implements Serializable {
 		valid.add(cmd);
 	}
 
-	public void addToFail( AbstractCommand<OutResult> cmd ) { 
+	public void addToFail( AbstractCommand cmd ) { 
 		if( cmd == null ) { return; }
 		if( fail == null) { 
 			fail = new OutSection();

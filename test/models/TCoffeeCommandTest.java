@@ -48,7 +48,7 @@ public class TCoffeeCommandTest extends UnitTest {
 
                 /* initialize */
                 File path = new File( AppProps.WORKSPACE_FOLDER, "tcoffee" );
-                tcoffee.init( new CommandCtx("data.path=" + path.getAbsolutePath()) );
+                tcoffee.init( new ContextHolder("data.path=" + path.getAbsolutePath()) );
 
                 
                 List<OutItem> result = tcoffee.parseResultFile(log);
@@ -88,7 +88,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 tcoffee.args = args;
 
                 /* set up the environment */
-                CommandCtx ctx = new CommandCtx();
+                ContextHolder ctx = new ContextHolder();
                 ctx.put("bundle.bin.path", new File(Play.applicationPath, "bundles/tcoffee/bin").getAbsolutePath());
                 ctx.put("bundle.path", new File(Play.applicationPath, "bundles/tcoffee").getAbsolutePath());
                 ctx.put("data.path",  Service.current().folder().toString());
@@ -103,7 +103,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertTrue( tcoffee.getCmdFile().exists() );
                 assertEquals( tcoffee.getCmdLine(), IO.readContentAsString(tcoffee.getCmdFile()).trim() );
 
-                OutResult result = tcoffee.getResult();
+                OutResult result = tcoffee.ctx.result;
                 assertNotNull( result.first("name", "out.log" ));
                 assertNotNull( result.first("name", "sample.score_html" ));
                 assertNotNull( result.first("name", "sample.dnd" ));
@@ -112,7 +112,7 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertNotNull( result.getAlignmentHtml() );
                 assertNotNull( result.getAlignmentFasta() );
 
-                /* assert that the html is the exècted form */
+                /* assert that the html is the expected one */
                 TCoffeeHelperTest.parseHtmlFile(result.getAlignmentHtml().file);
         }
 

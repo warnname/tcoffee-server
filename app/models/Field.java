@@ -35,7 +35,12 @@ import controllers.Data;
 import converters.SimpleCollectionConverter;
 import exception.QuickException;
 
-
+/**
+ * Models an application field used to render the web interface 
+ * 
+ * @author Paolo Di Tommaso
+ *
+ */
 @XStreamAlias("field")
 public class Field implements Serializable {
 
@@ -360,6 +365,15 @@ public class Field implements Serializable {
 			try { sOut.close(); } catch( IOException e ) { Logger.warn("Error closing field out stream for file: %s", target);  }
 		}
 		
+	} 
+	
+	/**
+	 * Add an error the {@link Validation} scope for the current request 
+	 * 
+	 * @param message
+	 */
+	public void error( String message ) {
+		Validation.addError(name, message, new String[]{name});
 	} 
 	
 }

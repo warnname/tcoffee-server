@@ -83,7 +83,7 @@ public class BsubCommand extends AbstractShellCommand {
 	}
 	
 	@Override
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 		
 		command =  _commands != null && _commands.size()>0 ? _commands.get(0) : null;
 		Check.notNull(command, "Missing nested command");
@@ -180,11 +180,6 @@ public class BsubCommand extends AbstractShellCommand {
 		 */
 		success = command.done(success);
 		
-		/* 
-		 * the result of this command is the same as the target command 
-		 */
-		result = command.result;
-
 		if( disabled ) { 
 			return success;
 		}
@@ -220,9 +215,9 @@ public class BsubCommand extends AbstractShellCommand {
 			/* Append each line like an error. 
 			 * Remove all previous errors because we are supposing that the main failure cause is the bsub command */
 			if( count++==0 ) { 
-				result.clearErrors();
+				ctx.result.clearErrors();
 			}
-			result.addError("bsub: " + line);
+			ctx.result.addError("bsub: " + line);
 		}
 		
 	}
@@ -244,7 +239,7 @@ public class BsubCommand extends AbstractShellCommand {
 		}
 
 		if( Utils.isEmpty(jobid)) { 
-			result.addError("Unable to submit your job to grid for computation");
+			ctx.result.addError("Unable to submit your job to grid for computation");
 			return false;
 		}
 		

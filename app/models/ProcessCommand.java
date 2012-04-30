@@ -18,10 +18,10 @@ import exception.CommandException;
  *
  */
 @XStreamAlias("process")
-public class ProcessCommand extends AbstractCommand<OutResult> implements Serializable {
+public class ProcessCommand extends AbstractCommand implements Serializable {
 
 	@XStreamImplicit
-	public List<AbstractCommand<OutResult>> commands;
+	public List<AbstractCommand> commands;
 	
 	/** The default constructor */
 	public ProcessCommand() {}
@@ -43,12 +43,12 @@ public class ProcessCommand extends AbstractCommand<OutResult> implements Serial
 	 * Initialize all commands 
 	 */
 	@Override
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 		super.init(ctx);
 		
 		if(!hasCommands()) return;
 		
-		for( AbstractCommand<OutResult> cmd : commands ) {
+		for( AbstractCommand cmd : commands ) {
 			cmd.init(ctx);
 		}
 	}
@@ -60,14 +60,9 @@ public class ProcessCommand extends AbstractCommand<OutResult> implements Serial
 	 */
 	@Override
 	protected boolean run() throws CommandException {
-		result = new OutResult();
 
-		for( AbstractCommand<OutResult> cmd : commands ) {
+		for( AbstractCommand cmd : commands ) {
 			boolean fail = !cmd.execute();
-
-			if( cmd.getResult() != null ) {
-				result.addAll(cmd.getResult());
-			}
 
 			if( fail ) { 
 				return false;
@@ -80,15 +75,15 @@ public class ProcessCommand extends AbstractCommand<OutResult> implements Serial
 	
 	@Override
 	protected boolean done(boolean success) {
-		result.elapsedTime = this.elapsedTime;
+		ctx.result.elapsedTime = this.elapsedTime;
 		return success;
 	}
 	
-	public void add( AbstractCommand<OutResult> cmd ) { 
+	public void add( AbstractCommand cmd ) { 
 		if( cmd == null ) return;
 
 		if( commands == null ) {
-			commands = new ArrayList<AbstractCommand<OutResult>>();
+			commands = new ArrayList<AbstractCommand>();
 		}
 		commands.add(cmd);
 	}
@@ -98,7 +93,7 @@ public class ProcessCommand extends AbstractCommand<OutResult> implements Serial
 		if( that == null || that.commands == null ) { return; } 
 		
 		if( commands == null ) {
-			commands = new ArrayList<AbstractCommand<OutResult>>();
+			commands = new ArrayList<AbstractCommand>();
 		}
 		
 		commands.addAll( that.commands ); 

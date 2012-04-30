@@ -31,7 +31,7 @@ public class OutSection implements Serializable  {
 		return events != null && events.hasCommands(); 
 	}
 	
-	public void add( AbstractCommand<OutResult> cmd ) { 
+	public void add( AbstractCommand cmd ) { 
 		if( cmd == null ) return;
 		
 		if( events == null ) { 

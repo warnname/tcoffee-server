@@ -66,7 +66,7 @@ public class ServiceTest extends UnitTest {
 		
 		Service service = new Service();
 		service.bundle = bundle;
-		service.fCtx = ctx;
+		service.fContextHolder = new ContextHolder(ctx);
 		
 		Map<String,String> env = service.defaultEnvironment();
 		assertEquals( "/bundle/root", env.get("home") );

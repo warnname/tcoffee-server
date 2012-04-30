@@ -185,7 +185,7 @@ public class CommonController extends Controller {
 	static void renderFile( File root, String path ) { 
 		if( root == null ) { 
 			Logger.error("Cannot render file with null 'root' argument");
-			notFound(); 
+			notFound(path); 
 		} 
 		if( path == null ) { 
 			Logger.error("Cannot render file with null 'path' argument");
@@ -195,7 +195,7 @@ public class CommonController extends Controller {
 		File file = new File(root, path);
 		
 		if( !file.exists() || !file.isFile() ) {
-			notFound(String.format("File '%s' does not exists", path));
+			notFound(path);
 		}
 		
 		if( !file.canRead() ) {

@@ -44,8 +44,6 @@ import bundle.BundleRegistry;
 
 public class Application extends CommonController {
 	
-	static List<String> PAGES = Arrays.asList("index", "history", "references", "help", "contacts");
-
 	static private ThreadLocal<Bundle> bundle = new ThreadLocal<Bundle>();
 	
 	@Before
@@ -262,7 +260,14 @@ public class Application extends CommonController {
     	redirect( Router.reverse(service.action, args).url );
 
 	}
-
+	
+	/**
+	 * This action is used to force the submission of a request for which the result is cached 
+	 * <p>
+	 * See 'cache-warning.html'
+	 * 
+	 * @param rid the request unique identifier 
+	 */
 	public static void submit( String rid ) {
 		assertNotEmpty(rid, "Missing 'rid' argument on #submit action");
 	
@@ -389,6 +394,7 @@ public class Application extends CommonController {
 		exec(bundle.get().name,service, true);
 	}
 	
+	@Util
 	static void exec( String bundle, Service service, boolean enableCaching ) {
 		
 		/*
@@ -423,7 +429,11 @@ public class Application extends CommonController {
     	result(service.rid());			
 	}
 
-
+	/**
+	 * Download a 'static' resource provided in the bundle 'public' folder 
+	 * 
+	 * @param path
+	 */
 	public static void servePublic( String path ) { 
 		assertNotEmpty(path, "Missing 'path' argument on #servePublic action");
 		response.contentType = MimeTypes.getMimeType(path, "text/plain");

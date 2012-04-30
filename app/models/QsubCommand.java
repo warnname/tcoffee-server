@@ -107,7 +107,7 @@ public class QsubCommand extends AbstractShellCommand {
 	}
 	
 	@Override
-	public void init(CommandCtx ctx) {
+	public void init(ContextHolder ctx) {
 		
 		command =  _commands != null && _commands.size()>0 ? _commands.get(0) : null;
 		Check.notNull(command, "Missing nested command");
@@ -263,11 +263,6 @@ public class QsubCommand extends AbstractShellCommand {
 		 */
 		success = command.done(success);
 		
-		/* 
-		 * the result of this command is the same as the target command 
-		 */
-		result = command.result;
-
 		if( disabled ) { 
 			return success;
 		}
@@ -305,8 +300,8 @@ public class QsubCommand extends AbstractShellCommand {
 			return false;
 		}
 		
-		result.clearErrors();
-		result.addError(error);
+		ctx.result.clearErrors();
+		ctx.result.addError(error);
 		return true;
 	}
 
@@ -322,7 +317,7 @@ public class QsubCommand extends AbstractShellCommand {
 		}
 		
 		if( Utils.isEmpty(jobid)) { 
-			result.addError("Unable to submit your job to grid for computation");
+			ctx.result.addError("Unable to submit your job to grid for computation");
 			return false;
 		}
 		
