@@ -396,30 +396,27 @@ public class Service implements Serializable {
 		 */
 		fContextHolder = new ContextHolder();
 		fContextHolder.input = input;
-		fContextHolder.result = new OutResult();;
-		
-		Map<String,Object> params = new HashMap<String,Object>();
-		
+		fContextHolder.result = new OutResult();
 		
 		AppProps props = AppProps.instance();
 		for( String key : props.getNames() ) { 
 			String val;
 			if( (val=props.getString(key,null)) != null ) { 
-				params.put(key, val);
+				fContextHolder.map.put(key, val);
 			}
 		}
 		
 		/* add the bundle properties content */
 		for( Object key : bundle.properties.keySet() ) {
-			setVariable( key.toString(), bundle.properties.getProperty(key.toString()));
+			fContextHolder.map.put( key.toString(), bundle.properties.getProperty(key.toString()));
 		}
 
 		/* the private folder for this service */
-		setVariable( "data.path", fRepo.getPath() );
+		fContextHolder.map.put( "data.path", fRepo.getPath() );
 
 		/* some 'special' variables */
-		setVariable("_rid", rid());
-		setVariable("_result_url", getResultURL());
+		fContextHolder.map.put("_rid", rid());
+		fContextHolder.map.put("_result_url", getResultURL());
 		
 		
 		/* 
