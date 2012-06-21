@@ -681,7 +681,7 @@
     <title>TM-Coffee</title>
     <group>Alignment</group>      
     <description>Aligns transmembrane proteins using homology extension (new)</description>
-    <cite><![CDATA[http://www.biomedcentral.com/1471-2105/13/S4/S1]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/22536955]]></cite>
     
     <input>
       <fieldset >
@@ -1185,7 +1185,7 @@
           
           <field type="checkbox" name="method" label="Pairwise Methods" >
           <value>Mproba_pair</value>
-            <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair</choices>
+            <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
           </field>
     </fieldset>
   
