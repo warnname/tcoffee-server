@@ -1,8 +1,11 @@
 package models;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.blackcoffee.commons.utils.StringIterator;
 
 import play.Logger;
 import play.libs.IO;
@@ -623,7 +627,21 @@ public class Repo implements Serializable {
 	
 	public File store( String content ) { 
 		File target = new File( fRoot, String.format("data_%s.in", Integer.toHexString(content.hashCode())));
-		IO.writeContent(content, target);
+		BufferedOutputStream out = null;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(target));
+			for( String line : new StringIterator(content)) {
+				out.write( line.getBytes() );
+				out.write('\n');
+			}
+
+		}
+		catch(IOException e ) {
+			throw new RuntimeException( String.format("Ooops cannot write file: '%s'", target) , e);
+		}
+		finally {
+			if( out != null ) try { out.close(); } catch( Exception e ) { }
+		}
 		return target;
 	}
 	

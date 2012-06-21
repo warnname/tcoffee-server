@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.blackcoffee.commons.utils.StringIterator;
 
 import play.Logger;
 import play.Play;
@@ -347,7 +348,10 @@ public class Field implements Serializable {
 			// save the field value (instead of copying the source 'file') because 
 			// in this way we use the 'normalized' value, not the original version
 			sOut = new FileOutputStream(target);
-			IOUtils.write(value, sOut);
+			for( String line : new StringIterator(value)) {
+				sOut.write( line.getBytes() );
+				sOut.write('\n');
+			}
 			
 			// update the file attribute to the new location 
 			fFile = target;
