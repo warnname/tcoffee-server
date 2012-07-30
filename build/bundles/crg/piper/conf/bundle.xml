@@ -1,12 +1,12 @@
-<bundle name="rnamap" version="1.0.533" >
-  <title>RNA-Map</title>
-  <description>RNA Mapping</description>
+<bundle name="piper" version="0.5" >
+  <title>Pipe-R</title>
+  <description>RNA Mapping pipeline</description>
   <author>Giovanni Bussotti </author>
   <email>giovanni.bussotti@crg.es</email>
 
   
-  <service name="rnamap">
-    <title>RNA-Mapping</title>
+  <service name="piper">
+    <title>Pipe-R</title>
     <description>Provide a description of the data here</description>
  	<input>
       <fieldset >
@@ -14,6 +14,14 @@
       
         <field type='memo' name='query' label='Query' >
           <sample>public/5_RNA_queries.fa.txt</sample>
+          <validation required='true' format='fasta' maxnum="100" >
+          <maxnum-error>You can enter at most 100 transcript</maxnum-error>
+          </validation>
+        </field>
+        
+        <field type='checkbox' name='genomes' label='Genomes' >
+        <choices>c_briggsae.WS227.genomic_softmasked, c_elegans.WS227.genomic_softmasked</choices>
+        <validation required='true' />
         </field>
      </fieldset>
 
@@ -27,7 +35,7 @@
 	</input>
   
   <process>
-	<script-command file="RnaMapRunner.groovy">
+	<script-command file="PiperRunner.groovy">
 	</script-command>
   </process>
   
@@ -39,20 +47,20 @@
         <events>
           <mail> 
           <to>${email}</to>
-          <subject>AMPA result</subject>
+          <subject>Pipe-R result</subject>
           <body>
           Hello, 
           
-          Your AMPA process been completed. 
+          Your Pipe-R process been completed. 
           
-          Click here to view --> ${_result_url} 
+          Click here to view the result page --> ${_result_url} 
           
           If you have questions, suggestions or to report problems 
-          do not reply to this message, write instead to marc.torrent@upf.edu. 
+          do not reply to this message, write instead to giovanni.bussotti@crg.es. 
 
           
           Cheers, 
-          AMPA team
+          Pipe-R team
           </body>
           </mail>
         </events>    
@@ -62,26 +70,26 @@
     <!--  definition for failed result -->
     <fail>
         <result> 
-        <title>AMPA has failed</title>
+        <title>Pipe-R has failed</title>
         </result>
   
         <events>
           <mail> 
           <to>${email}</to>
-          <subject>AMPA process result</subject>
+          <subject>Pipe-R process result</subject>
           <body>
           Hi, 
           
-          Unfortunately your AMPA process terminated with errors. 
+          Unfortunately your Pipe-R process could not complete. 
           
-          Click here to check --> ${_result_url} 
+          Click here to view the error page --> ${_result_url} 
           
           If you have questions, suggestions or to report problems 
-          do not reply to this message, write instead to marc.torrent@upf.edu. 
+          do not reply to this message, write instead to giovanni.bussotti@crg.es. 
           
           
           Cheers, 
-          AMPA team
+          Pipe-R team
           </body>
           </mail>
         </events>
