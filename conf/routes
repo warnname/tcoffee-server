@@ -15,6 +15,7 @@ GET		/tmcoffee				Main.tmcoffee
 GET		/core					Main.core
 GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
+GET		/piper				    Application.index(bundle:'piper')
 GET 	/robots.txt				Main.robots
 GET		/favicon.ico			Main.favicon
 GET		/google{siteId}.html	Main.googleSiteVerification

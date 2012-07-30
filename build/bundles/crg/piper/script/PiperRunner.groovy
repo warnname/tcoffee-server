@@ -1,6 +1,7 @@
 import models.Field;
 import models.OutItem;
 import play.Logger;
+import play.libs.Time
 
 /*
  * This script invoke the 'Piper' execution
@@ -11,20 +12,35 @@ import play.Logger;
  * - context: the execution context object 
  */ 
 
- /*
-  * Copy the select dataset to the target folder  
-  */
-def piperFolder = new File(context['bundle.path'], "rmp")
-def heatmapScriptFile = new File(piperFolder, "qualityCheck/utility/heatmap.R")
-def formattedGenomesFolder = new File(context['settings.piper.allgenomes.path'])
-def inputGenomesFolder = new File(context['settings.piper.inputgenomes.path'])
+def bundlePath = context['bundle.path']
 def scratchFolder = new File(context['data.path'])
-def timeout = 10 * 60 * 60 * 1000
+def formattedGenomesFolder = new File(context['settings.piper.formatted.genomes.path'])
+def timeout = Time.parseDuration( context['settings.piper.max.duration'] ?: '1h' ) *1000
+def cmdline = context['settings.piper.cmdline'] ?: ''
+
+def availGenomesFile = context['settings.piper.all.genomes.file'] ?: 'dataset/all-genomes.txt'
+availGenomesFile = availGenomesFile.startsWith('/') ? new File(availGenomesFile) : new File(bundlePath, availGenomesFile)
+
+// The Piper pipeline scripts root can be specified by the variable 'settings.piper.pipeline.path'
+// If the path specified is NOT absoulte, it is relative to the bundle path
+// If not specified is will be the path 'pipeline' in the piper bundle
+def piperFolder = context['settings.piper.pipeline.path'] ?: 'pipeline'
+piperFolder = (piperFolder .startsWith('/')) ? new File(piperFolder) : new File(bundlePath, piperFolder)
+
+// the hetmap script file 
+def heatmapScriptFile = new File(piperFolder, "qualityCheck/utility/heatmap.R")
 
 assert piperFolder.exists(), "The Piper scripts folder does not exist: '$piperFolder'"
 assert scratchFolder.exists(), "The folder where the job should run does not exists: '$scratchFolder'"
 assert heatmapScriptFile.exists(), "Cannot file 'heatmap' script: '$heatmapScriptFile'" 
+assert availGenomesFile.exists(), "The file '${availGenomesFile}' does not exist"
 
+Logger.debug "scratch-folder: $scratchFolder" 
+Logger.debug "formatted-genomes-folder: ${formattedGenomesFolder}"
+Logger.debug "piper-folder: ${piperFolder}"
+Logger.debug "avail-genomes-file: ${availGenomesFile}"
+Logger.debug "timeout: $timeout"
+Logger.debug "cmdline: $cmdline"
 
 /* 
  * THE USER INPUT ENTRIES 
@@ -41,12 +57,21 @@ assert genomes, 		"Missing genomes input"
 
 
 /*
- *  Create the 'genomes' file requied by 'Piper' CLI containing the absolute path 
- *  to the selected genomes by the user
+ *  Create the 'genomes' file required by 'Piper' CLI containing the absolute path 
+ *  to the selected genomes by the user.
+ *  
+ *  The 'genomes' field contains a blank (or comma) separated list of genomes. 
+ *  For each of then is created an entry line in the 'genomes' file,
+ *  each line is composed by two parts: the absolute genomes file name, plus 
+ *  the file name itself used as entry handler 
  */
 def gtext = new StringBuilder()
-genomes.split(' ,') .each {
-	gtext << new File(inputGenomesFolder, it + '.fa').absolutePath << ' ' << it << '\n'
+genomes.split(' |\\,') .each {
+	def pattern = ~".+\\b${it}\$" 
+	def line = availGenomesFile.readLines().grep(pattern)?.find({true})   // <-- strange bug w/o the '{true}' closure condition
+	assert line, "Cannot find the genome fasta file for entry: '${it}'"
+	// append to the buffer result
+	gtext << line << '\n'
 } 
 
 def genomesFile = new File(scratchFolder, 'genomes')
@@ -97,7 +122,7 @@ new File(scratchFolder,"run.sh").text =
 
 "chmod +x ./run.sh".execute(null,scratchFolder)
 		
-def proc = new ProcessBuilder("sh", "-c", "./run.sh")
+def proc = new ProcessBuilder("sh", "-c", "$cmdline ./run.sh".toString())
 		.directory(scratchFolder)
 		.redirectErrorStream(true)
 		.start()

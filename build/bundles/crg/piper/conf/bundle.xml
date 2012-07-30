@@ -1,4 +1,4 @@
-<bundle name="piper" version="0.5" >
+<bundle name="piper" version="0.5.6" >
   <title>Pipe-R</title>
   <description>RNA Mapping pipeline</description>
   <author>Giovanni Bussotti </author>
@@ -20,7 +20,7 @@
         </field>
         
         <field type='checkbox' name='genomes' label='Genomes' >
-        <choices>c_briggsae.WS227.genomic_softmasked, c_elegans.WS227.genomic_softmasked</choices>
+        <choices>cat,chimp,cow,dog,elephant,gibbon,guinea_pig,horse,human,macaque,marmoset,microbat,mouse,opossum,orangutan,panda,pig,platypus,rabbit,rat,sheep</choices>
         <validation required='true' />
         </field>
      </fieldset>
@@ -28,7 +28,7 @@
 
      <fieldset>
         <field type='text' name="email" label='Your email address' >
-          <hint>Optional to notify the results of this calculation</hint>
+          <hint>Optional, to notify you on process completion</hint>
           <validation format="EMAIL" />
         </field>
      </fieldset>

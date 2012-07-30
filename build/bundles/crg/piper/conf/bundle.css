@@ -7,8 +7,16 @@
   src: local('Rammetto One Regular'), local('RammettoOne-Regular'), url('http://themes.googleusercontent.com/static/fonts/rammettoone/v2/mh0uQ1tV8QgSx9v_KyEYPKRDOzjiPcYnFooOUGCOsRk.woff') format('woff');
 }
 
-font-family: 'Rammetto One', cursive;
+body  {
+	background: white url(public/images/piper-bg.gif) repeat-x 0% 0%;
+	text-align: center;
+}
 
+#content h2 
+{
+	background: transparent url(public/images/bl.gif) repeat-x 0% bottom;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);	
+}
 
 #logo {
 	float: left;
@@ -53,14 +61,14 @@ font-family: 'Rammetto One', cursive;
 #content em,
 #content h1 small 
 {
-	color: #0c8aa3;
+	color: #fd7512;
 }
 
 #content a,
 #footer a
 {
-	color: #0c8aa3;
-	border-color: #0c8aa3; 
+	color: #fd7512;
+	border-color: #fd7512; 
 }
 
 

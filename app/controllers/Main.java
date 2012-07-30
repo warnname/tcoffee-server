@@ -115,16 +115,20 @@ public class Main extends CommonController {
 		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=mcoffee")).toString() );
 	}
 	
-	/**
-	 * Quick link Expresso
+	/** 
+	 * Quick link Expresso 
 	 */
 	public static void expresso() { 
 		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=expresso")).toString() );
 	}
 
+	/** 
+	 * Quick link to core 
+	 */
 	public static void core() { 
 		redirect( Router.reverse("Application.main", params("bundle=tcoffee", "name=core")).toString() );
 	}
+	
 	
 	/**
 	 * Return the 'robots.txt' text file SEO optimization

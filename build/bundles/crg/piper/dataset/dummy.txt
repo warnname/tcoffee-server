@@ -1,0 +1,2 @@
+/Users/ptommaso/workspace/rnamap/data/c_briggsae.WS227.genomic_softmasked.fa  cat
+/Users/ptommaso/workspace/rnamap/data/c_elegans.WS227.genomic_softmasked.fa	chimp
