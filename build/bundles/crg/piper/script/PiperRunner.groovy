@@ -1,5 +1,6 @@
 import models.Field;
 import models.OutItem;
+import models.Service;
 import play.Logger;
 import play.libs.Time
 
@@ -110,15 +111,25 @@ genomesFile.eachLine { String line ->
  * Launch the pipeline
  */
 
+def exports = ""
+Service.current().defaultEnvironment()?.each { key,value ->
+	exports += "export $key=\"$value\"\n"	
+}
+// append the piper scripts folder 
+exports += "export PATH=\"${piperFolder}\":\$PATH"
+
 new File(scratchFolder,"run.sh").text = 
-		"""\
-		#!/bin/sh
-		set -e
-		export PATH="${piperFolder}:\$PATH"
-		startPipeline.pl -genomes ${genomesFile} -query ${query} -experiment exp_1 -blast_strategy abblastn -blast blastn; 
-		executePipeline.pl -step similarity -experiment exp_1 -pipeline_dir . 
-		"""
-		.stripIndent()
+"""\
+#!/bin/sh
+set -e
+${exports}
+[ \$TMP_4_TCOFFEE ] && mkdir -p \$TMP_4_TCOFFEE
+[ \$LOCKDIR_4_TCOFFEE ] && mkdir -p \$LOCKDIR_4_TCOFFEE
+[ \$CACHE_4_TCOFFEE ] && mkdir -p \$CACHE_4_TCOFFEE
+startPipeline.pl -genomes ${genomesFile} -query ${query} -experiment exp_1 -blast_strategy abblastn -blast blastn; 
+executePipeline.pl -step similarity -experiment exp_1 -pipeline_dir . 
+"""
+
 
 "chmod +x ./run.sh".execute(null,scratchFolder)
 		
@@ -164,7 +175,11 @@ def simMatrixFile = new File(experimentFolder,"simMatrix.csv")
 assert experimentFolder.exists(), "The pipeline experiments path does not exist: '$experimentFolder'"
 assert simMatrixFile.exists(), "The similarity matrix file does not exist: '$simMatrixFile'"
 
-// 2
+// 2 
+// add the similary matrix to the result set 
+result.add( new OutItem(simMatrixFile, "matrix_file") )
+
+// 3
 def cmd = ["R","CMD", "BATCH", heatmapScriptFile.toString()]
 def r_proc = new ProcessBuilder(cmd).directory(experimentFolder).start()
 exit = timeout ? r_proc.waitForOrKill(timeout) : r_proc.waitFor()
