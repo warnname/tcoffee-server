@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="views/**" kind="src" path="app"/>
+	<classpathentry kind="src" path="bundles/rnamap/script"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/ptommaso/tools/play-1.2.4/framework/play-1.2.4.jar" sourcepath="/Users/ptommaso/tools/play-1.2.4/framework/src"/>

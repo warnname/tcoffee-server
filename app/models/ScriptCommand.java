@@ -121,12 +121,39 @@ public class ScriptCommand extends AbstractCommand {
 			return delegate.run();
 		}
 
-		if( script != null ) {
-			script.setProperty("input", ctx.input); 
-			script.setProperty("result", ctx.result); 
-			script.setProperty("context", ctx.map); 
-			script.invokeMethod("run", null);
-			return true;
+		try {
+			if( script != null ) {
+				script.setProperty("input", ctx.input); 
+				script.setProperty("result", ctx.result); 
+				script.setProperty("context", ctx.map); 
+				// invoke the script 
+				Object result = script.invokeMethod("run", null);
+				
+				// a boolean result is interpred as the script success flag
+				if( result instanceof Boolean ) {
+					Logger.info("Script returned value: %s", result);
+					return ((Boolean)result).booleanValue();
+				}
+				
+				// an integer result is interpred as the script exit code 
+				// 0 -->  OK 
+				// not zero --> error 
+				if( result instanceof Integer ) {
+					Logger.info("Script returned value: %s", result);
+					return ((Integer)result)==0;
+				}
+				
+				// otherwise result ok by default
+				return true;
+			}
+		}
+		catch( Throwable e ) {
+			if( e instanceof CommandException ) {
+				throw (CommandException)e;
+			}
+			else {
+				throw new CommandException(e);
+			}
 		}
 		
 		Logger.warn("Service with not run method definition");

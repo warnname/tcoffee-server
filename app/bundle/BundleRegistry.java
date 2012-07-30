@@ -301,7 +301,16 @@ public class BundleRegistry {
 			}
 		}
 
-		
+		if( bundle.scriptPath == null || !bundle.scriptPath.exists() ) {
+			return hash;
+		}
+
+		/* add scripts to hot reloadale files */
+		for( File file : bundle.scriptPath.listFiles() ) { 
+			hash = Utils.hash(hash, file.getName());
+			hash = Utils.hash(hash, file.lastModified());
+			hash = Utils.hash(hash, file.length());
+		}		
 		
 		return hash;
 	} 	

@@ -1,0 +1,95 @@
+<bundle name="rnamap" version="1.0.533" >
+  <title>RNA-Map</title>
+  <description>RNA Mapping</description>
+  <author>Giovanni Bussotti </author>
+  <email>giovanni.bussotti@crg.es</email>
+
+  
+  <service name="rnamap">
+    <title>RNA-Mapping</title>
+    <description>Provide a description of the data here</description>
+ 	<input>
+      <fieldset >
+        <title>Analyzing your sequence</title>
+      
+        <field type='memo' name='query' label='Query' >
+          <sample>public/5_RNA_queries.fa.txt</sample>
+        </field>
+     </fieldset>
+
+
+     <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>Optional to notify the results of this calculation</hint>
+          <validation format="EMAIL" />
+        </field>
+     </fieldset>
+	</input>
+  
+  <process>
+	<script-command file="RnaMapRunner.groovy">
+	</script-command>
+  </process>
+  
+
+  <output>
+    <!--  definition for valid result  -->
+    <valid>
+        
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>AMPA result</subject>
+          <body>
+          Hello, 
+          
+          Your AMPA process been completed. 
+          
+          Click here to view --> ${_result_url} 
+          
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
+
+          
+          Cheers, 
+          AMPA team
+          </body>
+          </mail>
+        </events>    
+      
+    </valid>
+    
+    <!--  definition for failed result -->
+    <fail>
+        <result> 
+        <title>AMPA has failed</title>
+        </result>
+  
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>AMPA process result</subject>
+          <body>
+          Hi, 
+          
+          Unfortunately your AMPA process terminated with errors. 
+          
+          Click here to check --> ${_result_url} 
+          
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
+          
+          
+          Cheers, 
+          AMPA team
+          </body>
+          </mail>
+        </events>
+    
+    </fail>
+  </output>
+  
+</service>
+
+
+</bundle>
