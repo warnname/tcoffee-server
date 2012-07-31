@@ -18,6 +18,8 @@ def scratchFolder = new File(context['data.path'])
 def formattedGenomesFolder = new File(context['settings.piper.formatted.genomes.path'])
 def timeout = Time.parseDuration( context['settings.piper.max.duration'] ?: '1h' ) *1000
 def cmdline = context['settings.piper.cmdline'] ?: ''
+// append the 'qsub' job-id
+if( cmdline?.toString().trim().startsWith('qsub') ) cmdline += " -N 'p-${context['_rid']}' "
 
 def availGenomesFile = context['settings.piper.all.genomes.file'] ?: 'dataset/all-genomes.txt'
 availGenomesFile = availGenomesFile.startsWith('/') ? new File(availGenomesFile) : new File(bundlePath, availGenomesFile)
@@ -133,6 +135,7 @@ executePipeline.pl -step similarity -experiment exp_1 -pipeline_dir .
 
 "chmod +x ./run.sh".execute(null,scratchFolder)
 		
+
 def proc = new ProcessBuilder("sh", "-c", "$cmdline ./run.sh".toString())
 		.directory(scratchFolder)
 		.redirectErrorStream(true)

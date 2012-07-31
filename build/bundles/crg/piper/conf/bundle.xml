@@ -1,7 +1,7 @@
 <bundle name="piper" version="0.5.6" >
   <title>Pipe-R</title>
   <description>RNA Mapping pipeline</description>
-  <author>Giovanni Bussotti </author>
+  <author>Giovanni Bussotti</author>
   <email>giovanni.bussotti@crg.es</email>
 
   
@@ -15,12 +15,12 @@
         <field type='memo' name='query' label='Query' >
           <sample>public/5_RNA_queries.fa.txt</sample>
           <validation required='true' format='fasta' maxnum="100" >
-          <maxnum-error>You can enter at most 100 transcript</maxnum-error>
+          <maxnum-error>You can enter at most 100 transcripts</maxnum-error>
           </validation>
         </field>
         
         <field type='checkbox' name='genomes' label='Genomes' >
-        <choices>cat,chimp,cow,dog,elephant,gibbon,guinea_pig,horse,human,macaque,marmoset,microbat,mouse,opossum,orangutan,panda,pig,platypus,rabbit,rat,sheep</choices>
+        <choices>Chimp,Dog,Horse,Human,Mouse,Opossum,Orangutan,Pig,Rat,Sheep</choices>
         <validation required='true' />
         </field>
      </fieldset>
