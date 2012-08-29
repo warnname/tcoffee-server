@@ -1,0 +1,9 @@
+Sequence	PDB	Score
+1g41a   	0g41a	1.85
+1e94e   	2e94e	1.59
+1e32a   	3e32a	1.56
+1d2na   	4d2na	1.46
+AVG     	-	1.62
+
+
+STRIKE out:
