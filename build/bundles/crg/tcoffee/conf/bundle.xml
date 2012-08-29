@@ -124,7 +124,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>score_html fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -232,7 +232,7 @@
     
     <field type="checkbox" name='output' label='Alignment format' >
       <value>score_html fasta_aln clustalw_aln phylip</value>
-      <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+      <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
     </field>
     
     <field type='dropdown' name='letter' label='Case' >
@@ -340,7 +340,7 @@
       
       <field type="checkbox" name='output' label='Alignment format' >
         <value>score_html fasta_aln clustalw_aln phylip</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
@@ -492,7 +492,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>score_html fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -612,7 +612,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>score_html fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -711,7 +711,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -827,7 +827,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>score_html fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -938,7 +938,7 @@
       
      <field type="checkbox" name='output' label='Alignment format' >
        <value>score_html fasta_aln clustalw_aln phylip</value>
-       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -1091,7 +1091,7 @@
       
       <field type="checkbox" name='output' label='Alignment format' >
         <value>score_html fasta_aln clustalw_aln phylip</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
@@ -1195,7 +1195,7 @@
       
       <field type="checkbox" name='output' label='Alignment format' >
         <value>score_html fasta_aln clustalw_aln phylip</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
