@@ -619,6 +619,7 @@ public class Service implements Serializable {
 				fOutResult.service = this.name;
 				fOutResult.title = this.title;
 				fOutResult.cite = this.cite;
+				fOutResult.elapsedTime = process.elapsedTime;
 				
 				/*
 				 * execute the result events 

@@ -68,6 +68,7 @@ public abstract class AbstractCommand implements Serializable {
 		}
 		finally {
 			elapsedTime = System.currentTimeMillis() - startTime;
+			Logger.debug("%s cmd elapsedTime: %s ms", this.getClass().getSimpleName(), elapsedTime);
 		}
 		
 		return fOK = done(result);

@@ -73,11 +73,6 @@ public class ProcessCommand extends AbstractCommand implements Serializable {
 		
 	}
 	
-	@Override
-	protected boolean done(boolean success) {
-		ctx.result.elapsedTime = this.elapsedTime;
-		return success;
-	}
 	
 	public void add( AbstractCommand cmd ) { 
 		if( cmd == null ) return;
