@@ -160,6 +160,8 @@ public class ValidationCheckTest extends UnitTest {
 		assertEquals( check.maxError, Validation.error("fieldMaxSize").message() );
 	}	
 	
+	
+	
 	@Test
 	public void testPattern() {
 
@@ -524,6 +526,40 @@ public class ValidationCheckTest extends UnitTest {
 		assertEquals( check.maxLengthError, Validation.error("fieldFastaMaxLength").message() );			
 	}
 	
+	
+	@Test
+	public void testFastaSameLen() {
+		
+		final String SAMPLE_GOOD = 
+			">1aboA \n" +
+			"NLFVALYDFVASGDNTLSITKGEK---LGYNHNGEWCEAQTKNGQGWVPS\n" +
+			">1ycsB\n" +
+			"KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGY\n";
+
+		final String SAMPLE_BAD = 
+			">1aboA \n" +
+			"NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPS\n" +
+			">1ycsB\n" +
+			"KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGY\n" +
+			"NLFVALYDFVAS\n";		
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "FASTA";
+		check.formatError = "Invalid FASTA format";
+
+		check.sameLength = true;
+		check.sameLengthError = "Not the same length";
+		
+		
+		check.apply("fieldSameLength", SAMPLE_GOOD);
+		assertFalse( Validation.hasError("fieldSameLength") );		
+
+		check.apply("fieldSameLength", SAMPLE_BAD);
+		assertTrue( Validation.hasError("fieldSameLength") );		
+		assertEquals( check.sameLengthError, Validation.error("fieldSameLength").message() );			
+	}
+	
+	
 	@Test 
 	public void testClustalOK() { 
 		String GOOD = 
@@ -540,6 +576,9 @@ public class ValidationCheckTest extends UnitTest {
 		check.apply("fieldClustal", GOOD);
 		assertFalse( Validation.hasError("fieldClustal") );		
 	}
+	
+	
+	
 	
 	@Test 
 	public void testClustalFail() { 
@@ -585,6 +624,40 @@ public class ValidationCheckTest extends UnitTest {
 		
 		assertEquals( NORMALIZED, check.getNormalizedValue() );
 	}	
+	
+	@Test
+	public void testClustalSameLen() {
+		
+		String SAMPLE_GOOD = 
+				"CLUSTAL W (1.82) multiple sequence alignment\n" +
+				"\n" +
+				"1aboA  NGQGWVPSNYITPVN--NPTN\n" +
+				"1ycsB  DKEGYVPRNLLGLYP---PTN\n" +
+				"1pht   GERGDFPGTYVEYIGRKKISP";		
+
+		String SAMPLE_BAD = 
+				"CLUSTAL W (1.82) multiple sequence alignment\n" +
+				"\n" +
+				"1aboA  NGQGWVPSNYITPVN------\n" +
+				"1ycsB  DKEGYVPRNLLGLYP\n" +
+				"1pht   GERGDFPGTYVEYIGRKKISP";		
+		
+		ValidationCheck check = new ValidationCheck();
+		check.format = "CLUSTAL";
+		check.formatError = "Invalid CLUSTAL format";
+
+		check.sameLength = true;
+		check.sameLengthError = "Not the same length";
+		
+		
+		check.apply("clustalSameLength", SAMPLE_GOOD);
+		assertFalse( Validation.hasError("clustalSameLength") );		
+
+		check.apply("clustalSameLength", SAMPLE_BAD);
+		assertTrue( Validation.hasError("clustalSameLength") );		
+		assertEquals( check.sameLengthError, Validation.error("clustalSameLength").message() );			
+	}
+	
 	
 	@Test 
 	public void testFastaOrCLustal() { 

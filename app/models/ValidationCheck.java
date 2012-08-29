@@ -133,6 +133,16 @@ public class ValidationCheck implements Serializable {
 	@XStreamAlias("minlen-error")
 	public String minLengthError;		
 	
+	/** All the sequences MUST have the same length */
+	@XStreamAsAttribute
+	@XStreamAlias("samelen")
+	public boolean sameLength;
+	
+	/** The string displayed when the same length check does not pass */ 
+	@XStreamAlias("samelen-error")
+	public String sameLengthError;	
+	
+	
 	/** Validation rule expressed by groovy scripting */
 	@XStreamAlias("script")
 	public Script script;
@@ -428,6 +438,11 @@ public class ValidationCheck implements Serializable {
 			String message = Utils.isNotEmpty(maxLengthError) ? maxLengthError : "validation.clustal.maxlen";
         	return error(name, message, new String[0]);
         }
+        else if( sameLength && clustal.minLength() != clustal.maxLength() ) {
+			String message = Utils.isNotEmpty(sameLengthError) ? sameLengthError : "validation.clustal.samelen";
+        	return error(name, message, new String[0]);
+        }
+        
    
         // normalize the fasta sequence 
         fNormalizedValue = clustal.toString();
@@ -480,6 +495,10 @@ public class ValidationCheck implements Serializable {
         }
         else if( maxLength != null && fasta.maxLength()>maxLength ) { 
 			String message = Utils.isNotEmpty(maxLengthError) ? maxLengthError : "validation.fasta.maxlen";
+        	return error(name, message, new String[0]);
+        }
+        else if( sameLength && fasta.minLength() != fasta.maxLength() ) {
+			String message = Utils.isNotEmpty(sameLengthError) ? sameLengthError : "validation.fasta.samelen";
         	return error(name, message, new String[0]);
         }
         
