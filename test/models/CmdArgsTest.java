@@ -254,4 +254,13 @@ public class CmdArgsTest extends UnitTest {
 		
 		assertEquals("-a=1 -b 2 --c=3 --d 4", cmd.toCmdLine()); 
 	}	
+	
+	@Test
+	public void testOtherPg() {
+		CmdArgs cmd = new CmdArgs("-other_pg strike sample-strike.fa");
+
+		
+		assertEquals( cmd.getAsList("other_pg").get(0), "strike" );
+		assertEquals( cmd.getAsList("other_pg").get(1), "sample-strike.fa" );		
+	}
 }

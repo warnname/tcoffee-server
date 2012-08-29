@@ -180,6 +180,14 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		if( Utils.isNotEmpty(result=args.get("aln")) ) { 
 			return result;
 		}
+		
+		/* The Strike command has the following format 
+		 * t_coffee -other_pg strike <file name>
+		 */
+		List<String> otherpg = null;
+		if( (otherpg=args.getAsList("other_pg"))!=null && otherpg.size()>1 && "strike".equals(otherpg.get(0))) {
+			return otherpg.get(1);
+		}
 	
 		/* fallbakc to the first argument with no value and any prefix, just the name */
 		for( Arg arg : args.getItems() ) { 

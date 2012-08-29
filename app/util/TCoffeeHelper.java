@@ -7,12 +7,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.blackcoffee.commons.utils.FileIterator;
 import org.blackcoffee.commons.utils.ReaderIterator;
 
 import play.Logger;
@@ -186,5 +188,73 @@ public class TCoffeeHelper {
 		
 		return result.toString();
 	} 
+	
+	/**  
+	 * Parse the result file produced by the "Strike" evaluation mode e.g. "t_coffee -other_pg strike <input_file>" 
+	 * <p>
+	 * The output is like the example below:
+	 * <pre>
+	 * Sequence	PDB	Score
+	 * 1g41a   	1g41a	1.85
+	 * 1e94e   	1e94e	1.59
+	 * 1e32a   	1e32a	1.56
+	 * 1d2na   	1d2na	1.46
+	 * AVG     	-	1.62
+	 * 
+	 * 
+	 * STRIKE out:
+	 * </pre>
+	 * <p>
+	 * It contains an list of the "protein ID" altenate by the value evaluated by the strike method.
+	 * The list is closed by the "AVG" average value	
+	 * 
+	 * @param file
+	 * @return
+	 */
+	
+	public static List<String[]> parseStrikeOutput( File file ) {
+		
+		List<String[]> result = new LinkedList<String[]>();
+		
+
+		boolean header = false;
+		for( String line : new FileIterator(file) ) {
+			if( StringUtils.isEmpty(line) ) {
+				if( !header ) {
+					// consume the blanks at the beginning of the file
+					continue;
+				}
+				else{
+					// a blank after an entry suppose to be reached the end of the <id, value> pairs
+					break;
+				}
+			}
+			
+			/* 
+			 *  check for the header
+			 */
+			String[] row = line.split("\\s+");
+			
+			if( row==null || row.length != 3 ) {
+				Logger.warn("Invalid line '%s' (%d) in Strike result output: '%s'", line, row!=null?row.length:-1, file);
+				continue;
+			}
+			
+			/* 
+			 * Look for the header
+			 */
+			if( !header && "Sequence".equals(row[0]) && "PDB".equals(row[1]) && "Score".equals(row[2])) {
+				header = true;
+				continue;
+			} 
+
+			// add th row to the result
+			result.add(row);
+		}
+		
+		
+		return result;
+		
+	}
 	
 }

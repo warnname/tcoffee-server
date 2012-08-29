@@ -57,5 +57,36 @@ public class TCoffeeHelperTest extends UnitTest {
 		assertEquals( "_P_", list.get(2)[1] );
 		assertEquals( "2hevF", list.get(2)[2] );
 	}
+	
+	@Test
+	public void testStrikeFile( ) {
+		File file = TestHelper.file("/strike.out.txt");
+		assertTrue(file.exists());
+		
+		
+		List<String[]> list = TCoffeeHelper.parseStrikeOutput(file);
+		assertNotNull(list);
+		assertEquals( 5, list.size() );
+		assertEquals( list.get(0)[0], "1g41a");
+		assertEquals( list.get(0)[1], "0g41a");
+		assertEquals( list.get(0)[2], "1.85");
+		
+		assertEquals( list.get(1)[0], "1e94e");
+		assertEquals( list.get(1)[1], "2e94e");
+		assertEquals( list.get(1)[2], "1.59");
+		
+		assertEquals( list.get(2)[0], "1e32a");
+		assertEquals( list.get(2)[1], "3e32a");
+		assertEquals( list.get(2)[2], "1.56");
+		
+		assertEquals( list.get(3)[0], "1d2na");
+		assertEquals( list.get(3)[1], "4d2na");
+		assertEquals( list.get(3)[2], "1.46");
+		
+		assertEquals( list.get(4)[0], "AVG");
+		assertEquals( list.get(4)[1], "-");
+		assertEquals( list.get(4)[2], "1.62");
+		
+	}
  	
 }

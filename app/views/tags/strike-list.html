@@ -1,0 +1,57 @@
+<style type="text/css">
+table#box-table-a tr.row_hidden { display: none }   
+table#box-table-a thead th { width: 150px }  
+table#box-table-a #template_table_footer { cursor: pointer; }
+table#box-table-a td { font-family: "Vera Mono", courier new, courier-new, courier, monospace;  }
+table#box-table-a td.avg { border-top: 1px solid #72BBD2; font-weight: bold }
+</style>
+
+<table id="box-table-a">
+<thead>
+<th>Protein</th> <th>Structure</th> <th>Value</th>
+</thead>
+
+<tbody>
+%{def ROWS=20 }%
+#{list _arg}
+
+%{ 
+   
+   def link = "http://www.rcsb.org/pdb/explore/explore.do?pdbId="; 
+   def id = _[1]?.toUpperCase(); 
+   link += id.length()>4 ? id.substring(0,4) : id   
+ }% 
+
+<tr #{if _index > ROWS } class="row_hidden" #{/if} >
+
+#{if _index!=_arg.size() || _[0]!='AVG' } 
+<td>${_[0]}</td> <td> <a href="${link}" target="_blank" >${_[1]?.toUpperCase()}</a> </td> <td>${_[2]}</td>
+ #{/if}
+#{else}  <td class='avg' colspan="2">Average</td> <td class='avg'>${_[2]}</td> #{/else}
+
+</tr>
+#{/list}
+
+</tbody>
+
+#{if _arg.size() > ROWS }
+<tfoot>
+<tr id="template_table_footer" ><td colspan="2"> <small>(click to see more)</small> </td></tr>
+</tfoot>
+#{/if}
+
+</table>
+
+<script type="text/javascript">
+
+$('#template_table_footer').click(function(){
+	$('#box-table-a tr.row_hidden').toggle('fast')
+	var label = $(this).find('small')
+	if( label.text() == '(click to see more)' ) {
+		label.text('(collapse this table)')
+	}
+	else {
+		label.text('(click to see more)')
+	}
+}) 
+</script>
