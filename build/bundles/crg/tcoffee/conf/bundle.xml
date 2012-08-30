@@ -709,6 +709,16 @@
      <title>Output options</title>
      <description>Use this section to control the output format.</description>
       
+     <field type='dropdown' name='template' label='Template method' >
+        <hint>    
+		Topology of the sequence is predicted based on topology voting of its homologous instead of the original sequences (PSITM: default). 
+		This major voting strategy sometimes will result in a strange prediction, i.e. an extracellular right immediately after an intracellular 
+		without transmembrane domain in between. The problem might be solved by predicting in a single sequence (TM).
+        </hint>
+        <value>PSITM</value>
+     	<choices>PSITM, TM</choices>
+     </field>
+      
      <field type="checkbox" name='output' label='Alignment format' >
        <value>fasta_aln clustalw_aln phylip</value>
        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
@@ -755,7 +765,7 @@
           -mode=psicoffee
           -blast_server=LOCAL
           -protein_db=uniref50-TM
-		  -template_file=PSITM  
+		  -template_file=${template}  
 		  -prot_min_sim=50 
 		  -prot_max_sim=90 
 		  -prot_min_cov=70
