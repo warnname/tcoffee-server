@@ -9,7 +9,7 @@
 *{ HEATMAP Box }*
 
 #{if result.getItem('heatMap.png') }
-<h2 style="background: none" ><span>Heatmap</span> </h2>
+<h2 style="background: none" ><span>Conservation map</span> </h2>
 
 <div style="padding-bottom: 1.5em">
 <img src="${result.getItem('heatMap.png').webpath}" width="950" />
@@ -17,7 +17,10 @@
 
 <div style="margin-bottom: 2.5em; margin-left: 2em">
 
-<small class="size">brief description how to read the chart ..
+<small class="size" style="font-size: .9em; color: #555">Heatmat representing the conservation of the transcripts across target genomes.
+ The x-axis shows the target genomes while the y-axis list the input transcripts sorted by level of conservation.
+ Each spot represents the percentage similarity between query and the matched sequences. 
+ In the color scheme green gradients represent high similarity, while red indicate that the sequence was not found.   
 </small>
 
 </div>

@@ -7,19 +7,21 @@
   
   <service name="piper">
     <title>Pipe-R</title>
-    <description>Provide a description of the data here</description>
+    <description>A pipeline for the detection and mapping of long non-coding RNAs</description>
  	<input>
       <fieldset >
-        <title>Analyzing your sequence</title>
+        <title>Query and target selection</title>
       
-        <field type='memo' name='query' label='Query' >
+        <field type='memo' name='query' label='Query sequences' >
           <sample>public/5_RNA_queries.fa.txt</sample>
+          <hint>Input your transcripts in FASTA format</hint>
           <validation required='true' format='fasta' maxnum="100" >
           <maxnum-error>You can enter at most 100 transcripts</maxnum-error>
           </validation>
         </field>
         
         <field type='checkbox' name='genomes' label='Genomes' >
+        <hint>Select your target genonones</hint>
         <choices>Chimp,Dog,Horse,Human,Mouse,Opossum,Orangutan,Pig,Rat,Sheep</choices>
         <validation required='true' />
         </field>
