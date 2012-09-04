@@ -20,7 +20,7 @@ public class TCoffeeHelperTest extends UnitTest {
 	
 	public static void parseHtmlFile( File file ) {
 		String TEST_STYLE = "SPAN { font-family: courier new, courier-new, courier, monospace; font-weight: bold; font-size: 11pt;}";
-		String TEST_BODY = "<span class=valuedefault>T-COFFEE,&nbsp;Version_9.02";
+		String TEST_BODY = "<span class=valuedefault>T-COFFEE,&nbsp;Version_9.03";
 
 		ResultHtml result = TCoffeeHelper.parseHtml(file);
 		assertEquals( TEST_STYLE,  result.style.trim() .substring(0,TEST_STYLE.length()) );
