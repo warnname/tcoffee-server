@@ -19,7 +19,10 @@ http://www.jalview.org/examples/appletParameters.html
  }*
 
 <applet id="applet" code="jalview.bin.JalviewLite" width="800" height="600" archive="public/jalviewApplet.jar">
-<param name="file" value="${result.getAlignmentFasta().webpath}">
+<param name="file" value="http://${request.host}${result.getAlignmentFasta().webpath}">
+#{if result.first("format", "score_ascii") }
+<param name="scoreFile" value="http://${request.host}${result.first('format', 'score_ascii').webpath}" >
+#{/if}
 <param name="embedded" value="true">
 <param name="showFeatureSettings" value="false">
 <param name="widthScale" value="1.4">
@@ -40,7 +43,7 @@ function rz() {
 	handler=null;
 	
 	$('#applet').width ( $(window).width()-20 )
-	$('#applet').height ( $(window).height()-20 )
+	$('#applet').height ( $(window).height()-30 )
 } 
 
 function postRz() {

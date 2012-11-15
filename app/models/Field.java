@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.StringIterator;
 
@@ -73,6 +72,9 @@ public class Field implements Serializable {
 	
 	public ValidationCheck validation;
 	
+	@XStreamAlias("readonly")
+	public String readOnly;
+	
 	
 	/** It could an URL (relative or absolute) to a file that can be used to preload the field */ 
 	public String sample;
@@ -109,6 +111,7 @@ public class Field implements Serializable {
 		this.hint = Utils.copy(that.hint);
 		this.choices = Utils.copy(that.choices);
 		this.validation = Utils.copy(that.validation);
+		this.readOnly = that.readOnly;
 		this.sample = that.sample;
 		this.fFile = that.fFile;
 	}

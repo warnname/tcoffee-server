@@ -42,6 +42,7 @@ public class FieldTest extends UnitTest {
 		String xml = 
 			"<field > " +
 				"<choices> alfa, beta, gamma </choices>" +
+				"<readonly>beta</readonly>" +
 				"<validation required='true' />" +
 			"</field>";
 		
@@ -49,6 +50,7 @@ public class FieldTest extends UnitTest {
 		assertNotNull(field);
 		assertArrayEquals(new String[]{"alfa","beta","gamma"}, field.choices);
 		assertNotNull(field.validation);
+		assertEquals(field.readOnly, "beta");
 		assertTrue(field.validation.required);
 	}
 	

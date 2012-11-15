@@ -35,7 +35,7 @@
 <div #{if _arg.hint && !_arg.hintsMap } class="tiptip" title="${_arg.hint}"#{/if} >
 	#{listwrap list:_arg.choices, cols:5, as:'item' }
 	<span class="tiptip" title="${_arg.hintsMap[item]}">
-	<input type="checkbox" name='${_arg.name}' value="${item}" ${_arg.value?.split("[, ]")?.contains(item) ? "checked='checked'" : ""} />${item}
+	<input type="checkbox" name='${_arg.name}' value="${item}" ${_arg.value?.split("[, ]")?.contains(item) ? "checked='checked'" : ""} ${_arg.readOnly?.split("[, ]")?.contains(item) ? "disabled='disabled'" : ""} />${item}
 	</span>
 	#{/listwrap}
 </div>

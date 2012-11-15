@@ -192,6 +192,7 @@ $(document).ready(function(){
  * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 $('#form').submit(function(){
+	$(this).find(':checkbox').removeAttr('disabled')
 	$('#submit').attr('disabled',true).addClass('disabled').text('Wait ...');
 });
 
