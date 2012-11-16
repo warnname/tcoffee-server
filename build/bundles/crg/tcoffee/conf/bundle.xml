@@ -1571,6 +1571,7 @@
         
         <field type='checkbox' name='templatePDB' label='Automatically fetch pdb templates' >
           <hint>Check This Box To automatically Fetch Homologous Structures with BLAST</hint>
+          <value>PDB</value>
           <choices>PDB</choices>    
         </field>
         
