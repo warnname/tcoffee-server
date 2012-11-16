@@ -174,7 +174,7 @@ else {
 }
 
 
-def logFile = new File(scratchFolder,"pipeline.out") 
+def logFile = new File(scratchFolder,"pipeline.log") 
 if( logFile.exists() ) {
 	result.add(new OutItem(logFile, "system_file"))
 }
