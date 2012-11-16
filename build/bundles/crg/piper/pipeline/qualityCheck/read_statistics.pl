@@ -109,6 +109,7 @@ DESCRIPTION
 2- randomly map with shuffleBed all the blocks
 3- split the projectd block back to exon annotations
 This randomization strategy has the merit to mantain exactly the same nucleotide coverage as the original. Moreover the same exonic relative position is mantained. This means that the mapping of the block make it possible to mantain exactly the same amount of redundacy. In other words, the randomized exons at the end will be overlapping one another exactly as the original exons.
+Moreover this script considers the homologs returned by pipeR, where each different hitName is a different transcript homolog. This important because the script is going to work both when pipeR returns for each query a single best hit (a single homolog), and when pipeR it is run exahustively, i.e. returning a one2many mapping. In the case pipeR generated multiple homologs for one query, each homolog will be considered as a different transcript, with a different id. This script will tell you how much is the average RPKM support of all the annotations, with respect to random projections of such annotations.
 
 OPTIONS
   *-species = <name>
@@ -409,7 +410,7 @@ sub countReadsPerExon {
       my $cmd_template = $cmd;
 
       my $transcript_id;
-      if ($line=~/transcript_id \"([^\"]+)\"/){
+      if ($line=~/hitName \"([^\"]+)\"/){
 	$transcript_id = $1;
       }
       else{
@@ -478,7 +479,7 @@ sub splitExons {
   open (G,"<$gtf_map") or die "Error[reads_statistics.pl]! Cannot read $gtf_map\n$!\n";
   while (my $l = <G>){
       chomp $l;
-      if ($l=~/transcript_id \"([^\"]+)\"/){
+      if ($l=~/hitName \"([^\"]+)\"/){
 	  my $tx_id = $1;
 	  push (@{$transcripts{$tx_id}} , $l);
       }
@@ -780,7 +781,7 @@ sub readingGTFexons {
                 $gene_id = $1;
             }
             else {die "gtf file in wrong format. Impossible to find the gene_id in line:\n$line\n when it is mandatory for this format\n";}
-            if ($group =~/transcript_id \"([^\"]+)\"/){
+            if ($group =~/hitName \"([^\"]+)\"/){
                 $transcript_id = $1;
             }
             else {die "gtf file in wrong format. Impossible to find the transcript_id in line:\n$line\n when it is mandatory for this format\n";}
@@ -866,7 +867,7 @@ sub transcriptGtf2exonGtf {
 	    $start  = $2;
 	    $strand = $3;
 	}
-	if ($line =~/transcript_id "([^\"]+)"/ ){
+	if ($line =~/hitName "([^\"]+)"/ ){
 	    $tx_id = $1;
 	}
 
@@ -905,7 +906,7 @@ sub takeBlocks {
     #initialize
     my $old_l = shift(@sorted_gtf);
     my $c = 0;
-    if ($old_l =~/transcript_id \"([^\"]+)\"/){ 
+    if ($old_l =~/hitName \"([^\"]+)\"/){ 
 	my $tx_id = $1;
 	$extractedTX{$tx_id} = 1;
 	push (@current_block , $tx_id);
@@ -917,7 +918,7 @@ sub takeBlocks {
     #LOOP
     while (my $l = shift(@sorted_gtf)){
 	my $tx_id;
-	if ($l =~/transcript_id \"([^\"]+)\"/){
+	if ($l =~/hitName \"([^\"]+)\"/){
 	    $tx_id = $1;
 	}
 

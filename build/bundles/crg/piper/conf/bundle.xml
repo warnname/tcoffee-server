@@ -1,4 +1,4 @@
-<bundle name="piper" version="0.5.6" >
+<bundle name="piper" version="0.6.1" >
   <title>Pipe-R</title>
   <description>RNA Mapping pipeline</description>
   <author>Giovanni Bussotti</author>
@@ -22,7 +22,7 @@
         
         <field type='checkbox' name='genomes' label='Genomes' >
         <hint>Select your target genonones</hint>
-        <choices>Chimp,Dog,Horse,Human,Mouse,Opossum,Orangutan,Pig,Rat,Sheep</choices>
+        <choices>Cat,Chimp,Cow,Dog,Elephant,Gibbon,Guinea_pig,Horse,Human,Macaque,Marmoset,Microbat,Mouse,Opossum,Orangutan,Panda,Pig,Platypus,Rabbit,Rat,Sheep</choices>
         <validation required='true' />
         </field>
      </fieldset>

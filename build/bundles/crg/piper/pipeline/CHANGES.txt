@@ -1,6 +1,50 @@
 Next release
 ============
 
+
+0.6.1 (2012-09-10)
+==================
+
+Updates Fixes
+---------
+- The script transcriptGTF_2_geneGTF.pl has been included in the utility folder. This script can be used to guess the genes in a target genomes defined as separate transcript clusters.
+
+
+
+0.6.0 (2012-08-08)
+==================
+
+Updates Fixes
+---------
+- The scripts overlapStatistics.pl and readStatistics.pl have been updated so that they are now usable when pipeR is run exhaustively. This means that each homolog returned by pipeR is considered a different transcript. To do that now the scripts are parsing by "hitName" and not by "transcript_id" anymore. This is because there will be (if pipeR run exhaustively) more homologs for the same transcript_id
+
+
+
+0.5.9 (2012-08-02)
+==================
+
+Updates Fixes
+---------
+- The createDatabase.pl has been updated so that it manages to handle input genomes not well assempled (many contigs). During splitting of the contigs in the chr/ folder the header are checked and possibly fixed if there are strange symbols (pipe, parentesis, spaces..). Then if the contigs are less than 250 these are passed through STDIN to xdformat for the formatting. If the contigs (now splitted in files) are more than 250 the list risks to be too long and therefore it is required to concatenate back the contigs in a uniq genome multifasta file (but now with corrected headers) and pass this single file to xdformat. It is slower but it is perfectly safe and works good for badly assembled genomes.
+
+
+0.5.8 (2012-07-31)
+==================
+
+Updates Fixes
+---------
+- The heatmap.R script has been fixed so that it manages to handle also situations in which just a genome was screened (a single column output).
+
+
+0.5.7 (2012-07-29)
+==================
+
+Updates Fixes
+---------
+- Now it is possible to privide together with a normal query, a queryPromoterAnchored file. This is a fasta file having exactly the same headers of the query file, but each sequence include uppstream the promoter region (e.g 500 nt) which is know to be more conserved than the transcript itself. PipeR will blast the queryPromoterAnchored instead of the standard query. Then the exonerate will remap using the normal query file (without promoter).
+- The scripts that have been changed are the startPipeline.pl and the blastSearch.pl scripts.
+
+
 0.5.6 (2012-06-28)
 ==================
 

@@ -73,194 +73,7 @@ elsif ($gtfToRandomize eq 'gtf_annotations'){
 %gtf_map_info_tx = gtfExons2Transcripts(%gtf_map_info_ex);
 takeBlocks($gtf_map);
 $gtf_map_block        = doBlocks();
-sub checkExonOverlap {
-    my ($old , $new) = @_;
-    my ($o_chr , $o_start , $o_end , $o_strand , $n_chr , $n_start , $n_end , $n_strand);
-    if ($old=~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)\s+/){
-	$o_chr    = $1;
-	$o_start  = $2;
-	$o_end    = $3;
-	$o_strand = $4;
-    }
-    if ($new=~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)\s+/){
-	$n_chr    = $1;
-	$n_start  = $2;
-	$n_end    = $3;
-	$n_strand = $4;
-    }
-    my $overlap = 0;
-    if (($o_chr eq $n_chr) && ($o_strand eq $n_strand)){
-	$overlap = verifyOverlap ($o_start , $o_end , $n_start , $n_end);
-    }
 
-    return $overlap;
-}
-sub takeBlocks {
-    my ($current_gtf) = @_;
-    my $cmd_sort = 'sort -k 1,1 -k 7,7 -k 4,4n  ' . "$current_gtf";
-    my @sorted_gtf = `$cmd_sort`; if ($?) {die "Error[reads_statistics.pl]! cannot run $cmd_sort\n";}
-    my ($oldChr , $oldStart , $oldEnd , $oldStrand , %extractedTX , $foundExons , $exonsToBeFound , @current_block  );
-    #initialize
-    my $old_l = shift(@sorted_gtf);
-    my $c = 0;
-    if ($old_l =~/transcript_id \"([^\"]+)\"/){ 
-	my $tx_id = $1;
-	$extractedTX{$tx_id} = 1;
-	push (@current_block , $tx_id);
-	$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
-	$foundExons++;
-    }
-    my $overlap = 0;
-
-    #LOOP
-    while (my $l = shift(@sorted_gtf)){
-	my $tx_id;
-	if ($l =~/transcript_id \"([^\"]+)\"/){
-	    $tx_id = $1;
-	}
-
-	if ((checkExonOverlap($l,$old_l) == 1) or ($foundExons < $exonsToBeFound)){
-	    if (! defined $extractedTX{$tx_id}){ 
-		$extractedTX{$tx_id} = 1;
-		push (@current_block , $tx_id);
-		$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
-	    }
-	    $foundExons++;
-	    $old_l      = $l;
-	    next;
-	}
-	#save and reinitialize
-	push (@{$blocks[$c]} , @current_block );
-	$c++;
-	@current_block             = ();
-	%extractedTX               = ();
-	$exonsToBeFound            = 0;
-	push (@current_block , $tx_id);
-	$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
-	$extractedTX{$tx_id} = 1;
-	$foundExons          = 1;
-	$old_l               = $l;
-    }
-    push (@{$blocks[$c]} , @current_block );
-}
-sub doBlocks {
-    my $name = fileNameGenerator ('map.block.gtf');
-    open (O,">$name") or die "Error[reads_statistics]! cannot create $name\n$!\n";
-    foreach my $b (0..$#blocks){
-	#print "block $b ";
-	my (@allCoordinates , $strand , $chr , $outLine);
-	foreach my $tx_id (@{$blocks[$b]}){
-	    push (@allCoordinates , $gtf_map_info_tx{$tx_id}->{'start'});
-	    push (@allCoordinates , $gtf_map_info_tx{$tx_id}->{'end'});
-	    $strand = $gtf_map_info_tx{$tx_id}->{'strand'};
-	    $chr    = $gtf_map_info_tx{$tx_id}->{'chr'};
-	}
-	my $blockStart  = min (@allCoordinates);
-	my $blockEnd    = max (@allCoordinates);
-
-	$outLine .= $chr              . "\t";
-	$outLine .= 'read_statistics' . "\t";
-	$outLine .= "block"           . "\t";
-	$outLine .= $blockStart       . "\t";
-	$outLine .= $blockEnd         . "\t";
-	$outLine .= '.'               . "\t";
-	$outLine .= $strand           . "\t";
-	$outLine .= '.'               . "\t";
-	$outLine .= "block \"$b\";";
-	print O "$outLine\n";
-
-	#take block internal deltas
-	foreach my $tx_id (@{$blocks[$b]}){
-	    foreach my $ex (@{$gtf_map_info_ex{$tx_id}}){
-		my %hash;
-		$hash{'delta_start'} = $ex->{'start'} -  $blockStart;
-		$hash{'delta_end'}   = $ex->{'end'} -  $blockStart;
-		push (@{$deltas4block[$b]{$tx_id}} , \%hash);
-	    }
-	}
-
-	#save block start
-	$blockStarts[$b] = $blockStart;
-	$block_sizes[$b] = ($blockEnd - $blockStart) + 1 ;
-    }
-    close O;
-    return $name;
-
-}
-sub blockGtf2exonGtf {
-    my ($blockFile , $outFile) = @_;
-    open (B,"<$blockFile") or die "Error[reads_statistics.pl]! cannot open $blockFile $!\n";
-    open (O,">$outFile") or die "Error[reads_statistics.pl]! cannot open $outFile $!\n";
-
-    while (my $current_block = <B>){
-	#take shuffled block coordinates
-	my ($p_chr , $p_start , $p_strand , $block_in);
-	if ($current_block =~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+\S+\s+\S+\s+(\S+)\s+\S+\s+block \"([^\"]+)\";/){
-	    $p_chr    = $1;
-	    $p_start  = $2;
-	    $p_strand = $3;
-	    $block_in = $4;
-	}
-
-	#to do
-	my $projection_delta = $p_start - $blockStarts[$block_in];
-
-	#take internal transcript deltas
-	foreach my $tx_id (@{$blocks[$block_in]}){
-	    foreach my $ex_index (0..$#{$deltas4block[$block_in]{$tx_id}}){
-		my $new_chr   = $p_chr;
-		my $source    = $gtf_map_info_ex{$tx_id}[$ex_index]->{'source'};
-		my $feature   = 'exon';
-		my $new_start = $deltas4block[$block_in]{$tx_id}[$ex_index]{'delta_start'} + $p_start;
-		my $new_end   = $deltas4block[$block_in]{$tx_id}[$ex_index]{'delta_end'}   + $p_start;
-		my $score     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'score'};
-		my $strand    = $p_strand;
-		my $frame     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'frame'};
-		my $group     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'group'};
-		print O "$new_chr\t$source\t$feature\t$new_start\t$new_end\t$score\t$strand\t$frame\t$group\n";
-	    }
-
-	}
-
-    }
-    close B;
-    close O;
-}
-sub createRandomWithShuffleBed {
-  my ($ran)       = @_;
-  my $tmp = fileNameGenerator("_tmp_");
-  my $cmd = "$shuffleBed -i $gtf_map_block -g $shuffleBed_chrSize";
-  $cmd .= " -excl $shuffleBed_gap " if (defined $shuffleBed_gap);
-  $cmd .= " > $tmp" ;
-  (system "$cmd") == 0 or die "Error[overlap_statistics.pl]! cannot run $cmd \n$!\n";            # system "cat $tmp";
-  blockGtf2exonGtf($tmp , $ran);
-  system "rm $tmp";
-}
-sub createRandomGtf {
-  my ($ran)   = @_;
-  my $tmp = fileNameGenerator("_tmp_");
-  my %mappedFeature;
-  open (TMP,">>$tmp") or die "Error[overlap_statistics.pl]! cannot create $ran\n$!\n";
-  foreach my $b (0..$#blocks){
-    my $check  = 0;
-    my ($r_chr , $r_start ,$r_end);
-    while( $check  == 0 ){
-      $r_chr   = random_chr();
-      $r_start = random_start($r_chr , $block_sizes[$b]);
-      $r_end   = $r_start +  $block_sizes[$b];
-      if (%mappedFeature){
-	$check   = ovCheck($r_chr , $r_start , $r_end , %mappedFeature);
-      }
-      else{$check = 1;}
-    }
-    my %hash = ('start' => $r_start , 'end' => $r_end);
-    push (@{$mappedFeature{$r_chr}} , \%hash);
-    print TMP "$r_chr\trandom\texon\t$r_start\t$r_end\t\.\t\.\t\.\tblock \"$b\"\n";
-  }
-  close TMP;
-  blockGtf2exonGtf($tmp , $ran);
-  system "rm $tmp";
-}
 
 
 #RANDOMIZATIONS
@@ -542,7 +355,8 @@ DESCRIPTION
   * give an EXONERATE_OUT species.ex.gtf file and another gtf file you wanna compare with. It measures the level of overlap among the two. By default the strand of the overlap is not taken into account, just the positions are
   * If you wanna let the overlap be just on the same strand set -stranded 1
   * The script assign a significance to the gtf_map by measuring the overlap with some gtf_annotations, and assessing how much this overlap is different from the one we could get with a random gtf_map.
-  * The randomization is done as in read_statistics.pl, where every time two exons belonging to different transcript overlap, the two transcript will be joined into one block. Then the blocks so defined are randomly projected on the genome. Once projected, for each transcript in each block the exons annotations are derived. Then the overlap with the gtf_annotations is measured again,    
+  * The randomization is done as in read_statistics.pl, where every time two exons belonging to different transcript overlap, the two transcript will be joined into one block. Then the blocks so defined are randomly projected on the genome. Once projected, for each transcript in each block the exons annotations are derived. Then the overlap with the gtf_annotations is measured again,    * Moreover this script considers the homologs returned by pipeR, where each different hitName is a different transcript homolog. This important because the script is going to work both when the pipeR returns for each query a single best hit (a single homolog), and when pipeR it is run exahustively, i.e. returning a one2many mapping. In the case pipeR generated multiple homologs for one query, each homolog will be considered a different transcript, with a different id. This script will tell you how much is the real overlap with provided gtf_annotations, with respect to random projections of annotations.  
+
   * The default projection tool is shuffleBed. However there is also a built_in projection function perfetly working. 
   * OPTION: You can decide to randomize either the gtf_annotations either the gtf_map file [Default, recommended]
   * !!!IMPORTANT!!!! The gtf_annotations can be anything, exons, enhancers, chromatine markups, gene annotations..The important is that each line contains the transcript_id field with some identifier. If you are not interested in randomizing these gtf_annotations, it really doesn't matter. But if you wanna randomize the gtf_annotations, please bear in mind that these will be reconstructed in transcript and blocks, projected, splitted again in exons. It is therefore important that the transcript_id field of each annotation is correctly assigned. On the other hand, if the annotations are indipendent one another (i.e. a set of enhancers) you should give to the gtf_annotations a transctipt_id unique for each annotation line, so that they get projected together just in the case they are overlapping.
@@ -562,7 +376,7 @@ DESCRIPTION
 
 ADVICE
 It makes a lot of sense and it is recommended using the default randomization of the gtf_map. You create some homology based mapping, you measure the overlap, and you generate some randomization of your mapping to see how your original mapping is far from random.
-It makes a lot of sense tu use an exon.gtf as gtf_annotations (i.e. generated by cufflinks after RNAseq). This is because the region of the genome that should be considered positive are the exons, not the introns. Therefor do not use transcript as gtf_annotations, but just exons.gtf.
+It makes a lot of sense to use an exon.gtf as gtf_annotations (i.e. generated by cufflinks after RNAseq). This is because the region of the genome that should be considered positive are the exons, not the introns. Therefore do not use transcript as gtf_annotations, but just exons.gtf.
 This script will tell you the number of your homology based mapped transcript exons and nucleotides that overlap the cufflink exons. An example of command line is:
 ./overlap_statistics.pl -shuffleBed_gap ../../cowReadMappingData_fromDarek_UMD3_1_ens65/bosTau6_UMD_3.1_fromUCSC.gap_contig_unknown.bed -species cow -experiment exp_1 -pipeline_dir .. -gtf_annotations ../../cowReadMappingData_fromDarek_UMD3_1_ens65/mergedBt_CRGplusUS_grape_DAREK_COW_RNAseq_grapePlusCufflinks.ex.gtf
 
@@ -570,7 +384,7 @@ OPTIONS
   *-pipeline_dir = <path>
   exon gtf filepositin where the pipeline is installed
 
-  *-pipeline_direxperiment = <name>
+  *-experiment = <name>
   exon gtf filepositin where the pipeline is installedname of the experiment to run (i.e. exp_1)
 
   *-gtf_annotations = <file name>
@@ -820,7 +634,7 @@ sub readingGTFexonsLOCAL {
 		$gene_id = $1;
 	    }
 	    else {die "Error[overlap_statistics.pl]! gtf file in wrong format. Impossible to find the gene_id in line:\n$line\n when it is mandatory for this format\n";}
-	    if ($group =~/transcript_id \"([^\"]+)\"/){
+	    if ($group =~/hitName \"([^\"]+)\"/){
 		$transcript_id = $1;
 	    }
 	    else {die "Error[overlap_statistics.pl]! gtf file in wrong format. Impossible to find the transcript_id in line:\n$line\n when it is mandatory for this format\n";}
@@ -988,7 +802,7 @@ sub transcriptGtf2exonGtf {
 	    $start  = $2;
 	    $strand = $3;
 	}
-	if ($line =~/transcript_id "([^\"]+)"/ ){
+	if ($line =~/hitName "([^\"]+)"/ ){
 	    $tx_id = $1;
 	}
 	my $delta = -5;
@@ -1089,7 +903,194 @@ sub printLog {
 
 
 
+sub checkExonOverlap {
+    my ($old , $new) = @_;
+    my ($o_chr , $o_start , $o_end , $o_strand , $n_chr , $n_start , $n_end , $n_strand);
+    if ($old=~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)\s+/){
+	$o_chr    = $1;
+	$o_start  = $2;
+	$o_end    = $3;
+	$o_strand = $4;
+    }
+    if ($new=~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)\s+/){
+	$n_chr    = $1;
+	$n_start  = $2;
+	$n_end    = $3;
+	$n_strand = $4;
+    }
+    my $overlap = 0;
+    if (($o_chr eq $n_chr) && ($o_strand eq $n_strand)){
+	$overlap = verifyOverlap ($o_start , $o_end , $n_start , $n_end);
+    }
 
+    return $overlap;
+}
+sub takeBlocks {
+    my ($current_gtf) = @_;
+    my $cmd_sort = 'sort -k 1,1 -k 7,7 -k 4,4n  ' . "$current_gtf";
+    my @sorted_gtf = `$cmd_sort`; if ($?) {die "Error[reads_statistics.pl]! cannot run $cmd_sort\n";}
+    my ($oldChr , $oldStart , $oldEnd , $oldStrand , %extractedTX , $foundExons , $exonsToBeFound , @current_block  );
+    #initialize
+    my $old_l = shift(@sorted_gtf);
+    my $c = 0;
+    if ($old_l =~/hitName \"([^\"]+)\"/){ 
+	my $tx_id = $1;
+	$extractedTX{$tx_id} = 1;
+	push (@current_block , $tx_id);
+	$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
+	$foundExons++;
+    }
+    my $overlap = 0;
+
+    #LOOP
+    while (my $l = shift(@sorted_gtf)){
+	my $tx_id;
+	if ($l =~/hitName \"([^\"]+)\"/){
+	    $tx_id = $1;
+	}
+
+	if ((checkExonOverlap($l,$old_l) == 1) or ($foundExons < $exonsToBeFound)){
+	    if (! defined $extractedTX{$tx_id}){ 
+		$extractedTX{$tx_id} = 1;
+		push (@current_block , $tx_id);
+		$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
+	    }
+	    $foundExons++;
+	    $old_l      = $l;
+	    next;
+	}
+	#save and reinitialize
+	push (@{$blocks[$c]} , @current_block );
+	$c++;
+	@current_block             = ();
+	%extractedTX               = ();
+	$exonsToBeFound            = 0;
+	push (@current_block , $tx_id);
+	$exonsToBeFound += scalar(@{$gtf_map_info_ex{$tx_id}});
+	$extractedTX{$tx_id} = 1;
+	$foundExons          = 1;
+	$old_l               = $l;
+    }
+    push (@{$blocks[$c]} , @current_block );
+}
+sub doBlocks {
+    my $name = fileNameGenerator ('map.block.gtf');
+    open (O,">$name") or die "Error[reads_statistics]! cannot create $name\n$!\n";
+    foreach my $b (0..$#blocks){
+	#print "block $b ";
+	my (@allCoordinates , $strand , $chr , $outLine);
+	foreach my $tx_id (@{$blocks[$b]}){
+	    push (@allCoordinates , $gtf_map_info_tx{$tx_id}->{'start'});
+	    push (@allCoordinates , $gtf_map_info_tx{$tx_id}->{'end'});
+	    $strand = $gtf_map_info_tx{$tx_id}->{'strand'};
+	    $chr    = $gtf_map_info_tx{$tx_id}->{'chr'};
+	}
+	my $blockStart  = min (@allCoordinates);
+	my $blockEnd    = max (@allCoordinates);
+
+	$outLine .= $chr              . "\t";
+	$outLine .= 'read_statistics' . "\t";
+	$outLine .= "block"           . "\t";
+	$outLine .= $blockStart       . "\t";
+	$outLine .= $blockEnd         . "\t";
+	$outLine .= '.'               . "\t";
+	$outLine .= $strand           . "\t";
+	$outLine .= '.'               . "\t";
+	$outLine .= "block \"$b\";";
+	print O "$outLine\n";
+
+	#take block internal deltas
+	foreach my $tx_id (@{$blocks[$b]}){
+	    foreach my $ex (@{$gtf_map_info_ex{$tx_id}}){
+		my %hash;
+		$hash{'delta_start'} = $ex->{'start'} -  $blockStart;
+		$hash{'delta_end'}   = $ex->{'end'} -  $blockStart;
+		push (@{$deltas4block[$b]{$tx_id}} , \%hash);
+	    }
+	}
+
+	#save block start
+	$blockStarts[$b] = $blockStart;
+	$block_sizes[$b] = ($blockEnd - $blockStart) + 1 ;
+    }
+    close O;
+    return $name;
+
+}
+sub blockGtf2exonGtf {
+    my ($blockFile , $outFile) = @_;
+    open (B,"<$blockFile") or die "Error[reads_statistics.pl]! cannot open $blockFile $!\n";
+    open (O,">$outFile") or die "Error[reads_statistics.pl]! cannot open $outFile $!\n";
+
+    while (my $current_block = <B>){
+	#take shuffled block coordinates
+	my ($p_chr , $p_start , $p_strand , $block_in);
+	if ($current_block =~/^(\S+)\s+\S+\s+\S+\s+(\S+)\s+\S+\s+\S+\s+(\S+)\s+\S+\s+block \"([^\"]+)\";/){
+	    $p_chr    = $1;
+	    $p_start  = $2;
+	    $p_strand = $3;
+	    $block_in = $4;
+	}
+
+	#to do
+	my $projection_delta = $p_start - $blockStarts[$block_in];
+
+	#take internal transcript deltas
+	foreach my $tx_id (@{$blocks[$block_in]}){
+	    foreach my $ex_index (0..$#{$deltas4block[$block_in]{$tx_id}}){
+		my $new_chr   = $p_chr;
+		my $source    = $gtf_map_info_ex{$tx_id}[$ex_index]->{'source'};
+		my $feature   = 'exon';
+		my $new_start = $deltas4block[$block_in]{$tx_id}[$ex_index]{'delta_start'} + $p_start;
+		my $new_end   = $deltas4block[$block_in]{$tx_id}[$ex_index]{'delta_end'}   + $p_start;
+		my $score     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'score'};
+		my $strand    = $p_strand;
+		my $frame     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'frame'};
+		my $group     = $gtf_map_info_ex{$tx_id}[$ex_index]->{'group'};
+		print O "$new_chr\t$source\t$feature\t$new_start\t$new_end\t$score\t$strand\t$frame\t$group\n";
+	    }
+
+	}
+
+    }
+    close B;
+    close O;
+}
+sub createRandomWithShuffleBed {
+  my ($ran)       = @_;
+  my $tmp = fileNameGenerator("_tmp_");
+  my $cmd = "$shuffleBed -i $gtf_map_block -g $shuffleBed_chrSize";
+  $cmd .= " -excl $shuffleBed_gap " if (defined $shuffleBed_gap);
+  $cmd .= " > $tmp" ;
+  (system "$cmd") == 0 or die "Error[overlap_statistics.pl]! cannot run $cmd \n$!\n";            # system "cat $tmp";
+  blockGtf2exonGtf($tmp , $ran);
+  system "rm $tmp";
+}
+sub createRandomGtf {
+  my ($ran)   = @_;
+  my $tmp = fileNameGenerator("_tmp_");
+  my %mappedFeature;
+  open (TMP,">>$tmp") or die "Error[overlap_statistics.pl]! cannot create $ran\n$!\n";
+  foreach my $b (0..$#blocks){
+    my $check  = 0;
+    my ($r_chr , $r_start ,$r_end);
+    while( $check  == 0 ){
+      $r_chr   = random_chr();
+      $r_start = random_start($r_chr , $block_sizes[$b]);
+      $r_end   = $r_start +  $block_sizes[$b];
+      if (%mappedFeature){
+	$check   = ovCheck($r_chr , $r_start , $r_end , %mappedFeature);
+      }
+      else{$check = 1;}
+    }
+    my %hash = ('start' => $r_start , 'end' => $r_end);
+    push (@{$mappedFeature{$r_chr}} , \%hash);
+    print TMP "$r_chr\trandom\texon\t$r_start\t$r_end\t\.\t\.\t\.\tblock \"$b\"\n";
+  }
+  close TMP;
+  blockGtf2exonGtf($tmp , $ran);
+  system "rm $tmp";
+}
 
 
 

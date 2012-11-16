@@ -26,6 +26,18 @@ library(RColorBrewer)
 #data("ALL")                       #load some data...examples...is useless
 
 
+#HEATMAP DOES NOT WORK IF THERE IS A SINGLE GENOME (A COLUMN). THEREFORE THE FUNCTION IMAGE NEEDS TO BE USED INSTEAD
+if (ncol(testMat) == 1) { 
+	sortedMatrix=testMat[order(testMat[,1],decreasing=F),]                # sort the matrix in a descending order
+	sortedMatrixMat<-as.matrix(sortedMatrix)
+	image(t(sortedMatrixMat) , col=colorpanel(40, "red", "black", "green"),xlab=colnames(test),axes=F)            # you need to invert x and y axis, that is swap the row with the columns with the function t()
+	axis(2, at=seq(0,1, length.out=4) , labels=rownames(sortedMatrixMat),par(cex=0.5), las=1)            #"at" is telling you where to put the axis. 
+                                                                                                             #"seq" indicates that you wanna have intervals. 0,1 means from the bottom left to the top left. 
+													     #"length.out=4" means that there will be 4 of them
+	quit()
+}
+
+
 
 
 #OUTPUT THE CLUSTER PRODUCED BY THE HIRARCHICAL CLUSTERING

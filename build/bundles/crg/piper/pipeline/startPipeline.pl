@@ -24,7 +24,7 @@ if ($help > 0){
 }
 #TAKE OPTIONS
 acceptedVariableSpace();
-my ($splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode , $clusterName , $experimentName , $referencePhyloCsfName) = options();
+my ($query_promoter_anchor , $splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode , $clusterName , $experimentName , $referencePhyloCsfName) = options();
 
 
 #MAKE EMPTY DIRs
@@ -81,6 +81,7 @@ print P "GENEIDPARAMETERFILE=$geneidParameterFile\n";
 print P "ORFSCORETHRESHOLD=$orf_score_threshold\n";
 print P "CPUS=$cpus\n";
 print P "SPLITEXONERATE=$splitExonerate\n";
+print P "QUERYPROMOTERANCHOR=$query_promoter_anchor\n";
 print P "############\n";
 
 
@@ -104,7 +105,7 @@ print P 'if [ $CHECK -ne 0 ]; then exit ; fi' . "\n";
 
 print P "\n\n\n#BLAST SEARCH\n";
 print P 'rm $PIPELINEDIR/experiments/$EXPERIMENT/BLAST_OUT/* 2> /dev/null' . "\n";
-print P '$SCRIPTSDIR/blastSearch.pl -query $QUERYFILE -blast $BLAST -blast_strategy $STRATEGY  -cluster $CLUSTER -splitGenome $SPLITGENOME -experiment $EXPERIMENT -pipeline_dir $PIPELINEDIR' . "\n" ;
+print P '$SCRIPTSDIR/blastSearch.pl -query $QUERYFILE -blast $BLAST -blast_strategy $STRATEGY  -cluster $CLUSTER -splitGenome $SPLITGENOME -queryPromoterAnchor $QUERYPROMOTERANCHOR -experiment $EXPERIMENT -pipeline_dir $PIPELINEDIR' . "\n" ;
 print P 'CHECK=`echo $? |  tr -d "\n"`' . "\n";
 print P 'if [ $CHECK -ne 0 ]; then exit ; fi' . "\n";
 
@@ -184,7 +185,8 @@ close P;
 ###
 #FUNCTIONS
 sub options {
-  my ($splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode  , $clusterName  , $experimentName , $referencePhyloCsfName);
+  my ($query_promoter_anchor , $splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode  , $clusterName  , $experimentName , $referencePhyloCsfName);
+  my $spyQuery_promoter_anchor         = 1;
   my $spyPhylocsfParameter             = 1;
   my $spyPhylocsf                      = 1;
   my $spyUnstrandedGTF                 = 1;
@@ -227,6 +229,15 @@ sub options {
   my $spySplitExonerate                = 1;
 
   foreach my $field (0..$#ARGV){
+    if ($ARGV[$field] eq '-queryPromoterAnchor'){
+	$query_promoter_anchor = $ARGV[1+$field];
+	$spyQuery_promoter_anchor = 2;
+	next;
+    }
+    if ($spyQuery_promoter_anchor == 2){
+	$spyQuery_promoter_anchor = 3;
+	next;
+    }
     if ($ARGV[$field] eq '-splitExonerate'){
 	$splitExonerate = $ARGV[1+$field];
 	$spySplitExonerate = 2;
@@ -606,6 +617,19 @@ sub options {
     chomp $check_gtf;
     die "Error[startPipeline.pl]! The query_gtf file $query_gtf_name file looks strange. It needs the transcript_id field\n" if ($check_gtf < 1);
   }
+  if ((defined $query_promoter_anchor) && (defined $queryName)){
+    my $hpa_tmp = fileNameGenerator("promoterAnchorHeaders");
+    my $h_tmp   = fileNameGenerator("Headers");
+    system ("grep \">\" $queryName | sort > $h_tmp");
+    system ("grep \">\" $query_promoter_anchor | sort > $hpa_tmp");
+    my $diffCheck = `diff $h_tmp $hpa_tmp`;
+    if ($diffCheck){
+      print "Error[startPipeline.pl]! the \"queries\" and the \"queries anchored by the promoter\" should have the same header!\n" ;
+      system ("rm $h_tmp $hpa_tmp");
+      exit;
+    }
+    system ("rm $h_tmp $hpa_tmp");
+  }
   if (defined $genomesName){
     $genomesName = abs_path($genomesName);
     die "Error[startPipeline.pl]! The query file $genomesName does not exist\n" unless (-f $genomesName);
@@ -652,6 +676,7 @@ sub options {
   $geneid                        = "geneid"                                              if (! defined $geneid);
   $queryName                     = 'none'                                                if (! defined $queryName);
   $query_gtf_name                = 'none'                                                if (! defined $query_gtf_name);
+  $query_promoter_anchor         = 'none'                                                if (! defined $query_promoter_anchor);
   $splitGenome                   = 'no'                                                  if (! defined $splitGenome);
   $unstrandedGTFname             = 'off'                                                 if (! defined $unstrandedGTFname);
   $referenceGenomeName           = 'none'                                                if (! defined $referenceGenomeName);
@@ -698,12 +723,12 @@ sub options {
   }
   $pipelineOutDir = "${pipelineDirName}/experiments/$experimentName";
 
-  return ($splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode , $clusterName  , $experimentName , $referencePhyloCsfName);
+  return ($query_promoter_anchor , $splitExonerate , $ner , $splitGenome , $phylocsfName , $phyloCSFparametersName , $unstrandedGTFname , $querySplits4cluster4filtering , $uniprot , $link2referenceGenomeName , $overlapStrand , $cpus , $orf_score_threshold , $geneidParameterFile , $rfam , $annotationFile , $overlapDistance , $nr , $pfam , $blastx , $rpsblast , $codingPotential , $geneid , $referenceGenomeName , $query_gtf_name , $pre_processingName , $tcoffeeName , $xdformatName , $exonerateName , $genomesName , $chr_subseqName , $strategyName , $blastName , $queryName   , $exonerate_success_mode ,  $exonerate_lines_mode , $clusterName  , $experimentName , $referencePhyloCsfName);
 }
 
 
 sub acceptedVariableSpace {
-  my %space = ('-splitExonerate' => 1 , '-ner' => 1 , '-splitGenome' => 1 , '-phyloCSFparameters' => 1 , '-phyloCSF' => 1  , '-unstrandedGTF' => 1 , '-querySplits4cluster4filtering' => 1 ,'-uniprot' => 1 , '-link2referenceGenome' => 1 , '-overlapStrand' => 1  , '-cpus' => 1 , '-geneid_parameter' => 1 , '-rfam' => 1 , '-annotation' => 1 , '-overlapDistance' => 1 , '-nr' => 1 , '-pfam' => 1 , '-codingPotential_check' => 1 , '-blastx' => 1 , '-rpsblast' => 1 , '-query_gtf' => 1 , '-geneid' => 1  , '-reference_genome' => 1  , '-pre_processing' => 1  , '-tcoffee' => 1  , '-experiment' => 1  , '-cluster' => 1  ,'-exonerate_lines_mode' => 1  , '-exonerate_success_mode' => 1 , '-query' => 1  , '-chr_subseq' => 1   , '-blast' => 1   , '-xdformat' => 1   , '-exonerate' => 1   , '-blast_strategy' => 1   , '-genomes' => 1 , '-orf_score_threshold' => 1 , '-phyloCSFreference' => 1);
+  my %space = ('-queryPromoterAnchor' => 1 , '-splitExonerate' => 1 , '-ner' => 1 , '-splitGenome' => 1 , '-phyloCSFparameters' => 1 , '-phyloCSF' => 1  , '-unstrandedGTF' => 1 , '-querySplits4cluster4filtering' => 1 ,'-uniprot' => 1 , '-link2referenceGenome' => 1 , '-overlapStrand' => 1  , '-cpus' => 1 , '-geneid_parameter' => 1 , '-rfam' => 1 , '-annotation' => 1 , '-overlapDistance' => 1 , '-nr' => 1 , '-pfam' => 1 , '-codingPotential_check' => 1 , '-blastx' => 1 , '-rpsblast' => 1 , '-query_gtf' => 1 , '-geneid' => 1  , '-reference_genome' => 1  , '-pre_processing' => 1  , '-tcoffee' => 1  , '-experiment' => 1  , '-cluster' => 1  ,'-exonerate_lines_mode' => 1  , '-exonerate_success_mode' => 1 , '-query' => 1  , '-chr_subseq' => 1   , '-blast' => 1   , '-xdformat' => 1   , '-exonerate' => 1   , '-blast_strategy' => 1   , '-genomes' => 1 , '-orf_score_threshold' => 1 , '-phyloCSFreference' => 1);
   foreach my $field (0..$#ARGV){
     if (($ARGV[$field] =~/^-/) && (! defined $space{"$ARGV[$field]"})){
       print "Error[startPipeline.pl]! $ARGV[$field] it is not a valid parameter\n";
@@ -747,7 +772,16 @@ sub sanity_chrHeaderSyntax {
 
   die "Error[startPipeline.pl]! both reference and query_gtf files should have chromosomes with the same chromosome naming scheme (preceded or not by the \'chr\' label)\n" if ($gtf_chr != $ref_chr);
 }
-
+sub fileNameGenerator{
+  my ($nameRoot) = @_;
+  my $tmp_name_counter = 0;
+  my $tmp_name;
+  while (!$tmp_name || -f $tmp_name) {
+    $tmp_name_counter++;
+    $tmp_name = "${nameRoot}_$$".".${tmp_name_counter}";
+  }
+  return $tmp_name;
+}
 sub help_message {
 my $helpMessage = "\nNAME
 startPipeline.pl - Input the query RNAs and the target genomes to start a new RNAmapping experiment\n
@@ -762,6 +796,7 @@ DESCRIPTION
    OPTIONS
    * -query                                                                          <Default: none>
    * -query_gtf                                                                      <Default: none>
+   * -queryPromoterAnchor                                                            <Default: none>
    * -splitGenome                                                                    <Default: no>
    * -unstrandedGTF                                                                  <Default: off>
    * -pre_processing                                                                 <Default: off>

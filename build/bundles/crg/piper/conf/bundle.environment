@@ -1,0 +1,16 @@
+DIR_4_TCOFFEE=${workspace.path}/.t_coffee/
+MCOFFEE_4_TCOFFEE=/data/tomcat/tcoffee/bundles/tcoffee/matrix/
+MAFFT_BINARIES=/data/tomcat/tcoffee/bundles/tcoffee/bin
+PERL5LIB=/data/tomcat/tcoffee/bundles/tcoffee/perl
+
+EMAIL_4_TCOFFEE=${bundle.email}
+TMP_4_TCOFFEE=${data.path}/_tmp/
+LOCKDIR_4_TCOFFEE=${data.path}/_lck/
+CACHE_4_TCOFFEE=${data.path}/_cache/
+
+PDB_DIR=${settings.PDB_DIR}
+
+#
+# Note: the Pipe-R script path is added to PATH by the PiperRunner script
+#
+PATH=${bundle.path}/bin:/data/tomcat/tcoffee/bundles/tcoffee/bin:${settings.WUBLAST_HOME}:${env.PATH}

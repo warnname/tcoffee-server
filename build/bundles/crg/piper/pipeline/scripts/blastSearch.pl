@@ -13,7 +13,8 @@ if ($help > 0){
 }
 #TAKE OPTIONS
 acceptedVariableSpace();
-my ($splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName) = options();
+my ($query_promoter_anchor , $splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName) = options();
+$queryName = $query_promoter_anchor unless ($query_promoter_anchor eq 'none');
 my $databaseName       =  $pipelineDirName . '/allGenomeInfo/';
 my $configName         = "${pipelineDirName}/experiments/${experimentName}/CONFIG/blastConfig";
 my $clusterConfigName  = "${pipelineDirName}/experiments/${experimentName}/CONFIG/clusterConfig";
@@ -102,16 +103,26 @@ blastRmf2_to_standardMf2() if (($strategyName eq 'abblastr') || ($strategyName e
 ###
 #FUNCTIONS
 sub options {
-  my ($splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName);
-  my $spyBlast         = 1;
-  my $spyQuery         = 1;
-  my $spyStrategy      = 1;
-  my $spyCluster       = 1;
-  my $spyExperiment    = 1;
-  my $spyPipelineDir   = 1;
-  my $spySplitGenome   = 1;
+  my ($query_promoter_anchor , $splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName);
+  my $spyQuery_promoter_anchor = 1;
+  my $spyBlast                 = 1;
+  my $spyQuery                 = 1;
+  my $spyStrategy              = 1;
+  my $spyCluster               = 1;
+  my $spyExperiment            = 1;
+  my $spyPipelineDir           = 1;
+  my $spySplitGenome           = 1;
 
   foreach my $field (0..$#ARGV){
+    if ($ARGV[$field] eq '-queryPromoterAnchor'){
+	$query_promoter_anchor = $ARGV[1+$field];
+	$spyQuery_promoter_anchor = 2;
+	next;
+    }
+    if ($spyQuery_promoter_anchor == 2){
+	$spyQuery_promoter_anchor = 3;
+	next;
+    }
     if ($ARGV[$field] eq '-splitGenome'){
       $splitGenome = $ARGV[1+$field];
       $spySplitGenome = 2;
@@ -186,15 +197,16 @@ sub options {
   die "Error[blastSearch.pl]! Allowed cluster options are on|off \n"                                                if ((defined $clusterName) && ($clusterName ne 'off') && ($clusterName ne 'on'));
   die "Error[blastSearch.pl]! -splitGenome parameter can be either \'yes\' or \'no\'\n"                             if ((defined $splitGenome) && ($splitGenome ne 'yes') && ($splitGenome ne 'no'));
   die "Error[blastSearch.pl]! The -splitGenome function is meant to run on the cluster, please set -cluster on\n"   if ((defined $splitGenome) && ($splitGenome eq 'yes') && ($clusterName ne 'on'));
-  $blastName        = 'wu-blastn'    if (! defined $blastName);
-  $strategyName     = 'wublastn_opt' if (! defined $strategyName);
-  $clusterName      = 'off'          if (! defined $clusterName);
-  $splitGenome      = 'no'           if (! defined $splitGenome);
-  return ($splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName);
+  $blastName             = 'wu-blastn'    if (! defined $blastName);
+  $strategyName          = 'wublastn_opt' if (! defined $strategyName);
+  $clusterName           = 'off'          if (! defined $clusterName);
+  $splitGenome           = 'no'           if (! defined $splitGenome);
+  $query_promoter_anchor = 'none'         if (! defined $query_promoter_anchor);
+  return ($query_promoter_anchor , $splitGenome , $blastName , $queryName  , $strategyName  , $clusterName , $experimentName , $pipelineDirName);
 }
 
 sub acceptedVariableSpace {
-  my %space = ('-splitGenome' => 1 , '-cluster' => 1 , '-blast' => 1  , '-query' => 1  , '-blast_strategy' => 1  , '-experiment' => 1  , '-pipeline_dir' => 1 );
+  my %space = ('-queryPromoterAnchor' => 1 , '-splitGenome' => 1 , '-cluster' => 1 , '-blast' => 1  , '-query' => 1  , '-blast_strategy' => 1  , '-experiment' => 1  , '-pipeline_dir' => 1 );
   foreach my $field (0..$#ARGV){
     if (($ARGV[$field] =~/^-/) && (! defined $space{"$ARGV[$field]"})){
       print "Error[blastSearch.pl]! $ARGV[$field] it is not a valid parameter\n";

@@ -119,9 +119,33 @@ sub makeDatabase {
       return;
     }
     my @names = `ls ${outGenomeDirName}/chr/`; if ($?) {die "Error[createDatabase.pl]! cannot take the chr file names to format the database $!\n"};
-    my $format_cmd = "$xdFormatName -n -o ${db_folder}/db - <";
+    my $format_cmd;
+    if (scalar @names > 250){
+      print STDERR "#Genome $genomeName has more than 250 scaffolds. The formatting will take a bit of time..\n";
+      my $tmp_genome = fileNameGenerator("$pipelineDirName/experiments/$experimentName/$genomeName");
+      foreach my $c (@names){
+	chomp $c;
+	(system "cat ${outGenomeDirName}/chr/$c >> $tmp_genome") == 0 or die "Error[createDatabase.pl]! Cannot create $tmp_genome\n$!\n";
+      }
+      $format_cmd = "$xdFormatName -n -o ${db_folder}/db $tmp_genome";
+      (system "$format_cmd") == 0 or die "Error[createDatabase.pl]! Cannot run $format_cmd\n$!\n";;
+      system "rm $tmp_genome";
+      return;
+    }
+    $format_cmd = "$xdFormatName -n -o ${db_folder}/db - <";
     foreach my $name (@names){ chomp $name; $format_cmd .= " ${outGenomeDirName}/chr/$name";}
-    system "$format_cmd";
+    (system "$format_cmd") == 0 or die "Error[createDatabase.pl]! Cannot run $format_cmd\n$!\n";;
+  }
+
+sub fileNameGenerator{
+  my ($nameRoot) = @_;
+  my $tmp_name_counter = 0;
+  my $tmp_name;
+  while (!$tmp_name || -f $tmp_name) {
+    $tmp_name_counter++;
+    $tmp_name = "${nameRoot}_$$".".${tmp_name_counter}";
+  }
+  return $tmp_name;
 }
 
 sub options {
