@@ -38,11 +38,11 @@
     </input>
     
     <process>
-		<script clazz="MyClass"  >
+		<script-command clazz="MyClass"  >
 		<![CDATA[
 		println ">>> ${context}\n\n"
 		]]>
-		</script>
+		</script-command>
     </process>
     
   </service>

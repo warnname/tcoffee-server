@@ -271,7 +271,7 @@ public class AppProps implements Serializable  {
     	String id = Play.id;
     	Logger.info("Intercepting conf properties for '%s'", id);
 
-    	Properties playConf = IO.readUtf8Properties(Play.conf.inputstream());
+    	Properties playConf = IO.readUtf8Properties( Play.confs.iterator().next().inputstream() );
         Pattern pattern = Pattern.compile("^%"+id+"\\.(.*)$");
 
         for (Object key : playConf.keySet()) {
