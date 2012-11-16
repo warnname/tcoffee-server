@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo '' >> _qsub.pbs
+echo 'result=$?' >> _qsub.pbs
+echo 'echo -n "$result" > _errcode' >> _qsub.pbs
+echo 'exit $result' >> _qsub.pbs
+
+trap "{ echo -n "255" > _errcode; }" TERM
+
+shift 
+shift 
+shift
+/soft/general/gridengine/bin/lx24-amd64/qsub -cwd $@
+
+[ $? -ne 0 ] && exit $?
+
+while [ true ]; do 
+  [ -f _errcode ] && exit `cat _errcode`
+  sleep 10
+done 
+
+
