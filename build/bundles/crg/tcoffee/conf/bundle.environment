@@ -28,3 +28,4 @@ MCOFFEE_4_TCOFFEE=${bundle.path}/matrix/
 MAFFT_BINARIES=${bundle.path}/bin
 PERL5LIB=${bundle.path}/perl
 ALN_LINE_LENGTH=50
+PDB_DIR=${settings.PDB_DIR}
