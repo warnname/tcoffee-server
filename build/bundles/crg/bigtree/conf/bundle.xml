@@ -1,6 +1,6 @@
-<bundle name="bigtree" version="1.0.533" >
+<bundle name="bigtree" version="1.0" >
   <title>BigBigTree</title>
-  <description>Antimicrobial Sequence Scanning System</description>
+  <description>BigBigTree</description>
   <author>Jia-Ming Change</author>
   <email>chang.jiaming@gmail.com</email>
   
