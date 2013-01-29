@@ -152,7 +152,7 @@ function make_distribution()
 	# Copy the configuration specific /conf files
 	#
 	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/ ]; then 
-	find $WORKSPACE/tserver/build/conf/$CONFID/ -name "*" -type f  -exec cp  '{}' $SERVER_DIR/tserver/conf/ \;
+	for file in $(find $WORKSPACE/tserver/build/conf/$CONFID/ -name "*" -type f); do cp $file $SERVER_DIR/tserver/conf/; done
 	fi	
 	
 	# 
@@ -281,7 +281,7 @@ function pack_server_local() {
 	mkdir -p $SERVER_DIR/tserver/bundles
 	rm -rf $SERVER_DIR/tserver/bundles/tcoffee
 	cp -r $WORKSPACE/tserver/build/bundles/crg/tcoffee $SERVER_DIR/tserver/bundles
-	find $SERVER_DIR/tserver/bundles -name .svn | xargs rm -rf
+	for file in $(find $SERVER_DIR/tserver/bundles -name .svn); do rm -rf $file; done
 	
 	# 
 	# create start/stop script 
@@ -322,7 +322,7 @@ function pack_server_vital()
 	# 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver/build/bundles/vital-it/* $SERVER_DIR/bundles
-	find $SERVER_DIR/bundles -name .svn | xargs rm -rf
+	for file in $(find $SERVER_DIR/bundles -name .svn); do rm -rf $file; done
 
 	#
 	# Create the final zip file 
@@ -366,7 +366,7 @@ function pack_bundles()
 	# Copy required bundles 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver/build/bundles/crg/* $SERVER_DIR/bundles
-	find $SERVER_DIR/bundles -name .svn | xargs rm -rf
+	for file in $(find $SERVER_DIR/bundles -name .svn); do rm -rf $file; done
 
 	# Create the zip package
 	make_zip	
