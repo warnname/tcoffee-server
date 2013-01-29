@@ -141,11 +141,11 @@ function make_distribution()
 	#	
 	# Remove trash items 
 	#
-	find $SERVER_DIR -name .svn | xargs rm -rf
-	find $SERVER_DIR -name .settings | xargs rm -rf
-	find $SERVER_DIR -name .project | xargs rm -rf
-	find $SERVER_DIR -name *.svn-base | xargs rm -rf
-	find $SERVER_DIR -name all-wcprops | xargs rm -rf
+	for file in $(find $SERVER_DIR -name .svn); do rm -rf $file; done
+	for file in $(find $SERVER_DIR -name .settings); do rm -rf $file; done
+	for file in $(find $SERVER_DIR -name .project); do rm -rf $file; done
+	for file in $(find $SERVER_DIR -name *.svn-base); do rm -rf $file; done
+	for file in $(find $SERVER_DIR -name all-wcprops); do rm -rf $file; done
 	
 
 	#
