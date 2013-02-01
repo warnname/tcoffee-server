@@ -138,16 +138,6 @@ function make_distribution()
 	cp -R $WORKSPACE/tserver/public/ $SERVER_DIR/tserver/public
 	cp -R $WORKSPACE/tserver/globe/  $SERVER_DIR/tserver/globe
 
-	#	
-	# Remove trash items 
-	#
-	for it in $(find $SERVER_DIR -name .svn); do chmod +w $it; rm -rf $it; done
-	for it in $(find $SERVER_DIR -name .settings); do chmod +w $it; rm -rf $it; done
-	for it in $(find $SERVER_DIR -name .project); do chmod +w $it; rm -rf $it; done
-	for it in $(find $SERVER_DIR -name *.svn-base); do chmod +w $it; rm -rf $it; done
-	for it in $(find $SERVER_DIR -name all-wcprops); do chmod +w $it; rm -rf $it; done
-	
-
 	#
 	# Copy the configuration specific /conf files
 	#
@@ -181,7 +171,7 @@ function make_zip()
 
 	# zip them all
 	mkdir -p $DIST_DIR
-	zip -r $SERVER_NAME.zip $SERVER_NAME/* > /dev/null
+	zip -r $SERVER_NAME.zip $SERVER_NAME/* -x */.svn/* -q
 
 	# Moving to target path 
 	mv $SERVER_NAME.zip $DIST_DIR
@@ -284,7 +274,6 @@ function pack_server_local() {
 	mkdir -p $SERVER_DIR/tserver/bundles
 	rm -rf $SERVER_DIR/tserver/bundles/tcoffee
 	cp -r $WORKSPACE/tserver/build/bundles/crg/tcoffee $SERVER_DIR/tserver/bundles
-	for it in $(find $SERVER_DIR/tserver/bundles -name .svn); do chmod +w $it; rm -rf $it; done
 	
 	# 
 	# create start/stop script 
@@ -325,7 +314,6 @@ function pack_server_vital()
 	# 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver/build/bundles/vital-it/* $SERVER_DIR/bundles
-	for it in $(find $SERVER_DIR/bundles -name .svn); do chmod +w $it; rm -rf $it; done
 
 	#
 	# Create the final zip file 
@@ -369,7 +357,6 @@ function pack_bundles()
 	# Copy required bundles 
 	mkdir -p $SERVER_DIR/bundles
 	cp -r $WORKSPACE/tserver/build/bundles/crg/* $SERVER_DIR/bundles
-	for it in $(find $SERVER_DIR/bundles -name .svn); do chmod +w $it; rm -rf $it; done
 
 	# Create the zip package
 	make_zip	
