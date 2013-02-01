@@ -142,7 +142,7 @@ function make_distribution()
 	# Copy the configuration specific /conf files
 	#
 	if [ -e $WORKSPACE/tserver/build/conf/$CONFID/ ]; then 
-	for it in $(find $WORKSPACE/tserver/build/conf/$CONFID/ -name "*" -type f); do 
+	for it in `ls $WORKSPACE/tserver/build/conf/$CONFID/*`; do 
 	  chmod +w $it
 	  cp $it $SERVER_DIR/tserver/conf/ 
 	done
@@ -171,7 +171,7 @@ function make_zip()
 
 	# zip them all
 	mkdir -p $DIST_DIR
-	zip -r $SERVER_NAME.zip $SERVER_NAME/* -x */.svn/* -q
+	zip -q -r $SERVER_NAME.zip $SERVER_NAME/* -x */.svn/* 
 
 	# Moving to target path 
 	mv $SERVER_NAME.zip $DIST_DIR
