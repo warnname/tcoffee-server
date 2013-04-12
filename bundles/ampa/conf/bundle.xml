@@ -1,0 +1,135 @@
+<bundle name="ampa" version="1.0.533" >
+  <title>AMPA</title>
+  <description>Antimicrobial Sequence Scanning System</description>
+  <author>Marc Torrent</author>
+  <email>marc.torrent@upf.edu</email>
+
+  <def>
+    <dictionary>
+      <label key="input_file" value="Input(s)" />
+      <label key="data_file" value="Data file(s)" />
+      <label key="graph_file" value="Graph file(s)" />
+      <label key="result_file" value="Result file(s)" />
+    </dictionary>
+  </def>
+  
+  
+  <service name="ampa">
+    <cite>http://www.ncbi.nlm.nih.gov/pubmed/19906288</cite>
+    <title>Antimicrobial Sequence Scanning System</title>
+    <description>A theoretical approach to spot active regions in antimicrobial proteins.</description>
+ 	<input>
+      <fieldset >
+        <title>Analyzing your sequence</title>
+      
+        <field type='memo' name='protein' label='Protein' >
+          <sample>public/sample.fasta.txt</sample>
+          <validation format="FASTA" type="amino-acid" required="true" minnum="1" maxnum="50" >
+            <required-error>You have to enter the sequences to align</required-error>
+            <format-error>Sequences have to be in multi-FASTA format</format-error>
+            <minnum-error>You must enter at least 1 sequence</minnum-error>
+            <maxnum-error>You can enter at most 50 sequences</maxnum-error>
+          </validation>
+        </field>
+
+
+        <field type='text' name='window' label='Window size' >
+          <hint>(Default value 7) Although it is not recommended you can use higher window size to analyze very large proteins (&gt;1000 residues)</hint>
+          <value>7</value>
+          <validation required='true' format="INTEGER" min="5" max="19" >
+          	<min-error>Window Size minimun accepted value is 5</min-error>
+          	<max-error>Window Size maximum accepted value is 19</max-error>
+            <required-error>Window Size is a mandatory field</required-error>
+          </validation>
+        </field>
+
+        <field type='text' name='threshold' label='Threshold value' >
+          <hint>Default value 0.225) Although it is not recommended you can use lower threshold values for high stringency predictions</hint>
+          <value>0.225</value>
+          <validation required='true' format="DECIMAL" min="0.15" max="0.35"  >
+          	<min-error>Threshold minimun accepted value is 0.15</min-error>
+          	<max-error>Threshold maximum accepted value is 0.35</max-error>
+            <required-error>Threshold is a mandatory field</required-error>
+          </validation>
+        </field>
+      </fieldset>	
+
+     <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>Optional to notify the results of this calculation</hint>
+          <validation format="EMAIL" />
+        </field>
+     </fieldset>
+	</input>
+  
+  <process>
+    <qsub>
+    <ampa input="${protein}" threshold="${threshold}" window="${window}" >
+	    <logfile>stdout.txt</logfile>
+	    <errfile>stderr.txt</errfile>
+    </ampa>
+    </qsub>
+  </process>
+  
+
+  <output>
+    <!--  definition for valid result  -->
+    <valid>
+        
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>AMPA result</subject>
+          <body>
+          Hello, 
+          
+          Your AMPA process been completed. 
+          
+          Click here to view --> ${_result_url} 
+          
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
+
+          
+          Cheers, 
+          AMPA team
+          </body>
+          </mail>
+        </events>    
+      
+    </valid>
+    
+    <!--  definition for failed result -->
+    <fail>
+        <result> 
+        <title>AMPA has failed</title>
+        </result>
+  
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>AMPA process result</subject>
+          <body>
+          Hi, 
+          
+          Unfortunately your AMPA process terminated with errors. 
+          
+          Click here to check --> ${_result_url} 
+          
+          If you have questions, suggestions or to report problems 
+          do not reply to this message, write instead to marc.torrent@upf.edu. 
+          
+          
+          Cheers, 
+          AMPA team
+          </body>
+          </mail>
+        </events>
+    
+    </fail>
+  </output>
+  
+</service>
+
+
+</bundle>

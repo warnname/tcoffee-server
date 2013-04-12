@@ -1,0 +1,167 @@
+#{set 'meta'}
+<title>T-COFFEE Multiple Sequence Alignment Server</title>
+<meta name="description" content="T-Coffee is a multiple sequence alignment server. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
+<meta name="keywords" content="t-coffee, tcoffee, t_coffee, T-Coffee server, web server, multiple sequence alignment server, server, msa, multiple sequence alignment, dna, rna, protein sequence, protein structure, Ceric Notredame, Comparative Bioinformatics" />
+<meta name="google-site-verification" content="h3pS1Y9xQdTbZlkoBNPeMtEt269Gdc_mDoia6kC0ASM" />
+#{/set}
+
+<h1>T-Coffee
+<small>
+A collection of tools for Computing, Evaluating and Manipulating 
+Multiple Alignments of DNA, RNA, Protein Sequences and Structures
+</small>
+</h1>
+
+<style type="text/css"> 
+#somethingNew { float: right;  } 
+#somethingNew a { color: #d90f0f; border: none; font-weight: 500 }  
+</style>
+
+<div class="box" >
+
+#{list _bundle.groups, as:'group' }
+<h2><span>${group ?: 'Other'}</span></h2>
+
+<table class="c-home" summary="T-Coffee Applications">
+<tbody>
+#{list _bundle.getServicesByGroup(group) } 
+<tr>
+	<td class="c-lbl" >
+	#{if _.name == 'adv-cmdline'}
+		<a href="@{Application.advanced}">${_.title}</a>
+	#{/if}
+	#{else}
+		<a href="${play.mvc.Router.reverse(_.action,['name':_.name])}">${_.title}</a>
+	#{/else}
+	</td>
+	
+	<td class="c-val">
+		#{if ! (_.name in ['tmcoffee','procoffee','trmsd', 'strike' ]) }
+		${_.description}  
+		#{/if}
+		#{else}
+		${_?.description?.replace('(new)','')} <img style="padding-left: 6px" src="@{'/public/images/new_icon_1.gif'}" width="28" height="11"/>
+		#{/else}
+
+		#{if _.cite}<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="${_.cite}" title="Cite ${_.title}" target="_blank" >Cite</a> </small> #{/if}	
+	</td>
+	</tr>
+#{/list } 
+</tbody>
+</table>
+#{/list}
+</div>
+
+
+<!-- 
+	USEFUL LINKS section
+ -->
+
+<h2>
+<span>Useful links</span>
+</h2>
+
+<table class="c-home" summary="Useful Links">
+<tbody>
+
+<tr>
+	<td class="c-lbl"><a href="http://groups.google.com/group/tcoffee" target="_blank" >Google Group</a> </td>
+	<td class="c-val">Support and discussion group </td>
+</tr>
+
+
+<tr>
+<td class="c-lbl" style="padding-left: 0px; margin-left: 0px">
+	<a target="_blank" href="http://www.tcoffee.org/Projects/tcoffee/">tcoffee.org</a>
+</td>
+<td class="c-val">Find out more about T-Coffee project and documentation</td>
+</tr>
+
+<tr>
+<td class="c-lbl"><em style="font-weight: normal">Cedric Notredame</em></td>
+<td class="c-val">
+<a href="http://www.tcoffee.org/homepage.html" target="_blank" title="Cedric Notredame's home page" >Home page</a>, 
+<a href="http://www.tcoffee.org/Courses/Exercises/index.html"  target="_blank" title="Cedric Notredame's Courses">Courses</a> and 
+<a href="http://cedricnotredame.blogspot.com/"  target="_blank" title="Cedric Notredame's blog" >Blog</a></td>
+</tr>
+
+<tr>
+<td class="c-lbl" style="padding-left: 0px; margin-left: 0px">
+	<a target="_blank" href="http://www.tcoffee.org/Projects_home_page/t_coffee_home_page.html#Download">Download</a>
+</td>
+<td class="c-val">Sources and binaries are available for download at this link</td>
+</tr>
+
+<tr>
+<td class="c-lbl">
+	<a target="_blank" href="http://www.twitter.com/tcoffeemsa">Twitter</a>
+</td>
+<td class="c-val"> Check it out for latest T-Coffee developments and new tips </td>
+</tr>
+
+<tr>
+<td class="c-lbl">
+<a href="http://en-gb.facebook.com/people/T-Coffee-Msa/100002039268111" target="_blank" title="T-Coffee on Facebook" >Facebook</a></td>
+<td class="c-val"> T-Coffee has a page on Facebook</td>
+</tr>
+
+
+</tbody>
+</table>
+
+<!-- 
+	MIRROR SITES section
+ 	-->
+<h2>
+<span>Mirror sites</span>
+</h2>
+
+<div class="box" style="float: right; width: 200px; text-align: center;"  >
+<a href="http://www.amazon.com/gp/product/0470089857?ie=UTF8&amp;tag=wwwtcoffeeorg-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0470089857" 
+target="_blank" style="border: none" ><img src="public/images/bio-for-dummies.jpg" width="127" height="160" alt="Bioinfo for dummies"></a>
+
+<br>
+<small>
+The Book <a target="_blank" href="http://www.amazon.com/gp/product/0470089857?ie=UTF8&amp;tag=wwwtcoffeeorg-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=0470089857" >Bioinformatics For Dummies</a> 
+contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.dummies.com/WileyCDA/DummiesTitle/productCd-0470089857,page-1.html" >online resources</a>. 
+</small>
+</div>
+
+<table id="mirrors" class="c-home" summary="Mirror Sites">
+<tbody>
+
+<tr>
+<td class="c-lbl"><a href="http://tcoffee.vital-it.ch/" target="_blank" title="Vital-IT"><img src="public/images/mirror_vitalch.gif" alt="Vital-IT" width="33" height="25"></a> </td>
+<td class="c-val"><a href="http://tcoffee.vital-it.ch/" target="_blank">Vital-IT, Swiss Institute of Bioinformatics (SIB)</a> </td>
+</tr>
+
+<tr>
+<td class="c-lbl"> <a href="http://www.ebi.ac.uk/Tools/t-coffee/" target="_blank" title="EBI"><img src="public/images/mirror_ebi.gif" alt="EBI" width="36" height="25"></a></td>
+<td class="c-val"> <a href="http://www.ebi.ac.uk/Tools/t-coffee/" target="_blank">EBI, European Bioinformatics Institute</a></td>
+</tr>
+
+<tr>
+<td class="c-lbl" > <a href="http://www.igs.cnrs-mrs.fr/Tcoffee/" target="_blank" title="IGS CNRS"><img src="public/images/mirror_cnrs.jpg" alt="IGS CNRS" width="25" height="25"></a>&nbsp;</td>
+<td class="c-val"> <a href="http://www.igs.cnrs-mrs.fr/Tcoffee/" target="_blank">IGS lab., CNRS</a></td>
+</tr>
+
+<tr>
+<td class="c-lbl"><a href="http://toolkit.tuebingen.mpg.de/t_coffee" target="_blank" title="Max-Planck Institute"> <img src="public/images/mirror_maxplank.gif" alt=">Max-Planck Institute" width="36" height="25"></a></td>
+<td class="c-val"><a href="http://toolkit.tuebingen.mpg.de/t_coffee" target="_blank">Max-Planck Institute for Developmental Biology</a></td>
+</tr>
+
+<tr>
+<td class="c-lbl"><a href="http://cbsuapps.tc.cornell.edu/t_coffee.aspx" target="_blank" title="Cornell"> <img src="public/images/mirror_cbsu.jpg" alt="Cornell" width="36" height="25"></a></td>
+<td class="c-val"><a href="http://cbsuapps.tc.cornell.edu/t_coffee.aspx" target="_blank">Cornell</a></td>
+</tr>
+
+<tr>
+<td class="c-lbl"><a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank" title="EMBNet-Spain"><img src="public/images/mirror_EMBnetCNB.png" alt="EMBNet-Spain" width="36" height="25"></a> </td>
+<td class="c-val"><a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank">EMBNet-Spain</a></td>
+</tr>
+
+</tbody>
+</table>
+
+
+

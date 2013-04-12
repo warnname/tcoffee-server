@@ -1,0 +1,24 @@
+#!/bin/bash
+CONCATENATE_CMD="concatenate.pl"
+DEAL_DUPLICATEID_CMD="deal-duplicateID.pl"
+
+ALN_DIC=$1
+CONCATENATE_ALN=$2
+
+if [ ! -e $CONCATENATE_ALN ]
+then
+  #deal with duplicate sequences
+  echo " [RUN] handle with duplicate clusterID in one species"
+  $DEAL_DUPLICATEID_CMD $ALN_DIC
+
+  #perform concatenation
+  ALNS=$(ls *_nn.fasta_aln|grep -v cluster|tr '\n' ' ')
+  echo " [RUN] perform concatenation"
+  $CONCATENATE_CMD --aln $ALNS --out $CONCATENATE_ALN
+  sed -i 's/X/-/g' $CONCATENATE_ALN
+  sed -i "s/\/1-[0-9]*//" $CONCATENATE_ALN
+
+  rm *_nn.fasta_aln
+else
+  echo "[WARNNING] $CONCATENATE_ALN exists, skip this step"
+fi

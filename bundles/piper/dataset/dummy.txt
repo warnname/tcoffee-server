@@ -1,0 +1,2 @@
+/Users/ptommaso/workspace/piper/data/c_elegans.WS227.genomic_softmasked.fa	 Dog
+/Users/ptommaso/workspace/piper/data/c_briggsae.WS227.genomic_softmasked.fa  Chimp

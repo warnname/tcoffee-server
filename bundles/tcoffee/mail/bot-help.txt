@@ -1,0 +1,36 @@
+[T-COFFEE aligner bot processor]
+
+Welcome to the T-Coffee bot processor. T-Coffee is a multiple sequence alignment package.
+
+To use this service send an email message containing the sequences to align. 
+It can be entered in the as the mail body message or as a mail file attachmnt. 
+
+The sequences must be provided in multi-fasta format. An optional T-Coffee mode option can be specified 
+as the first line in the mail body message using the following format: [mode=the-mode-value]
+
+A valid alignment mail request could be the following: 
+
+
+[mode=expresso]
+>1aboA
+NLFVALYDFVASGDNTLSITKGEKLRVLGYNHNGEWCEAQTKNGQGWVPS
+NYITPVN
+>1ycsB
+KGVIYALWDYEPQNDDELPMKEGDCMTIIHREDEDEIEWWWARLNDKEGY
+VPRNLLGLYP
+>1pht
+GYQYRALYDYKKEREEDIDLHLGDILTVNKGSLVALGFSDGQEARPEEIG
+WLNGYNETTGERGDFPGTYVEYIGRKKISP
+>1vie
+DRVRKKSGAAWQGQIVGWYCTNLTPEGYAVESEAHPGSVQIYPVAALERI
+N
+>1ihvA
+NFRVYYRDSRDPVWKGPAKLLWKGEGAVVIQDNSDIKVVPRRKAKIIRD
+
+
+
+To get more information visit http://tcoffee.crg.cat or subscribe to 
+the T-Coffee support group http://groups.google.com/group/tcoffee 
+
+Cheers,
+T-Coffee team

@@ -1,0 +1,16 @@
+[T-COFFEE request (invalid data)]
+
+The alignent request you have submitted could not be processed due the following validation error(s): 
+
+${validation}
+
+T-Coffee accepts sequences in multi-fasta format. 
+Also make sure to send your request using an email client using the text-plain format.
+
+
+Send email with the text "help" in the subject to receive more information.
+
+Cheers,
+T-Coffee team
+
+

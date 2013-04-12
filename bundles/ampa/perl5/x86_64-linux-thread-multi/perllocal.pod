@@ -1,0 +1,44 @@
+=head2 Wed Sep 14 11:38:20 2011: C<Module> L<Math::CDF|Math::CDF>
+
+=over 4
+
+=item *
+
+C<installed into: /users/cn/ptommaso/Downloads/ampa/perlm/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.1>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Wed Sep 14 11:38:38 2011: C<Module> L<Math::Round|Math::Round>
+
+=over 4
+
+=item *
+
+C<installed into: /users/cn/ptommaso/Downloads/ampa/perlm/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.06>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

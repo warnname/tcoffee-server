@@ -1,0 +1,99 @@
+#{set title:'User Guide' /}
+
+<style type="text/css">
+#content p, 
+#content ul { margin-top: 0.6em; margin-bottom: 0.4em; padding-left: 1em; } 
+
+pre {
+	padding-left: 2em;
+	margin-left: 2em;
+	margin-bottom: 2em;
+	margin-top: 2em;
+	border-left: 4px solid #aaa;
+} 
+</style>
+
+<div class="box" >
+<h2><span>Download</span>
+<small><span>
+Right-click on the below link, choose "Save Link As.." and the save the script on your machine.
+</span></small>
+</h2>
+
+<p>The AMPA algorithm is available for download a <a href="public/ampa.zip" >this link</a>.   
+</p>
+
+</div>
+
+
+<div class="box" >
+<h2><span>Installation</span>
+</h2>
+
+<p>
+1) Unzip the downloaded package using the following command (or any other ZIP tools): 
+</p>
+<pre>
+unzip ampa.zip
+</pre>
+
+<p>
+2) Grant the execution permission to the perl scripts (only for Linux and OSX users):
+</p>
+<pre>
+chmod +x AMPA.pl
+chmod +x multi-AMPA.pl
+</pre>
+
+</div>
+
+
+<div class="box" >
+<h2><span>Usage</span>
+<small><span>Use the following command line in your terminal window</span></small>
+</h2>
+
+<p>
+Save your protein sequence in a <a href="http://en.wikipedia.org/wiki/FASTA_format" target="_blank" >FASTA formatted</a> file and run the following command in your shell.
+</p>
+<pre>
+AMPA.pl -in=&lt;single-sequence-fasta-file&gt; 
+</pre>
+<p>
+To analyse more than one sequence at a time (multi-FASTA file) use command below: 
+</p>
+
+<pre>
+multi-AMPA.pl -in=&lt;single-sequence-fasta-file&gt; 
+</pre>
+
+ 
+</div>
+
+
+<div class="box" >
+<h2><span>Depencies</span>
+<small><span>What you need to run it on your machine</span></small>
+</h2>
+
+<h3>PERL</h3>
+<p >
+The AMPA script to be execute requires the <a href="http://www.perl.org" target="_blank">PERL</a> 
+interpreter to be installed on your machine. 
+</p>
+<p>
+It is included by default in the most popular Linux distribution, and in the Apple Mac OS X. 
+Windows users can download and install the <a href="http://www.activestate.com/activeperl" target="_target">ActivePerl</a> interpreter.
+ </p>
+ 
+<h3>Other modules</h3>
+<p >
+It is also required the following PERL modules to be installed on your machine. 
+</p>
+<ul>
+<li><a target="_blank" href="http://search.cpan.org/~callahan/Math-CDF-0.1/CDF.pm" ><code>Math::CDF</code></a></li>
+<li><a target="_blank" href="http://search.cpan.org/dist/Math-Round/Round.pm"><code>Math::Round</code></a></li>
+<li><a target="_blank" href="http://search.cpan.org/~cjfields/BioPerl-1.6.901/" ><code>BioPerl</code></a> </li>
+</ul>
+</div>
+ 
