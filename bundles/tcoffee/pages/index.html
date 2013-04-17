@@ -2,7 +2,6 @@
 <title>T-COFFEE Multiple Sequence Alignment Server</title>
 <meta name="description" content="T-Coffee is a multiple sequence alignment server. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
 <meta name="keywords" content="t-coffee, tcoffee, t_coffee, T-Coffee server, web server, multiple sequence alignment server, server, msa, multiple sequence alignment, dna, rna, protein sequence, protein structure, Ceric Notredame, Comparative Bioinformatics" />
-<meta name="google-site-verification" content="h3pS1Y9xQdTbZlkoBNPeMtEt269Gdc_mDoia6kC0ASM" />
 #{/set}
 
 <h1>T-Coffee
@@ -12,37 +11,19 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 </small>
 </h1>
 
-<style type="text/css"> 
-#somethingNew { float: right;  } 
-#somethingNew a { color: #d90f0f; border: none; font-weight: 500 }  
-</style>
-
 <div class="box" >
-
 #{list _bundle.groups, as:'group' }
-<h2><span>${group ?: 'Other'}</span></h2>
+<h2><span>${group ?: 'other'}</span></h2>
 
 <table class="c-home" summary="T-Coffee Applications">
 <tbody>
 #{list _bundle.getServicesByGroup(group) } 
 <tr>
 	<td class="c-lbl" >
-	#{if _.name == 'adv-cmdline'}
-		<a href="@{Application.advanced}">${_.title}</a>
-	#{/if}
-	#{else}
-		<a href="${play.mvc.Router.reverse(_.action,['name':_.name])}">${_.title}</a>
-	#{/else}
+		<a href="@{Application.main(_.name)}">${_.title ?: '(unknown)'}</a>
 	</td>
 	
-	<td class="c-val">
-		#{if ! (_.name in ['tmcoffee','procoffee','trmsd', 'strike' ]) }
-		${_.description}  
-		#{/if}
-		#{else}
-		${_?.description?.replace('(new)','')} <img style="padding-left: 6px" src="@{'/public/images/new_icon_1.gif'}" width="28" height="11"/>
-		#{/else}
-
+	<td class="c-val">${_.description} 
 		#{if _.cite}<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="${_.cite}" title="Cite ${_.title}" target="_blank" >Cite</a> </small> #{/if}	
 	</td>
 	</tr>
@@ -70,19 +51,12 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 </tr>
 
 
-<tr>
-<td class="c-lbl" style="padding-left: 0px; margin-left: 0px">
-	<a target="_blank" href="http://www.tcoffee.org/Projects/tcoffee/">tcoffee.org</a>
-</td>
-<td class="c-val">Find out more about T-Coffee project and documentation</td>
-</tr>
 
 <tr>
-<td class="c-lbl"><em style="font-weight: normal">Cedric Notredame</em></td>
-<td class="c-val">
-<a href="http://www.tcoffee.org/homepage.html" target="_blank" title="Cedric Notredame's home page" >Home page</a>, 
-<a href="http://www.tcoffee.org/Courses/Exercises/index.html"  target="_blank" title="Cedric Notredame's Courses">Courses</a> and 
-<a href="http://cedricnotredame.blogspot.com/"  target="_blank" title="Cedric Notredame's blog" >Blog</a></td>
+<td class="c-lbl" style="padding-left: 0px; margin-left: 0px">
+	<a target="_blank" href="http://www.tcoffee.org/Projects_home_page/t_coffee_home_page.html">tcoffee.org</a>
+</td>
+<td class="c-val">Find out more about T-Coffee project and documentation</td>
 </tr>
 
 <tr>
@@ -94,7 +68,7 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 
 <tr>
 <td class="c-lbl">
-	<a target="_blank" href="http://www.twitter.com/tcoffeemsa">Twitter</a>
+	<a style="border: none" target="_blank" href="http://www.twitter.com/tcoffeemsa" title="Follow T-Coffee on Twitter"><img src="public/images/twitter-small.png" alt="Follow T-Coffee on Twitter" width="24" height="24"></a>
 </td>
 <td class="c-val"> Check it out for latest T-Coffee developments and new tips </td>
 </tr>
@@ -105,6 +79,11 @@ Multiple Alignments of DNA, RNA, Protein Sequences and Structures
 <td class="c-val"> T-Coffee has a page on Facebook</td>
 </tr>
 
+<tr>
+<td class="c-lbl">
+<a href="http://cedricnotredame.blogspot.com/" target="_blank" title="T-Coffee blog" >Blog</a></td>
+<td class="c-val"> The T-Coffee blog</td>
+</tr>
 
 </tbody>
 </table>
@@ -160,6 +139,10 @@ contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.
 <td class="c-val"><a href="http://www.es.embnet.org/Services/MolBio/t-coffee/" target="_blank">EMBNet-Spain</a></td>
 </tr>
 
+<tr>
+<td class="c-lbl" ><a href="http://tcoffee.crg.cat/" title="CRG"> <img src="public/images/mirror_crg.png" width="24" height="24" alt="CRG"></a>&nbsp;</td>
+<td class="c-val"><a href="http://tcoffee.crg.cat/" >Centre for Genomic Regulation (CRG)</a> </td>
+</tr>
 </tbody>
 </table>
 

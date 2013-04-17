@@ -205,7 +205,17 @@ public class BsubCommand extends AbstractShellCommand {
 
 		int count=0;
 		for( String line : new FileIterator(file) ) { 
-			if( line != null ) { 
+			if( line != null ) {
+                /* [Nn]o space left on device
+                   LSF/bsub tmp dir is full on the compute node => black hole ! */
+                if( line.trim().contains("o space left on device") ){
+                    Mail mail    = new Mail();
+                    mail.from    = new Eval("tcoffee@vital-it.ch");
+                    mail.to      = new Eval("smoretti@unil.ch");
+                    mail.subject = new Eval("No space left on device");
+                    mail.body    = new Eval("JobName: " + jobname + " | JobId: " + jobid);
+                }
+
 				if( line.trim().equals("<<Job is finished>>") || 
 					line.trim().equals("<<Waiting for dispatch ...>>")) { 
 					continue;

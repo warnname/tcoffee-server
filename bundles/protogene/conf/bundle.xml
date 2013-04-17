@@ -1,0 +1,105 @@
+<bundle name="protogene" version="3.4.4" >
+  <title>ProtoGene</title>
+  <description>ProtoGene turns automatically amino acic alignments into CDS nucleotide alignments</description>
+  <author>Sébastien Moretti</author>
+  <email>moretti.sebastien@gmail.com</email>
+
+  <service name="protogene">
+    <title>ProtoGene</title>
+    <description>Turning amino acid alignments into CDS nucleotide alignments</description>
+
+ 	<input>
+      <fieldset >
+	    <title>ProtoGene</title>
+	    <description>Turning amino acid alignments into CDS nucleotide alignments</description>
+      
+        <field type='memo' name='msa' label='Sequence input' >
+          <sample>public/msa.fasta</sample>
+          <validation required='true' >
+          </validation>
+        </field>
+	 </fieldset>
+
+	 <fieldset hideable='true'>
+		<field type="checkbox" name='revtrans' label='Reverse Translation'>
+			<hint>If one of the query sequence returns no blast hit, no link to nucleotides, or no alignment with Exonerate,\nTHIS sequence is NOT returned in the result file; Unless you check on the box.\nThen THIS sequence will be back-translated with IUB (IUPAC) depiction code:\ne.g. A or G are replaced by R, A or G or C or T are replaced by N.</hint>
+			<choices>Using IUB-IUPAC depiction code on sequences without hit</choices>
+		</field>
+	 </fieldset>
+
+     <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>Optional to notify the results of this calculation</hint>
+          <validation format="EMAIL" />
+        </field>
+     </fieldset>
+	</input>
+  
+<!-- IUB-IUPAC depiction code option + long queue + single URL ? + long queue / no duration + hide result.out if empty + hide stderr.txt  -->
+
+  <process>
+    <bsub queue='long'>
+    <exec program="ProtoGene.pl" >
+      	<args>--msa ${msa} --revtrans=${revtrans} --pep --giga --lim 60 --hideBOJ --run_name=result</args>
+	    <logfile>stdout.txt</logfile>
+	    <errfile>stderr.txt</errfile>
+    </exec>
+    </bsub>
+  </process>
+  
+
+  <output>
+    <!--  definition for valid result  -->
+    <valid>
+        <result>
+			<item><name>result.cdsP.html</name> <label>colored fasta CDS</label> </item>
+	        <item><name>result.cds</name> <label>fasta CDS</label> </item>
+	        <item><name>result.cdsP</name> <label>fasta CDS + Query</label> </item>
+	        <item><name>result.out</name> <label>rejected sequences</label> </item>
+        </result>
+        
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>ProtoGene result</subject>
+          <body>
+          Your ProtoGene process been completed. 
+          
+          Click here to view --> ${_result_url} 
+          
+          
+          Cheers 
+          </body>
+          </mail>
+        </events>    
+      
+    </valid>
+    
+    <!--  definition for failed result -->
+    <fail>
+        <result> 
+        <title>ProtoGene has failed</title>
+        </result>
+  
+        <events>
+          <mail> 
+          <to>${email}</to>
+          <subject>ProtoGene process result</subject>
+          <body>
+          Unfortunately your ProtoGene process terminated with errors. 
+          
+          Click here to check --> ${_result_url} 
+          
+          
+          Cheers 
+          </body>
+          </mail>
+        </events>
+    
+    </fail>
+  </output>
+  
+</service>
+
+
+</bundle>
