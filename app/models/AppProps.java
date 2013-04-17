@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.PatternLayout;
@@ -272,7 +273,8 @@ public class AppProps implements Serializable  {
     	Logger.info("Intercepting conf properties for '%s'", id);
 
     	Properties playConf = IO.readUtf8Properties( Play.confs.iterator().next().inputstream() );
-        Pattern pattern = Pattern.compile("^%"+id+"\\.(.*)$");
+        String sPattern = StringUtils.isEmpty(id) ? "^([^\\^]+)$" : "^%"+id+"\\.(.*)$";
+    	Pattern pattern = Pattern.compile(sPattern);
 
         for (Object key : playConf.keySet()) {
             Matcher matcher = pattern.matcher(key.toString());
