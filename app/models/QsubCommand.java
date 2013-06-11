@@ -230,6 +230,7 @@ public class QsubCommand extends AbstractShellCommand {
 		result .append("-sync y ");
 		result .append("-r no ");
 		result .append("-terse ");
+		result .append("-l h_rt=48:00:00 ");
 		result .append("-q ") .append(queue) .append(" ");
 
 		if( targetOutFile != null ) {
