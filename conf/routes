@@ -13,6 +13,7 @@ GET		/mcoffee				Main.mcoffee
 GET		/rcoffee				Main.rcoffee
 GET		/tmcoffee				Main.tmcoffee
 GET		/core					Main.core
+GET		/tcs					Main.core
 GET		/ampa					Application.index(bundle:'ampa')
 GET		/catrapid				Application.index(bundle:'catrapid')
 GET		/piper				    Application.index(bundle:'piper')
