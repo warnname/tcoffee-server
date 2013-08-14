@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -162,6 +164,14 @@ public class AmpaCommand extends AbstractShellCommand {
 			throw new QuickException(e, "Failing opening write stream to: '%s'", fData);
 		}
 		
+		File fTabular = new File(ctxfolder, "data.csv");
+		PrintWriter wTabular; 
+		try {
+			wTabular = new PrintWriter( new FileWriter(fTabular) );
+		} catch (IOException e) {
+			throw new QuickException(e, "Failing opening write stream to: '%s'", fTabular);
+		}
+		
 		/* 
 		 * parse all 'data' file to create flot json file 
 		 */
@@ -186,13 +196,21 @@ public class AmpaCommand extends AbstractShellCommand {
 			/* 
 			 * parse to find out all stretches found 
 			 */
-			ResultData data = parseResult(resultFile);
+			ResultData data = parseResult(resultFile, fasta.sequences.get(index));
 
 			/*
 			 * add the json object for this item 
 			 */
 			if( index>0 ) { mainPlotData.append(","); }
 			appendData(mainPlotData, index, data);
+			
+			/*
+			 * write csv file  
+			 */
+			for( String line : data.tabular ) {
+				wTabular.println(line);
+			}
+			
 			
 		}
 		mainPlotData.append("], ");
@@ -215,6 +233,7 @@ public class AmpaCommand extends AbstractShellCommand {
 		 */
 		wData.close();
 		wResult.close();
+		wTabular.close();
 		
 		File chartFile = new File(ctxfolder,"graph.json");
 		IO.writeContent(mainPlotData, chartFile);
@@ -241,6 +260,10 @@ public class AmpaCommand extends AbstractShellCommand {
 						.label("Chart Data (json format)")
 						.format("json") );		
 
+		ctx.result.add( new OutItem(fTabular,"data_file")
+						.label("Tabular Data (csv format)")
+						.format("csv") );
+		
 		return true;
 	}
 
@@ -255,13 +278,19 @@ public class AmpaCommand extends AbstractShellCommand {
 	static class ResultData {
 		String stretches; 
 		String mean;
+		List<String> tabular;
+		
 	} 
 	
-	static ResultData parseResult(String str) {
+	static ResultData parseResult(String str, Sequence seq) {
 		ResultData result = new ResultData();
 		StringBuilder stretches = new StringBuilder();
+		List<String> tabular = new ArrayList<String>();
 		
+		int index = 0;
+		StringBuilder tabLine = new StringBuilder();
 		for( String line : new StringIterator(str)) { 
+			index++;
 			Matcher matcher;
 			/* try to match a streth */
 			if( (matcher=STRETCH_PATTERN.matcher(line)).find() ) { 
@@ -280,6 +309,18 @@ public class AmpaCommand extends AbstractShellCommand {
 						.append("\"propensity\":") .append(c) .append(",")
 						.append("\"probability\":") .append(d) 
 						.append("}");
+					
+					// add a line to the csv result
+					String region = seq.value.substring(a-1,b);
+					tabLine.setLength(0);
+					tabLine.append(seq.header.replace(',', '_')).append(",")
+							.append(index).append(",")
+							.append(a).append(",")
+							.append(b).append(",")
+							.append(c).append(",")
+							.append(d).append("%").append(",")
+							.append(region);
+					tabular.add( tabLine.toString() );
 				}
 			}
 			/* try to match a 'mean' row */
@@ -292,6 +333,7 @@ public class AmpaCommand extends AbstractShellCommand {
 		stretches.insert(0, "[");
 		stretches.append("]");
 		result.stretches = stretches.toString();
+		result.tabular = tabular;
 		
 		return result;
 	}
