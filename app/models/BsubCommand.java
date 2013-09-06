@@ -132,7 +132,7 @@ public class BsubCommand extends AbstractShellCommand {
 		StringBuilder result = new StringBuilder("bsub ");
 
 		result .append("-K ");		// sync mode i.e. wait for termination before exit
-	
+
 		result .append("-cwd ") .append(ctxfolder) .append(" ");
 		
 		// add the queue name
