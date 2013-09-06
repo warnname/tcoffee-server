@@ -1,0 +1,7 @@
+/var/log/tcoffee/usage.log {
+    copytruncate
+    weekly
+    rotate 52
+    compress
+    missingok
+}
