@@ -110,11 +110,11 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>best_pair4prot, fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
         
       </fieldset>
@@ -220,12 +220,12 @@
         <description>M-Coffee computes its alignments by combining a collection of Multiple Alignments named a Library. In this section you can select the methods you want to combine into the library. You can choose pairwise and multiple sequence alignment methods. The standard M-Coffee protocol only uses Multiple sequence alignment methods.</description>
         
         <field type="checkbox" name="lib1" label="Pairwise Methods">
-          <choices>Mlalign_id_pair, Mclustalw_pair, Mpoa_pair, Mprobcons_pair, Mfast_pair, Mproba_pair, Mmafft_pair, Mdialigntx_pair, Mslow_pair, Mpcma_pair, Mmuscle_pair</choices>
+          <choices>Mlalign_id_pair, Mclustalw2_pair, Mpoa_pair, Mprobcons_pair, Mfast_pair, Mproba_pair, Mmafft_pair, Mdialigntx_pair, Mslow_pair, Mpcma_pair, Mmuscle_pair</choices>
         </field>
         
         <field type="checkbox" name="lib2" label="Multiple Methods" >
-          <value>Mpcma_msa, Mmafft_msa, Mclustalw_msa, Mdialigntx_msa, Mpoa_msa, Mmuscle_msa, Mprobcons_msa, Mt_coffee_msa</value>
-          <choices>Mpcma_msa, Mmafft_msa, Mclustalw_msa, Mdialigntx_msa, Mpoa_msa, Mmuscle_msa, Mprobcons_msa, Mt_coffee_msa</choices>
+          <value>Mpcma_msa, Mmafft_msa, Mclustalw2_msa, Mdialigntx_msa, Mpoa_msa, Mmuscle_msa, Mprobcons_msa, Mt_coffee_msa</value>
+          <choices>Mpcma_msa, Mmafft_msa, Mclustalw2_msa, Mdialigntx_msa, Mpoa_msa, Mmuscle_msa, Mprobcons_msa, Mt_coffee_msa</choices>
         </field>
   </fieldset>
 
@@ -330,11 +330,11 @@
           
         <field type="checkbox" name="method1" label="Multiple Methods">
           <value>mafft_msa muscle_msa probconsRNA_msa</value>
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method2" label="Pairwise Methods">
-          <choices>fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
           
     </fieldset>
@@ -460,11 +460,11 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>best_pair4prot, fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
 
       </fieldset>
@@ -605,11 +605,11 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>best_pair4prot, fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
       </fieldset>
       
@@ -660,7 +660,7 @@
     </input>
     
     <process>
-      <bsub>  
+      <bsub queue='normal -R "rusage[mem=10240]" -M 10000000'>  
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -722,11 +722,11 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>best_pair4prot, fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
         
       </fieldset>
@@ -834,11 +834,11 @@
         </field>
         
         <field type="checkbox" name="method2" label="Multiple Methods">
-          <choices>pcma_msa, mafft_msa, clustalw_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
+          <choices>pcma_msa, mafft_msa, clustalw2_msa, dialigntx_msa, poa_msa, muscle_msa, probcons_msa, t_coffee_msa, amap_msa, kalign_msa, fsa_msa, probconsRNA_msa</choices>
         </field>
 
         <field type="checkbox" name="method3" label="Pairwise Methods">
-          <choices>best_pair4prot, fast_pair, clustalw_pair, lalign_id_pair, slow_pair, proba_pair </choices>
+          <choices>best_pair4prot, fast_pair, clustalw2_pair, lalign_id_pair, slow_pair, proba_pair </choices>
         </field>
         
       </fieldset>
@@ -889,7 +889,7 @@
     </input>
     
     <process>
-      <bsub>  
+      <bsub queue='normal -R "rusage[mem=10240]" -M 10000000'>  
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -1070,7 +1070,7 @@
     -->
   <service name="core">
     <title>Core</title>
-    <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
+    <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability</description>
     <group>Evaluation</group>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
     
@@ -1100,7 +1100,7 @@
           
           <field type="checkbox" name="method" label="Pairwise Methods" >
           <value>Mproba_pair</value>
-            <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
+            <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw2_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
           </field>
     </fieldset>
   
@@ -1173,7 +1173,7 @@
     -->  
   <service name="irmsd">
     <title>iRMSD-APDB</title>
-    <description>Evaluates Multiple Sequence Alignment using structural information with APDB and iRMSD.</description>
+    <description>Evaluates Multiple Sequence Alignment using structural information with APDB and iRMSD</description>
     <group>Evaluation</group>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,16873492,17032685,12855461]]></cite>
     
@@ -1257,7 +1257,82 @@
       </bsub>
     </process>
   </service>
-  
+ 
+  <!--
+      ProtoGene
+  -->
+  <service name="protogene">
+    <title>ProtoGene</title>
+    <description>Turning amino acid alignments into CDS nucleotide alignments</description>
+    <group>Processing</group>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=16845080]]></cite>
+
+    <input>
+      <fieldset >
+        <title>ProtoGene</title>
+        <description>Turning amino acid alignments into CDS nucleotide alignments</description>
+
+        <field type='memo' name='msa' label='Sequence input' >
+          <sample>public/sample-protogene.fasta.txt</sample>
+          <validation format="FASTA" type="amino-acid" maxnum="60" required='true' >
+		    <required-error>You have to enter the sequences for ProtoGene</required-error>
+			<format-error>Sequences have to be in FASTA format</format-error>
+			<maxnum-error>You can enter at most 60 sequences, or split your file</maxnum-error>
+          </validation>
+        </field>
+     </fieldset>
+
+     <fieldset hideable='true'>
+        <field type="checkbox" name='revtrans' label='Reverse Translation'>
+            <hint>If one of the query sequence returns no blast hit, no link to nucleotides, or no alignment with Exonerate,\nTHIS sequence is NOT returned in the result file; Unless you check on the box.\nThen THIS sequence will be back-translated with IUB (IUPAC) depiction code:\ne.g. A or G are replaced by R, A or G or C or T are replaced by N.</hint>
+            <choices>Using IUB-IUPAC depiction code on sequences without hit</choices>
+        </field>
+     </fieldset>
+
+     <fieldset>
+        <field type='text' name="email" label='Your email address' >
+          <hint>To notify the results of ProtoGene jobs that may be long</hint>
+          <validation required='true' format="EMAIL" />
+        </field>
+     </fieldset>
+    </input>
+
+    <!-- IUB-IUPAC depiction code option + long queue + single URL ? + long queue / no duration + hide result.out if empty + hide stderr.txt  -->
+
+    <process>
+      <bsub queue='long -R "rusage[mem=6144]" -M 6000000'>
+       <exec program="ProtoGene.pl" >
+        <args>--msa ${msa} --revtrans=${revtrans} --pep --giga --lim 60 --hideBOJ --run_name=result</args>
+        <logfile>stdout.txt</logfile>
+        <errfile>stderr.txt</errfile>
+       </exec>
+      </bsub>
+    </process>
+
+    <output>
+    <!--  definition for valid result  -->
+      <valid>
+        <result>
+            <item><name>result.cdsP.html</name> <label>colored fasta CDS</label> </item>
+            <item><name>result.cds</name> <label>fasta CDS</label> </item>
+            <item><name>result.cdsP</name> <label>fasta CDS + Query</label> </item>
+            <item><name>result.out</name> <label>rejected sequences</label> </item>
+			<item><name>stdout.txt</name> <label>log file</label> </item>
+			<item><name>stderr.txt</name> <label>error file</label> </item>
+        </result>
+      </valid>
+      
+    <!--  definition for failed result -->
+      <fail>
+        <result> 
+            <title>ProtoGene has failed</title>
+    		<item><name>stdout.txt</name> <label>log file</label> </item>
+			<item><name>stderr.txt</name> <label>error file</label> </item>
+        </result>
+      </fail>
+    </output>
+
+  </service>
   
 </bundle>
 
