@@ -37,15 +37,6 @@
 #{/if}
 
 
-*{ Cite box }*
-
-#{if result?.cite }
-<div class="box">
-<h2><span>Citation</span></h2>
-Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
-</div>
-#{/if}
-
 *{ Result file list }*
 
 #{if result?.items?.size > 0 }
@@ -70,7 +61,7 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 <form action="#" id="sendto" name="sendto"  method="POST" target="_blank">
 <input type="hidden" name="stage1" value="1" >
 <input type="hidden" name="daction" value="PROTOGENE::Regular">
-<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+<input type="hidden" name="msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 
 <p style="padding-bottom: 1em;" > 
@@ -84,7 +75,8 @@ MyHits: a new interactive resource for protein annotation and domain identificat
 
 <script type="text/javascript">
 $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
-$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+//$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+$('#to_ProtoGene').click(function() { $('#sendto').attr('action','/apps/tcoffee/do:protogene').submit(); } );
 </script>
 </div>
 #{/if}
@@ -102,6 +94,16 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 #{/if}
 
 
+*{ Cite box }*
+
+#{if result?.cite }
+<div class="box">
+<h2><span>Citation</span></h2>
+Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+</div>
+#{/if}
+
+
 *{Info box}*
 <div class="box">
 <h2><span>Info</span>
@@ -110,11 +112,11 @@ $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee
 
 
 <ul>
-<li>Mode: <b>${result?.title}</b></li>
-<li>Request ID: <b>${rid}</b></li>
-<li>Created at: <b>${ctx?.creationTimeFmt}</b></li>
-<li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
-<li>Expiration at: <b>${ctx?.expirationTimeFmt}</b></li>
+<li>Mode: <strong>${result?.title}</strong></li>
+<li>Request ID: <strong>${rid}</strong></li>
+<li>Created at: <strong>${ctx?.creationTimeFmt}</strong></li>
+<li>Elapsed time: <strong>${result?.elapsedTimeFmt}</strong></li>
+<li>Expiration at: <strong>${ctx?.expirationTimeFmt}</strong></li>
 </ul>
 </div>
 
