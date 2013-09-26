@@ -164,7 +164,7 @@
     </input>
     
     <process>
-      <bsub>  
+      <bsub queue='normal -R "rusage[mem=2512]" -M 2500000'>
       <tcoffee >
         <args>
           -in=${seqs} 
