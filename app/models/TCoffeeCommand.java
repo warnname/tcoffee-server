@@ -17,6 +17,7 @@ import play.Play;
 import util.Utils;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import exception.QuickException;
@@ -26,6 +27,9 @@ public class TCoffeeCommand extends AbstractShellCommand {
 
 	/** The t-coffee arguments */
 	public CmdArgs args;
+	
+	/* by-pass default argument handling and uses a free command script */
+	public Eval script; 
 
 	private String fInputFileName;
 	
@@ -42,6 +46,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	public TCoffeeCommand(TCoffeeCommand that) {
 		super(that);
 		this.args = Utils.copy(that.args);
+		this.script = Utils.copy(that.script);
 	}
 	
 	@Override
@@ -95,6 +100,12 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	
 	@Override
 	protected String onInitCommandLine(String cmdLine) {
+		
+		/* just an hack to bypass default mechanism and enter and free script */
+		if( script != null ) {
+			return script.toString();
+		}
+		
 		/*
 		 * get t_coffee absolute path 
 		 */
@@ -254,7 +265,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		if( fInputFileName != null ) {		
 
 			OutItem out = new OutItem(fInputFileName,"input_file");
-			//TODO tis label should be parametrized
+			//TODO this label should be parametrized
 			out.label = "Input sequences";
 			result.add(out);
 		}
@@ -314,10 +325,12 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		/*
 		 * check if the html exists if it has been specified on the cmd line
 		 */
-		List<String> output = args.getAsList("output");
-		if( output != null && (output.contains("score_html") || output.contains("html")) ) { 
-			OutItem html = result.getAlignmentHtml();
-			success = success && html != null && html.exists();
+		if( args != null ) {
+	 		List<String> output = args.getAsList("output");
+			if( output != null && (output.contains("score_html") || output.contains("html")) ) { 
+				OutItem html = result.getAlignmentHtml();
+				success = success && html != null && html.exists();
+			}			
 		}
 
 		return success;

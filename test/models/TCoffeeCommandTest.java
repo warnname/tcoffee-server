@@ -38,6 +38,25 @@ public class TCoffeeCommandTest extends UnitTest {
                 assertEquals( "t_coffee -in=input.txt -mode=regular -output=html pdf clustal -quiet=stdout", cmd );
         }
 
+        @Test
+        public void testCoffeeScript () {
+        	
+            String xml =
+                    "<tcoffee>" +
+                            "<env name='alfa' value='beta' />" +
+                            "<script>" +
+                            "line1\nline2\nt_coffee -in file -out ${output}" +
+                            "</script>" +
+                    "</tcoffee>";
+
+
+            TCoffeeCommand tcoffee = XStreamHelper.fromXML(xml);
+            tcoffee.init();
+            String cmd = tcoffee.getCmdLine();
+            
+            assertEquals( "line1\nline2\nt_coffee -in file -out html pdf clustal", cmd ); 
+        	
+        }
 
 
 
