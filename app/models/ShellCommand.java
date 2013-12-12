@@ -22,10 +22,12 @@ public class ShellCommand extends AbstractShellCommand {
 	/** the command line argument to be used to execute the program */
 	public CmdArgs args;
 	
+	public Eval script; 
+	
 	/** The default constructor */
 	public ShellCommand() {}
 	
-	public ShellCommand(String programWithArguments ) { 
+	public ShellCommand( String programWithArguments ) { 
 		String val = programWithArguments.trim();
 		int i = val.indexOf(' ');
 		if( i == -1 ) { 
@@ -42,6 +44,7 @@ public class ShellCommand extends AbstractShellCommand {
 		super(that);
 		this.program = Utils.copy(that.program);
 		this.args = Utils.copy(that.args);
+		this.script = Utils.copy(that.script);
 	}
 	
 	@Override
@@ -63,6 +66,9 @@ public class ShellCommand extends AbstractShellCommand {
 				result.append(" ") .append( args.toCmdLine() );
 			}
 			
+		}
+		else if( script != null ) {
+			result.append(script.eval());
 		}
 		else { 
 			// otheriwse just an empty string 

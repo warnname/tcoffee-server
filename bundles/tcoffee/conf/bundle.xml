@@ -481,20 +481,24 @@
   <process>
       <qsub>
       <tcoffee>
-        <args >          
-          -in ${seqs}
-  		  -method sara_pair
-  		  -template_file $TEMPLATEFILE,RNA -extend_mode rna2
-  		  -relax_lib 0
-  		  -transform dna2rna
-  		  -run_name=result
-  		  -output ${output}
-          -case=${letter} 
-          -seqnos=${seqnos} 
-          -outorder=${outorder} 
-          -multi_core=${settings.multicore}
-  		  -pdb_min_sim 0
-        </args>
+      	<env PDB_DIR="${settings.saracoffee.PDB_DIR}" NO_REMOTE_PDB_DIR="1" /> 
+        <script>  
+unset MAFFT_BINARIES;
+t_coffee \        
+ -in ${seqs} \
+ -method sara_pair \
+ -template_file ${settings.saracoffee.TEMPLATE_FILE},RNA \
+ -extend_mode rna2 \
+ -relax_lib 0 \
+ -transform dna2rna \
+ -run_name=result \
+ -output ${output} \
+ -case=${letter} \
+ -seqnos=${seqnos} \
+ -outorder=${outorder} \
+ -multi_core=${settings.multicore} \
+ -pdb_min_sim 0
+        </script>
       </tcoffee>
     </qsub>
   </process>

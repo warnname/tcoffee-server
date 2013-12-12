@@ -46,6 +46,42 @@ public class ShellCommandTest extends UnitTest {
 	}
 	
 	@Test 
+	public void testScriptCommand() {
+		
+		
+		String xml = 
+				"<exec >" +
+					"<logfile>out.txt</logfile> " +
+					"<errfile>err.txt</errfile> " +
+					"<envfile>env.txt</envfile> " +
+					"<cmdfile>cmd.txt</cmdfile> " +
+					"<validCode>1</validCode> " +
+				
+					"<env var1='${field1}' var2='dos' var3='tres' />" + 
+					
+					"<script>" +
+					"t_coffee -in ${field1}" +
+					" -out ${field2}" +
+					" -xxx" +
+					"</script>" + 
+				
+				"</exec>";
+		
+		
+		ShellCommand cmd = XStreamHelper.fromXML(xml);
+		assertNotNull(cmd);
+		assertEquals( "t_coffee -in uno -out dos -xxx", cmd.script.eval() );
+		
+		assertEquals("out.txt", cmd.logfile);
+		assertEquals("err.txt", cmd.errfile);
+		assertEquals("env.txt", cmd.envfile);
+		assertEquals("cmd.txt", cmd.cmdfile);
+		assertEquals(1, cmd.validCode );
+		
+		
+	}
+	
+	@Test 
 	public void testExecuteOK() throws Exception {
 		ShellCommand cmd = new ShellCommand();
 		cmd.program = new Eval("ls");
