@@ -481,6 +481,7 @@
   <process>
       <qsub>
       <tcoffee>
+<<<<<<< HEAD
       	<env PDB_DIR="${settings.saracoffee.PDB_DIR}" NO_REMOTE_PDB_DIR="1" /> 
         <script>  
 unset MAFFT_BINARIES;
@@ -499,6 +500,22 @@ t_coffee \
  -multi_core=${settings.multicore} \
  -pdb_min_sim 0
         </script>
+=======
+        <args >          
+          -in ${seqs}
+  		  -method sara_pair
+  		  -template_file $TEMPLATEFILE,RNA -extend_mode rna2
+  		  -relax_lib 0
+  		  -transform dna2rna
+  		  -run_name=result
+  		  -output ${output}
+          -case=${letter} 
+          -seqnos=${seqnos} 
+          -outorder=${outorder} 
+          -multi_core=${settings.multicore}
+  		  -pdb_min_sim 0
+        </args>
+>>>>>>> 6a0dbaf... Sara-coffee first commit
       </tcoffee>
     </qsub>
   </process>
