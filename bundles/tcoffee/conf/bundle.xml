@@ -419,13 +419,11 @@
       <description>Paste or upload your set of sequences in FASTA format</description>
       
       <field type='memo' name="seqs" label='Sequences to align' >
-          <hint>Enter the sequences to align</hint>
-            <validation format='FASTA' type='nucleic-acid' required='true' minnum='2' maxnum='150' maxlen='2500' >
+          <hint>Enter here the RNA sequences to align. Sequences have to be in FASTA format. The sequence headers must indicate the structure PDB id and the considered chain separated by an underscore (i.e. >PDBid_chain)</hint>
+            <validation format='FASTA' type='nucleic-acid' required='true' minnum='2' >
               <required-error>You have to enter the sequences to align</required-error>
               <format-error>Sequences have to be in FASTA format</format-error>
               <minnum-error>You must enter at least 2 sequences</minnum-error>
-              <maxnum-error>You can enter at most 150 sequences</maxnum-error>
-              <maxlen-error>Sequences cannot exceed 2500 char length</maxlen-error>
             </validation>
           
           <sample>public/sample-rna-sara.fasta.txt</sample>
@@ -439,27 +437,32 @@
       <description>Use this section to control the output format.</description>
       
       <field type="checkbox" name='output' label='Alignment format' >
+        <hint>Specifies the format used for outputting the result MSA</hint>
         <value>score_html clustalw_aln</value>
         <choices>score_html, clustalw_aln, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
         <readonly>score_html, clustalw_aln</readonly>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
-        <hint>Output case selection</hint>
+        <hint>Causes the output alignment to contains only upper case, lower case or to keep the original letters formatting</hint>
         <choices>upper, lower, keep</choices>
       </field>      
       
       <field type='dropdown' name='seqnos' label='Residue number' >
-      <hint>Print the residue number</hint>
+      <hint>Causes the output alignment to contain residue numbers at the end of each line</hint>
       <choices>on, off</choices>  
       </field>
       
-      <field type='dropdown' name='outorder' >
+      <field type='dropdown' name='outorder' label='Output order' >
+        <hint>
+        Sets the order of the sequences in the output alignment: 'input' means the sequences are kept in the original order;
+ 'aligned' means the sequences come in the order indicated by the tree
+        </hint>
         <choices>input, aligned</choices>
       </field>
       
       <field type="text" name="msa_max_len" label="Alignment length" >
-     	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
+     	<hint>The max number of columns of the result alignment, after that the sequence is splitted on another row</hint>
      	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
