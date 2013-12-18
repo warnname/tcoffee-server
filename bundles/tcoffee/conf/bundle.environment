@@ -17,7 +17,7 @@
 #
 # Relatives paths are located starting from 'bundle.path' 
 # 
-PATH=${bundle.path}/bin:${settings.BLASTPLUS_HOME}/bin:${env.PATH}
+PATH=${settings.saracoffee.X3DNA}/bin:${settings.saracoffee.HOME}/sara-1.0.6:${settings.saracoffee.HOME}/sara-1.0.6/Utils:${bundle.path}/bin:${settings.BLASTPLUS_HOME}/bin:${env.PATH}
 HOME=${data.path}
 EMAIL_4_TCOFFEE=${bundle.email}
 DIR_4_TCOFFEE=${workspace.path}/.t_coffee/
@@ -29,3 +29,4 @@ MAFFT_BINARIES=${bundle.path}/bin
 PERL5LIB=${bundle.path}/perl
 ALN_LINE_LENGTH=50
 PDB_DIR=${settings.PDB_DIR}
+PYTHONPATH=${settings.PYTHONPATH}

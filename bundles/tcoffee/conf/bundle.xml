@@ -439,8 +439,8 @@
       <description>Use this section to control the output format.</description>
       
       <field type="checkbox" name='output' label='Alignment format' >
-        <value>score_html fasta_aln clustalw_aln phylip score_ascii</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
+        <value>score_html clustalw_aln</value>
+        <choices>score_html, clustalw_aln, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
         <readonly>score_html, clustalw_aln</readonly>
       </field>
       
@@ -481,10 +481,13 @@
   <process>
       <qsub>
       <tcoffee>
-      	<env PDB_DIR="${settings.saracoffee.PDB_DIR}" NO_REMOTE_PDB_DIR="1" /> 
         <script>  
+export X3DNA=${settings.saracoffee.X3DNA}; 
+export PDB_DIR=${settings.saracoffee.PDB_DIR}; 
+export NO_REMOTE_PDB_DIR=1; 
 unset MAFFT_BINARIES;
-t_coffee \        
+(cd $CACHE_4_TCOFFEE; ln -s ${settings.saracoffee.HOME}/pdb_entry_type.txt);
+t_coffee \
  -in ${seqs} \
  -method sara_pair \
  -template_file ${settings.saracoffee.TEMPLATE_FILE},RNA \
@@ -497,7 +500,8 @@ t_coffee \
  -seqnos=${seqnos} \
  -outorder=${outorder} \
  -multi_core=${settings.multicore} \
- -pdb_min_sim 0
+ -pdb_min_sim 0 \
+ -quiet stdout 
         </script>
       </tcoffee>
     </qsub>

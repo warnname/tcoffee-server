@@ -1,0 +1,40 @@
+
+<table class="one-col" summary="List of items">
+#{list _arg.aggregations(), as:'ag'} 
+#{if !ag?.toUpperCase().startsWith('TEMPLATE') }
+%{	
+	def items = _arg.filter(ag); 
+	def len = items.size();  
+	def COLS= 5; 
+	def rows = Math.floor(len / COLS) +1;  
+	def count=0;
+}%
+<tbody>
+#{list items:0..rows-1, as:'r'}
+<tr>
+	#{if r==0 } 
+	<td class="oce-first backimg">
+	${ag} 
+	</td>
+	#{/if}
+	#{else}
+	<td class="oce-first" >&nbsp;</td>
+	#{/else}
+	
+	#{list items:0..COLS-1, as:'i'}  
+	<td>
+	#{if count < len }
+	%{ def item=items[count]; count++; }%
+	<a href="${item.webpath}" target="_blank">${item.label}</a>&nbsp;&nbsp;<small class="size">(${item.file?.length()?.formatSize()})</small>
+	#{/if}
+	</td>
+	#{/list}
+	
+</tr>
+#{/list}
+#{/if}
+#{/list} 
+</tbody>
+
+</table>
+
