@@ -1,0 +1,161 @@
+#{set title:'SARA-Coffee Tutorial' /}
+
+<style type="text/css">
+div.box img {
+  -moz-box-shadow: 0px 5px 10px #909090 ;
+  -webkit-box-shadow: 0px 5px 10px #909090 ;
+  box-shadow: 0px 5px 10px #909090 ;
+  
+  border: 1px solid #666;
+}
+
+.box ul { padding-left: 1.3em; padding-bottom: 1em }
+.box ul li { padding-bottom: .5em; list-style: disc;  }
+.box ul li em { padding-right: .2em }
+</style>
+
+<h1>SARA-Coffee Tutorial
+<small>A quick start to SARA-Coffee structure based multiple RNA aligner.</small>
+</h1>
+
+<div class="box">
+<h2><span>Description</span></h2>
+
+<p>
+The web server allows the structure-based alignment of multiple RNAs combining the <i>SARA</i> 
+<a href='#ref' target='_blank'>[1]</a> and the <i>T-Coffee</i> framework <a href='#ref' target='_blank'>[2]</a>.
+</p>
+<p>
+SARA executes a structural superposition of ribose C3' carbons to obtain the equivalences needed to return a 
+structure-based alignment. As such, SARA acts as an aligner, therefore allowing its incorporation in a consistency-based
+environment like T-Coffee. The SARA-Coffee paper <a href='#ref' target='_blank'>[3]</a>.
+</p>
+
+</div>
+
+<div class="box">
+<h2><span>Data input</span></h2>
+
+<ul >
+<li>
+Enter the sequences in the input field (marked with <i>1</i> in the picture below) or 
+alternatively provide them using the Upload link (<i>2</i>).
+</li>
+
+<li>
+The RNA sequences have to be in <i>FASTA</i> format. The sequence headers must indicate the structure PDB id 
+and the considered chain separated by an underscore (i.e. &gt;PdbID_chain). 
+For instance the 5S ribosomal RNA available in the PDB structure <i>2J01</i> chain B should be passed to the server as:
+<pre style='padding-top:6px'>
+&gt;2J01_B
+UCCCCCGUGCCCAUAGCGGCGUGGAACCACCCGUUCCCAUUCCGAACACG
+GAAGUGAAACGCGCCAGCGCCGAUGGUACUGGGCGGGCGACCGCCUGGGA
+GAGUAGGUCGGUGCGGGGGAUU
+</pre>
+</li>
+
+<li>You may access to SARA-Coffee advanced settings by clicking the link <i>Show more options</i> (<i>3</i>). </li>
+
+<li>Provide your email address (<i>4</i>) if you want to be notified when the job complete.</li>
+
+<li>Press the button <i>submit</i> (<i>5</i>) to submit your request.</li>
+
+</ul>
+
+<p>
+Please note that the computation can take some minutes to be fulfilled. You don't need to keep your browser 
+open to wait for the result. You can close it or navigate away to another page. 
+</p>
+<p>Use the <i>History</i> link, in top-bar menu to get access to the computation result at any moment.</p>
+
+<p> <img alt="SARA-Coffee input form" src="public/images/saracoffee1.png" width="728" height="433"> </p>
+
+</div>
+
+
+
+
+<div class="box" >
+<h2><span>Output interpretation</span></h2>
+
+<p>The result page contains the following sections: </p>
+
+<ul>
+<li>
+<em>MSA</em>
+The MSA is colored according to the SARA-Coffee scheme (it is not a T-Coffee consistency based color scheme). 
+Red bits are very reliable, while green and blue bits are unreliable. The details of the coloring scheme are 
+given in a book chapter <a href='#ref' target='_blank'>[4]</a>
+</li>
+
+
+
+<li><em>Result files</em>
+The result files coming from the alignment and Sara-Coffee method; all files can be downloaded as a single zip file
+</li>
+
+<li><em>Citation</em>
+The related article when citing the SARA-Coffee.
+</li>
+
+<li><em>Info</em>
+Some information related to the submitted job (running time, date, etc).
+</li>
+
+
+<li><em>Replay</em>
+this link allows the user to re-run the job while modifying input options or data.
+</li>
+
+<li><em>Feedback</em>
+To share your alignment experience in the social network.
+</li>
+
+</ul>
+
+<p> <img alt="T-Coffee home" src="public/images/saracoffee2.png" width="728" height='1194' > </p>
+
+</div>
+
+
+<div class="box">
+<h2><span>References</span></h2>
+
+<div id="ref">
+<ol style="list-style: decimal; padding-left: 1.4em">
+<li style='padding-bottom: 6px'>
+	<a href='http://bioinformatics.oxfordjournals.org/content/24/16/i112.long' target='_blank' >
+	RNA structure alignment by a unit-vector approach
+	</a> 
+	<br>
+	<i>Capriotti E, Marti-Renom MA</i>
+</li>
+
+<li style='padding-bottom: 6px'>
+	<a href='http://www.sciencedirect.com/science/article/pii/S0022283600940427' target='_blank'>
+	T-Coffee: A novel method for fast and accurate multiple sequence alignment
+	</a>
+	<br>
+	<i>Notredame C, Higgins DG, Heringa J</i>
+</li>
+
+<li style='padding-bottom: 6px'>
+	<a href='http://bioinformatics.oxfordjournals.org/content/29/9/1112.long' target='_blank'>	
+	Using tertiary structure for the computation of highly accurate multiple RNA alignments with the SARA-Coffee package	
+	</a>
+	<br>
+	<i> Kemena C, Bussotti G, Capriotti E, Marti-Renom MA, Notredame C  </i>
+</li>
+
+<li>
+	<a href='http://www.tcoffee.org/Publications/Pdf/core.pp.pdf' target='_blank' >
+	Using Multiple Alignment Methods to Assess the Quality of Genomic Data Analysis 
+	</a> 
+	<br>
+	<i>Notredame and Abergel, in Bioinformatics and Genomes: Current Perspectives. M. Andrade, Horizon Scientific Press: pp 30-50.</i>
+</li>
+
+</ol>
+</div>
+
+</div>
