@@ -444,7 +444,7 @@
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
-        <hint>Causes the output alignment to contains only upper case, lower case or to keep the original letters formatting</hint>
+        <hint>Causes the output alignment to contain only upper case, lower case or to keep the original letters formatting</hint>
         <choices>upper, lower, keep</choices>
       </field>      
       
@@ -462,7 +462,7 @@
       </field>
       
       <field type="text" name="msa_max_len" label="Alignment length" >
-     	<hint>The max number of columns of the result alignment, after that the sequence is splitted on another row</hint>
+     	<hint>The max number of columns of the result alignment, after that the alignment returns to a new line</hint>
      	<value>80</value>
      	<validation format="integer" min="20">
      		<format-error>The entered value is not an integer number</format-error>
@@ -474,7 +474,7 @@
   
     <fieldset>
       <field type='text' name="email" label='Your email address' >
-        <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas.</hint>
+        <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas</hint>
         <validation format="EMAIL" />
       </field>
     </fieldset>
