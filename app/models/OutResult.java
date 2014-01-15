@@ -166,6 +166,11 @@ public class OutResult implements Serializable {
 	public OutItem getAlignmentFasta() {
 		return Utils.firstItem(items(), "format", "fasta_aln");
 	} 
+
+	public OutItem getAlignmentClustalw() {
+		return Utils.firstItem(items(), "format", "clustalw_aln");
+	} 
+	
 	
 	public OutItem getCommandLine() {
 		return  Utils.firstItem(items(), "format", "cmdline");
