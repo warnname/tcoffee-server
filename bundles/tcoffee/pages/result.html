@@ -145,7 +145,7 @@ $('#to_jalview').click(function() {
 	return false;
 })
 $('#to_Espript').click(function() { 
-	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://beta.tcoffee.crg.cat${result.getAlignmentClustalw().webpath}","_blank"); 
+	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${request.host}${result.getAlignmentClustalw().webpath}","_blank"); 
 });
 </script>
 </div>
