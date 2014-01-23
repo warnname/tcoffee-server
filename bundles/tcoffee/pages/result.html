@@ -121,9 +121,11 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
     <button id="to_jalview" name="to_jalview" class="button" title="Click to open the Jalview viewer">  JalView </button>
     <span>Open this alignment in the <a href="http://www.jalview.org/" target="_blank">Jalview</a> viewer </span>
 
+#{if result?.getAlignmentClustalw()?.webpath }
     <br><br>
     <button id="to_Espript" name="to_Espript" class="button" >  ESPript </button>
-    <span>ESPript server</span>
+    <span>ESPript server renders sequence similarities and secondary structure information from aligned sequences</span>
+#{/if}
 </div>
 
 <form action="#" id="sendto" name="sendto"  method="POST" target="_blank" >
@@ -133,16 +135,7 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 </form>
 
-<form method="POST" id="sendto_Espript" action="http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi" target="_blank" >
-    <INPUT TYPE="hidden" name="FRAMES" value="yes" >
-    <INPUT TYPE="hidden" name="fromtcoffee" VALUE="on" >
-    <INPUT TYPE="hidden" name="alnfile0" VALUE="http://${request.host}${result.getAlignmentClustalw().webpath}">
-</form>
-
-
-
 <script type="text/javascript">
-$('#to_Espript').click(function() { $('#sendto_Espript').submit(); } );
 $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
 $('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
 $('#to_jalview').click(function() {
@@ -150,7 +143,10 @@ $('#to_jalview').click(function() {
 	var h = Math.round(window.screen.height * .6); 
 	window.open("@{Application.jalview(params.rid)}", "_blank", "width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0");
 	return false;
-} )
+})
+$('#to_Espript').click(function() { 
+	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://beta.tcoffee.crg.cat${result.getAlignmentClustalw().webpath}","_blank"); 
+});
 </script>
 </div>
 #{/if}
