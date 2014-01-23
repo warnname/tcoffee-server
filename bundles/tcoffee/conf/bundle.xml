@@ -164,7 +164,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=2512]" -M 2500000'>
+      <bsub queue='normal -R "rusage[mem=8204]" -M 8000000'>
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -273,7 +273,7 @@
     </input>
     
     <process>
-      <bsub>
+      <bsub queue='normal -R "rusage[mem=3580]" -M 3500000'>
       <tcoffee>
         <args>
           -in=${seqs} ${lib1} ${lib2} 
@@ -540,7 +540,7 @@
     </input>
     
     <process>
-      <bsub>  
+      <bsub queue='normal -R "rusage[mem=8204]" -M 8000000'>
       <tcoffee >
         <args>
           -in=${seqs}
@@ -1285,7 +1285,7 @@
      <fieldset hideable='true'>
         <field type="checkbox" name='revtrans' label='Reverse Translation'>
             <hint>If one of the query sequence returns no blast hit, no link to nucleotides, or no alignment with Exonerate,\nTHIS sequence is NOT returned in the result file; Unless you check on the box.\nThen THIS sequence will be back-translated with IUB (IUPAC) depiction code:\ne.g. A or G are replaced by R, A or G or C or T are replaced by N.</hint>
-            <choices>Using IUB-IUPAC depiction code on sequences without hit</choices>
+            <choices>Using_IUB-IUPAC_depiction_code_on_sequences_without_hit</choices>
         </field>
      </fieldset>
 
@@ -1333,6 +1333,5 @@
     </output>
 
   </service>
-  
 </bundle>
 
