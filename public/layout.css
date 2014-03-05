@@ -50,7 +50,7 @@ html, body {
 
 #wrapper {
 	text-align: left;
-	width: 940px;
+	width: 1200px;
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;
@@ -63,7 +63,7 @@ html, body {
 }
 
 #footer {
-	width: 940px;
+	width: 1200px;
 	margin: 0 auto;
 }
 
@@ -272,6 +272,10 @@ html, body {
 	background-color: #f9f9f9; 
 }
 
+#content .box-transparent {
+	padding: 1.2em 2em 1.6em 2em;	
+}
+
 #content .box-aqua {
 	background: #EAF2F5;
 	border: 1px solid #BEDCE7;
@@ -324,11 +328,11 @@ html, body {
 
 #content input[type='text'], 
 #content select {
-	width: 26em;
+	width: 46em;
 }
 
 #content textarea {
-	width: 44em;
+	width: 54em;
 	font-family: monospace;
 }
 
@@ -824,4 +828,25 @@ body.admin #content {
 	color: #666;
 	font-size: 14px;
 	font-weight: lighter;
+}
+
+
+@media (max-width: 1024px) {
+	#wrapper {
+		width: 940px;
+	}
+	
+	#footer {
+		width: 940px;
+	}
+
+	#content input[type='text'], 
+  	#content select {
+		width: 26em;
+  	}
+
+	#content textarea {
+ 		width: 44em;
+  	}
+
 }
