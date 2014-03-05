@@ -1644,7 +1644,7 @@ t_coffee \
         <title>Sequences input</title>
     	<description>Paste or upload your set of sequences in FASTA format</description>
       
-        <field type='memo' name="seqs" label='Sequences to align' >
+        <field type='memo' name="seqs" label='Evaluation' >
           <hint>Enter the sequences to align</hint>
           <validation format="FASTA" type="amino-acid" required="true" minnum="2" maxnum="150" maxlen="2500" samelen='true' >
             <required-error>You have to enter the sequences to align</required-error>

@@ -27,6 +27,6 @@ CACHE_4_TCOFFEE=${data.path}/_cache/
 MCOFFEE_4_TCOFFEE=${bundle.path}/matrix/
 MAFFT_BINARIES=${bundle.path}/bin
 PERL5LIB=${bundle.path}/perl
-ALN_LINE_LENGTH=50
+ALN_LINE_LENGTH=100
 PDB_DIR=${settings.PDB_DIR}
 PYTHONPATH=${settings.PYTHONPATH}
