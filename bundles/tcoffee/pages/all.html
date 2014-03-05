@@ -3,59 +3,14 @@
 <meta name="description" content="T-Coffee is a multiple sequence alignment server. It can align Protein, DNA and RNA sequences. You can use T-Coffee to align sequences or to combine the output of your favorite alignment methods into one unique alignment. It is also able to combine sequence information with protein structural information, profile information or RNA secondary structures." />
 <meta name="keywords" content="t-coffee, tcoffee, t_coffee, T-Coffee server, web server, multiple sequence alignment server, server, msa, multiple sequence alignment, dna, rna, protein sequence, protein structure, Ceric Notredame, Comparative Bioinformatics" />
 <meta name="google-site-verification" content="h3pS1Y9xQdTbZlkoBNPeMtEt269Gdc_mDoia6kC0ASM" />
-<script type="text/javascript"> 
-if(navigator.appName.indexOf("Internet Explorer")!=-1 || screen.width < 1280 ) {
-	window.location.replace('/apps/tcoffee/all.html')	
-}
-</script>
 #{/set}
 
-<link href="public/circles/circles.css" rel="stylesheet" type="text/css">
-
-<!-- CIRCLES  -->
-<div class='ch-container'>
-
-	<div id='back-circle'></div>
-	<div id='center-logo'> <img src='public/circles/tcoffee-msa.png' class='link' data-href='/apps/tcoffee/do:regular'></img>  </div>
-	
-	<div>
-   <!-- circles -->
-	<ul class="ch-grid">
-	  <li>
-	    <div class="ch-item ch-img-1">
-	      <div class="ch-info">
-	        <h3>Align Protein<br>sequences</h3>
-	        <p><span id='link-expresso' class='link' data-href='/apps/tcoffee/do:expresso' >Structural alignments (Expresso)</span></p>
-	        <p><span id='link-mcoffee' class='link' data-href='/apps/tcoffee/do:mcoffee' >Combine popular aligners (M-Coffee)</span></p>
-	        <p><span id='link-tmcoffee' class='link' data-href='/apps/tcoffee/do:tmcoffee' >Transmembrane proteins (TM-Coffee)</span></p>
-	        <p><span id='link-psicoffee' class='link' data-href='/apps/tcoffee/do:psicoffee' >Homology extension (PSI-Coffee)</span></p>
-	 
-	      </div>
-	    </div>
-	  </li>
-	  <li>
-	    <div class="ch-item ch-img-2">
-	      <div class="ch-info">
-	        <h3>Align RNA<br>sequences</h3>
-	        <p><span id='link-rcoffee' class='link' data-href='/apps/tcoffee/do:rcoffee'>Secondary structure (R-Coffee)</span></p>
-	        <p><span id='link-saracoffee' class='link' data-href='/apps/tcoffee/do:saracoffee'>Tertiary structure (SARA-Coffee)</span></p>
-	        <p><span id='link-mcoffee' class='link' data-href='/apps/tcoffee/do:mcoffee'>Combine popular aligners (M-Coffee)</span></p>
-	      </div>
-	    </div>
-	  </li>
-	  <li>
-	    <div class="ch-item ch-img-3">
-	      <div class="ch-info">
-	        <h3>Align DNA<br>sequences</h3>
-	        <p><span id='link-mcoffee' class='link' data-href='/apps/tcoffee/do:mcoffee'>Combine popular aligners (M-Coffee)</span></p>
-	        <p><span id='link-procoffee' class='link' data-href='/apps/tcoffee/do:procoffee' style='position: relative; left: -12px; white-space: nowrap;' >Homologous promoter regions (Pro-coffee)</span></p>
-	      </div>
-	    </div>
-	  </li>
-	</ul>
-	</div>
-</div>
-<!-- end of CIRCLES  -->
+<h1>T-Coffee
+<small>
+A collection of tools for Computing, Evaluating and Manipulating 
+Multiple Alignments of DNA, RNA, Protein Sequences and Structures
+</small>
+</h1>
 
 <style type="text/css"> 
 #somethingNew { float: right;  } 
@@ -64,10 +19,12 @@ if(navigator.appName.indexOf("Internet Explorer")!=-1 || screen.width < 1280 ) {
 
 <div class="box" >
 
-<h2><span>Evaluation</span></h2>
+#{list _bundle.groups, as:'group' }
+<h2><span>${group ?: 'Other'}</span></h2>
+
 <table class="c-home" summary="T-Coffee Applications">
 <tbody>
-#{list _bundle.getServicesByGroup('Evaluation') } 
+#{list _bundle.getServicesByGroup(group) } 
 <tr>
 	<td class="c-lbl" >
 	#{if _.name == 'adv-cmdline'}
@@ -92,40 +49,14 @@ if(navigator.appName.indexOf("Internet Explorer")!=-1 || screen.width < 1280 ) {
 #{/list } 
 </tbody>
 </table>
-
-<h2><span>Other</span></h2>
-<table class="c-home" summary="T-Coffee Applications">
-<tbody>
- 
-<tr>
-	<td class="c-lbl" > <a href="/apps/tcoffee/do:advanced">Advanced</a> </td>
-	<td class="c-val"> 
-		Run your alignment using full featured T-Coffee options.  
-		<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="http://www.ncbi.nlm.nih.gov/pubmed/21558174%2C10964570" title="Cite Advanced" target="_blank" >Cite</a> </small> 	
-	</td>
-</tr>
-
-<tr>
-	<td class="c-lbl" > <a href="/apps/tcoffee/all.html">All</a> </td>
-	<td class="c-val"> 
-		All available T-Coffee methods   
-	</td>
-</tr>
-
-
-</tbody>
-</table>
-
+#{/list}
 </div>
 
-<script type="text/javascript">
-$('.link').click( function() {  window.location.href  = $(this).data('href')  } )
-</script>
 
 <!-- 
 	USEFUL LINKS section
  -->
-<div class='box-transparent' >
+
 <h2>
 <span>Useful links</span>
 </h2>
@@ -179,6 +110,9 @@ $('.link').click( function() {  window.location.href  = $(this).data('href')  } 
 <a href="https://www.researchgate.net/topic/t-coffee/?ev=tp_nav_xheader" target="_blank" title="T-Coffee on ResearchGate" >ResearchGate</a></td>
 <td class="c-val"> Follow the discussion on ResearchGate</td>
 </tr>
+
+
+
 
 </tbody>
 </table>
@@ -239,11 +173,9 @@ contains a T-Coffee tutorial and many other <a target="_blank" href="http://www.
 <td class="c-val"><a href="http://mobyle.pasteur.fr/cgi-bin/portal.py#forms::rpbs.T-Coffee" target="_blank">Pasteur Institute</a></td>
 </tr>
 
+
 </tbody>
 </table>
-
-</div>
-
 
 
 
