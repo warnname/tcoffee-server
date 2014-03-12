@@ -1282,7 +1282,7 @@ t_coffee \
     CORE mode 
     -->
   <service name="core">
-    <title>Core</title>
+    <title>Core/TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
@@ -1322,8 +1322,8 @@ t_coffee \
       <description>Use this section to control the output format.</description>
       
       <field type="checkbox" name='output' label='Alignment format' >
-        <value>score_html fasta_aln clustalw_aln phylip score_ascii</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
+        <value>score_html fasta_aln score_ascii sp_ascii</value>
+        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, sp_ascii, msf_aln, phylip, score_pdf</choices>
         <readonly>score_html score_ascii</readonly>
       </field>
       
