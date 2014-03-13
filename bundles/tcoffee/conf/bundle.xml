@@ -1313,7 +1313,7 @@ t_coffee \
           
           <field type="checkbox" name="method" label="Pairwise Methods" >
           <value>Mproba_pair</value>
-            <choices>Mlalign_id_pair, Mfast_pair, Mproba_pair, Mclustalw_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
+            <choices>Mproba_pair, Mlalign_id_pair, Mclustalw_pair, Mfast_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
           </field>
     </fieldset>
   
@@ -1323,7 +1323,7 @@ t_coffee \
       
       <field type="checkbox" name='output' label='Alignment format' >
         <value>score_html fasta_aln score_ascii sp_ascii</value>
-        <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, sp_ascii, msf_aln, phylip, score_pdf</choices>
+        <choices>score_html, score_pdf, score_ascii, sp_ascii, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, msf_aln, phylip</choices>
         <readonly>score_html score_ascii</readonly>
       </field>
       
