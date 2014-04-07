@@ -1285,7 +1285,7 @@ t_coffee \
     <title>Core/TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570,24694831]]></cite>
     
     <input>
     <fieldset >
