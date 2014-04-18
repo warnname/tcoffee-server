@@ -74,6 +74,31 @@ ${result?.getAlignmentFasta()?.content()}
 </style>
 #{/elseif}
 
+
+*{ Tree Box }*
+<div class="box">
+#{if result.getItem('result.dnd')}
+<h2><span>Alignment tree</span> 
+</h2>
+
+Click the following link to view the alignment tree with <a href="javascript:void(0)" id="to_jsphylo" >JsPhyloSVG</a> 
+
+</div>
+
+<script type="text/javascript" type="text/javascript">
+
+$('#to_jsphylo').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.jsphylosvg(rid,'result.dnd')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
+	return false
+}) 
+ 
+</script>
+#{/if}
+
+
 *{ Cite box }*
 
 #{if result?.cite }
@@ -167,11 +192,6 @@ $('#to_jalview').click(function() {
 <div class="box">
 <h2><span>Replay</span></h2>
 Change some input parameters and resubmit this alignment <a href="@{Application.replay(rid)}" >clicking here</a>.
-#{if result.service != 'adv-cmdline'}
-<div style="padding-top: .7em">
-Are you a T-Coffee guru? You may want to use the full featured T-Coffee <a href="@{Application.advanced().add('replay',rid)}">command line options</a>.
-</div>
-#{/if}
 
 </div>
 #{/if}
