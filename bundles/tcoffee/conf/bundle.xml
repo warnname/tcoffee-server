@@ -137,7 +137,7 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -246,7 +246,7 @@
     
     <field type='dropdown' name='seqnos' label='Residue number' >
     <hint>Print the residue number</hint>
-    <choices>on, off</choices>  
+    <choices>off, on</choices>
     </field>
     
     <field type='dropdown' name='outorder' >
@@ -356,7 +356,7 @@
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -510,7 +510,7 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -631,7 +631,7 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -660,7 +660,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=10240]" -M 10000000'>  
+      <bsub queue='normal -R "rusage[mem=10240]" -M 11000000'>  
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -749,7 +749,7 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -861,7 +861,7 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -1016,7 +1016,7 @@
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -1121,7 +1121,7 @@
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>off, on</choices>
       </field>
       
       <field type='dropdown' name='outorder' >
