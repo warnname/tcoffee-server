@@ -426,7 +426,7 @@
               <minnum-error>You must enter at least 2 sequences</minnum-error>
             </validation>
           
-          <sample>public/sample-rna-sara.fasta.txt</sample>
+          <sample>public/sample-rna-sara2.fasta.txt</sample>
       </field>
   
       </fieldset>
@@ -1285,7 +1285,7 @@ t_coffee \
     <title>Core/TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&list_uids=21558174,10964570,24694831]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24694831%2C21558174%2C10964570]]></cite>
     
     <input>
     <fieldset >
