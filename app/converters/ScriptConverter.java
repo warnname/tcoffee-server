@@ -18,12 +18,12 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  */
 public class ScriptConverter implements Converter {
 
-	@Override
+/**	@Override**/
 	public boolean canConvert(Class clazz) {
 		return Script.class.isAssignableFrom(clazz);
 	}
 
-	@Override
+/**	@Override**/
 	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
 		Script script = (Script) obj;
 		
@@ -40,7 +40,7 @@ public class ScriptConverter implements Converter {
 
 	}
 
-	@Override
+/**	@Override**/
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext ctx) {
 		Script result = new Script();
 		result.text = reader.getValue();

@@ -88,7 +88,7 @@ public class BundleScriptLoader {
 		}
 		
 		libPath.list( new FilenameFilter() {
-			@Override
+/**			@Override **/
 			public boolean accept(File dir, String name) {
 				boolean yes = name.toLowerCase().endsWith(".jar");
 				if( yes ) { 

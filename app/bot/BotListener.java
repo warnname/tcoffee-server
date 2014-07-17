@@ -123,7 +123,7 @@ public class BotListener implements MessageCountListener {
 	}
 
 
-	@Override
+/**	@Override**/
 	public void messagesAdded(MessageCountEvent event) {
 		Logger.info("New batch processing mail messages! Message(s) count: %s", event.getMessages().length);
 		
@@ -136,7 +136,7 @@ public class BotListener implements MessageCountListener {
 		}
 	}
 
-	@Override
+/**	@Override**/
 	public void messagesRemoved(MessageCountEvent arg0) { /* empty */ }
 	
 	/**

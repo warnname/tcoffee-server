@@ -358,7 +358,7 @@ public class FileChooser extends Controller {
     		final String sQuery = query.contains("*") ? query : "*" + query + "*";
     		filter = new FilenameFilter() {
 
-				@Override
+/**				@Override**/
 				public boolean accept(File dir, String name) {
 					return FilenameUtils.wildcardMatch(name, sQuery, IOCase.INSENSITIVE);
 				}}; 
@@ -516,7 +516,7 @@ public class FileChooser extends Controller {
 		public boolean isDir;
 		public Date modified;
 		
-		@Override
+/**		@Override**/
 		public int compareTo(FileEntry o) {
 			return name.compareTo(o.name);
 		}
