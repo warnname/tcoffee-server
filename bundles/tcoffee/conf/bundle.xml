@@ -135,7 +135,8 @@
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -244,7 +245,8 @@
     
     <field type='dropdown' name='seqnos' label='Residue number' >
     <hint>Print the residue number</hint>
-    <choices>on, off</choices>  
+    <choices>on, off</choices>
+    <value>off</value>  
     </field>
     
     <field type='dropdown' name='outorder' >
@@ -353,7 +355,8 @@
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -411,7 +414,7 @@
   <title>SARA-Coffee</title>
   <description>Aligns RNA sequences using tertiary structure (new)</description>
   <group>Alignment</group>
-  <cite><![CDATA[http://bioinformatics.oxfordjournals.org/content/29/9/1112.long]]></cite>
+  <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24972831]]></cite>
   
   <input>
     <fieldset >
@@ -450,7 +453,8 @@
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Causes the output alignment to contain residue numbers at the end of each line</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices> 
+      <value>off</value> 
       </field>
       
       <field type='dropdown' name='outorder' label='Output order' >
@@ -615,7 +619,8 @@ t_coffee \
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -736,7 +741,8 @@ t_coffee \
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -846,7 +852,8 @@ t_coffee \
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -963,7 +970,8 @@ t_coffee \
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -1075,7 +1083,8 @@ t_coffee \
 
      <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
      </field>
       
      <field type='dropdown' name='outorder' >
@@ -1229,7 +1238,8 @@ t_coffee \
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -1285,7 +1295,7 @@ t_coffee \
     <title>Core/TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24694831%2C21558174%2C10964570]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24694831,21558174,10964570]]></cite>
     
     <input>
     <fieldset >
@@ -1316,15 +1326,35 @@ t_coffee \
             <choices>Mproba_pair, Mlalign_id_pair, Mclustalw_pair, Mfast_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
           </field>
     </fieldset>
-  
+ 
+    <fieldset hideable='true' >
+      <title>TCS Filtering</title>
+      <description>Use these options to control the filtering intensity on your output alignment and whether you want the filtering to remove columns (recommended) or residues</description>
+
+      <field type='dropdown' name='type' label='Type' >
+         <value>column</value>
+         <choices>column,residue</choices>
+      </field>
+
+      <field type='dropdown' name='filter' label='Threshold' >
+         <value>2</value>
+         <choices>0,1,2,3,4,5,6,7,8,9</choices>
+      </field>
+
+    </fieldset>
+ 
     <fieldset hideable="true">
       <title>Output options</title>
       <description>Use this section to control the output format.</description>
       
-      <field type="checkbox" name='output' label='Alignment format' >
-        <value>score_html fasta_aln score_ascii sp_ascii</value>
-        <choices>score_html, score_pdf, score_ascii, sp_ascii, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, msf_aln, phylip</choices>
-        <readonly>score_html score_ascii</readonly>
+      <field type="checkbox" name='tcs_output' label='TCS output' >
+        <value>score_html</value>
+        <choices>score_html, score_pdf, score_ascii, sp_ascii, tcs_weighted, tcs_replicate100</choices>
+        <readonly>score_html</readonly>
+      </field>
+
+      <field type="checkbox" name='aln_output' label='Alignment format' >
+        <choices>clustalw_aln, fasta_aln, msf_aln, phylip, gcg, pir_aln, pir_seq</choices>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
@@ -1334,7 +1364,8 @@ t_coffee \
       
       <field type='dropdown' name='seqnos' label='Residue number' >
       <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
+      <choices>on, off</choices>
+      <value>off</value>  
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -1367,7 +1398,7 @@ t_coffee \
           -infile=${alignment}  
           -in=${method}  
           -score=1 
-          -output=${output} 
+          -output=${tcs_output} ${aln_output} tcs_${type}_filter${filter} 
           -maxnseq=50 
           -maxlen=2500 
           -case=${letter} 
