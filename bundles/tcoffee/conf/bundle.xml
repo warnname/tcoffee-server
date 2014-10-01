@@ -1305,12 +1305,12 @@ t_coffee \
       <field type='memo' name="alignment" label='Alignment' >
           <hint>Enter your alignment</hint>
 
-          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='150' maxlen='2500' >
+          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='150' maxlen='5000' >
             <required-error>You have to enter the sequences to evaluate</required-error>
             <format-error>Sequences have to be in CLUSTAL format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
             <maxnum-error>You can enter at most 150 sequences</maxnum-error>
-            <maxlen-error>Sequences cannot exceed 2500 char length</maxlen-error>
+            <maxlen-error>Sequences cannot exceed 5000 char length</maxlen-error>
           </validation>
 
           <sample >public/sample-clustalw.txt</sample>
