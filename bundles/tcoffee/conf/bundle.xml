@@ -1399,8 +1399,8 @@ t_coffee \
           -in=${method}  
           -score=1 
           -output=${tcs_output} ${aln_output} tcs_${type}_filter${filter} 
-          -maxnseq=50 
-          -maxlen=2500 
+          -maxnseq=500 
+          -maxlen=5000 
           -case=${letter} 
           -seqnos=${seqnos} 
           -outorder=${outorder}  
