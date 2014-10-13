@@ -1392,7 +1392,7 @@ t_coffee \
     </input>
     
     <process>
-        <qsub>
+        <qsub opts='-l virtual_free=8G'>
         <tcoffee>
           <args>
           -infile=${alignment}  

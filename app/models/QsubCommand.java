@@ -37,7 +37,10 @@ public class QsubCommand extends AbstractShellCommand {
 
 	@XStreamAsAttribute
 	String queue;
-	
+
+        @XStreamAsAttribute
+        String opts;	
+
 	@XStreamAsAttribute
 	String jobname;
 	
@@ -65,6 +68,7 @@ public class QsubCommand extends AbstractShellCommand {
 		this.queue = that.queue;
 		this.jobname = that.jobname;
 		this.jobfile = that.jobfile;
+                this.opts = that.opts; 
 	}
 	
 	public QsubCommand( AbstractShellCommand target ) { 
@@ -245,6 +249,10 @@ public class QsubCommand extends AbstractShellCommand {
 			result.append("-N ") .append(jobname) .append(" ");
 		}
 
+                if( Utils.isNotEmpty(opts) ) {
+                    	result.append(opts) .append(" ");
+                }
+ 
 		result.append( fJobFile.getName() );
 		return  result.toString();
 	}
