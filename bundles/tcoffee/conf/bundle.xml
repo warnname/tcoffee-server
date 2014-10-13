@@ -1305,11 +1305,11 @@ t_coffee \
       <field type='memo' name="alignment" label='Alignment' >
           <hint>Enter your alignment</hint>
 
-          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='500' maxlen='5000' >
+          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='1000' maxlen='5000' >
             <required-error>You have to enter the sequences to evaluate</required-error>
             <format-error>Sequences have to be in CLUSTAL format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
-            <maxnum-error>You can enter at most 500 sequences</maxnum-error>
+            <maxnum-error>You can enter at most 1000 sequences</maxnum-error>
             <maxlen-error>Sequences cannot exceed 5000 char length</maxlen-error>
           </validation>
 
@@ -1399,7 +1399,7 @@ t_coffee \
           -in=${method}  
           -score=1 
           -output=${tcs_output} ${aln_output} tcs_${type}_filter${filter} 
-          -maxnseq=500 
+          -maxnseq=1000 
           -maxlen=5000 
           -case=${letter} 
           -seqnos=${seqnos} 
