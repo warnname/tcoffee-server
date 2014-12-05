@@ -242,7 +242,6 @@ public class Application extends CommonController {
 		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln -action %s +keep %s -output aln", alnFile.name, scoreFile.name, flag, range);
 
 		File scriptFile = new File(repo.getFile(), ".core_filter.sh");
-		Logger.debug("Core/TCS filter cmd: " + scriptFile);
 		script.append(cmd).append("\n");
 
 
@@ -268,6 +267,8 @@ public class Application extends CommonController {
 			status = 1;
 			buffer.append(ExceptionUtils.getFullStackTrace(e));
 		}
+
+		Logger.debug(String.format("Core/TCS filter status: %s; cmd: %s", status, scriptFile));
 
 	   	renderText(buffer.toString());
 	}

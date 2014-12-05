@@ -1317,17 +1317,12 @@ t_coffee \
       <field type="checkbox" name='output' label='Alignment format' >
         <value>score_html fasta_aln clustalw_aln phylip score_ascii</value>
         <choices>score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
-        <readonly>score_html score_ascii</readonly>
+        <readonly>score_html clustalw_aln score_ascii</readonly>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
         <hint>Output case selection</hint>
         <choices>upper, lower, keep</choices>
-      </field>      
-      
-      <field type='dropdown' name='seqnos' label='Residue number' >
-      <hint>Print the residue number</hint>
-      <choices>on, off</choices>  
       </field>
       
       <field type='dropdown' name='outorder' >
@@ -1364,7 +1359,7 @@ t_coffee \
           -maxnseq=50 
           -maxlen=2500 
           -case=${letter} 
-          -seqnos=${seqnos} 
+          -seqnos=off
           -outorder=${outorder}  
           -run_name=result
           -multi_core=${settings.multicore}
