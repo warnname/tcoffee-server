@@ -151,7 +151,11 @@ public class OutResult implements Serializable {
 		Check.notNull(result, "Argument result cannot be null");
 		items().addAll(result);
 	}
-	
+
+	public OutItem getItemByFormat( String fmt ) {
+		return Utils.firstItem(items(), "format", fmt);
+	}
+
 	public OutItem getAlignmentHtml() {
 		
 		OutItem result = Utils.firstItem(items(), "format", "html");
