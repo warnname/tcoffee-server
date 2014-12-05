@@ -1,0 +1,303 @@
+#{set title:'Your alignment result' /}
+
+#{cache-warning /}
+
+
+<style>
+.sendto button {
+	width: 8em;
+	margin-right: 1em;
+	position: relative;
+	top: -1px;
+}
+
+form#sendto { display: none }
+
+</style>
+
+<h1>
+#{if !result?.title || result?.service=='adv-cmdline'}T-Coffee alignment result#{/if}
+#{else}${result?.title} alignment result#{/else}
+</h1> 
+
+*{ MSA Box }*
+
+%{
+  def resultHtml = result?.first("format", "tm_html");
+  if( resultHtml == null ) { resultHtml = result.getAlignmentHtml(); } 
+}%
+
+#{if resultHtml?.file }
+<div class="box">
+
+<h2><span>MSA</span> 
+<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
+</h2>
+
+#{if resultHtml.file.length() < 1024*1024 }
+<div id="result">
+#{tcoffeeHtml resultHtml.file /}
+</div>
+#{/if}
+
+#{else}
+<p>
+   	<img src="@{'/public/images/document.png'}" width="48" height="48" style="float: left; align:bottom"> 
+   	<span style="position:relative; left:1em; ">The result alignment is too big to <br> be showed inline, 
+   	<a target="_blank" href="${resultHtml.webpath}" >click here to open it</a> .
+   	</span>  
+
+</p>
+#{/else}
+</div>
+<style type='text/css'> 
+#result { line-height: 1.0  }
+#result SPAN { font-family: "Vera Mono", courier new, courier-new, courier, monospace; font-weight: 100; font-size: 11pt; color: black; }
+</style>
+#{/if}
+
+*{ 
+ * If HTML result is missing try to display the txt based result 
+}*
+#{elseif result?.getAlignmentFasta()?.file }
+<div class="box">
+<h2><span>MSA</span> 
+<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
+</h2>
+
+<pre id="result">
+${result?.getAlignmentFasta()?.content()}
+</pre>
+</div>
+
+<style type='text/css'>
+#result { line-height: 1.0  }
+#result { font-family: "Vera Mono", courier new, courier-new, courier, monospace; font-weight: 100; font-size: 11pt; color: black; }
+</style>
+#{/elseif}
+
+*{ Tree Box }*
+#{if result.getItem('result.dnd')}
+<div class="box">
+<h2><span>Alignment tree</span>
+</h2>
+
+Click the following links to view the alignment tree with <a href="javascript:void(0)" id="to_jsphylo" >JsPhyloSVG</a> or with <a href="javascript:void(0)" id="to_phylowidget" >PhyloWidget</a>
+
+</div>
+
+<script type="text/javascript" type="text/javascript">
+
+$('#to_phylowidget').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.phylowidget(rid,'result.dnd')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0")
+	return false
+} )
+
+$('#to_jsphylo').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.jsphylosvg(rid,'result.dnd')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
+	return false
+}) 
+ 
+</script>
+#{/if}
+
+*{ Filtering }*
+<div class="box">
+<h2><span>Filtering</span></h2>
+
+<form name="filtering" method="get" action="@{Application.corefilter()}" target="_blank">
+	<input type="hidden" name="rid" value="${rid}" />
+	<p>
+	Filtering by: <br>
+	<input type="radio" name="type" value="column"/> Column
+	<input type="radio" name="type" value="residue"/> Residue
+	</p>
+
+	<p>
+	Range:
+	<br> Min <input type="range" id="filterMin" name="min" min="0" max="9">
+	<br> Max <input type="range" id="filterMax" name="max" min="0" max="9">
+	</p>
+
+	<p>
+	<button value="Apply" class="button">Apply</button>
+	</p>
+</form>
+
+</div>
+
+
+*{ Cite box }*
+
+#{if result?.cite }
+<div class="box">
+<h2><span>Citation</span></h2>
+Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+</div>
+#{/if}
+
+*{ Result file list }*
+
+#{if result?.items?.size > 0 }
+<div class="box">
+
+<h2><span>Result files</span> 
+<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
+</h2>
+
+#{result-items result /}
+
+#{copy-to-dropbox  /}
+
+</div>
+#{/if}
+
+*{ Send result box }* 
+#{if result?.alignmentFasta?.file }
+<div class="box">
+
+<h2><span>Send results</span>
+<small><span>Forward this result to other online tools.</span></small>
+</h2>
+
+<div class='sendto' >
+    <button id="to_ProtoGene" name="to_ProtoGene" class="button"> ProtoGene </button>
+    <span>Turning amino acid alignments into bona fide CDS nucleotide alignments </span>
+
+    <br><br>
+    <button id="to_MyHits" name="to_MyHits" class="button">  MSA hub </button>
+    <span>MyHits: a new interactive resource for protein annotation and domain identification</span>
+
+    <br><br>
+    <button id="to_jalview" name="to_jalview" class="button" title="Click to open the Jalview viewer">  JalView </button>
+    <span>Open this alignment in the <a href="http://www.jalview.org/" target="_blank">Jalview</a> viewer </span>
+
+#{if result?.getAlignmentClustalw()?.webpath }
+    <br><br>
+    <button id="to_Espript" name="to_Espript" class="button" >  ESPript </button>
+    <span>ESPript server renders sequence similarities and secondary structure information from aligned sequences</span>
+#{/if}
+</div>
+
+<form action="#" id="sendto" name="sendto"  method="POST" target="_blank" >
+<input type="hidden" name="stage1" value="1" >
+<input type="hidden" name="daction" value="PROTOGENE::Regular">
+<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+<input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+</form>
+
+
+<script type="text/javascript">
+$('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
+$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+$('#to_jalview').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .6); 
+	window.open("@{Application.jalview(params.rid)}", "_blank", "width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0");
+	return false;
+})
+$('#to_Espript').click(function() { 
+	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${request.host}${result.getAlignmentClustalw().webpath}","_blank"); 
+});
+
+$('#filterMin').change(function(){
+	var min=$('#filterMin').val()
+	var max=$('#filterMax').val()
+	if( min>max ) $('#filterMax').val(min)
+})
+$('#filterMax').change(function(){
+ 	var min=$('#filterMin').val()
+	var max=$('#filterMax').val()
+	if( min>max ) $('#filterMin').val(max)
+ })
+
+</script>
+</div>
+#{/if}
+
+*{ Warnings box }*
+#{if result?.warnings }
+<div class="box-warn" >
+<p>Please note: T-Coffee returned the following warning(s):</p>
+<ul class="list" >
+#{list result?.warnings }
+<li>${_}</li>
+#{/list}
+</ul>
+</div>
+#{/if}
+
+
+*{Info box}*
+<div class="box">
+<h2><span>Info</span>
+<small><span>Some information about this alignment job</span></small>
+</h2>
+
+
+<ul>
+<li>Mode: <b>${result?.title}</b></li>
+<li>Request ID: <b>${rid}</b></li>
+<li>Created at: <b>${ctx?.creationTimeFmt}</b></li>
+<li>Elapsed time: <b>${result?.elapsedTimeFmt}</b></li>
+<li>Expiration at: <b>${ctx?.expirationTimeFmt}</b></li>
+</ul>
+</div>
+
+*{ Command line box }*
+#{if result?.commandLine?.file }
+<div class="box">
+
+<h2><span>Command Line</span>
+<small><span>This is the command line used to execute your alignment. You can use it as reference to run this alignment on your desktop.</span></small>
+</h2>
+
+<code >
+#{includefile result.commandLine.file /}
+</code>
+</div>
+#{/if}
+
+
+*{ Replay box }*
+#{if result.service}
+<div class="box">
+<h2><span>Replay</span></h2>
+Change some input parameters and resubmit this alignment <a href="@{Application.replay(rid)}" >clicking here</a>.
+#{if result.service != 'adv-cmdline'}
+<div style="padding-top: .7em">
+Are you a T-Coffee guru? You may want to use the full featured T-Coffee <a href="@{Application.advanced().add('replay',rid)}">command line options</a>.
+</div>
+#{/if}
+
+</div>
+#{/if}
+
+*{ Yeah Facebook is infesting also T-Coffee }* 
+
+<div class="box">
+<h2><span>Feedback</span> 
+<small><span>Give us feedback about T-coffee web server</span></small>
+</h2>
+
+Are you satisfied with this result? Do you like this alignment server? If so recommend it using Google+1 or Facebook.  
+<br><br>
+
+<div style="float: left">
+<g:plusone href="http://tcoffee.crg.cat" ></g:plusone>
+</div>
+
+<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftcoffee.crg.cat&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=recommend&amp;colorscheme=light&amp;height=35" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:35px;" allowtransparency="true" title="Recommend T-Coffee using Facebook"></iframe>
+<div style="clear: both"></div>
+
+For suggestions, questions or any problem send an email to <a href="mailto:tcoffee@googlegroups.com">tcoffee@googlegroups.com</a>
+</div>
+
+
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>

@@ -71,7 +71,10 @@ public class Service implements Serializable {
 	 * The unique service name
 	 */
 	@XStreamAsAttribute
-	public String name; 
+	public String name;
+
+	@XStreamAsAttribute
+	public boolean hidden;
 
 	/** A label used to describe the group to which this service belongs to */
 	public String group;
@@ -398,21 +401,7 @@ public class Service implements Serializable {
 		fContextHolder.input = input;
 		fContextHolder.result = new OutResult();
 		
-		AppProps props = AppProps.instance();
-		for( String key : props.getNames() ) { 
-			String val;
-			if( (val=props.getString(key,null)) != null ) { 
-				fContextHolder.map.put(key, val);
-			}
-		}
-		
-		/* add the bundle properties content */
-		for( Object key : bundle.properties.keySet() ) {
-			fContextHolder.map.put( key.toString(), bundle.properties.getProperty(key.toString()));
-		}
-
-		/* the private folder for this service */
-		fContextHolder.map.put( "data.path", fRepo.getPath() );
+		initContextMap( fContextHolder.map, fRepo.getPath()  );
 
 		/* some 'special' variables */
 		fContextHolder.map.put("_rid", rid());
@@ -433,6 +422,28 @@ public class Service implements Serializable {
 		input.save( fRepo.getInputFile() );
 	}
 
+	public Map<String,Object> initContextMap(Map<String,Object> ctx, String path) {
+		AppProps props = AppProps.instance();
+		for( String key : props.getNames() ) {
+			String val;
+			if( (val=props.getString(key,null)) != null ) {
+				ctx.put(key, val);
+			}
+		}
+
+		/* add the bundle properties content */
+		for( Object key : bundle.properties.keySet() ) {
+			ctx.put( key.toString(), bundle.properties.getProperty(key.toString()));
+		}
+
+		/* the private folder for this service */
+		ctx.put( "data.path", path );
+		return ctx;
+	}
+
+	public Map<String,Object> initContextMap( String path ) {
+		return initContextMap(new HashMap<String, Object>(), path);
+	}
 	
 	public String getResultURL() {
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -741,7 +752,7 @@ public class Service implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Map<String,String> defaultEnvironment() {
+	public Map<String,String> defaultEnvironment(Map<String,Object> ctx) {
 
 		if( bundle == null || bundle.environment == null ) { 
 			return null;
@@ -762,8 +773,8 @@ public class Service implements Serializable {
                 if( var != null && var.startsWith("env.")) { 
                 	replace = System.getenv(var.substring(4));
                 }
-                else if( fContextHolder.map != null ) { 
-                	replace = fContextHolder.map.get(var) != null ? fContextHolder.map.get(var).toString() : null; 
+                else if( ctx != null ) {
+                	replace = ctx.get(var) != null ? ctx.get(var).toString() : null;
                 }
                 
                 if (replace == null) {
@@ -777,7 +788,11 @@ public class Service implements Serializable {
         }		
         
         return result;
-	}		
+	}
+
+	public Map<String,String> defaultEnvironment() {
+		return defaultEnvironment(fContextHolder.map);
+	}
 
 	
 	

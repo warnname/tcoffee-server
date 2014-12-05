@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,19 +11,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import bundle.BundleRegistry;
 import models.AppProps;
 import models.Bundle;
 import models.CmdArgs;
 import models.Field;
+import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import models.Service;
 import models.Status;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.CmdLineUtils;
-
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -33,7 +36,6 @@ import play.mvc.Router;
 import play.mvc.Util;
 import query.History;
 import util.Utils;
-import bundle.BundleRegistry;
 
 /**
  * The main application controller 
@@ -176,8 +178,68 @@ public class Application extends CommonController {
     	renderArgs.put("mode", mode);
     	showResultFor(rid, "jsphylosvg.html", false);
     }
-   
-    
+
+
+	public static void corefilter(String rid, String type, String min, String max) {
+
+		Repo repo = new Repo(rid);
+		if( !repo.hasResult() ) {
+			notFound( "Cannot found result for request ID: '%s'", rid );
+		}
+
+		String bundle = repo.getResult().bundle;
+		Bundle _bundle = BundleRegistry.instance().get(bundle);
+		if( _bundle == null ) {
+			notFound( "Unknown bundle: '%s'", bundle );
+			return;
+		}
+
+		Service service = _bundle.getService("core");
+		Map<String,String> env = new HashMap<String,String>(System.getenv());
+		Map<String,Object> ctx = service.initContextMap(repo.getPath());
+		Map<String,String> localEnv = service.defaultEnvironment(ctx);
+		if( localEnv != null ) {
+			env.putAll(localEnv);
+		}
+
+		OutResult out = repo.getResult();
+		OutItem alnFile = out.getItemByFormat("aln");
+		if( alnFile == null )
+			alnFile = out.getItemByFormat("clustalw_aln");
+		OutItem scoreFile = out.getItemByFormat("score_ascii");
+
+		if( alnFile == null ) error("Missing `aln` file");
+		if( scoreFile == null ) error("Missing `score_ascii` file");
+
+		String range = min.equals(max) ? min : min + "-" + max;
+		String flag = "column".equals(type) ? "+use_consensus" : "";
+		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln -action %s +keep %s -output aln", alnFile.name, scoreFile.name, flag, range);
+		Logger.debug("Core/TCS filter cmd: " + cmd);
+
+		StringWriter buffer = new StringWriter();
+		int status;
+		try {
+			ProcessBuilder builder = new ProcessBuilder();
+			builder.environment().putAll(env);
+
+			Process process = builder
+					.directory(repo.getFile())
+					.command(StringUtils.split(cmd))
+					.redirectErrorStream(true)
+					.start();
+
+			InputStream stream = process.getInputStream();
+			IOUtils.copy(stream, buffer);
+			stream.close();
+			status = process.waitFor();
+		}
+		catch (Exception e) {
+			status = 1;
+		}
+
+	   	renderText(buffer.toString());
+	}
+
     /**
      * Renders the user requests 'history' page 
      */
