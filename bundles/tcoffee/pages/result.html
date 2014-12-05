@@ -4,12 +4,14 @@
 
 
 <style>
-#sendto button {
+.sendto button {
 	width: 8em;
 	margin-right: 1em;
 	position: relative;
-	top: -1px
+	top: -1px;
 }
+
+form { display: none }
 
 </style>
 
@@ -107,25 +109,30 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 <small><span>Forward this result to other online tools.</span></small>
 </h2>
 
-<form action="#" id="sendto" name="sendto"  method="POST" target="_blank">
+<div class='sendto' >
+    <button id="to_ProtoGene" name="to_ProtoGene" class="button"> ProtoGene </button>
+    <span>Turning amino acid alignments into bona fide CDS nucleotide alignments </span>
+
+    <br><br>
+    <button id="to_MyHits" name="to_MyHits" class="button">  MSA hub </button>
+    <span>MyHits: a new interactive resource for protein annotation and domain identification</span>
+
+    <br><br>
+    <button id="to_jalview" name="to_jalview" class="button" title="Click to open the Jalview viewer">  JalView </button>
+    <span>Open this alignment in the <a href="http://www.jalview.org/" target="_blank">Jalview</a> viewer </span>
+
+#{if result?.getAlignmentClustalw()?.webpath }
+    <br><br>
+    <button id="to_Espript" name="to_Espript" class="button" >  ESPript </button>
+    <span>ESPript server renders sequence similarities and secondary structure information from aligned sequences</span>
+#{/if}
+</div>
+
+<form action="#" id="sendto" name="sendto"  method="POST" target="_blank" >
 <input type="hidden" name="stage1" value="1" >
 <input type="hidden" name="daction" value="PROTOGENE::Regular">
 <input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
-
-<p style="padding-bottom: 1em;" > 
-<button id="to_ProtoGene" name="to_ProtoGene" class="button"> ProtoGene </button>
-<span>Turning amino acid alignments into bona fide CDS nucleotide alignments </span>
-
-<br><br>
-<button id="to_MyHits" name="to_MyHits" class="button">  MSA hub </button>
-<span>MyHits: a new interactive resource for protein annotation and domain identification</span>
-
-<br><br>
-<button id="to_jalview" name="to_jalview" class="button" title="Click to open the Jalview viewer">  JalView </button>
-<span>Open this alignment in the <a href="http://www.jalview.org/" target="_blank">Jalview</a> viewer </span>
-</p>
-
 </form>
 
 <script type="text/javascript">
@@ -136,7 +143,10 @@ $('#to_jalview').click(function() {
 	var h = Math.round(window.screen.height * .6); 
 	window.open("@{Application.jalview(params.rid)}", "_blank", "width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0");
 	return false;
-} )
+})
+$('#to_Espript').click(function() { 
+	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${request.host}${result.getAlignmentClustalw()?.webpath}","_blank"); 
+});
 </script>
 </div>
 #{/if}

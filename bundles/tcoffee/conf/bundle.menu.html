@@ -4,10 +4,14 @@
 #{if service?.name == 'trmsd'}
  <li class="tutorial"><a href="tutorial_trmsd.html"><span>Tutorial</span></a></li>
 #{/if}
+#{elseif service?.name == 'saracoffee'}
+ <li class="tutorial"><a href="tutorial_saracoffee.html"><span>Tutorial</span></a></li>
+#{/elseif}
 #{else}
  <li class="tutorial"><a href="tutorial.html"><span>Tutorial</span></a></li>
 #{/else}
  <li class="references"><a href="references.html"><span>References</span></a></li>
  <li class="contacts"><a href="contacts.html"><span>Contacts</span></a></li>
- <li class="contacts"><a href="http://tcoffee.org"><span>tcoffee.org</span></a></li>
+ <li class="download"><a href="https://github.com/cbcrg/tcoffee" target='_blank'><span>Download</span></a></li>
 </ul>
+
