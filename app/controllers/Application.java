@@ -162,7 +162,7 @@ public class Application extends CommonController {
      * Render a page tree based on http://www.jsphylosvg.com/
      * 
      * @param rid The processed request ID
-     * @param tfn The 'tree file name' (relative path the above request) provind a tree in the newick format
+     * @param tfn The 'tree file name' (relative path the above request) providing a tree in the newick format
      * @param mode How the tree will rendered. Other than the default, it can be specified 'circular' 
      */
     public static void jsphylosvg(String rid, String tfn, String mode) {

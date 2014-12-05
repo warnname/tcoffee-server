@@ -92,7 +92,7 @@ function run(){
                 setTimeout(run, errorCount * 60000);  
         	}
         	else {
-                // TODO improve this, handling retring to poll the status for after a while 
+                // TODO improve this, handling retrying to poll the status for after a while
                 // also in case of error 
                 jQuery(document).trigger('close.facebox');
     			$('#wait').hide();

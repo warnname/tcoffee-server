@@ -120,7 +120,7 @@ public class Service implements Serializable {
 	}
 	
 	/**
-	 * The defualt constructor. Initialize the class to empty 
+	 * The default constructor. Initialize the class to empty
 	 */
 	public Service() {
 		
