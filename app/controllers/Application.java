@@ -37,6 +37,9 @@ import play.mvc.Util;
 import query.History;
 import util.Utils;
 
+import java.io.PrintWriter;
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 /**
  * The main application controller 
  * 
@@ -198,8 +201,31 @@ public class Application extends CommonController {
 		Map<String,String> env = new HashMap<String,String>(System.getenv());
 		Map<String,Object> ctx = service.initContextMap(repo.getPath());
 		Map<String,String> localEnv = service.defaultEnvironment(ctx);
+		
+		Object binPath = ctx.get("bundle.bin.path") ;
+		if( binPath != null && Utils.isNotEmpty(binPath.toString())) {
+			String path = binPath + File.pathSeparator + System.getenv("PATH");
+			env.put("PATH", path);
+		}
+		
 		if( localEnv != null ) {
 			env.putAll(localEnv);
+		}
+		// max len
+		Object maxlen = ctx.get("msa_max_len");
+		if( maxlen != null && Utils.isNotEmpty(maxlen.toString()) ) {
+			env.put("ALN_LINE_LENGTH", maxlen.toString());
+		}
+
+		StringBuilder script = new StringBuilder();
+		for( Map.Entry<String,String> entry : env.entrySet() ) {
+			if( entry.getKey().contains("(") ) continue;
+			script.append("export ")
+					.append(entry.getKey())
+					.append("=")
+					.append("'")
+					.append(entry.getValue())
+					.append("'\n");
 		}
 
 		OutResult out = repo.getResult();
@@ -214,17 +240,22 @@ public class Application extends CommonController {
 		String range = min.equals(max) ? min : min + "-" + max;
 		String flag = "column".equals(type) ? "+use_consensus" : "";
 		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln -action %s +keep %s -output aln", alnFile.name, scoreFile.name, flag, range);
-		Logger.debug("Core/TCS filter cmd: " + cmd);
+
+		File scriptFile = new File(repo.getFile(), ".core_filter.sh");
+		Logger.debug("Core/TCS filter cmd: " + scriptFile);
+		script.append(cmd).append("\n");
+
 
 		StringWriter buffer = new StringWriter();
 		int status;
 		try {
-			ProcessBuilder builder = new ProcessBuilder();
-			builder.environment().putAll(env);
+			PrintWriter writer = new PrintWriter(scriptFile);
+			writer.print(script.toString());
+			writer.close();
 
-			Process process = builder
+			Process process = new ProcessBuilder()
 					.directory(repo.getFile())
-					.command(StringUtils.split(cmd))
+					.command("bash",scriptFile.toString())
 					.redirectErrorStream(true)
 					.start();
 
@@ -235,6 +266,7 @@ public class Application extends CommonController {
 		}
 		catch (Exception e) {
 			status = 1;
+			buffer.append(ExceptionUtils.getFullStackTrace(e));
 		}
 
 	   	renderText(buffer.toString());
