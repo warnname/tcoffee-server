@@ -20,6 +20,16 @@ form#sendto { display: none }
 #{else}${result?.title} alignment result#{/else}
 </h1> 
 
+*{ Cite box }*
+
+#{if result?.cite }
+<div class="box">
+<h2><span>Citation</span></h2>
+Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+</div>
+#{/if}
+
+
 *{ MSA Box }*
 
 %{
@@ -108,39 +118,147 @@ $('#to_jsphylo').click(function() {
 #{/if}
 
 *{ Filtering }*
+
+<style type="text/css">
+	table.colorcode { margin-left: 2.5em; height: 5px; clear: both }
+	.colorcode td { border-spacing: 0; border-collapse: collapse; }
+	.colorcode tr { width: 20px }
+	.colorcode span { line-height:100%}
+	.colorcode span {white-space: pre}
+	.colorcode span { padding-left: 5px; padding-right: 5px }
+	.colorcode span.value0 {background: #9B92FF}
+	.colorcode span.value1 {background: #B4FFB4}
+	.colorcode span.value2 {background: #BEFFBE}
+	.colorcode span.value3 {background: #C8FFC8}
+	.colorcode span.value4 {background: #FFFFB7}
+	.colorcode span.value5 {background: #FFFFAD}
+	.colorcode span.value6 {background: #FFFFAD}
+	.colorcode span.value7 {background: #FFE6E6}
+	.colorcode span.value8 {background: #FFDCDC}
+	.colorcode span.value9 {background: #FFC8C8}
+
+ span.range { float: left }
+ input.range { float:left; margin-top: 5px; margin-bottom: 4px; width: 13.5em; }      
+ div.range { margin-bottom: 15px }
+</style>
+
 <div class="box">
 <h2><span>Filtering</span></h2>
 
-<form name="filtering" method="get" action="@{Application.corefilter()}" target="_blank">
+<form class="range" name="filtering" method="get" action="@{Application.corefilter()}" target="_blank">
 	<input type="hidden" name="rid" value="${rid}" />
-	<p>
+	<div class="range" >
 	Filtering by: <br>
 	<input type="radio" name="type" value="column" checked="checked"/> Column
 	<input type="radio" name="type" value="residue"/> Residue
-	</p>
+	</div>
 
-	<p>
-	Range:
-	<br> Min <input type="range" id="filterMin" name="min" min="0" max="9">
-	<br> Max <input type="range" id="filterMax" name="max" min="0" max="9">
-	</p>
+	<div class="range" style="min-height: 5.6em;" >
+	Range: 
+        <div>
+	<span class="range" style="float: left; width: 2.5em" >Min</span>
+        <input class="range" type="range" id="filterMin" name="min" min="0" max="9" value='0' > 
+        <span class="range" style="padding-left: 4px" id="minout" >0</span>
+        </div>
+       
+        <table class="colorcode"  >
+                <tr>
+                        <td ><span class="value0">&nbsp;</span></td>
+                        <td ><span class="value1">&nbsp;</span></td>
+                        <td ><span class="value2">&nbsp;</span></td>
+                        <td ><span class="value3">&nbsp;</span></td>
+                        <td ><span class="value4">&nbsp;</span></td>
+                        <td ><span class="value5">&nbsp;</span></td>
+                        <td ><span class="value6">&nbsp;</span></td>
+                        <td ><span class="value7">&nbsp;</span></td>
+                        <td ><span class="value8">&nbsp;</span></td>
+                        <td ><span class="value9">&nbsp;</span></td>
+                </tr>
+        </table>
+ 
+        <div>
+	<span class="range" style="width: 2.5em" >Max</span>
+        <input class="range" type="range" id="filterMax" name="max" min="0" max="9" value='0' > 
+        <span id="maxout" class="range" style="padding-left: 4px" >0</span> 
+        </div>
+	</div>
 
-	<p>
-	<button value="Apply" class="button">Apply</button>
-	</p>
+        <div style="clear: both" ></div> 
+        <div class="range" >
+        Remove empty columns: <input type="checkbox" name="rmempty" value="yes" checked='checked' > 
+        </div> 
+
+	<div class="range" >
+	<button class="button blue">Apply filter</button>
+	</div>
 </form>
 
 </div>
+<script>
+$('#filterMin').change(function(){
+        var min=$('#filterMin').val()
+        var max=$('#filterMax').val()
+        if( min>max ) { $('#filterMax').val(min); $('#maxout').text(min); } 
+        $('#minout').text(min) 
+})
+$('#filterMax').change(function(){
+        var min=$('#filterMin').val()
+        var max=$('#filterMax').val()
+        if( min>max ) { $('#filterMin').val(max);  $('#minout').text(max) } 
+        $('#maxout').text(max)
+ })
+</script>
 
+*{ Tree box }* 
 
-*{ Cite box }*
+%{
+  def phylip = result?.first("format", "phylip")
+  def tcs_weighted = result?.first("format", "tcs_weighted")
+  def tcs_replicate = result?.first("format", "tcs_replicate100")
+}%
 
-#{if result?.cite }
-<div class="box">
-<h2><span>Citation</span></h2>
-Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
-</div>
+<div class='box' >
+<h2><span>Phylogenetic reconstruction</span>
+<small><span >Send alignment file to PhyML web server for building phylogenetic tree</span>
+</h2>
+
+#{if phylip }
+	<button id="to_PhyML" name="to_PhyML" class="button" > Send to PhyML </button>
+	<br><br>
 #{/if}
+#{if tcs_weighted }
+ 	<button id="to_tcs_weighted" name="to_tcs_weighted" class="button" > Send <i>tcs_weighted</i> file to PhyML </button>
+	<br><br>
+#{/if}
+#{if tcs_replicate }
+        <button id="to_tcs_replicate" name="to_tcs_replicate" class="button" > Send <i>tcs_replicate100</i> file to PhyML </button>
+	<br><br>
+#{/if}
+
+</div>
+
+<script>
+#{if phylip }
+$('#to_PhyML').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml/?file=http://beta.tcoffee.crg.cat${phylip.webpath}","_blank");
+        return false
+})
+#{/if}
+
+#{if tcs_weighted  }
+$('#to_tcs_weighted').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml/?file=http://beta.tcoffee.crg.cat${tcs_weighted.webpath}","_blank");
+        return false
+})
+#{/if}
+
+#{if tcs_replicate  }
+$('#to_tcs_replicate').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml/?file=http://beta.tcoffee.crg.cat${tcs_replicate.webpath}","_blank");
+        return false
+})
+#{/if}
+</script>
 
 *{ Result file list }*
 
@@ -205,17 +323,6 @@ $('#to_jalview').click(function() {
 $('#to_Espript').click(function() { 
 	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${request.host}${result.getAlignmentClustalw().webpath}","_blank"); 
 });
-
-$('#filterMin').change(function(){
-	var min=$('#filterMin').val()
-	var max=$('#filterMax').val()
-	if( min>max ) $('#filterMax').val(min)
-})
-$('#filterMax').change(function(){
- 	var min=$('#filterMin').val()
-	var max=$('#filterMax').val()
-	if( min>max ) $('#filterMin').val(max)
- })
 
 </script>
 </div>

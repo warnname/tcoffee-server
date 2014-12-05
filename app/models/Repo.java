@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,15 +12,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import exception.QuickException;
 import org.apache.commons.io.FileUtils;
 import org.blackcoffee.commons.utils.StringIterator;
-
 import play.Logger;
-import play.libs.IO;
 import util.Check;
 import util.Utils;
 import util.XStreamHelper;
-import exception.QuickException;
 
 public class Repo implements Serializable {
 	
@@ -53,7 +50,7 @@ public class Repo implements Serializable {
 	public boolean cached = false;
 	
 	/** 
-	 * Create the context folder on the file system for the specified <i>requets identifier</i> 
+	 * Create the context folder on the file system for the specified <i>request identifier</i>
 	 * */
 	public Repo( final String rid ) {
 		this(rid,false);

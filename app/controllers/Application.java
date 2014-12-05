@@ -183,7 +183,7 @@ public class Application extends CommonController {
     }
 
 
-	public static void corefilter(String rid, String type, String min, String max) {
+	public static void corefilter(String rid, String type, String min, String max, String rmempty) {
 
 		Repo repo = new Repo(rid);
 		if( !repo.hasResult() ) {
@@ -195,6 +195,25 @@ public class Application extends CommonController {
 		if( _bundle == null ) {
 			notFound( "Unknown bundle: '%s'", bundle );
 			return;
+		}
+
+		int hash = Utils.hash();
+		hash = Utils.hash(hash, rid);
+		hash = Utils.hash(hash, type);
+		hash = Utils.hash(hash, min);
+		hash = Utils.hash(hash, max);
+		hash = Utils.hash(hash, rmempty);
+
+		String uid = Integer.toHexString(hash); 
+		File resultFile = new File(repo.getFile(), String.format(".core_filter_%s.txt", uid));
+		if( resultFile.exists() ) {
+			try {
+				Logger.debug("Reading core filter cached file: " + resultFile);
+				renderText(FileUtils.readFileToString(resultFile));
+			}
+			catch( IOException e ) {
+				Logger.debug("Unable to read cached filter result: " + resultFile);
+			}
 		}
 
 		Service service = _bundle.getService("core");
@@ -211,7 +230,7 @@ public class Application extends CommonController {
 		if( localEnv != null ) {
 			env.putAll(localEnv);
 		}
-		// max len
+		
 		Object maxlen = ctx.get("msa_max_len");
 		if( maxlen != null && Utils.isNotEmpty(maxlen.toString()) ) {
 			env.put("ALN_LINE_LENGTH", maxlen.toString());
@@ -237,12 +256,14 @@ public class Application extends CommonController {
 		if( alnFile == null ) error("Missing `aln` file");
 		if( scoreFile == null ) error("Missing `score_ascii` file");
 
-		String range = min.equals(max) ? min : min + "-" + max;
-		String flag = "column".equals(type) ? "+use_consensus" : "";
-		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln -action %s +keep %s -output aln", alnFile.name, scoreFile.name, flag, range);
+		String range = min.equals(max) ? min : String.format("'[%s-%s]'", min,max);
+                String action = "-action ";
+                if( "column".equals(type) ) action += "+use_consensus ";
+                if( "yes".equals(rmempty) ) action += "+rm_gap 100 " ;
+                action += "+keep " + range;
+		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln %s -output aln", alnFile.name, scoreFile.name, action);
 
-		File scriptFile = new File(repo.getFile(), ".core_filter.sh");
-		Logger.debug("Core/TCS filter cmd: " + scriptFile);
+		File scriptFile = new File(repo.getFile(), String.format(".core_filter_%s.sh",uid));
 		script.append(cmd).append("\n");
 
 
@@ -267,6 +288,14 @@ public class Application extends CommonController {
 		catch (Exception e) {
 			status = 1;
 			buffer.append(ExceptionUtils.getFullStackTrace(e));
+		}
+
+		try {
+			FileUtils.write(resultFile, buffer.toString());
+			Logger.debug(String.format("Core/TCS filter status: %s; cmd: %s", status, scriptFile));
+		}
+		catch( IOException e ) {
+			Logger.debug("Unable to save filter result file: " + resultFile);
 		}
 
 	   	renderText(buffer.toString());

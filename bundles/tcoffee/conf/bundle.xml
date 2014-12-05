@@ -1292,7 +1292,7 @@ t_coffee \
     CORE mode 
     -->
   <service name="core">
-    <title>Core/TCS</title>
+    <title>TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24694831,21558174,10964570]]></cite>
@@ -1328,8 +1328,8 @@ t_coffee \
     </fieldset>
  
     <fieldset hideable='true' >
-      <title>TCS Filtering</title>
-      <description>Use these options to control the filtering intensity on your output alignment and whether you want the filtering to remove columns (recommended) or residues</description>
+      <title>TCS output options</title>
+      <description>Use these options to control the output formats and the filtering intensity on your output alignment and whether you want the filtering to remove columns (recommended) or residues</description>
 
       <field type='dropdown' name='type' label='Type' >
          <value>column</value>
@@ -1341,33 +1341,32 @@ t_coffee \
          <choices>0,1,2,3,4,5,6,7,8,9</choices>
       </field>
 
-    </fieldset>
- 
-    <fieldset hideable="true">
-      <title>Output options</title>
-      <description>Use this section to control the output format.</description>
-      
       <field type="checkbox" name='tcs_output' label='TCS output' >
-        <value>score_html</value>
-        <choices>score_html, score_pdf, score_ascii, sp_ascii, tcs_weighted, tcs_replicate100</choices>
-        <readonly>score_html</readonly>
+        <value>score_html,score_ascii,tcs_weighted,tcs_replicate100</value>
+        <choices>score_html,score_pdf,score_ascii,sp_ascii,tcs_weighted,tcs_replicate100</choices>
+        <readonly>score_html,score_ascii,tcs_weighted,tcs_replicate100</readonly>
+        <hint>
+        tcs_weighted: MSA with columns duplicated according to their TCS score. Suitable for phylogenetic reconstruction.
+        tcs_replicate100: 100 replicates drawn from the original MSA columns weighted according to their TCS score. SUitable for phylogenetic bootstraping.
+        </hint>
+      </field>
+     
+      <field type="checkbox" name='rmcolumn' label='Remove empty columns' >
+          <value>yes</value>
+          <choices>yes</choices> 
       </field>
 
       <field type="checkbox" name='aln_output' label='Alignment format' >
         <choices>clustalw_aln, fasta_aln, msf_aln, phylip, gcg, pir_aln, pir_seq</choices>
+        <value>clustalw_aln phylip</value>
+        <readonly>clustalw_aln phylip</readonly>
       </field>
       
       <field type='dropdown' name='letter' label='Case' >
         <hint>Output case selection</hint>
         <choices>upper, lower, keep</choices>
       </field>      
-      
-      <field type='dropdown' name='seqnos' label='Residue number' >
-      <hint>Print the residue number</hint>
-      <choices>on, off</choices>
-      <value>off</value>  
-      </field>
-      
+
       <field type='dropdown' name='outorder' >
         <choices>input, aligned</choices>
       </field>
@@ -1402,7 +1401,7 @@ t_coffee \
           -maxnseq=50 
           -maxlen=2500 
           -case=${letter} 
-          -seqnos=${seqnos} 
+          -seqnos=off
           -outorder=${outorder}  
           -run_name=result
           -multi_core=${settings.multicore}
