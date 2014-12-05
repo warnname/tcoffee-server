@@ -18,8 +18,8 @@
 # Description:    Play server for tcoffee
 ### END INIT INFO
 
-TCOFFEE_HOME=/var/lib/tcoffee
-PLAY_HOME=/var/lib/tcoffee
+TCOFFEE_HOME=/var/vhosts/tcoffee
+PLAY_HOME=/var/vhosts/tcoffee
 
 USER=tcoffee
 GROUP=cnotreda

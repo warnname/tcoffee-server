@@ -1,4 +1,4 @@
-/var/log/tcoffee/usage.log {
+/var/log/tcoffee/*.log {
     copytruncate
     weekly
     rotate 52
