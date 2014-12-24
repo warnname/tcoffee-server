@@ -52,7 +52,8 @@ public class Field implements Serializable {
 			"dropdown",
 			"checkbox", 
 			"radio", 
-			"list", 
+			"list",
+			"range", 
 			"memo",
 			"file"
 			);
@@ -74,7 +75,12 @@ public class Field implements Serializable {
 	
 	@XStreamAlias("readonly")
 	public String readOnly;
-	
+
+	@XStreamAsAttribute
+	public String min;
+
+	@XStreamAsAttribute
+	public String max;
 	
 	/** It could an URL (relative or absolute) to a file that can be used to preload the field */ 
 	public String sample;
@@ -114,6 +120,8 @@ public class Field implements Serializable {
 		this.readOnly = that.readOnly;
 		this.sample = that.sample;
 		this.fFile = that.fFile;
+                this.min = that.min;
+                this.max = that.max;
 	}
 	
 	public Field(final String type) {

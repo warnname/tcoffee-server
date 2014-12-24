@@ -25,6 +25,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.CmdLineUtils;
+import org.blackcoffee.commons.format.Alphabet;
+import org.blackcoffee.commons.format.Clustal;
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -109,6 +111,10 @@ public class Application extends CommonController {
 			renderArgs.put("ctx", ctx);
 			renderArgs.put("result", result);
 			renderArgs.put("cached", cached);
+			renderArgs.put("hostname", AppProps.instance().getHostName());
+
+			if( "core".equals(result.service) )
+			renderArgs.put("data_type", dataType(result.getInputFiles().get(0)));
 			
 			// try to load a result page specific for this service 
 			String altPage = null;
@@ -135,6 +141,34 @@ public class Application extends CommonController {
    	
     } 
     
+	private static String dataType( File file ) {
+
+		boolean aa = false;
+		boolean nn = true;
+		Clustal clustal = new Clustal();
+		try {
+			clustal.parse(file);
+			for( int i=0; i<clustal.sequences.size(); i++ ) {
+				String seq = clustal.sequences.get(i).value;
+				for( int x=0; x<seq.length(); x++ ) {
+					char ch = seq.charAt(x);
+					aa = aa || Alphabet.AminoAcid.INSTANCE.isValidChar(ch);
+					nn = nn && Alphabet.NucleicAcid.INSTANCE.isValidChar(ch);
+					if( aa && !nn ) return "aa";
+				}
+			}
+		}
+		catch(Exception e) {
+			Logger.debug("Cannot find out data type for file: " + file, e);
+			return "";
+		}
+
+		if( aa ) return "aa";
+		if( nn ) return "nn";
+		return "";
+	}
+
+
     /**
      * Embed the Jalview applet 
      * 
@@ -181,125 +215,6 @@ public class Application extends CommonController {
     	renderArgs.put("mode", mode);
     	showResultFor(rid, "jsphylosvg.html", false);
     }
-
-
-	public static void corefilter(String rid, String type, String min, String max, String rmempty) {
-
-		Repo repo = new Repo(rid);
-		if( !repo.hasResult() ) {
-			notFound( "Cannot found result for request ID: '%s'", rid );
-		}
-
-		String bundle = repo.getResult().bundle;
-		Bundle _bundle = BundleRegistry.instance().get(bundle);
-		if( _bundle == null ) {
-			notFound( "Unknown bundle: '%s'", bundle );
-			return;
-		}
-
-		int hash = Utils.hash();
-		hash = Utils.hash(hash, rid);
-		hash = Utils.hash(hash, type);
-		hash = Utils.hash(hash, min);
-		hash = Utils.hash(hash, max);
-		hash = Utils.hash(hash, rmempty);
-
-		String uid = Integer.toHexString(hash); 
-		File resultFile = new File(repo.getFile(), String.format(".core_filter_%s.txt", uid));
-		if( resultFile.exists() ) {
-			try {
-				Logger.debug("Reading core filter cached file: " + resultFile);
-				renderText(FileUtils.readFileToString(resultFile));
-			}
-			catch( IOException e ) {
-				Logger.debug("Unable to read cached filter result: " + resultFile);
-			}
-		}
-
-		Service service = _bundle.getService("core");
-		Map<String,String> env = new HashMap<String,String>(System.getenv());
-		Map<String,Object> ctx = service.initContextMap(repo.getPath());
-		Map<String,String> localEnv = service.defaultEnvironment(ctx);
-		
-		Object binPath = ctx.get("bundle.bin.path") ;
-		if( binPath != null && Utils.isNotEmpty(binPath.toString())) {
-			String path = binPath + File.pathSeparator + System.getenv("PATH");
-			env.put("PATH", path);
-		}
-		
-		if( localEnv != null ) {
-			env.putAll(localEnv);
-		}
-		
-		Object maxlen = ctx.get("msa_max_len");
-		if( maxlen != null && Utils.isNotEmpty(maxlen.toString()) ) {
-			env.put("ALN_LINE_LENGTH", maxlen.toString());
-		}
-
-		StringBuilder script = new StringBuilder();
-		for( Map.Entry<String,String> entry : env.entrySet() ) {
-			if( entry.getKey().contains("(") ) continue;
-			script.append("export ")
-					.append(entry.getKey())
-					.append("=")
-					.append("'")
-					.append(entry.getValue())
-					.append("'\n");
-		}
-
-		OutResult out = repo.getResult();
-		OutItem alnFile = out.getItemByFormat("aln");
-		if( alnFile == null )
-			alnFile = out.getItemByFormat("clustalw_aln");
-		OutItem scoreFile = out.getItemByFormat("score_ascii");
-
-		if( alnFile == null ) error("Missing `aln` file");
-		if( scoreFile == null ) error("Missing `score_ascii` file");
-
-		String range = min.equals(max) ? min : String.format("'[%s-%s]'", min,max);
-                String action = "-action ";
-                if( "column".equals(type) ) action += "+use_consensus ";
-                if( "yes".equals(rmempty) ) action += "+rm_gap 100 " ;
-                action += "+keep " + range;
-		String cmd = String.format("t_coffee -other_pg seq_reformat -in %s -struc_in %s -struc_in_f number_aln %s -output aln", alnFile.name, scoreFile.name, action);
-
-		File scriptFile = new File(repo.getFile(), String.format(".core_filter_%s.sh",uid));
-		script.append(cmd).append("\n");
-
-
-		StringWriter buffer = new StringWriter();
-		int status;
-		try {
-			PrintWriter writer = new PrintWriter(scriptFile);
-			writer.print(script.toString());
-			writer.close();
-
-			Process process = new ProcessBuilder()
-					.directory(repo.getFile())
-					.command("bash",scriptFile.toString())
-					.redirectErrorStream(true)
-					.start();
-
-			InputStream stream = process.getInputStream();
-			IOUtils.copy(stream, buffer);
-			stream.close();
-			status = process.waitFor();
-		}
-		catch (Exception e) {
-			status = 1;
-			buffer.append(ExceptionUtils.getFullStackTrace(e));
-		}
-
-		try {
-			FileUtils.write(resultFile, buffer.toString());
-			Logger.debug(String.format("Core/TCS filter status: %s; cmd: %s", status, scriptFile));
-		}
-		catch( IOException e ) {
-			Logger.debug("Unable to save filter result file: " + resultFile);
-		}
-
-	   	renderText(buffer.toString());
-	}
 
     /**
      * Renders the user requests 'history' page 

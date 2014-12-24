@@ -37,6 +37,9 @@ public class TCoffeeCommand extends AbstractShellCommand {
 	List<String> _warnings;
 	
 	List<String> warnings() { return _warnings != null ? _warnings : (_warnings = new ArrayList<String>()); } 
+
+	@XStreamAsAttribute
+	public String program;
 	
 	/** The default constructor */
 	public TCoffeeCommand() {
@@ -47,6 +50,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		super(that);
 		this.args = Utils.copy(that.args);
 		this.script = Utils.copy(that.script);
+		this.program = that.program;
 	}
 	
 	@Override
@@ -109,7 +113,7 @@ public class TCoffeeCommand extends AbstractShellCommand {
 		/*
 		 * get t_coffee absolute path 
 		 */
-		String result = "t_coffee";
+		String result = program != null ? new String(program) : "t_coffee" ;
 		
 		/* 
 		 * add the specified arguments for t-coffee 

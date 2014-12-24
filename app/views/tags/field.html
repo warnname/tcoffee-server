@@ -14,6 +14,11 @@
 	<input type="password" name="${_arg.name}" value="${_arg.value}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} />
 #{/elseif}
 
+#{elseif _arg.type == 'range' }
+<input type="range" id="${_arg.name}" name="${_arg.name}" value="${_arg.value}" min="${_arg.min}" max="${_arg.max}" #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if} />
+<span style="padding-left: 4px" id="${_arg.name}_lbl" >${_arg.value}</span>
+#{/elseif}
+
 #{elseif _arg.type == 'dropdown' }
 	<select name='${_arg.name}' #{if _arg.useTipTip} title="${_arg.hint}" class="tiptip" #{/if}>
 	#{list _arg.choices, as: 'item'}

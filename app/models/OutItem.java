@@ -122,15 +122,6 @@ public class OutItem implements Serializable {
 		if( ext == null ) {
 			return name + " file";
 		}
-		else if( ext.equals("html") || ext.equals("score_htm")) {
-			return "Sequence alignment in HTML format";
-		}
-		else  if( ext.equals("score_ascii") ) {
-			return "Sequence alignment in ASCII format";
-		}
-		else  if( ext.equals("score_ascii") ) {
-			return "Sequence alignment in ClustalW format";
-		}
 		else {
 			return format + " file";
 		}

@@ -1305,11 +1305,11 @@ t_coffee \
       <field type='memo' name="alignment" label='Alignment' >
           <hint>Enter your alignment</hint>
 
-          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='150' maxlen='2500' >
+          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='1000' maxlen='2500' >
             <required-error>You have to enter the sequences to evaluate</required-error>
             <format-error>Sequences have to be in CLUSTAL format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
-            <maxnum-error>You can enter at most 150 sequences</maxnum-error>
+            <maxnum-error>You can enter at most 1000 sequences</maxnum-error>
             <maxlen-error>Sequences cannot exceed 2500 char length</maxlen-error>
           </validation>
 
@@ -1317,71 +1317,87 @@ t_coffee \
       </field>
       </fieldset>
 
+	<fieldset hideable='true' >
+            <title>Filter options</title>
+            <description>Use these options to control the filtering intensity of your output alignment and whether you want the filtering to remove columns (recommended) or residues</description>
+
+            <field type='radio' name='filter_type' label='Filter' >
+                <value>column</value>
+                <choices>column,residue</choices>
+            </field>
+
+            <field type='range' name='filter_min' label='Min' min="0" max="9" >
+                <value>0</value>
+            </field>
+
+            <field type='range' name='filter_max' label='Max' min='0' max='9' >
+                <value>9</value>
+            </field>
+
+
+            <field type="checkbox" name='filter_gap' label='Remove empty columns' >
+                <value>yes</value>
+                <choices>yes</choices>
+            </field>
+
+            <field type="checkbox" name='out1' label='Filtered output' >
+               <value>clustalw_aln,fasta_aln,phylip</value>
+               <choices>clustalw_aln,fasta_aln,phylip </choices>
+            </field>
+
+        </fieldset>
+
+
+        <fieldset>
+            <title>Output options</title>
+            <description>Use these options to control the output formats of your output alignment</description>
+
+            <field type="checkbox" name='out2' label='Weighted' >
+                <value>tcs_weighted,tcs_replicate,score_ascii</value>
+                <choices>tcs_weighted,tcs_replicate,score_ascii</choices>
+                <readonly>score_ascii</readonly>
+                <hint>
+                    tcs_weighted: MSA with columns duplicated according to their TCS score. Suitable for phylogenetic reconstruction.
+                    tcs_replicate100: 100 replicates drawn from the original MSA columns weighted according to their TCS score. SUitable for phylogenetic bootstraping.
+                </hint>
+            </field>
+
+            <field type="checkbox" name='out3' label='Graphic' >
+                <choices>score_html,score_pdf</choices>
+                <value>score_html</value>
+                <readonly>score_html</readonly>
+            </field>
+
+            <custom>
+                <![CDATA[
+                <script>
+                    $('#filter_min').change(function(){
+                    var min=$('#filter_min').val()
+                    var max=$('#filter_max').val()
+                    if( min>max ) { $('#filter_max').val(min); $('#filter_max_lbl').text(min); }
+                    $('#filter_min_lbl').text(min)
+                    })
+                    $('#filter_max').change(function(){
+                    var min=$('#filter_min').val()
+                    var max=$('#filter_max').val()
+                    if( min>max ) { $('#filter_min').val(max);  $('#filter_min_lbl').text(max) }
+                    $('#filter_max_lbl').text(max)
+                    })
+                </script>
+                ]]>
+            </custom>
+        </fieldset>
+  
     <fieldset hideable="true" >
           <title>Library Computation</title>
           <description>Your alignment is evaluated by comparison against a collection of alignments. This collection is named a Library. This section lets you control the computation of the library. Different libraries give different score results</description>
-          
+
           <field type="checkbox" name="method" label="Pairwise Methods" >
           <value>Mproba_pair</value>
             <choices>Mproba_pair, Mlalign_id_pair, Mclustalw_pair, Mfast_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
           </field>
     </fieldset>
- 
-    <fieldset hideable='true' >
-      <title>TCS output options</title>
-      <description>Use these options to control the output formats and the filtering intensity on your output alignment and whether you want the filtering to remove columns (recommended) or residues</description>
 
-      <field type='dropdown' name='type' label='Type' >
-         <value>column</value>
-         <choices>column,residue</choices>
-      </field>
-
-      <field type='dropdown' name='filter' label='Threshold' >
-         <value>2</value>
-         <choices>0,1,2,3,4,5,6,7,8,9</choices>
-      </field>
-
-      <field type="checkbox" name='tcs_output' label='TCS output' >
-        <value>score_html,score_ascii,tcs_weighted,tcs_replicate100</value>
-        <choices>score_html,score_pdf,score_ascii,sp_ascii,tcs_weighted,tcs_replicate100</choices>
-        <readonly>score_html,score_ascii,tcs_weighted,tcs_replicate100</readonly>
-        <hint>
-        tcs_weighted: MSA with columns duplicated according to their TCS score. Suitable for phylogenetic reconstruction.
-        tcs_replicate100: 100 replicates drawn from the original MSA columns weighted according to their TCS score. SUitable for phylogenetic bootstraping.
-        </hint>
-      </field>
-     
-      <field type="checkbox" name='rmcolumn' label='Remove empty columns' >
-          <value>yes</value>
-          <choices>yes</choices> 
-      </field>
-
-      <field type="checkbox" name='aln_output' label='Alignment format' >
-        <choices>clustalw_aln, fasta_aln, msf_aln, phylip, gcg, pir_aln, pir_seq</choices>
-        <value>clustalw_aln phylip</value>
-        <readonly>clustalw_aln phylip</readonly>
-      </field>
-      
-      <field type='dropdown' name='letter' label='Case' >
-        <hint>Output case selection</hint>
-        <choices>upper, lower, keep</choices>
-      </field>      
-
-      <field type='dropdown' name='outorder' >
-        <choices>input, aligned</choices>
-      </field>
-      
-      <field type="text" name="msa_max_len" label="Alignment length" >
-     	<hint>The maximum length of the result alignment, after that the sequence is splitted on another row</hint>
-     	<value>80</value>
-     	<validation format="integer" min="20">
-     		<format-error>The entered value is not an integer number</format-error>
-     		<min-error>The length value cannot be less than 20</min-error>
-     	</validation>
-     </field> 
-      
-    </fieldset>  
-  
     <fieldset>
       <field type='text' name="email" label='Your email address' >
         <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas.</hint>
@@ -1392,19 +1408,21 @@ t_coffee \
     
     <process>
         <qsub opts='-l virtual_free=8G'>
-        <tcoffee>
+        <tcoffee program='tcs.sh' >
           <args>
-          -infile=${alignment}  
-          -in=${method}  
-          -score=1 
-          -output=${tcs_output} ${aln_output} tcs_${type}_filter${filter} 
-          -maxnseq=50 
-          -maxlen=2500 
-          -case=${letter} 
-          -seqnos=off
-          -outorder=${outorder}  
-          -run_name=result
-          -multi_core=${settings.multicore}
+          -infile ${alignment}  
+          -in ${method}  
+          -score 1 
+          -output ${out1} ${out2} ${out3}
+          -maxnseq 1000 
+          -maxlen 2500 
+          -seqnos off
+          -run_name result
+          -multi_core ${settings.multicore}
+          --filter-type ${filter_type}
+          --filter-min ${filter_min}
+          --filter-max ${filter_max}
+          --filter-gap ${filter_gap}
           </args> 
         </tcoffee>
         </qsub>

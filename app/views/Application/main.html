@@ -55,6 +55,8 @@
 #{list set.fields, as:'field' }
 #{render field /}
 #{/list} 
+
+#{if set.custom }${set.custom.raw()}#{/if}
 </fieldset>
 </div>
 #{/list} 
