@@ -1327,7 +1327,7 @@ t_coffee \
             </field>
 
             <field type='range' name='filter_min' label='Min' min="0" max="9" >
-                <value>0</value>
+                <value>4</value>
             </field>
 
             <field type='range' name='filter_max' label='Max' min='0' max='9' >

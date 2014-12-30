@@ -163,8 +163,8 @@ public class Application extends CommonController {
 			return "";
 		}
 
-		if( aa ) return "aa";
 		if( nn ) return "nn";
+                if( aa ) return "aa";
 		return "";
 	}
 
