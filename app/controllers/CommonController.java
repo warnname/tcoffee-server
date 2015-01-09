@@ -231,7 +231,7 @@ public class CommonController extends Controller {
 		String bundle = repo.getResult().bundle;
 		Bundle _bundle = BundleRegistry.instance().get(bundle);
 		if( _bundle == null ) { 
-			notFound( "Unkown bundle: '%s'", bundle );
+			notFound( "Unknown bundle: '%s'", bundle );
 		}
 		
 		return _bundle;
@@ -242,7 +242,7 @@ public class CommonController extends Controller {
 		
 		Bundle _bundle = BundleRegistry.instance().get(bundle);
 		if( _bundle == null ) { 
-			notFound( "Unkown bundle: '%s'", bundle );
+			notFound( "Unknown bundle: '%s'", bundle );
 		}
 		
 		Service result = _bundle.getService(service);

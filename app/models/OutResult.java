@@ -89,11 +89,11 @@ public class OutResult implements Serializable {
 	
 	/**
 	 * @return The list of all types (categories) of OutItems instances. This is used to show 
-	 * the table of produced output in a catagorized manned in the result page.
+	 * the table of produced output in a categorized manned in the result page.
 	 * 
 	 */
 	public List<String> aggregations() {
-		List<String> result = new ArrayList();
+		List<String> result = new ArrayList<String>();
 		for( OutItem item : items() ) {
 			String _type = item.aggregation;
 			if( !result.contains(_type) ) {
@@ -151,7 +151,11 @@ public class OutResult implements Serializable {
 		Check.notNull(result, "Argument result cannot be null");
 		items().addAll(result);
 	}
-	
+
+	public OutItem getItemByFormat( String fmt ) {
+		return Utils.firstItem(items(), "format", fmt);
+	}
+
 	public OutItem getAlignmentHtml() {
 		
 		OutItem result = Utils.firstItem(items(), "format", "html");

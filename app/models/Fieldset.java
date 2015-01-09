@@ -16,6 +16,8 @@ public class Fieldset implements Serializable {
 	public String title;
 	
 	public String description;
+
+	public String custom;
 	
 	@XStreamImplicit(itemFieldName="field")
 	public List<Field> fields = new ArrayList<Field>();
@@ -33,6 +35,7 @@ public class Fieldset implements Serializable {
 		this.description = Utils.copy(that.description);
 		this.hideable = that.hideable;
 		this.fields = Utils.copy(that.fields);
+                this.custom = that.custom;
 	}
 	
 	public Fieldset( Field ... fields ) { 

@@ -11,14 +11,23 @@
 	top: -1px;
 }
 
-form { display: none }
+form#sendto { display: none }
 
 </style>
 
 <h1>
-#{if !result?.title || result?.service=='adv-cmdline'}T-Coffee alignment result#{/if}
-#{else}${result?.title} alignment result#{/else}
+TCS evaluation result
 </h1> 
+
+*{ Cite box }*
+
+#{if result?.cite }
+<div class="box">
+<h2><span>Citation</span></h2>
+If you found these results useful please cite the following <a href="${result.cite.trim()}" target="_blank">publications</a>.
+</div>
+#{/if}
+
 
 *{ MSA Box }*
 
@@ -31,7 +40,7 @@ form { display: none }
 <div class="box">
 
 <h2><span>MSA</span> 
-<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
+<small><span>The multiple sequence alignment colored according to TCS scheme</span></small>
 </h2>
 
 #{if resultHtml.file.length() < 1024*1024 }
@@ -62,7 +71,7 @@ form { display: none }
 #{elseif result?.getAlignmentFasta()?.file }
 <div class="box">
 <h2><span>MSA</span> 
-<small><span>The multiple sequence alignment result as produced by T-coffee.</span></small>
+<small><span>The multiple sequence alignment colored according to TCS scheme</span></small>
 </h2>
 
 <pre id="result">
@@ -76,14 +85,75 @@ ${result?.getAlignmentFasta()?.content()}
 </style>
 #{/elseif}
 
-*{ Cite box }*
-
-#{if result?.cite }
+*{ Tree Box }*
+#{if result.getItem('result.dnd')}
 <div class="box">
-<h2><span>Citation</span></h2>
-Please cite this result referring the papers at <a href="${result.cite.trim()}" target="_blank">this link</a>.
+<h2><span>Alignment tree</span>
+</h2>
+
+Click the following links to view the alignment tree with <a href="javascript:void(0)" id="to_jsphylo" >JsPhyloSVG</a> or with <a href="javascript:void(0)" id="to_phylowidget" >PhyloWidget</a>
+
 </div>
+
+<script type="text/javascript" type="text/javascript">
+
+$('#to_phylowidget').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.phylowidget(rid,'result.dnd')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0")
+	return false
+} )
+
+$('#to_jsphylo').click(function() {
+	var w = Math.round(window.screen.width * .7); 
+	var h = Math.round(window.screen.height * .85);
+	var url = "@{Application.jsphylosvg(rid,'result.dnd')}"
+	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
+	return false
+}) 
+ 
+</script>
 #{/if}
+
+*{ Tree box }* 
+
+%{
+  def phylip = result?.first("format", "phylip")
+  def tcs_weighted = result?.first("format", "tcs_weighted")
+}%
+
+<div class='box' >
+<h2><span>Phylogenetic reconstruction</span>
+<small><span >Estimate a phylogenetic tree from selected MSAs using the PhyML web server</span>
+</h2>
+
+#{if phylip }
+	<button id="to_PhyML" name="to_PhyML" class="button" > Send Filtered MSA to PhyML </button>
+	<br><br>
+#{/if}
+#{if tcs_weighted }
+ 	<button id="to_tcs_weighted" name="to_tcs_weighted" class="button" > Send Weighted MSA to PhyML </button>
+	<br><br>
+#{/if}
+
+</div>
+
+<script>
+#{if phylip }
+$('#to_PhyML').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml-tcs/?file=http://${hostname}${phylip.webpath}&dt=${data_type}","_blank");
+        return false
+})
+#{/if}
+
+#{if tcs_weighted  }
+$('#to_tcs_weighted').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml-tcs/?file=http://${hostname}${tcs_weighted.webpath}&dt=${data_type}","_blank");
+        return false
+})
+#{/if}
+</script>
 
 *{ Result file list }*
 
@@ -145,7 +215,7 @@ $('#to_jalview').click(function() {
 	return false;
 })
 $('#to_Espript').click(function() { 
-	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${request.host}${result.getAlignmentClustalw()?.webpath}","_blank"); 
+	window.open("http://espript.ibcp.fr/ESPript/cgi-bin/ESPript.cgi?FRAMES=YES&fromtcoffee=on&alnfile0=http://${hostname}${result.getAlignmentClustalw()?.webpath}","_blank"); 
 });
 </script>
 </div>
@@ -208,17 +278,6 @@ Are you a T-Coffee guru? You may want to use the full featured T-Coffee <a href=
 
 </div>
 #{/if}
-
-<div class="box">
-<h2><span>Documentation</span> 
-</h2>
-
-  <ul>
-  <li> <a href='http://www.tcoffee.org/Projects/tcs/' target='_blank' >Project page</a></li>
-  <li> <a href='http://tcoffee.readthedocs.org/en/latest/TCS.html' target='_blank'>Standalone usage page </a></li> 
-  </ul>
-
-</div>
 
 *{ Yeah Facebook is infesting also T-Coffee }* 
 

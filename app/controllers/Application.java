@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,19 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import bundle.BundleRegistry;
 import models.AppProps;
 import models.Bundle;
 import models.CmdArgs;
 import models.Field;
+import models.OutItem;
 import models.OutResult;
 import models.Repo;
 import models.Service;
 import models.Status;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.blackcoffee.commons.utils.CmdLineUtils;
-
+import org.blackcoffee.commons.format.Alphabet;
+import org.blackcoffee.commons.format.Clustal;
 import play.Logger;
 import play.data.validation.Validation;
 import play.libs.IO;
@@ -33,7 +38,9 @@ import play.mvc.Router;
 import play.mvc.Util;
 import query.History;
 import util.Utils;
-import bundle.BundleRegistry;
+
+import java.io.PrintWriter;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
  * The main application controller 
@@ -104,6 +111,10 @@ public class Application extends CommonController {
 			renderArgs.put("ctx", ctx);
 			renderArgs.put("result", result);
 			renderArgs.put("cached", cached);
+			renderArgs.put("hostname", AppProps.instance().getHostName());
+
+			if( "core".equals(result.service) )
+			renderArgs.put("data_type", dataType(result.getInputFiles().get(0)));
 			
 			// try to load a result page specific for this service 
 			String altPage = null;
@@ -130,6 +141,34 @@ public class Application extends CommonController {
    	
     } 
     
+	private static String dataType( File file ) {
+
+		boolean aa = false;
+		boolean nn = true;
+		Clustal clustal = new Clustal();
+		try {
+			clustal.parse(file);
+			for( int i=0; i<clustal.sequences.size(); i++ ) {
+				String seq = clustal.sequences.get(i).value;
+				for( int x=0; x<seq.length(); x++ ) {
+					char ch = seq.charAt(x);
+					aa = aa || Alphabet.AminoAcid.INSTANCE.isValidChar(ch);
+					nn = nn && Alphabet.NucleicAcid.INSTANCE.isValidChar(ch);
+					if( aa && !nn ) return "aa";
+				}
+			}
+		}
+		catch(Exception e) {
+			Logger.debug("Cannot find out data type for file: " + file, e);
+			return "";
+		}
+
+		if( nn ) return "nn";
+                if( aa ) return "aa";
+		return "";
+	}
+
+
     /**
      * Embed the Jalview applet 
      * 
@@ -162,7 +201,7 @@ public class Application extends CommonController {
      * Render a page tree based on http://www.jsphylosvg.com/
      * 
      * @param rid The processed request ID
-     * @param tfn The 'tree file name' (relative path the above request) provind a tree in the newick format
+     * @param tfn The 'tree file name' (relative path the above request) providing a tree in the newick format
      * @param mode How the tree will rendered. Other than the default, it can be specified 'circular' 
      */
     public static void jsphylosvg(String rid, String tfn, String mode) {
@@ -176,8 +215,7 @@ public class Application extends CommonController {
     	renderArgs.put("mode", mode);
     	showResultFor(rid, "jsphylosvg.html", false);
     }
-   
-    
+
     /**
      * Renders the user requests 'history' page 
      */
