@@ -31,19 +31,22 @@
 	  <li>
 	    <div class="ch-item ch-img-2">
 	      <div class="ch-info">
-	        <h3>Align RNA<br>sequences</h3>
+	        <h3>Align DNA/RNA<br>sequences</h3>
 	        <p id='link-rcoffee' class='link' data-href='/apps/tcoffee/do:rcoffee'>Secondary structure (R-Coffee)</p>
 	        <p id='link-saracoffee' class='link' data-href='/apps/tcoffee/do:saracoffee'>Tertiary structure (SARA-Coffee)</p>
 	        <p id='link-mcoffee' class='link' data-href='/apps/tcoffee/do:mcoffee'>Combine popular aligners (M-Coffee)</p>
+	        <p id='link-procoffee' class='link' data-href='/apps/tcoffee/do:procoffee'>Homologous promoter regions <br>(Pro-coffee)</p>
 	      </div>
 	    </div>
 	  </li>
 	  <li>
 	    <div class="ch-item ch-img-3">
 	      <div class="ch-info">
-	        <h3>Align DNA<br>sequences</h3>
-	        <p id='link-procoffee' class='link' data-href='/apps/tcoffee/do:procoffee'>Homologous promoter regions <br>(Pro-coffee)</p>
-	        <p id='link-mcoffee' class='link' data-href='/apps/tcoffee/do:mcoffee'>Combine popular aligners (M-Coffee)</p>
+	        <h3>Evaluate<br>alignments</h3>	        
+	        <p id='link-tcs' class='link' data-href='/apps/tcoffee/do:core'>using phylogenetic reconstruction (TCS)</p>
+	        <p id='link-trmsd' class='link' data-href='/apps/tcoffee/do:trmsd'>using protein domains (TRMSD)</p>
+	        <p id='link-irmsd' class='link' data-href='/apps/tcoffee/do:irmsd'>using APDB and iRMSD (iRMSD)</p>
+	        <p id='link-strike' class='link' data-href='/apps/tcoffee/do:strike'>using 3D structure (Strike)</p>
 	      </div>
 	    </div>
 	  </li>
@@ -59,10 +62,12 @@
 
 <div class="box" >
 
-<h2><span>Evaluation</span></h2>
+#{list _bundle.groups, as:'group' }
+<h2><span>${group ?: 'Other'}</span></h2>
+
 <table class="c-home" summary="T-Coffee Applications">
 <tbody>
-#{list _bundle.getServicesByGroup('Evaluation') } 
+#{list _bundle.getServicesByGroup(group) } 
 <tr>
 	<td class="c-lbl" >
 	#{if _.name == 'adv-cmdline'}
@@ -87,30 +92,7 @@
 #{/list } 
 </tbody>
 </table>
-
-<h2><span>Other</span></h2>
-<table class="c-home" summary="T-Coffee Applications">
-<tbody>
- 
-<tr>
-	<td class="c-lbl" > <a href="/apps/tcoffee/do:advanced">Advanced</a> </td>
-	<td class="c-val"> 
-		Run your alignment using full featured T-Coffee options.  
-		<small class="cite" >&nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;<a class="cite" href="http://www.ncbi.nlm.nih.gov/pubmed/21558174%2C10964570" title="Cite Advanced" target="_blank" >Cite</a> </small> 	
-	</td>
-</tr>
-
-<tr>
-	<td class="c-lbl" > <a href="/apps/tcoffee/all.html">All</a> </td>
-	<td class="c-val"> 
-		All available T-Coffee methods   
-	</td>
-</tr>
-
-
-</tbody>
-</table>
-
+#{/list}
 </div>
 
 <script type="text/javascript">

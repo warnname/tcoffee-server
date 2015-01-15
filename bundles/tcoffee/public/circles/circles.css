@@ -94,20 +94,20 @@ body {
 }
  
 .ch-img-2 { 
-	background-image: url(rna-w.png);
+	background-image: url(dna-rna-w.png);
  	background-repeat: no-repeat; 	
  	background-position: center;
  	background-color: #cdddf6;
- 	background-size: 165px;
+ 	background-size: 320px;
  	box-shadow: inset 0 0 0 16px rgba(255,255,255,0.6), 2px -2px 2px rgba(0,0,0,0.2);
 }
  
 .ch-img-3 { 
-	background-image: url(dna-w.png);
+	background-image: url(eval-w.png);
  	background-repeat: no-repeat; 
 	background-position: center;
 	background-color: #c0e9e8;
- 	background-size: 170px;
+ 	background-size: 295px;
 	box-shadow: inset 0 0 0 16px rgba(255,255,255,0.6), 0px 2px 2px rgba(0,0,0,0.2);
 }
  
