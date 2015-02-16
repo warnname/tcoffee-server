@@ -1300,12 +1300,12 @@ t_coffee \
     <input>
     <fieldset >
       <title>Alignment input</title>
-      <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL format.</description>
+      <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL, FASTA or MSF format.</description>
       
       <field type='memo' name="alignment" label='Alignment' >
           <hint>Enter your alignment</hint>
 
-          <validation format='CLUSTAL' type='amino-acid' required='true' minnum='2' maxnum='1000' maxlen='5000' >
+          <validation format='TEXT' required='true' >
             <required-error>You have to enter the sequences to evaluate</required-error>
             <format-error>Sequences have to be in CLUSTAL format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
@@ -1340,11 +1340,6 @@ t_coffee \
                 <choices>yes</choices>
             </field>
 
-            <field type="checkbox" name='out1' label='Filtered output' >
-               <value>clustalw_aln,fasta_aln,phylip</value>
-               <choices>clustalw_aln,fasta_aln,phylip </choices>
-            </field>
-
         </fieldset>
 
 
@@ -1352,9 +1347,14 @@ t_coffee \
             <title>Output options</title>
             <description>Use these options to control the output formats of your output alignment</description>
 
+            <field type="checkbox" name='out1' label='Filtered' >
+                 <value>clustalw_aln,fasta_aln,phylip</value>
+                 <choices>clustalw_aln,fasta_aln,phylip </choices>
+            </field>
+
             <field type="checkbox" name='out2' label='Weighted' >
-                <value>tcs_weighted,tcs_replicate,score_ascii</value>
-                <choices>tcs_weighted,tcs_replicate,score_ascii</choices>
+                <value>score_ascii,tcs_weighted,tcs_replicate</value>
+                <choices>score_ascii,tcs_weighted,tcs_replicate</choices>
                 <readonly>score_ascii</readonly>
                 <hint>
                     tcs_weighted: MSA with columns duplicated according to their TCS score. Suitable for phylogenetic reconstruction.
@@ -1394,12 +1394,12 @@ t_coffee \
 
           <field type="checkbox" name="method" label="Pairwise Methods" >
           <value>Mproba_pair</value>
-            <choices>Mproba_pair, Mlalign_id_pair, Mclustalw_pair, Mfast_pair, Mslow_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa</choices>
+            <choices>Mproba_pair, Mkalign_msa, Mmafft_msa, Mmuscle_msa, Mlalign_id_pair, Mclustalw_pair, Mfast_pair, Mslow_pair</choices>
           </field>
     </fieldset>
 
     <fieldset>
-      <field type='text' name="email" label='Your email address' >
+      <field type='text' name="email" label='Your email (optional)' >
         <hint>It will be used to notify you on alignment completion. Multiple email addresses can be entered by separating them with commas.</hint>
         <validation format="EMAIL" />
       </field>

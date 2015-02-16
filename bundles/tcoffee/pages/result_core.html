@@ -85,38 +85,24 @@ ${result?.getAlignmentFasta()?.content()}
 </style>
 #{/elseif}
 
-*{ Tree Box }*
-#{if result.getItem('result.dnd')}
+*{ Result file list }*
+
+#{if result?.items?.size > 0 }
 <div class="box">
-<h2><span>Alignment tree</span>
+
+<h2><span>Result files</span> 
+<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
 </h2>
 
-Click the following links to view the alignment tree with <a href="javascript:void(0)" id="to_jsphylo" >JsPhyloSVG</a> or with <a href="javascript:void(0)" id="to_phylowidget" >PhyloWidget</a>
+#{result-items result /}
+
+#{copy-to-dropbox  /}
 
 </div>
-
-<script type="text/javascript" type="text/javascript">
-
-$('#to_phylowidget').click(function() {
-	var w = Math.round(window.screen.width * .7); 
-	var h = Math.round(window.screen.height * .85);
-	var url = "@{Application.phylowidget(rid,'result.dnd')}"
-	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=no,status=no,location=0")
-	return false
-} )
-
-$('#to_jsphylo').click(function() {
-	var w = Math.round(window.screen.width * .7); 
-	var h = Math.round(window.screen.height * .85);
-	var url = "@{Application.jsphylosvg(rid,'result.dnd')}"
-	window.open(url,"_blank","width="+w+",height="+h+",resizable=yes,scrollbars=yes,status=no,location=0")
-	return false
-}) 
- 
-</script>
 #{/if}
 
-*{ Tree box }* 
+
+*{ Reconstruction box }* 
 
 %{
   def phylip = result?.first("format", "phylip")
@@ -129,11 +115,11 @@ $('#to_jsphylo').click(function() {
 </h2>
 
 #{if phylip }
-	<button id="to_PhyML" name="to_PhyML" class="button" > Send Filtered MSA to PhyML </button>
+	<button id="to_PhyML" name="to_PhyML" class="button" style='width: 10em' > Filtered PhyML </button> <span>Send Filtered MSA to PhyML</span>
 	<br><br>
 #{/if}
 #{if tcs_weighted }
- 	<button id="to_tcs_weighted" name="to_tcs_weighted" class="button" > Send Weighted MSA to PhyML </button>
+ 	<button id="to_tcs_weighted" name="to_tcs_weighted" class="button" style='width: 10em' > Weighted PhyML </button> <span>Send Weighted MSA to PhyML</span>
 	<br><br>
 #{/if}
 
@@ -154,22 +140,6 @@ $('#to_tcs_weighted').click(function() {
 })
 #{/if}
 </script>
-
-*{ Result file list }*
-
-#{if result?.items?.size > 0 }
-<div class="box">
-
-<h2><span>Result files</span> 
-<small><span >${result.items.size} output files - <a href="@{Data.zip(rid)}">download them all</a></span></small>
-</h2>
-
-#{result-items result /}
-
-#{copy-to-dropbox  /}
-
-</div>
-#{/if}
 
 *{ Send result box }* 
 #{if result?.alignmentFasta?.file }
@@ -200,14 +170,17 @@ $('#to_tcs_weighted').click(function() {
 
 <form action="#" id="sendto" name="sendto"  method="POST" target="_blank" >
 <input type="hidden" name="stage1" value="1" >
-<input type="hidden" name="daction" value="PROTOGENE::Regular">
-<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 </form>
 
+<form method="POST" id="sendto_protogene" action="http://tcoffee.vital-it.ch/apps/tcoffee/cgi?name=protogene" target="_blank" >
+    <input type="hidden" name="msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" />
+</form>
+
+
 <script type="text/javascript">
 $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
-$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+$('#to_ProtoGene').click(function() { $('#sendto_protogene').submit(); } );
 $('#to_jalview').click(function() {
 	var w = Math.round(window.screen.width * .7); 
 	var h = Math.round(window.screen.height * .6); 
@@ -251,6 +224,7 @@ $('#to_Espript').click(function() {
 </div>
 
 *{ Command line box }*
+*{
 #{if result?.commandLine?.file }
 <div class="box">
 
@@ -263,6 +237,7 @@ $('#to_Espript').click(function() {
 </code>
 </div>
 #{/if}
+}*
 
 
 *{ Replay box }*
