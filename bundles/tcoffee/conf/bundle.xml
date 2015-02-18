@@ -1300,7 +1300,7 @@ t_coffee \
     <input>
     <fieldset >
       <title>Alignment input</title>
-      <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL format.</description>
+      <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL, FASTA or MSF format.</description>
       
       <field type='memo' name="alignment" label='Alignment' >
           <hint>Enter your alignment</hint>
