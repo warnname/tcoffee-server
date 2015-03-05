@@ -164,7 +164,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=12280]" -M 12200000'>
+      <bsub queue='normal -R "rusage[mem=14280]" -M 14200000'>
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -273,7 +273,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=3580]" -M 3500000'>
+      <bsub queue='normal -R "rusage[mem=6100]" -M 6000000'>
       <tcoffee>
         <args>
           -in=${seqs} ${lib1} ${lib2} 
@@ -660,7 +660,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=12280]" -M 12200000'>  
+      <bsub queue='normal -R "rusage[mem=14280]" -M 14200000'>  
       <tcoffee >
         <args>
           -in=${seqs} 
@@ -889,7 +889,7 @@
     </input>
     
     <process>
-      <bsub queue='normal -R "rusage[mem=12280]" -M 12200000'>  
+      <bsub queue='normal -R "rusage[mem=14280]" -M 14200000'>  
       <tcoffee >
         <args>
           -in=${seqs} 
