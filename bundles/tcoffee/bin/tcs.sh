@@ -46,6 +46,12 @@ done
 rm -f result.*
 
 #
+# Convert the input file
+# 
+mv $INPUT_FILE input.xx
+convertAlignment.pl -i input.xx -o $INPUT_FILE &> convert.log
+
+#
 # Run T-Coffee
 #    
 t_coffee "${args[@]}"

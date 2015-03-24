@@ -107,6 +107,7 @@ ${result?.getAlignmentFasta()?.content()}
 %{
   def phylip = result?.first("format", "phylip")
   def tcs_weighted = result?.first("format", "tcs_weighted")
+  def tcs_replicate = result?.first("format", "tcs_replicate")
 }%
 
 <div class='box' >
@@ -122,6 +123,10 @@ ${result?.getAlignmentFasta()?.content()}
  	<button id="to_tcs_weighted" name="to_tcs_weighted" class="button" style='width: 10em' > Weighted PhyML </button> <span>Send Weighted MSA to PhyML</span>
 	<br><br>
 #{/if}
+#{if tcs_replicate }
+        <button id="to_tcs_replicate" name="to_tcs_replicate" class="button" style='width: 10em' > Bootstrap PhyML </button> <span>Send Bootstrap MSA to PhyML</span>
+        <br><br>
+#{/if}
 
 </div>
 
@@ -136,6 +141,13 @@ $('#to_PhyML').click(function() {
 #{if tcs_weighted  }
 $('#to_tcs_weighted').click(function() { 
         window.open("http://www.atgc-montpellier.fr/phyml-tcs/?file=http://${hostname}${tcs_weighted.webpath}&dt=${data_type}","_blank");
+        return false
+})
+#{/if}
+
+#{if tcs_replicate  }
+$('#to_tcs_replicate').click(function() { 
+        window.open("http://www.atgc-montpellier.fr/phyml-tcs/?file=http://${hostname}${tcs_replicate.webpath}&dt=${data_type}&ns=100","_blank");
         return false
 })
 #{/if}
