@@ -1295,7 +1295,7 @@ t_coffee \
     <title>TCS</title>
     <description>Evaluates your Alignment and outputs a Colored version indicating the local reliability.</description>
     <group>Evaluation</group>
-    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/24694831,21558174,10964570]]></cite>
+    <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/25855806,24694831,21558174,10964570]]></cite>
     
     <input>
     <fieldset >
@@ -1303,7 +1303,7 @@ t_coffee \
       <description>Paste or upload your Multiple Sequence Alignment in CLUSTAL, FASTA, MSF, NEXUS or PHYLIP format.</description>
       
       <field type='memo' name="alignment" label="MSA to evalute" >
-          <hint>Enter here the multiple sequence alignment you want to evalute with TCS. It must be either in CLUSTAL, FASTA, MSF, NEXUS or PHYLIP format. Do not enter more than 1'000 sequences.</hint>
+          <hint>Do not enter more than 1'000 sequences and length larger than 5'000.</hint>
 
           <validation format='TEXT' required='true' >
             <required-error>You have to enter the sequences to evaluate</required-error>

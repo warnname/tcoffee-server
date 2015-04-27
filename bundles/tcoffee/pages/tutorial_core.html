@@ -23,7 +23,7 @@ div.box img {
 
 <p>
 The web server allows you to measure alignment confidence based on T-Coffee framework, <i>TCS</i> 
-<a href='#ref'>[1]</a> and its downstream application for phylogenetic reconstruction.
+<a href='#ref'>[1]</a> and its downstream application for phylogenetic reconstruction based on <i>PhyML</i> <a href='#ref'>[6]</a>.
 </p>
 <p>
 TCS is an alignment evaluation score that makes it possible to identify in an MSA the most correct positions. 
@@ -47,49 +47,55 @@ as well as T-Coffee package. It can be used to evaluate and filter any third par
 <ul>
 <li>
 Enter the MSA in the input field (marked with <i>1</i> in the picture below) or 
-alternatively provide them using the Upload link (<i>2</i>).
+alternatively provide them using the Upload link (<i>2</i>). 
 </li>
 
-<li>MSA must be in CLUSTAL format</li>
+<li>MSA must be in CLUSTAL, FASTA, MSF, NEXUS or PHYLIP format. The limit of MSA size is 1000 sequences and sequence length is 5000.</li>
 
-<li>You may access to TCS advanced settings by clicking the link <i>Show more options</i> (<i>3</i>). 
+<li>TCS requires a MSA input. If your sequences are NOT aligned, you can run any T-Coffee method first (i.e., the link for regular T-Coffee) and then click a blue button ‘Core/TCS’ in the ‘Send results’ section of the result page, which will automatically initialize pre-filled TCS service with T-Coffee (<i>3</i>).
+</li>
+
+<li>You may access to TCS advanced settings by clicking the link <i>Show more options</i> (<i>4</i>). 
 Please refer to the “advance model” section for detailed information.
 </li>
 
 <li>
 Use these options to control the output formats of the evaluation:
   <ul style='padding-bottom: 0'>
-  <li> Enriched alignment (<i>4</i>):
+  <li>
+  Filtered (5): Specify alignment output format after TCS-based filtering procedure. It is suggested to select "phylip" if you want to perform downstream phylogenetic reconstruction. Default: clustalw_aln, fasta_aln, phylip.
+  </li>
+  <li> Enriched alignment (<i>6</i>):
      <ul style='padding-bottom: 0'>
+       <li><em>score_ascii</em> Outputs a TCS evaluation score in plain text format</li>
        <li><em>tcs_weighted</em> Outputs phylip format with duplicated columns according to their TCS score</li>
        <li><em>tcs_replicate</em> Generates 100 phylip replicates, with columns drawn according to their TCS score</li>
-       <li><em>score_ascii</em> outputs a TCS evaluation score in plain text format</li>
      </ul>
   </li>
   
-  <li>Graphic (<i>5</i>):
+  <li>Graphic (<i>7</i>):
        <ul style='padding-bottom: 0'>
-       <li><em>score_html</em> Contains ascii format in html format</li>
-       <li><em>score_pdf</em> will transfer score_html into pdf format</li>
+       <li><em>score_html</em> Outputs a TCS evaluation score in html format</li>
+       <li><em>score_pdf</em> Will transfer score_html into pdf format</li>
      </ul>
   </li>
   </ul>
 </li>
 
-<li>Provide your email address (<i>6</i>) if you want to be notified when the job complete.</li>
+<li>Provide your email address (<i>8</i>) if you want to be notified when the job complete.</li>
 
-<li>Press the button <i>submit</i> (<i>7</i>) to submit your request.</li>
+<li>Press the button <i>submit</i> (<i>9</i>) to submit your request.</li>
 
 </ul>
 
-<p> <img alt="TCS input form" src="public/images/tcs_pic1.png" width="728" height="447"> </p>
+<p> <img alt="TCS input form" src="public/images/tcs_pic1_new.png" width="728" height="508"> </p>
 
 <p>
 Please note that the computation can take some minutes to be fulfilled. You don't need to keep your browser 
 open to wait for the result. You can close it or navigate away to another page. 
 </p>
 <p>Use the <i>History</i> link, in top-bar menu to get access to the computation result at any moment.</p>
-
+<p>You can also retrieve your results using the permanent URL <i>http://tcoffee.crg.cat/apps/tcoffee/result?rid=jobid</i>, where <i>jobid</i> is the ID given at the time of submission.</p>
 <hr>
 <br>
 
@@ -99,9 +105,8 @@ Filter options:
 
 <ul>
 <li>You can use these options to control the filtering intensity of your output alignment and whether you want the filtering to remove columns (recommended) or residues (<i>1</i>).</li>
-<li>All columns with a TCS score lower than minimum or larger than maximum are turned into gaps (<i>2</i>). Default: minimum = 0, maximum = 9</li>
+<li>All columns with a TCS score lower than minimum or larger than maximum are turned into gaps (<i>2</i>). Default: minimum = 4, maximum = 9</li>
 <li>Remove empty columns which contains all gaps after the above filtering (<i>3</i>). Default: yes</li>
-<li>Specify alignment output format (4). It's recommended to check "phylip" if you want to perform downstream phylogenetic reconstruction. Default: clustalw_aln, fasta_aln, phylip</li>
 </ul>
 
 Library Computation:
@@ -109,7 +114,7 @@ Library Computation:
 <ul>
 <li>
 Your alignment is evaluated by comparison against a collection of alignments. This collection is named a Library. 
-This section lets you control the computation of the library. Different libraries give different score results (<i>5</i>): 
+This section lets you control the computation of the library. Different libraries give different score results (<i>4</i>): 
 
   <ul style='padding-bottom: 0'>
     <li><em>Mproba_pair</em> It is the default mode of T-Coffee that runs a pair-HMM to populate the library with residue pairs having the best posterior probabilities.</li>
@@ -122,7 +127,7 @@ This section lets you control the computation of the library. Different librarie
 </li>
 </ul>
 
-<p> <img alt="TCS advanced mode" src="public/images/tcs_pic2.png" width="728" height='777' > </p>
+<p> <img alt="TCS advanced mode" src="public/images/tcs_pic2_new.png" width="728" height='559' > </p>
 
 </div>
 
@@ -139,23 +144,34 @@ This section lets you control the computation of the library. Different librarie
 
 <li>
 <em>MSA</em>
-The MSA is colored according to T-Coffee TCS scheme. Red bits are very reliable, while green and 
-blue bits are unreliable. Color has been redesigned to be visualized for color blind people.
+The MSA is colored according to T-Coffee TCS scheme. Dark pink bits are very reliable, while blue and green bits are unreliable. 
+Color has been redesigned to be visualized for color blind people.
+</li>
+
+<li><em>Result files</em>
+  All files can be downloaded as a single zip file or copied to the user’s Dropbox account.
+  <ul>
+  <li>The <i>Multiple Alignment</i> subsection provides a filtered version of the original MSAs in CLUSTAL, FASTA and Phylip formats that can be used for phylogenetic reconstruction or homology modeling.
+  </li>
+  <li><em>score_ascii</em> The plain text format indicating the <i>ResidueTCS</i>, <i>ColumnTCS</i>, <i>SequenceTCS</i> and <i>AlignmentTCS</i> scores, respectively.
+  </li>
+  <li><em>score_html</em> The html format.
+  </li>
+  <li><em>tcs_weighted</em> In which all columns are duplicated a number of times equal to their <i>ColumnTCS</i>.
+  </li>
+  <li><em>tcs_replicate</em> That contains a 100 bootstrap replicates of the original MSA with column randomly selected weighed by their <i>ColumnTCS</i>. 
+  </li>
+  </ul>
 </li>
 
 <li>
 <em>Phylogenetic reconstruction</em> 
-Estimate a phylogenetic tree from selected MSAs using the PhyML web server
+Estimate a phylogenetic tree from selected MSAs using the PhyML web server. 
   <ul>
-  <li>Send Filtered MSA to PhyML: automatically initial a PhyML job with the filtered MSA. Please select correct "Data Type" in PhyML page</li> 
-  <li>Send Weighted MSA to PhyML: automatically initial a PhyML job with the tcs_weighted. Please select correct "Data Type" in PhyML page</li>
+  <li>Send Filtered MSA to PhyML: automatically initial a PhyML job with the filtered MSA.</li> 
+  <li>Send Weighted MSA to PhyML: automatically initial a PhyML job with the tcs_weighted.</li>
+  <li>Send Bootstrap MSA to PhyML: automatically initial a PhyML job with the tcs_replicate.</li>
   </ul>
-</li>
-
-
-<li><em>Result files</em>
-The result files coming from the alignment and TCS method. 
-All files can be downloaded as a single zip file r copied to your DropBox.
 </li>
 
 <li><em>Send results</em>
@@ -164,6 +180,7 @@ Forward this result to other online tools.
 
 <li><em>Info</em>
 Some information related to the submitted job (running time, date, etc).
+You may want to use the full featured TCS through command line mode online.
 </li>
 
 <li><em>Replay</em>
@@ -176,7 +193,7 @@ To share your alignment experience in the social network.
 
 </ul>
 
-<p> <img alt="T-Coffee home" src="public/images/tcs_pic3.png" width="728" height='1258' > </p>
+<p> <img alt="T-Coffee home" src="public/images/tcs_pic3_new.png" width="728" height='1301' > </p>
 </div>
 
 
@@ -186,25 +203,32 @@ To share your alignment experience in the social network.
 <div id="ref">
 <ol style="list-style: decimal; padding-left: 1.4em">
 <li style='padding-bottom: 6px'>
+        TCS method <br>
+        <i>Chang JM, Di Tommaso P, Notredame C.</i> <br> 
 	<a href='http://www.ncbi.nlm.nih.gov/pubmed/?term=24694831' target='_blank' >
 	TCS: a new multiple sequence alignment reliability measure to estimate alignment accuracy and improve phylogenetic tree reconstruction.
 	</a> 
-	<br>
-	<i>Chang JM, Di Tommaso P, Notredame C.</i>
 	<br>
 	Molecular biology and evolution 31, 1625–37 (2014). (PMID: 24694831)
 </li>
 
 <li style='padding-bottom: 6px'>
-	Original CORE publication Notredame and Abergel, in Bioinformatics and Genomes: Current Perspectives. M. Andrade, Horizon Scientific Press: pp 30-50
+   TCS web server <br>
+   Chang, J.-M. M., Di Tommaso, P., Lefort, V., Gascuel, O. &amp; Notredame, C. <br>
+   <a href='http://www.ncbi.nlm.nih.gov/pubmed/25855806' target='_blank' >TCS: a web server for multiple sequence alignment evaluation and phylogenetic reconstruction.</a> <br>
+    Nucleic Acids Res. (2015). doi:10.1093/nar/gkv310 (PMID: 25855806)
 </li>
 
 <li style='padding-bottom: 6px'>
-    <a href='http://www.tcoffee.org/Projects/tcs/' target='_blank'>TCS home page</a>
+	Original CORE publication <br> Notredame and Abergel, in Bioinformatics and Genomes: Current Perspectives. M. Andrade, Horizon Scientific Press: pp 30-50
+</li>
+
+<li style='padding-bottom: 6px'>
+    <a href='http://www.tcoffee.org/Projects/tcs/' target='_blank'>TCS project site</a>
 </li>
 
 <li>
-  <a href='http://tcoffee.readthedocs.org/en/latest/TCS.html' target='_blank' >TCS manual</a>
+  <a href='http://tcoffee.readthedocs.org/en/latest/TCS.html' target='_blank' >TCS standalone usage</a>
 </li>
 
 <li>
