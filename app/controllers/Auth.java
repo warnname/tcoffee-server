@@ -1,5 +1,9 @@
 package controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+import play.libs.WS;
+
 import org.apache.commons.lang.StringUtils;
 
 import play.Logger;
@@ -8,6 +12,9 @@ import play.libs.OpenID;
 import play.libs.OpenID.UserInfo;
 import play.mvc.Before;
 import play.mvc.Router;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 
 /**
  * Implements Google OpenID authentication. User will be redirctor  
@@ -20,6 +27,7 @@ public class Auth extends CommonController {
 
 	private static final boolean IS_AUTH_OPENID;
 	private static final boolean IS_AUTH_BROWSERID;
+	private static final boolean IS_AUTH_GITHUB;
 	
 	private static class Account {
 		String id;
@@ -35,6 +43,8 @@ public class Auth extends CommonController {
 		 */
 		IS_AUTH_OPENID = "openid".equals( Play.configuration.getProperty("application.auth") ) ;
 		IS_AUTH_BROWSERID = "browserid".equals( Play.configuration.getProperty("application.auth") ) ;
+		IS_AUTH_GITHUB = "github".equals( Play.configuration.getProperty("application.auth") ) ;
+
 	}
 	
 	/**
@@ -52,7 +62,7 @@ public class Auth extends CommonController {
 	 * Show the login page
 	 */
 	public static void login() {
-		Logger.debug("Auth: entering login() method");
+		Logger.debug("Auth: entering login() method > " + Play.configuration.getProperty("application.auth"));
 		injectImplicitVars();
 		
 		/* keep the original to redirect to */
@@ -63,6 +73,15 @@ public class Auth extends CommonController {
         if( IS_AUTH_OPENID ) {
         	page = "Auth/login_openid.html";
         }
+	else if( IS_AUTH_GITHUB ) {
+		String client_id = Play.configuration.getProperty("github.client_id");
+		String client_secret = Play.configuration.getProperty("github.client_secret");
+		String host_name = Play.configuration.getProperty("settings.hostname");
+		renderArgs.put("client_id", client_id);
+		renderArgs.put("client_secret", client_secret);
+		renderArgs.put("host_name", host_name);
+		page = "Auth/login_github.html";
+	}
         else if( IS_AUTH_BROWSERID ) {
         	page = "Auth/login_browserid.html";          	
         }
@@ -165,6 +184,9 @@ public class Auth extends CommonController {
         else if( IS_AUTH_OPENID ) { 
         	account = validateOpenID(); 
         }
+	else if( IS_AUTH_GITHUB ) {
+		account = validateGithubID();
+	}
         else { 
         	account = validateBasic();
         }
@@ -189,6 +211,38 @@ public class Auth extends CommonController {
 
 	}	
 	
+	private static Account validateGithubID() {
+		String client_id = Play.configuration.getProperty("github.client_id");
+		String client_secret = Play.configuration.getProperty("github.client_secret");
+
+		String code = request.params.get("code");        
+
+		Map<String,Object> p = new HashMap<String,Object>();
+		p.put("client_id", client_id);
+		p.put("client_secret", client_secret);
+		p.put("code", code);
+		p.put("accept", "json");
+
+		WS.HttpResponse res = WS.url("https://github.com/login/oauth/access_token").params(p).post();
+		String token = res.getQueryString().get("access_token");
+
+		String email=null;
+		res = WS.url("https://api.github.com/user/emails?access_token=" + token).get();
+		for( JsonElement item: res.getJson().getAsJsonArray() ) {
+			JsonObject obj = item.getAsJsonObject();
+			if( obj.get("primary").getAsBoolean() ) {
+				email = obj.get("email").getAsString();
+				break;
+			}
+		}
+
+		Account result = new Account();
+		result.id = token;
+		result.email = email;
+		return result;
+
+	}
+
     private static Account validateBrowserID() {
     	Account result = new Account();
     	result.id = session.get("trusted_user");
