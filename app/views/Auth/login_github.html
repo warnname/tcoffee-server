@@ -9,7 +9,7 @@ ${flash.error?.raw()}
 #{/if}
  
 <form action="https://github.com/login/oauth/authorize?scope=user:email&client_id=${client_id}&redirect_uri=http://${host_name}@{Auth.validate()}" method="GET">
-    <a class='button blue' href="https://github.com/login/oauth/authorize?scope=user:email&client_id=${client_id}&redirect_uri=http://${host_name}@{Auth.validate()}">
+    <a class='button' href="https://github.com/login/oauth/authorize?scope=user:email&client_id=${client_id}&redirect_uri=http://${host_name}@{Auth.validate()}">
     &nbsp;Sign-in using your Github Account&nbsp; 
     </a>
 </form>
