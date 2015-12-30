@@ -800,7 +800,7 @@ t_coffee \
   <service name="tmcoffee" >
     <title>TM-Coffee</title>
     <group>Alignment</group>      
-    <description>Aligns transmembrane proteins using homology extension (new)</description>
+    <description>Align Proteins using Homology Extension against Reduced Databases</description>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/22536955]]></cite>
     
     <input>
@@ -810,12 +810,12 @@ t_coffee \
       
         <field type='memo' name='seqs' label='Sequences to align' >
           <hint>Enter the sequences to align</hint>
-          <validation format='FASTA' type="amino-acid" required='true' minnum='2' maxnum='150' maxlen='2500' >
+          <validation format='FASTA' type="amino-acid" required='true' minnum='2' maxnum='1000' maxlen='5000' >
             <required-error>You have to enter the sequences to align</required-error>
             <format-error>Sequences have to be in FASTA format</format-error>
             <minnum-error>You must enter at least 2 sequences</minnum-error>
-            <maxnum-error>You can enter at most 150 sequences</maxnum-error>
-            <maxlen-error>Sequences cannot exceed 2500 char length</maxlen-error>
+            <maxnum-error>You can enter at most 1000 sequences</maxnum-error>
+            <maxlen-error>Sequences cannot exceed 5000 char length</maxlen-error>
           </validation>
           
           <sample>public/sample-tm.fasta.txt</sample>
@@ -823,26 +823,32 @@ t_coffee \
 
       </fieldset>
       
-      
+    <fieldset >
+     <title>Homology search options</title>
+
+     <field type='checkbox' name='type' label='Sequence type' >
+        <choices>transmembrane</choices>
+     </field>  
+
+     <field type='dropdown' name='db' label='Homology Extension' >
+       <choices>UniRef50 -- Very Fast/Rough,UniRef90 -- Fast/Approximate,UniRef100 -- Slow/Accurate,UniProt -- Slow/Accurate,NCBI-NR -- Slow/Accurate</choices>
+     </field>
+
+    </fieldset>  
       
     <fieldset hideable="true">
      <title>Output options</title>
      <description>Use this section to control the output format.</description>
       
-     <field type='dropdown' name='template' label='Template method' >
-        <hint>    
-		Topology of the sequence is predicted based on topology voting of its homologous instead of the original sequences (PSITM: default). 
-		This major voting strategy sometimes will result in a strange prediction, i.e. an extracellular right immediately after an intracellular 
-		without transmembrane domain in between. The problem might be solved by predicting in a single sequence (TM).
-        </hint>
-        <value>PSITM</value>
-     	<choices>PSITM, TM</choices>
-     </field>
-      
      <field type="checkbox" name='output' label='Alignment format' >
-       <value>tm_html fasta_aln clustalw_aln phylip score_ascii</value>
-       <choices>tm_html, score_html, clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip, score_pdf</choices>
-       <readonly>tm_html fasta_aln score_ascii</readonly>
+       <value>fasta_aln clustalw_aln phylip score_ascii</value>
+       <choices>clustalw_aln, pir_aln, pir_seq, gcg, fasta_aln, score_ascii, msf_aln, phylip</choices>
+       <readonly>fasta_aln score_ascii</readonly>
+     </field>
+  
+     <field type="checkbox" name='output2' label='Graphic formats' >
+       <value>score_html</value>
+       <choices>score_html, score_pdf</choices>
      </field>
 
      <field type='dropdown' name='letter' label='Case' >
@@ -880,25 +886,25 @@ t_coffee \
     
     <process>
       <qsub>  
-      <tcoffee >
-      	<env BLASTDB="${settings.UNIREF50TM_DB}"  /> 
+      <tcoffee program='tmcoffee.sh' >
+      	<env BLASTDB="${settings.UNIREFTM_DB}"  /> 
         <args>
-          -in=${seqs} 
-          -mode=psicoffee
-          -blast_server=LOCAL
-          -protein_db=uniref50-TM
-		  -template_file=${template}  
-		  -prot_min_sim=50 
-		  -prot_max_sim=90 
-		  -prot_min_cov=70
-          -output=${output} 
-          -maxnseq=150 
-          -maxlen=2500 
-          -case=${letter} 
-          -seqnos=${seqnos} 
-          -outorder=${outorder} 
-          -run_name=result
-          -multi_core=${settings.multicore}
+          -in ${seqs} 
+          -mode psicoffee
+          -blast_server LOCAL
+          --search-db '${db}'
+          --search-type '${type}'  
+	  -prot_min_sim 50 
+          -prot_max_sim 90 
+	  -prot_min_cov 70
+          --search-out '${output} ${output2}'
+          -maxnseq 1000 
+          -maxlen 5000 
+          -case ${letter} 
+          -seqnos ${seqnos} 
+          -outorder ${outorder} 
+          -run_name result
+          -multi_core ${settings.multicore}
         </args>
       </tcoffee>
       </qsub>  
