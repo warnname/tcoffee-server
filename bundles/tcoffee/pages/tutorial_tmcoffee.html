@@ -1,4 +1,4 @@
-#{set title:'TM-Coffee Tutorial' /}
+#{set title:'PSI/TM-Coffee Tutorial' /}
 
 <style type="text/css">
 div.box img {
@@ -14,21 +14,21 @@ div.box ul li { padding-bottom: .5em; list-style: disc;  }
 div.box ul li em { padding-right: .2em }
 </style>
 
-<h1>TM-Coffee Tutorial
-<small>A quick start to align proteins using homology extension against reduced databases</small>
+<h1>PSI/TM-Coffee Tutorial
+<small>A quick start guide to aligning proteins using homology extension against reduced databases</small>
 </h1>
 
 <div class="box">
 <h2><span>Description</span></h2>
 
 <p>
-The web server allows to align non-transmembrane and transmembrane proteins (TMPs) <a href='#ref'>[1]</a> 
-through combining homology extension into T-Coffee consistency approach, Position Specific Iterative T-Coffee (PSI-Coffee) 
+The web server aligns non-transmembrane and transmembrane proteins (TMPs) <a href='#ref'>[1]</a> 
+by combining homology extension into the T-Coffee consistency approach, termed Position Specific Iterative T-Coffee (PSI-Coffee) 
 <a href='#ref'>[2]</a>, and also perform transmembrane topology prediction for TMPs.
 </p>
 <p>
 TM-Coffee is an alignment procedure that uses reduced reference databases for homology extension to obtain similar results at a significantly reduced computational cost over full protein databases <a href='#ref'>[3]</a>. Our benchmarking on BAliBASE2-ref7 alpha-helical TMPs shows a significant improvement over the most accurate methods <a href='#ref'>[3]</a>.
-The homology extension and transmembrane topology prediction is implemented in the web server, as well as T-Coffee package 
+The homology extension and transmembrane topology prediction is implemented in the web server, as well as the T-Coffee package 
 <a href='#ref'>[4]</a>.
 </p>
 
@@ -39,25 +39,25 @@ The homology extension and transmembrane topology prediction is implemented in t
 
 <ul>
 <li>
-<em>Sequences input</em> Enter the sequence in the input field or alternatively provide them using the Upload link. The limit of sequence size is 1000 sequences and sequence length is 5000.
+<em>Sequences input</em> Enter the sequences in the input field or alternatively provide them using the Upload link. The sequence size limit is 1000 sequences and the sequence length limit is 5000.
 </li>
 
-<li>Sequence must be in FASTA format</li>
+<li>Sequences must be in FASTA format</li>
 
 <li>
- <em>Homology search options</em> Use these options to control homology search procedure.
+ <em>Homology search options</em> Use these options to control the homology search procedure.
 
   <ul style='padding-bottom:0'>
   <li>
-  Sequence type: non-transmembrane by default. When checking transmembrane, the source databases will be further reduced by only keeping "keyword:transmembrane". These TMP specific databases are typically 20% of the size of their sources <a href='#ref'>[3]</a>. Besides alignment, the prediction of the transmembrane topology will be conducted for each sequence. The output will be tm_html instead of score_html (detailed in Output interpretation section).
+  Sequence type: non-transmembrane by default. When checking transmembrane, the source databases will be further reduced by only keeping entried containing "keyword:transmembrane". These TMP specific databases are typically 20% of the size of their sources <a href='#ref'>[3]</a>. Besides performing alignment, the prediction of the transmembrane topology will be conducted for each sequence. The output will be tm_html instead of score_html (see more details in the Output interpretation section).
   </li>
 
   <li>
-  Homology extension databases: you can specify the databases which homology extension was carried out against:
+  Homology extension databases: you can specify the database which homology extension will be carried out against:
   <ul style='padding-bottom:0'>
   <li>UniRef50, very fast, rough (default) : built by clustering UniRef100 sequences at the 50% sequence identity levels <a href='#ref'>[5]</a>.</li>
   <li>UniRef90, fast, approximate : built by clustering UniRef100 sequences at the 90% sequence identity levels <a href='#ref'>[5]</a>.</li>
-  <li>UniRef100, slow, accurate : combines  identical  sequences  and subfragments from any source organism into a single UniRef entry (i.e.,  cluster) <a href='#ref'>[5]</a>.</li>
+  <li>UniRef100, slow, accurate : combines  identical  sequences  and sub-fragments from any source organism into a single UniRef entry (i.e.,  cluster) <a href='#ref'>[5]</a>.</li>
   <li>UniProt, slow, accurate</li>
   <li>NCBI NR, slow, accurate</li>
   </ul>
@@ -65,7 +65,7 @@ The homology extension and transmembrane topology prediction is implemented in t
   </ul>
 </li>
 
-<li>You may access to advanced settings by clicking the link <i>Show more options</i>. Please refer to the <i>Output options</i> section for detailed information.</li>
+<li>You may access the advanced settings by clicking the link <i>Show more options</i>. Please refer to the <i>Output options</i> section for detailed information.</li>
 
 <li>Provide your email address if you want to be notified when the job complete.</li>
 
@@ -74,7 +74,7 @@ The homology extension and transmembrane topology prediction is implemented in t
 <p> <img alt="T-Coffee home" src="public/images/tmcoffee_fig1.png" width="728" height='441' > </p>
 
 <p>
-Please note that the computation can take some minutes to be fulfilled. You don't need to keep your browser open to wait for the result. You can close it or navigate away to another page. Use the History link, in top-bar menu to get access to the computation result at any moment. You can also retrieve your results using the permanent URL http://tcoffee.crg.cat/apps/tcoffee/result?rid=jobid, where jobid is the ID given at the time of submission.
+Please note that the computation can take some minutes to be fulfilled. You don't need to keep your browser open to wait for the result. You can close it or navigate away to another page. Use the History link, in top-bar menu to access the computation result at any moment. You can also retrieve your results using the permanent URL http://tcoffee.crg.cat/apps/tcoffee/result?rid=jobid, where jobid is the ID given at the time of submission.
 </p>
 
 <br>
@@ -97,15 +97,15 @@ Use these options to control the output formats of the alignment
 </li>
 
 <li>
-<em>Case</em> upper/lower/keep will output alignment in upper/lower/original case, respectively.
+<em>Case</em> upper/lower/keep will output the alignment in upper/lower/original case, respectively.
 </li>
 
 <li>
-<em>Residue number</em> on/off will output alignment with/without residue number beside alignment, respectively.
+<em>Residue number</em> on/off will output the alignment with/without the residue numbers beside the alignment, respectively.
 </li>
 
 <li>
-<em>outorder</em> input/aligned will order the sequence of the alignment according to input/align procedure, respectively.
+<em>outorder</em> input/aligned will order the sequences of the alignment according to input/align procedure, respectively.
 </li>
 
 <li>
@@ -120,34 +120,34 @@ Use these options to control the output formats of the alignment
 <div class="box" >
 <h2><span>Output interpretation</span></h2>
 
-<h3>Non-transmembrane protein</h3>
+<h3>Non-transmembrane proteins</h3>
 The result page contains the following sections:
 
 <ul>
-<li><em>MSA</em> The MSA is colored according to T-Coffee TCS scheme. Dark pink bits are very reliable, while blue and green bits are unreliable based on T-Coffee library. Color has been redesigned to be visualized for color blind people.
+<li><em>MSA</em> The MSA is colored according to the T-Coffee TCS scheme. Dark pink bits are very reliable, while blue and green bits are unreliable based on the T-Coffee library. The color scheme has been redesigned to be easily visualized by color blind people.
 </li>
 
 <li><em>Citation</em> The related article when citing the TM-Coffee.</li>
 
 <li><em>Result files</em>
   <ul style='padding-bottom:0'>
-  <li>Tree the guide tree is used during alignment procedure. </li>
-  <li>Multiple Alignment subsection provides the MSAs in CLUSTAL, FASTA and Phylip. <i>score_html</i> the html format of above MSA section and its plain text format, <i>score_ascii</i>.</li>
+  <li>Tree the guide tree used during the alignment procedure. </li>
+  <li>Multiple Alignment subsection provides the MSAs in CLUSTAL, FASTA and Phylip formats. <i>score_html</i> is the html format of the above MSA section and its plain text format, <i>score_ascii</i>.</li>
   <li>Template List lists the homology profiles for sequences</li>
-  <li>Template Profile the homology profile of the each sequence from BLAST search procedure</li>
+  <li>Template Profile the homology profile of each sequence from BLAST search procedure</li>
   </ul>
   All files can be downloaded as a single zip file or copied to the user’s Dropbox account.
 </li>
 
 <li><em>Send results</em> Forward this result to other online tools</li>
-<li><em>Info</em> Some information related to the submitted job (running time, date, etc).</li>
+<li><em>Info</em> Information related to the submitted job (running time, date, etc).</li>
 <li><em>Replay</em> This link allows the user to re-run the job while modifying input options or data. </li>
-<li><em>Feedback</em> To share your alignment experience in the social network.</li>
+<li><em>Feedback</em> To share your alignment experience on social networks.</li>
 </ul>
 
 <p> <img alt="T-Coffee home" src="public/images/tmcoffee_fig3.png" width="728" height='1435' > </p>
 
-<h3>Transmembrane protein</h3>
+<h3>Transmembrane proteins</h3>
 The result page contains the following sections:
 
 <ul>
@@ -155,18 +155,18 @@ The result page contains the following sections:
 <li><em>Citation</em> The related article when citing the TM-Coffee.</li>
 <li><em>Result files</em>
   <ul style='padding-bottom:0'>
-  <li>Tree the guide tree is used during alignment procedure</li>
-  <li>Multiple Alignment subsection provides the MSAs in CLUSTAL, FASTA and Phylip. <i>score_html</i> the html format of the T-Coffee TCS score and its plain text format, <i>score_ascii</i>. <i>tm_html</i> the html format of the above MSA section indicates the transmembrane topology prediction.</li>
+  <li>Tree the guide tree used during the alignment procedure</li>
+  <li>Multiple Alignment subsection provides the MSAs in CLUSTAL, FASTA and Phylip formats. <i>score_html</i> the html format of the T-Coffee TCS score and its plain text format, <i>score_ascii</i>. <i>tm_html</i> the html format of the above MSA section indicates the transmembrane topology prediction.</li>
   <li>Template List lists the homology profiles and topology predictions for sequences</li>
-  <li>Template Profile the homology profile of the each sequence from BLAST search procedure</li>
-  <li>Template Protein Transmembrane Topology the transmembrane topology prediction of the each sequence, where I: in loop, H: TM helix and O: out loop</li>
+  <li>Template Profile the homology profile of each sequence from the BLAST search procedure</li>
+  <li>Template Protein Transmembrane Topology the transmembrane topology prediction of each sequence, where I: in loop, H: TM helix and O: out loop</li>
   </ul>
   All files can be downloaded as a single zip file or copied to the user’s Dropbox account.
 </li>
 <li><em>Send results</em> Forward this result to other online tools</li>
-<li><em>Info</em> Some information related to the submitted job (running time, date, etc).</li>
+<li><em>Info</em> Information related to the submitted job (running time, date, etc).</li>
 <li><em>Replay</em> This link allows the user to re-run the job while modifying input options or data. </li>
-<li><em>Feedback</em> To share your alignment experience in the social network.</li>
+<li><em>Feedback</em> To share your alignment experience on social networks.</li>
 </ul>
 
 <p> <img alt="T-Coffee home" src="public/images/tmcoffee_fig4.png" width="728" height='1390' > </p>

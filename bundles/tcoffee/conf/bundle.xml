@@ -798,7 +798,7 @@ t_coffee \
       TM-COFFEE
       ======================================================================== -->
   <service name="tmcoffee" >
-    <title>TM-Coffee</title>
+    <title>PSI/TM-Coffee</title>
     <group>Alignment</group>      
     <description>Align Proteins using Homology Extension against Reduced Databases</description>
     <cite><![CDATA[http://www.ncbi.nlm.nih.gov/pubmed/22536955]]></cite>
