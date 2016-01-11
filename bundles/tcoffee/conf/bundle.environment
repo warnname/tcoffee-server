@@ -30,3 +30,6 @@ PERL5LIB=${bundle.path}/perl:/data/www-cn/perllib/lib/perl5
 ALN_LINE_LENGTH=100
 PDB_DIR=${settings.PDB_DIR}
 PYTHONPATH=${settings.PYTHONPATH}
+PDB_ENTRY_TYPE_FILE=/db/pdb/derived_data/pdb_entry_type.txt
+PDB_UNREALEASED_FILE=/data/www-cn/pdb_unreleased.xml
+NO_REMOTE_PDB_DIR=1
