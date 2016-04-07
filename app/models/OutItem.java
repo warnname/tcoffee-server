@@ -78,6 +78,7 @@ public class OutItem implements Serializable {
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
 		this.aggregation = defaultAggregationByType(type);
+		fixLabel();
 	}
 
 	
@@ -91,8 +92,15 @@ public class OutItem implements Serializable {
 		this.format = defaultFormatByName(name);
 		this.label = defaultLabelByName(name);
 		this.aggregation = defaultAggregationByType(type);
+
+		fixLabel();
 	}
 	
+	private void fixLabel() {
+		if( "Template Profile".equals(aggregation) ) {
+			this.label = this.name;
+		}
+	}
 	
 	private String defaultAggregationByType(String type) {
 		Definition def = Service.current().bundle.def;

@@ -136,22 +136,20 @@ Please cite this result referring the papers at <a href="${result.cite.trim()}" 
 
 <form action="#" id="sendto" name="sendto"  method="POST" target="_blank" >
 <input type="hidden" name="stage1" value="1" >
-<input type="hidden" name="daction" value="PROTOGENE::Regular">
-<input type="hidden" name="--msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
+<input type="hidden" name="msa" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 <input type="hidden" name="text" value="#{includefile result.alignmentFasta.file, escapeHtml:true /}" >
 </form>
 
 #{if result?.getAlignmentClustalw() }
 <form method="POST" id="sendto_tcoffee" action="@{Application.gateway('core')}" >
     <input type="hidden" name="alignment" value="#{includefile result.alignmentClustalw.file, escapeHtml:true /}" />
-
 </form>
 #{/if}
 
 <script type="text/javascript">
 $('#to_TCoffeeCore').click(function() { $('#sendto_tcoffee').submit() })
 $('#to_MyHits').click(function() { $('#sendto').attr('action','http://myhits.isb-sib.ch/cgi-bin/msa_hub').submit(); } );
-$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/cgi-bin/Tcoffee/tcoffee_cgi/index.cgi').submit(); } );
+$('#to_ProtoGene').click(function() { $('#sendto').attr('action','http://tcoffee.vital-it.ch/apps/tcoffee/cgi?name=protogene').submit(); } );
 $('#to_jalview').click(function() {
 	var w = Math.round(window.screen.width * .7); 
 	var h = Math.round(window.screen.height * .6); 

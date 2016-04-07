@@ -831,7 +831,7 @@ t_coffee \
      </field>  
 
      <field type='dropdown' name='db' label='Homology Extension' >
-       <choices>UniRef50 -- Very Fast/Rough,UniRef90 -- Fast/Approximate,UniRef100 -- Slow/Accurate,UniProt -- Slow/Accurate,NCBI-NR -- Slow/Accurate</choices>
+       <choices>UniRef50 -- Very Fast/Rough,UniRef90 -- Fast/Approximate,UniRef100 -- Slow/Accurate</choices>
      </field>
 
     </fieldset>  

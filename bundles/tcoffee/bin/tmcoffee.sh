@@ -12,9 +12,9 @@ SEARCH_OUT=''
 
 function db2name() {
   case "$1" in
-  'UniRef50 -- Very Fast/Rough')  SEARCH_DB=uniref50-TM;;
-  'UniRef90 -- Fast/Approximate')  SEARCH_DB=uniref90-TM;;
-  'UniRef100 -- Slow/Accurate') SEARCH_DB=uniref100-TM;;
+  'UniRef50 -- Very Fast/Rough')  SEARCH_DB=uniref50;;
+  'UniRef90 -- Fast/Approximate')  SEARCH_DB=uniref90;;
+  'UniRef100 -- Slow/Accurate') SEARCH_DB=uniref100;;
   'UniProt -- Slow/Accurate')   SEARCH_DB=uniprot;;
   'NCBI-NR -- Slow/Accurate')   SEARCH_DB=nr;;
   esac
@@ -49,7 +49,11 @@ done
 
 # add custom params 
 args+=("-protein_db") 
+if [[ $SEARCH_TYPE == transmembrane ]]; then
+args+=("$SEARCH_DB-TM")
+else 
 args+=("$SEARCH_DB")
+fi
 
 args+=("-template_file") 
 if [[ $SEARCH_TYPE == transmembrane ]]; then 
